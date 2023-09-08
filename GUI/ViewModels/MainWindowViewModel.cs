@@ -50,7 +50,6 @@ using System.Windows.Markup;
 using DivinityModManager.Models.Extender;
 using DynamicData.Kernel;
 
-
 namespace DivinityModManager.ViewModels
 {
     public class MainWindowViewModel : BaseHistoryViewModel, IActivatableViewModel, IDivinityAppViewModel
@@ -74,7 +73,6 @@ namespace DivinityModManager.ViewModels
             get => dragHandler;
             set { this.RaiseAndSetIfChanged(ref dragHandler, value); }
         }
-
 
         [Reactive] public string Title { get; set; }
         [Reactive] public string Version { get; set; }
@@ -4815,55 +4813,6 @@ Directory the zip will be extracted to:
             }
         }
 
-
-        class ActiveModsChangedObserver : IObserver<DivinityModData>
-        {
-            private const string NEXUS_MODS_API_KEY = "JLEbuBXmtLMK+d/zlkByYGYThdJGcW3lOC8ZlnroTqk0PzV9--fxVDZrWnpDd6skDK--jQiLzK0ftyINjzfwPU2pfA==";
-
-            static ActiveModsChangedObserver()
-            {
-                NexusAPI.ApiManager.Init(apiKey: NEXUS_MODS_API_KEY, userAgent: "DivinityModManager", cacheDir: Path.Combine("nexus-cache"));
-            }
-
-            public void OnCompleted()
-            {
-                // Logic for when the provider has finished sending data.
-            }
-
-            public void OnError(Exception error)
-            {
-                // Logic for handling errors.
-            }
-
-            public void OnNext(DivinityModData value)
-            {
-                DivinityApp.Log($"ActiveModsChangedObserver.OnNext({value.DisplayName})");
-                Task<NexusAPI.Responses.ModHashResult[]> modsByHash = NexusAPI.ApiManager.GetModByHash("baldurs-gate-3", value.MD5);
-                if (modsByHash != null)
-                {
-                    // Print the mod name and version.
-                    foreach (var modHashResult in modsByHash.Result)
-                    {
-                        DivinityApp.Log($"Mod: {modHashResult.Mod.Name} - {modHashResult.Mod.Version}");
-                    }
-                }
-            }
-        }
-
-        public class HashUtility
-        {
-            public static string GetMD5Hash(string filePath)
-            {
-                using (var md5 = System.Security.Cryptography.MD5.Create())
-                {
-                    using (var stream = File.OpenRead(filePath))
-                    {
-                        return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", string.Empty);
-                    }
-                }
-            }
-        }
-
         public MainWindowViewModel() : base()
         {
             MainProgressValue = 0d;
@@ -5203,30 +5152,49 @@ Directory the zip will be extracted to:
                 SelectedModOrder?.Sort(SortModOrder);
             });
 
-            // Whenever anything about ActiveMods changes, log it
+            string GetMD5Hash(string filePath)
+            {
+                using (var md5 = System.Security.Cryptography.MD5.Create())
+                {
+                    using (var stream = File.OpenRead(filePath))
+                    {
+                        return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", string.Empty);
+                    }
+                }
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // (Gavin): BEGIN CHANGES
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // I'll revoke this later
             const string NEXUS_MODS_API_KEY = "JLEbuBXmtLMK+d/zlkByYGYThdJGcW3lOC8ZlnroTqk0PzV9--fxVDZrWnpDd6skDK--jQiLzK0ftyINjzfwPU2pfA==";
             ActiveMods.ActOnEveryObject(
+                // onAdd
                 (mod) =>
                 {
                     DivinityApp.Log($"ActiveMods changed: {mod.DisplayName} ({mod.UUID})");
-                    // Calculate MD5 Hash using the filepath to the mod
-                    var md5 = HashUtility.GetMD5Hash(mod.FilePath);
+
+                    var md5 = GetMD5Hash(mod.FilePath);
                     DivinityApp.Log($"MD5: {md5}");
+
                     Task<NexusAPI.Responses.ModHashResult[]> modsByHash = NexusAPI.ApiManager.GetModByHash("baldursgate3", md5);
                     if (modsByHash != null)
                     {
-                        // Print the mod name and version.
                         foreach (var modHashResult in modsByHash.Result)
                         {
                             DivinityApp.Log($"FETCHED MOD BY HASH: {modHashResult.Mod.Name} - {modHashResult.Mod.Version}");
                         }
                     }
                 },
-                (mod) =>
-                {
-
-                }
+                // onRemove
+                (mod) => { }
             );
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // (Gavin): END CHANGES
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             var selectedModsConnection = modsConnection.AutoRefresh(x => x.IsSelected, TimeSpan.FromMilliseconds(25)).AutoRefresh(x => x.IsActive, TimeSpan.FromMilliseconds(25)).Filter(x => x.IsSelected);
 
             _activeSelected = selectedModsConnection.Filter(x => x.IsActive).Count().ToProperty(this, nameof(ActiveSelected), true, RxApp.MainThreadScheduler);
@@ -5289,15 +5257,6 @@ Directory the zip will be extracted to:
             CheckForAppUpdatesCommand = ReactiveCommand.Create(checkForUpdatesAction, canCheckForUpdates);
             Keys.CheckForUpdates.AddAction(checkForUpdatesAction, canCheckForUpdates);
 
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            // Use Nexus Mods API to check for updates
-            // Listen to ActiveMods, and when it changes, check for updates by mapping over the mods and
-            // making an API call for each mod. If the API call returns a newer version, then add it to
-            // the list of mods that have updates available.
-            ActiveMods.Subscribe(new ActiveModsChangedObserver());
-            //////////////////////////////////////////////////////////////////////////////////////////
-
-            /////////////////////////////////////////////////////////////////////////////////////////////
             canRenameOrder = this.WhenAnyValue(x => x.SelectedModOrderIndex, (i) => i > 0);
 
             ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object, Unit>(ToggleRenamingLoadOrder, canRenameOrder);
