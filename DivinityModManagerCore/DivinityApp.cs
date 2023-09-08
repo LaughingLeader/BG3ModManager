@@ -70,6 +70,7 @@ namespace DivinityModManager
 
 		private static bool developerModeEnabled = false;
 
+
 		public static bool DeveloperModeEnabled
 		{
 			get => developerModeEnabled;

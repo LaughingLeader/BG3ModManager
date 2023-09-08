@@ -1096,7 +1096,17 @@
 					</DataTemplate>
 				</GridViewColumn.CellTemplate>
 			</GridViewColumn>
-		</GridView.Columns>
+            <GridViewColumn
+				Width="Auto"
+				Header="Latest Version"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Version.Version}" ToolTip="{Binding Version.Version}" />
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
+        </GridView.Columns>
 	</GridView>
 	<Style
 		x:Key="GridViewHiddenLeftContainerStyle"
