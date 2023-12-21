@@ -1,0 +1,71 @@
+name: main
+
+on: 
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+
+jobs: 
+  build-net:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get LSLib
+        run: |
+          wget https://github.com/Norbyte/lslib/releases/download/v1.18.7/ExportTool-v1.18.7.zip
+          7z e ExportTool-v*.zip -o./External/lslib
+
+      - name: Build
+        run: dotnet build BG3ModManager.sln -c Release -r win-x64 --nologo --self-contained false
+
+      - name: Pack
+        run: | 
+          python BuildRelease.py
+
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: BUILD
+          path: ./BG3ModManager_Latest.zip
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build-net
+    if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - name: Create github release 
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          draft: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+          prerelease: false
+
+      - uses: actions/download-artifact@v2
+        id: download
+        with:
+          name: BUILD
+          path: ./BUILD
+
+      - name: 'Echo download path'
+        if: env.ACTIONS_STEP_DEBUG 
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - name: Uploading artifacts to release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: ${{ steps.download.outputs.download-path }}
+          release_id: ${{ steps.create_release.outputs.id }}
+          overwrite: true
+          verbose: env.ACTIONS_STEP_DEBUG
