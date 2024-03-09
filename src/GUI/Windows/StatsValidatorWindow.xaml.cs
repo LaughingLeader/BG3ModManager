@@ -1,4 +1,5 @@
 ﻿using DivinityModManager.Models.View;
+using DivinityModManager.Util;
 using DivinityModManager.ViewModels;
 using DivinityModManager.Views.StatsValidator;
 
@@ -41,5 +42,10 @@ public partial class StatsValidatorWindow : StatsValidatorWindowBase
 		this.OneWayBind(ViewModel, vm => vm.ModName, view => view.TitleTextBlock.Text, name => $"{name} Results");
 		this.OneWayBind(ViewModel, vm => vm.OutputText, view => view.ResultsTextBlock.Text);
 		this.OneWayBind(ViewModel, vm => vm.Entries, view => view.EntriesTreeView.ItemsSource);
+
+		this.OneWayBind(ViewModel, vm => vm.LockScreenVisibility, view => view.LockScreen.Visibility);
+
+		this.BindCommand(ViewModel, vm => vm.ValidateCommand, view => view.ValidateButton, vm => vm.Mod);
+		this.BindCommand(ViewModel, vm => vm.CancelValidateCommand, view => view.CancelButton);
 	}
 }

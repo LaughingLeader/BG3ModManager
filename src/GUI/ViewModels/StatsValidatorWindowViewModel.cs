@@ -1,5 +1,7 @@
 ﻿using DivinityModManager.Models;
 using DivinityModManager.Models.View;
+using DivinityModManager.Util;
+
 using DynamicData.Binding;
 
 using LSLib.LS.Stats;
@@ -9,8 +11,11 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System.IO;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Windows;
+using System.Windows.Input;
 
 namespace DivinityModManager.ViewModels;
 public class StatsValidatorWindowViewModel : ReactiveObject
@@ -21,6 +26,10 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 	public ObservableCollectionExtended<StatsValidatorFileResults> Entries { get; }
 
 	[ObservableAsProperty] public string ModName { get; }
+	[ObservableAsProperty] public Visibility LockScreenVisibility { get; }
+
+	public ReactiveCommand<DivinityModData, Unit> ValidateCommand { get; }
+	public ReactiveCommand<Unit, Unit> CancelValidateCommand { get; }
 
 	private static string FormatMessage(StatLoadingError message)
 	{
@@ -109,10 +118,23 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 		});
 	}
 
+	private IObservable<Unit> StartValidationAsync(DivinityModData mod)
+	{
+		return ObservableEx.CreateAndStartAsync(token => DivinityGlobalCommands.ValidateModStats(mod, token), RxApp.TaskpoolScheduler)
+			.TakeUntil(CancelValidateCommand);
+	}
+
 	public StatsValidatorWindowViewModel()
 	{
 		Entries = [];
 
 		this.WhenAnyValue(x => x.Mod).WhereNotNull().Select(x => x.DisplayName).ToUIProperty(this, x => x.ModName);
+
+		var canValidate = this.WhenAnyValue(x => x.Mod).Select(x => x != null);
+
+		ValidateCommand = ReactiveCommand.CreateFromObservable<DivinityModData, Unit>(StartValidationAsync, canValidate);
+		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
+
+		ValidateCommand.IsExecuting.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.LockScreenVisibility, Visibility.Collapsed);
 	}
 }

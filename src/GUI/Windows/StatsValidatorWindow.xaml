@@ -31,43 +31,96 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Window.Resources>
-	<Border BorderBrush="LightGray" BorderThickness="1">
-		<controls:AutoGrid
-			Margin="8"
-			Columns="*"
-			RowCount="3"
-			Rows="auto,auto,*">
+	<Grid>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<ToolBarTray>
+				<ToolBar Band="1" BandIndex="1">
+					<Button x:Name="ValidateButton" Content="Validate Again" />
+				</ToolBar>
+			</ToolBarTray>
+			<Border
+				Grid.Row="1"
+				BorderBrush="LightGray"
+				BorderThickness="1">
+				<controls:AutoGrid
+					Columns="*"
+					RowCount="3"
+					Rows="auto,auto,*">
 
-			<TextBlock
-				x:Name="TitleTextBlock"
-				Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}"
-				FontSize="24"
-				Text="Results"
-				TextAlignment="Center"
-				TextWrapping="Wrap" />
+					<Border HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
+						<TextBlock
+							x:Name="TitleTextBlock"
+							FontSize="24"
+							Text="Results"
+							TextAlignment="Center"
+							TextWrapping="Wrap" />
+					</Border>
 
-			<TextBlock x:Name="ResultsTextBlock" />
+					<TextBlock
+						x:Name="ResultsTextBlock"
+						Margin="8"
+						FontSize="16" />
 
-			<TreeView x:Name="EntriesTreeView" ScrollViewer.VerticalScrollBarVisibility="Visible">
-				<TreeView.Resources>
-					<Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="TreeViewItem">
-						<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-						<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-						<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-					</Style>
-				</TreeView.Resources>
-				<TreeView.ItemTemplate>
-					<HierarchicalDataTemplate DataType="{x:Type data:TreeViewEntry}" ItemsSource="{Binding Children}">
-						<reactiveui:ViewModelViewHost
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Stretch"
-							HorizontalContentAlignment="Stretch"
-							VerticalContentAlignment="Stretch"
-							ViewModel="{Binding ViewModel}" />
-					</HierarchicalDataTemplate>
-				</TreeView.ItemTemplate>
-			</TreeView>
+					<TreeView
+						x:Name="EntriesTreeView"
+						Margin="8,0,8,0"
+						ScrollViewer.VerticalScrollBarVisibility="Visible">
+						<TreeView.Resources>
+							<Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="TreeViewItem">
+								<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+								<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+								<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+							</Style>
+						</TreeView.Resources>
+						<TreeView.ItemTemplate>
+							<HierarchicalDataTemplate DataType="{x:Type data:TreeViewEntry}" ItemsSource="{Binding Children}">
+								<reactiveui:ViewModelViewHost
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Stretch"
+									HorizontalContentAlignment="Stretch"
+									VerticalContentAlignment="Stretch"
+									ViewModel="{Binding ViewModel}" />
+							</HierarchicalDataTemplate>
+						</TreeView.ItemTemplate>
+					</TreeView>
 
-		</controls:AutoGrid>
-	</Border>
+				</controls:AutoGrid>
+			</Border>
+		</Grid>
+		<Border
+			x:Name="LockScreen"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Background="Black"
+			Opacity="0.75"
+			Visibility="Collapsed">
+			<ContentControl>
+				<StackPanel
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Orientation="Vertical">
+					<TextBlock
+						Margin="8"
+						FontSize="32"
+						Text="Validating..." />
+					<ContentControl
+						Width="32"
+						Height="32"
+						Margin="8"
+						Content="{Binding}"
+						ContentTemplate="{DynamicResource {x:Static adonisUI:Templates.LoadingCircle}}"
+						Focusable="False" />
+					<Button
+						x:Name="CancelButton"
+						Margin="8"
+						Background="{DynamicResource {x:Static adonisUI:Brushes.ErrorBrush}}"
+						Content="Cancel" />
+				</StackPanel>
+			</ContentControl>
+		</Border>
+	</Grid>
 </local:StatsValidatorWindowBase>

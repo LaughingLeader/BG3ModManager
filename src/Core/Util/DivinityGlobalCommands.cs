@@ -186,7 +186,7 @@ public class DivinityGlobalCommands : ReactiveObject
 
 	private static CancellationTokenSource _statValidatorTokenSource;
 
-	public static async Task ValidateModStats(DivinityModData mod)
+	public static async Task ValidateModStats(DivinityModData mod, CancellationToken token)
 	{
 		_statValidatorTokenSource ??= new();
 		var results = await ModUtils.ValidateStatsAsync([mod], Services.Settings.ManagerSettings.GameDataPath, _statValidatorTokenSource.Token);
@@ -200,7 +200,7 @@ public class DivinityGlobalCommands : ReactiveObject
 	{
 		RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
 		{
-			await ValidateModStats(mod);
+			await ValidateModStats(mod, token);
 		});
 	}
 
