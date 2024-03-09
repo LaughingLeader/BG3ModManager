@@ -1,44 +1,26 @@
-﻿using System.Windows;
+﻿using DivinityModManager.Controls.Util;
+
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace DivinityModManager.Controls;
 
-// Source: https://stackoverflow.com/a/32870521
-public partial class SelectableTextBlock : TextBlock
+/// <summary>
+/// Source: https://stackoverflow.com/a/45627524
+/// </summary>
+public class SelectableTextBlock : TextBlock
 {
-	TextPointer StartSelectPosition;
-	TextPointer EndSelectPosition;
-	public String SelectedText = "";
-
-	public delegate void TextSelectedHandler(string SelectedText);
-	public event TextSelectedHandler TextSelected;
-
-	protected override void OnMouseDown(MouseButtonEventArgs e)
+	static SelectableTextBlock()
 	{
-		base.OnMouseDown(e);
-		Point mouseDownPoint = e.GetPosition(this);
-		StartSelectPosition = this.GetPositionFromPoint(mouseDownPoint, true);
+		FocusableProperty.OverrideMetadata(typeof(SelectableTextBlock), new FrameworkPropertyMetadata(true));
+		TextEditorWrapper.RegisterCommandHandlers(typeof(SelectableTextBlock), true, true, true);
+
+		// remove the focus rectangle around the control
+		FocusVisualStyleProperty.OverrideMetadata(typeof(SelectableTextBlock), new FrameworkPropertyMetadata((object)null));
 	}
 
-	protected override void OnMouseUp(MouseButtonEventArgs e)
+	public SelectableTextBlock()
 	{
-		base.OnMouseUp(e);
-		Point mouseUpPoint = e.GetPosition(this);
-		EndSelectPosition = this.GetPositionFromPoint(mouseUpPoint, true);
-
-		TextRange otr = new(this.ContentStart, this.ContentEnd);
-		otr.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.GreenYellow));
-
-		TextRange ntr = new(StartSelectPosition, EndSelectPosition);
-		ntr.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.White));
-
-		SelectedText = ntr.Text;
-		if (!(TextSelected == null))
-		{
-			TextSelected(SelectedText);
-		}
+		TextEditorWrapper.CreateFor(this);
 	}
 }

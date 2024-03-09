@@ -50,7 +50,7 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:HighlightingTextBlock}">
 					<Grid HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
-						<TextBlock
+						<controls:SelectableTextBlock
 							x:Name="PART_HighlightTextblock"
 							Margin="{TemplateBinding Margin}"
 							Padding="{TemplateBinding Padding}"
@@ -60,7 +60,15 @@
 							FontStyle="{TemplateBinding FontStyle}"
 							FontWeight="{TemplateBinding FontWeight}"
 							TextTrimming="{TemplateBinding TextTrimming}"
-							TextWrapping="{TemplateBinding TextWrapping}" />
+							TextWrapping="{TemplateBinding TextWrapping}">
+							<controls:SelectableTextBlock.ContextMenu>
+								<ContextMenu>
+									<MenuItem Command="{x:Static ApplicationCommands.Copy}" />
+									<Separator />
+									<MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
+								</ContextMenu>
+							</controls:SelectableTextBlock.ContextMenu>
+						</controls:SelectableTextBlock>
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>

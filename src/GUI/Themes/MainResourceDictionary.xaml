@@ -192,25 +192,33 @@
 		<Setter Property="Fill" Value="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}" />
 	</Style>
 
+	<ContextMenu x:Key="TextBoxSelectAllContextMenu">
+		<MenuItem Command="{x:Static ApplicationCommands.Cut}" />
+		<MenuItem Command="{x:Static ApplicationCommands.Copy}" />
+		<MenuItem Command="{x:Static ApplicationCommands.Paste}" />
+		<Separator />
+		<MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
+	</ContextMenu>
+
+	<ContextMenu x:Key="ReadOnlySelectAllContextMenu">
+		<MenuItem Command="{x:Static ApplicationCommands.Copy}" />
+		<Separator />
+		<MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
+	</ContextMenu>
+
 	<Style
 		x:Key="TextBoxWithSelectAll"
 		BasedOn="{StaticResource {x:Type TextBox}}"
 		TargetType="TextBox">
-		<Setter Property="ContextMenu">
-			<Setter.Value>
-				<ContextMenu>
-					<MenuItem Command="{x:Static ApplicationCommands.Cut}" />
-					<MenuItem Command="{x:Static ApplicationCommands.Copy}" />
-					<MenuItem Command="{x:Static ApplicationCommands.Paste}" />
-					<Separator />
-					<MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
-				</ContextMenu>
-			</Setter.Value>
-		</Setter>
+		<Setter Property="ContextMenu" Value="{StaticResource TextBoxSelectAllContextMenu}" />
 	</Style>
 
 	<Style BasedOn="{StaticResource TextBoxWithSelectAll}" TargetType="{x:Type controls:UnfocusableTextBox}" />
 	<Style BasedOn="{StaticResource {x:Type ListBox}}" TargetType="ListBox" />
+
+	<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="controls:SelectableTextBlock">
+		<Setter Property="ContextMenu" Value="{StaticResource ReadOnlySelectAllContextMenu}" />
+	</Style>
 
 	<Style
 		x:Key="ReadOnlyTextBox"
