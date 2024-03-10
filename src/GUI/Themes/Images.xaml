@@ -206,4 +206,12 @@
 		x:Shared="false"
 		AppName="BG3ModManager"
 		UriSource="/Resources/Icons/ValidateModel_16x.svg" />
+
+	<svgc:SvgBitmap
+		x:Key="QuickRefreshIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/QuickRefresh_16x.svg" />
 </ResourceDictionary>

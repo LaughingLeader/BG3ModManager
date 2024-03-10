@@ -29,6 +29,13 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
 			</ResourceDictionary.MergedDictionaries>
+
+			<Style
+				x:Key="ToolbarButton"
+				BasedOn="{StaticResource {x:Static adonisUI:Styles.ToolbarButton}}"
+				TargetType="Button">
+				<Setter Property="Padding" Value="4,0" />
+			</Style>
 		</ResourceDictionary>
 	</Window.Resources>
 	<Grid>
@@ -39,7 +46,16 @@
 			</Grid.RowDefinitions>
 			<ToolBarTray>
 				<ToolBar Band="1" BandIndex="1">
-					<Button x:Name="ValidateButton" Content="Validate Again" />
+					<Button x:Name="ValidateButton" Style="{StaticResource ToolbarButton}">
+						<StackPanel Orientation="Horizontal">
+							<ContentControl
+								Width="8"
+								Height="8"
+								Margin="0,0,8,0"
+								Content="{StaticResource QuickRefreshIcon}" />
+							<TextBlock Text="Re-Validate" />
+						</StackPanel>
+					</Button>
 				</ToolBar>
 			</ToolBarTray>
 			<Border
