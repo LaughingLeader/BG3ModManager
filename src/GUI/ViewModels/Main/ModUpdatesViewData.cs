@@ -17,7 +17,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace DivinityModManager.ViewModels.Main;
 
 public class CopyModUpdatesTask
 {
@@ -27,8 +27,11 @@ public class CopyModUpdatesTask
 	public int TotalProcessed { get; set; }
 }
 
-public class ModUpdatesViewData : ReactiveObject
+public class ModUpdatesViewData : ReactiveObject, IRoutableViewModel
 {
+	public string UrlPathSegment => "modupdates";
+	public IScreen HostScreen { get; }
+
 	[Reactive] public bool Unlocked { get; set; }
 	[Reactive] public bool JustUpdated { get; set; }
 
@@ -154,6 +157,7 @@ public class ModUpdatesViewData : ReactiveObject
 
 	public ModUpdatesViewData(MainWindowViewModel mainWindowViewModel)
 	{
+		HostScreen = mainWindowViewModel;
 		Unlocked = true;
 		AllSelected = true;
 

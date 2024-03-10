@@ -113,6 +113,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <local:DeleteFilesConfirmationView
+					Visibility="Collapsed"
                     x:Name="DeleteFilesView"
                     Grid.RowSpan="3"
                     Panel.ZIndex="99" />
@@ -588,12 +589,11 @@
                         </Grid>
                         <Grid Grid.Column="3" />
                     </Grid>
-                    <Separator
+					<Separator
                         Grid.Row="1"
                         Height="1"
                         Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BorderBrush}}" />
-                    <local:HorizontalModLayout x:Name="ModLayout" Grid.Row="2" />
-                </Grid>
+				</Grid>
                 <local:ModUpdatesLayout
                     x:Name="ModUpdaterPanel"
                     Grid.Row="2"

@@ -13,7 +13,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveui="http://reactiveui.net"
     xmlns:views="clr-namespace:DivinityModManager.Controls.Views"
-    xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
+    xmlns:vm="clr-namespace:DivinityModManager.ViewModels.Main"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">

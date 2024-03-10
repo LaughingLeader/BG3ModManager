@@ -1,7 +1,7 @@
 ﻿using AdonisUI;
 
 using DivinityModManager.Models.Updates;
-using DivinityModManager.ViewModels;
+using DivinityModManager.ViewModels.Main;
 
 using Microsoft.Windows.Themes;
 

@@ -9,7 +9,9 @@ using DivinityModManager.Models.Settings;
 using DivinityModManager.Models.Updates;
 using DivinityModManager.ModUpdater.Cache;
 using DivinityModManager.Util;
+using DivinityModManager.Views.Main;
 using DivinityModManager.Windows;
+using DivinityModManager.ViewModels.Main;
 
 using DynamicData;
 using DynamicData.Aggregation;
@@ -31,6 +33,8 @@ using SharpCompress.Compressors.BZip2;
 using SharpCompress.Compressors.Xz;
 using SharpCompress.Readers;
 using SharpCompress.Writers;
+
+using Splat;
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -54,11 +58,14 @@ using ZstdSharp;
 
 namespace DivinityModManager.ViewModels;
 
-public class MainWindowViewModel : BaseHistoryViewModel, IDivinityAppViewModel
+public class MainWindowViewModel : BaseHistoryViewModel, IDivinityAppViewModel, IScreen
 {
 	private const int ARCHIVE_BUFFER = 128000;
 
-	[Reactive] public MainWindow Window { get; private set; }
+    public RoutingState Router { get; }
+	public ViewManager Views { get; }
+
+    [Reactive] public MainWindow Window { get; private set; }
 	[Reactive] public DivinityModManager.Views.MainViewControl View { get; private set; }
 	public DownloadActivityBarViewModel DownloadBar { get; private set; }
 
@@ -4883,7 +4890,11 @@ Directory the zip will be extracted to:
 
 	public MainWindowViewModel() : base()
 	{
-		MainProgressValue = 0d;
+        Router = new RoutingState();
+
+		Views = new ViewManager(Router, this);
+
+        MainProgressValue = 0d;
 		MainProgressIsActive = true;
 		StatusBarBusyIndicatorVisibility = Visibility.Collapsed;
 

@@ -3,6 +3,7 @@ using DivinityModManager.Converters;
 using DivinityModManager.Models;
 using DivinityModManager.Util;
 using DivinityModManager.ViewModels;
+using DivinityModManager.ViewModels.Main;
 
 using GongSolutions.Wpf.DragDrop.Utilities;
 
@@ -19,7 +20,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace DivinityModManager.Views;
+namespace DivinityModManager.Views.Main;
 
 public interface IModViewLayout
 {
@@ -28,7 +29,7 @@ public interface IModViewLayout
 	void FixActiveModsScrollbar();
 }
 
-public class HorizontalModLayoutBase : ReactiveUserControl<MainWindowViewModel> { }
+public class HorizontalModLayoutBase : ReactiveUserControl<ModOrderViewModel> { }
 
 /// <summary>
 /// Interaction logic for HorizonalModLayout.xaml

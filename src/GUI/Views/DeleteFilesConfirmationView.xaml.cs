@@ -1,6 +1,6 @@
 ﻿using DivinityModManager.Converters;
 using DivinityModManager.Util;
-using DivinityModManager.ViewModels;
+using DivinityModManager.ViewModels.Main;
 
 using ReactiveUI;
 
@@ -54,9 +54,6 @@ public partial class DeleteFilesConfirmationView : DeleteFilesConfirmationViewBa
 	public DeleteFilesConfirmationView()
 	{
 		InitializeComponent();
-
-		this.ViewModel = new DeleteFilesViewData();
-		this.DataContext = ViewModel;
 
 		this.WhenActivated(d =>
 		{

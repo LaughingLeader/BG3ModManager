@@ -7,13 +7,15 @@ using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using Splat;
+
 using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.ViewModels;
+namespace DivinityModManager.ViewModels.Main;
 
 public class FileDeletionCompleteEventArgs : EventArgs
 {
@@ -28,8 +30,11 @@ public class FileDeletionCompleteEventArgs : EventArgs
 	}
 }
 
-public class DeleteFilesViewData : BaseProgressViewModel
+public class DeleteFilesViewData : BaseProgressViewModel, IRoutableViewModel
 {
+	public string UrlPathSegment => "deletefiles";
+	public IScreen HostScreen { get; }
+
 	[Reactive] public bool PermanentlyDelete { get; set; }
 	[Reactive] public bool RemoveFromLoadOrder { get; set; }
 	[Reactive] public bool IsDeletingDuplicates { get; set; }
@@ -122,8 +127,10 @@ public class DeleteFilesViewData : BaseProgressViewModel
 
 	private bool IsClosingAllowed(bool isDeletingDupes, int totalFiles) => !isDeletingDupes || totalFiles <= 0;
 
-	public DeleteFilesViewData() : base()
+	public DeleteFilesViewData(IScreen hostScreen)
 	{
+		HostScreen = hostScreen ?? Locator.Current.GetService<IScreen>();
+
 		RemoveFromLoadOrder = true;
 		PermanentlyDelete = false;
 
