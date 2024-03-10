@@ -17,16 +17,16 @@ public class ModManagerUpdateSettings : ReactiveObject
 	[DataMember, Reactive] public bool UpdateScriptExtender { get; set; }
 
 	[DefaultValue(true)]
-	[SettingsEntry("Update GitHub Mods", "Automatically check for mod updates for mods configured with GitHub repository releases")]
+	[SettingsEntry("Update GitHub Mods", "Automatically check for updates for mods configured with GitHub repository releases")]
 	[DataMember, Reactive] public bool UpdateGitHubMods { get; set; }
 
 	[DefaultValue(true)]
-	[SettingsEntry("Update NexusMods Mods", "Automatically check for mod updates for mods configured with NexusMods releases")]
+	[SettingsEntry("Update NexusMods Mods", "Automatically check for updates for mods configured with NexusMods releases")]
 	[DataMember, Reactive] public bool UpdateNexusMods { get; set; }
 
 	//TODO: Remove if Larian doesn't add workshop support
 	[DefaultValue(true)]
-	[SettingsEntry("Update Steam Workshop Mods", "Automatically check for mod updates for mods configured with Steam Workshop releases", HideFromUI = true)]
+	[SettingsEntry("Update Steam Workshop Mods", "Automatically check for updates for mods configured with Steam Workshop releases", HideFromUI = true)]
 	[DataMember, Reactive] public bool UpdateSteamWorkshopMods { get; set; }
 
 	[DefaultValue("")]
