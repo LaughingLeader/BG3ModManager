@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:svgc="http://sharpvectors.codeplex.com/svgc/">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/">
 	<BitmapImage x:Key="AddItemImage" UriSource="pack://application:,,,/Resources/Icons/AddItem_16x.png" />
 	<BitmapImage x:Key="AddPropertyImage" UriSource="pack://application:,,,/Resources/Icons/AddProperty_16x.png" />
 	<BitmapImage x:Key="AlertBar_Close" UriSource="pack://application:,,,/Resources/Icons/AlertBar_Close.png" />
@@ -49,169 +49,207 @@
 	<PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
 	<!--  x:Shared is required so prevent the next MenuItem from unsetting the previous icon.  -->
 	<Image
-		x:Key="CopyToClipboardIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource CopyToClipboardImage}" />
+        x:Key="CopyToClipboardIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource CopyToClipboardImage}" />
 	<Image
-		x:Key="OpenFolderIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource OpenFolderImage}" />
+        x:Key="OpenFolderIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource OpenFolderImage}" />
 	<Image
-		x:Key="OpenFileIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource OpenFileImage}" />
+        x:Key="OpenFileIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource OpenFileImage}" />
 	<Image
-		x:Key="OpenInBrowserIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource OpenInBrowserImage}" />
+        x:Key="OpenInBrowserIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource OpenInBrowserImage}" />
 	<Image
-		x:Key="OpenSteamWorkshopFolderIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource OpenSteamWorkshopFolderImage}" />
+        x:Key="OpenSteamWorkshopFolderIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource OpenSteamWorkshopFolderImage}" />
 	<Image
-		x:Key="ModDeveloperIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource OsirisImage}" />
+        x:Key="ModDeveloperIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource OsirisImage}" />
 	<Image
-		x:Key="ModPropertiesIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource ConfigurationFileImage}" />
+        x:Key="ModPropertiesIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource ConfigurationFileImage}" />
 	<Image
-		x:Key="DeleteModIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource DeleteModImage}" />
+        x:Key="DeleteModIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource DeleteModImage}" />
 	<Image
-		x:Key="SelectIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource SelectImage}" />
+        x:Key="SelectIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource SelectImage}" />
 	<Image
-		x:Key="ShowAllFilesIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		Source="{StaticResource ShowAllFilesImage}" />
+        x:Key="ShowAllFilesIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        Source="{StaticResource ShowAllFilesImage}" />
 	<Image
-		x:Key="LargeFileIcon"
-		Width="36"
-		Height="36"
-		x:Shared="false"
-		Source="{svgc:SvgImage Source=/Resources/Icons/CurrentFile_16x.svg,
-		                       AppName=BG3ModManager}" />
+        x:Key="LargeFileIcon"
+        Width="36"
+        Height="36"
+        x:Shared="false"
+        Source="{svgc:SvgImage Source=/Resources/Icons/CurrentFile_16x.svg,
+        AppName=BG3ModManager}" />
 	<Image
-		x:Key="LargeFolderIcon"
-		Width="36"
-		Height="36"
-		x:Shared="false"
-		Source="{svgc:SvgImage Source=/Resources/Icons/Folder_16x.svg,
-		                       AppName=BG3ModManager}" />
+        x:Key="LargeFolderIcon"
+        Width="36"
+        Height="36"
+        x:Shared="false"
+        Source="{svgc:SvgImage Source=/Resources/Icons/Folder_16x.svg,
+        AppName=BG3ModManager}" />
 
 	<svgc:SvgBitmap
-		x:Key="HelpIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/StatusHelp_16x.svg" />
+        x:Key="HelpIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        AppName="BG3ModManager"
+        UriSource="/Resources/Icons/StatusHelp_16x.svg" />
 
 	<svgc:SvgBitmap
-		x:Key="ListViewIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/ListView_16x.svg" />
+        x:Key="ListViewIcon"
+        Width="16"
+        Height="16"
+        x:Shared="false"
+        AppName="BG3ModManager"
+        UriSource="/Resources/Icons/ListView_16x.svg" />
 
 	<svgc:SvgBitmap
-		x:Key="ListViewIconToggled"
-		Width="16"
-		Height="16"
-		x:Shared="false">
+        x:Key="ListViewIconToggled"
+        Width="16"
+        Height="16"
+        x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-	<style type="text/css">.icon-canvas-transparent{opacity:0;fill:#86a9eb;} .icon-vs-out{fill:#86a9eb;} .icon-vs-bg{fill:#384a6b;} .icon-vs-fg{fill:#6b82e8;}</style>
-	<rect class="icon-canvas-transparent" width="16" height="16" id="canvas"/>
-	<rect class="icon-vs-out" width="16" height="15" id="outline"/>
-	<path class="icon-vs-bg" d="M1 1v13h14v-13h-14zm13 12h-12v-11h12v11zm-4-8h-6v-1h6v1zm-6 1h8v1h-8v-1zm6 3h-6v-1h6v1zm-6 1h8v1h-8v-1z" id="iconBg"/>
-	<path class="icon-vs-fg" d="M2 2v11h12v-11h-12zm2 2h6v1h-6v-1zm0 4h6v1h-6v-1zm8 3h-8v-1h8v1zm0-4h-8v-1h8v1z" id="iconFg"/>
-</svg>
-			]]>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                <style type="text/css">.icon-canvas-transparent{opacity:0;fill:#86a9eb;} .icon-vs-out{fill:#86a9eb;} .icon-vs-bg{fill:#384a6b;} .icon-vs-fg{fill:#6b82e8;}</style>
+                <rect class="icon-canvas-transparent" width="16" height="16" id="canvas"/>
+                <rect class="icon-vs-out" width="16" height="15" id="outline"/>
+                <path class="icon-vs-bg" d="M1 1v13h14v-13h-14zm13 12h-12v-11h12v11zm-4-8h-6v-1h6v1zm-6 1h8v1h-8v-1zm6 3h-6v-1h6v1zm-6 1h8v1h-8v-1z" id="iconBg"/>
+                <path class="icon-vs-fg" d="M2 2v11h12v-11h-12zm2 2h6v1h-6v-1zm0 4h6v1h-6v-1zm8 3h-8v-1h8v1zm0-4h-8v-1h8v1z" id="iconFg"/>
+            </svg>
+                ]]>
 		</svgc:SvgBitmap.SvgSource>
 	</svgc:SvgBitmap>
 
 	<svgc:SvgBitmap
-		x:Key="CardViewIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/ViewPortrait_16x.svg" />
+            x:Key="CardViewIcon"
+            Width="16"
+            Height="16"
+            x:Shared="false"
+            AppName="BG3ModManager"
+            UriSource="/Resources/Icons/ViewPortrait_16x.svg" />
 
 	<svgc:SvgBitmap
-		x:Key="CardViewIconToggled"
-		Width="16"
-		Height="16"
-		x:Shared="false">
+            x:Key="CardViewIconToggled"
+            Width="16"
+            Height="16"
+            x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-	<style type="text/css">.icon-canvas-transparent{opacity:0;fill:#86a9eb;} .icon-vs-out{fill:#86a9eb;} .icon-vs-bg{fill:#384a6b;} .icon-vs-fg{fill:#6b82e8;}</style>
-	<path class="icon-canvas-transparent" d="M16 16h-16v-16h16v16z" id="canvas"/>
-	<path class="icon-vs-out" d="M2 16v-16h13v16h-13z" id="outline"/>
-	<path class="icon-vs-bg" d="M14 1h-11v14h11v-14zm-10 13v-12h9v12h-9zm1-1v-10h7v10h-7z" id="iconBg"/>
-	<path class="icon-vs-fg" d="M13 2h-9v12h9v-12zm-8 11v-10h7v10h-7z" id="iconFg"/>
-</svg>
-			]]>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                    <style type="text/css">.icon-canvas-transparent{opacity:0;fill:#86a9eb;} .icon-vs-out{fill:#86a9eb;} .icon-vs-bg{fill:#384a6b;} .icon-vs-fg{fill:#6b82e8;}</style>
+                    <path class="icon-canvas-transparent" d="M16 16h-16v-16h16v16z" id="canvas"/>
+                    <path class="icon-vs-out" d="M2 16v-16h13v16h-13z" id="outline"/>
+                    <path class="icon-vs-bg" d="M14 1h-11v14h11v-14zm-10 13v-12h9v12h-9zm1-1v-10h7v10h-7z" id="iconBg"/>
+                    <path class="icon-vs-fg" d="M13 2h-9v12h9v-12zm-8 11v-10h7v10h-7z" id="iconFg"/>
+                </svg>
+                    ]]>
 		</svgc:SvgBitmap.SvgSource>
 	</svgc:SvgBitmap>
 
 	<svgc:SvgBitmap
-		x:Key="CheckboxCheckAllIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/CheckboxCheckAll_16x.svg" />
+                x:Key="CheckboxCheckAllIcon"
+                Width="16"
+                Height="16"
+                x:Shared="false"
+                AppName="BG3ModManager"
+                UriSource="/Resources/Icons/CheckboxCheckAll_16x.svg" />
 
 	<svgc:SvgBitmap
-		x:Key="CheckboxClearAllIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/CheckboxClearAll_16x.svg" />
+                x:Key="CheckboxClearAllIcon"
+                Width="16"
+                Height="16"
+                x:Shared="false"
+                AppName="BG3ModManager"
+                UriSource="/Resources/Icons/CheckboxClearAll_16x.svg" />
 
 	<svgc:SvgBitmap
-		x:Key="ValidateModelIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/ValidateModel_16x.svg" />
+                x:Key="ValidateModelIcon"
+                Width="16"
+                Height="16"
+                x:Shared="false"
+                AppName="BG3ModManager"
+                UriSource="/Resources/Icons/ValidateModel_16x.svg" />
 
 	<svgc:SvgBitmap
-		x:Key="QuickRefreshIcon"
-		Width="16"
-		Height="16"
-		x:Shared="false"
-		AppName="BG3ModManager"
-		UriSource="/Resources/Icons/QuickRefresh_16x.svg" />
+                x:Key="QuickRefreshIcon"
+                Width="16"
+                Height="16"
+                x:Shared="false"
+                AppName="BG3ModManager"
+                UriSource="/Resources/Icons/QuickRefresh_16x.svg" />
+
+	<svgc:SvgBitmap
+                x:Key="RedCloseIcon"
+                Width="16"
+                Height="16"
+                x:Shared="false">
+		<svgc:SvgBitmap.SvgSource>
+			<![CDATA[
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <style>.icon-canvas-transparent{opacity:0;fill:#f6f6f6}.icon-vs-out{fill:#f6f6f6}.icon-vs-action-red{fill:#a1260d}</style>
+                        <path class="icon-canvas-transparent" d="M16 0v16H0V0h16z" id="canvas"/>
+                        <path class="icon-vs-out" d="M10.828 8l4.543 4.543-2.828 2.828L8 10.828l-4.543 4.543-2.828-2.828L5.172 8 .629 3.457 3.457.629 8 5.172 12.543.629l2.828 2.828L10.828 8z" id="outline"/>
+                        <g id="iconBg">
+                            <path class="icon-vs-action-red" d="M9.414 8l4.543 4.543-1.414 1.414L8 9.414l-4.543 4.543-1.414-1.414L6.586 8 2.043 3.457l1.414-1.414L8 6.586l4.543-4.543 1.414 1.414L9.414 8z"/>
+                        </g>
+                    </svg>
+                        ]]>
+		</svgc:SvgBitmap.SvgSource>
+	</svgc:SvgBitmap>
+
+	<svgc:SvgBitmap
+                x:Key="RedCloseIconHover"
+                Width="16"
+                Height="16"
+                x:Shared="false">
+		<svgc:SvgBitmap.SvgSource>
+			<![CDATA[
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <style>.icon-canvas-transparent{opacity:0;fill:#f6f6f6}.icon-vs-out{fill:#f6f6f6}.icon-vs-action-red{fill:#ff6666}</style>
+                        <path class="icon-canvas-transparent" d="M16 0v16H0V0h16z" id="canvas"/>
+                        <path class="icon-vs-out" d="M10.828 8l4.543 4.543-2.828 2.828L8 10.828l-4.543 4.543-2.828-2.828L5.172 8 .629 3.457 3.457.629 8 5.172 12.543.629l2.828 2.828L10.828 8z" id="outline"/>
+                        <g id="iconBg">
+                            <path class="icon-vs-action-red" d="M9.414 8l4.543 4.543-1.414 1.414L8 9.414l-4.543 4.543-1.414-1.414L6.586 8 2.043 3.457l1.414-1.414L8 6.586l4.543-4.543 1.414 1.414L9.414 8z"/>
+                        </g>
+                    </svg>
+                        ]]>
+		</svgc:SvgBitmap.SvgSource>
+	</svgc:SvgBitmap>
 </ResourceDictionary>

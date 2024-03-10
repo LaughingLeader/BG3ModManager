@@ -1,15 +1,18 @@
 ﻿<local:DownloadActivityBarBase
-	x:Class="DivinityModManager.Controls.DownloadActivityBar"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:local="clr-namespace:DivinityModManager.Controls"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
-	d:DesignHeight="450"
-	d:DesignWidth="800"
-	mc:Ignorable="d">
+    x:Class="DivinityModManager.Controls.DownloadActivityBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DivinityModManager.Controls"
+    xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+	d:DataContext="{d:DesignInstance Type=vm:DownloadActivityBarViewModel}"
+	d:DesignHeight="200"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -20,45 +23,41 @@
 	<UserControl.Style>
 		<Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
 	</UserControl.Style>
-	<Grid>
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
 		<ProgressBar
-			x:Name="TaskProgressBar"
-			MinHeight="15"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Center"
-			adonisExtensions:ProgressBarExtension.IsProgressAnimationEnabled="{Binding IsAnimating}"
-			Maximum="100"
-			Minimum="0" />
+            Padding="0,8"
+            Value="50"
+            x:Name="TaskProgressBar"
+            MinHeight="16"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            adonisExtensions:ProgressBarExtension.IsProgressAnimationEnabled="{Binding IsAnimating}"
+            Maximum="100"
+            Minimum="0" />
 		<TextBlock
-			x:Name="TaskProgressWorkText"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			TextAlignment="Center" />
+            x:Name="TaskProgressWorkText"
+            Text="Downloading..."
+			Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            TextAlignment="Center" />
 		<Button
-			x:Name="CancelButton"
-			HorizontalAlignment="Right"
-			VerticalAlignment="Top"
-			Background="Transparent"
-			BorderBrush="Transparent"
-			BorderThickness="0">
-			<Button.Content>
-				<Image
-					Width="10"
-					Height="10"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center">
-					<Image.Style>
-						<Style>
-							<Setter Property="Image.Source" Value="{StaticResource AlertBar_Close}" />
-							<Style.Triggers>
-								<Trigger Property="Image.IsMouseOver" Value="True">
-									<Setter Property="Image.Source" Value="{StaticResource AlertBar_Close_Hover}" />
-								</Trigger>
-							</Style.Triggers>
-						</Style>
-					</Image.Style>
-				</Image>
-			</Button.Content>
+            x:Name="CancelButton"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            BorderBrush="Transparent"
+			ToolTip="Cancel Download"
+            BorderThickness="0" Content="{StaticResource RedCloseIcon}">
+			<Button.Style>
+				<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+					<Style.Triggers>
+						<Trigger Property="Button.IsMouseOver" Value="True">
+							<Setter Property="Content" Value="{StaticResource RedCloseIconHover}" />
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</Button.Style>
 		</Button>
 	</Grid>
 </local:DownloadActivityBarBase>

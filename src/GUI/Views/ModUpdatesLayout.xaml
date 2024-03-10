@@ -186,7 +186,7 @@
                     <Button
                         x:Name="UpdateButton"
                         Padding="8,2"
-                        Content="Updated Selected Mods" />
+                        Content="Update Selected Mods" />
                 </StackPanel>
             </Grid>
         </controls:AutoGrid>
