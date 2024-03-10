@@ -40,23 +40,15 @@ public class ModUpdatesViewData : ReactiveObject
 
 	private readonly SourceList<DivinityModUpdateData> Mods = new();
 
-	private readonly ReadOnlyObservableCollection<DivinityModUpdateData> _newMods;
-	public ReadOnlyObservableCollection<DivinityModUpdateData> NewMods => _newMods;
-
-	private readonly ReadOnlyObservableCollection<DivinityModUpdateData> _updatedMods;
-	public ReadOnlyObservableCollection<DivinityModUpdateData> UpdatedMods => _updatedMods;
+	private readonly ReadOnlyObservableCollection<DivinityModUpdateData> _updates;
+	public ReadOnlyObservableCollection<DivinityModUpdateData> Updates => _updates;
 
 	[ObservableAsProperty] public bool AnySelected { get; }
-	[ObservableAsProperty] public bool AllNewModsSelected { get; }
-	[ObservableAsProperty] public bool AllModUpdatesSelected { get; }
-	[ObservableAsProperty] public bool NewAvailable { get; }
-	[ObservableAsProperty] public bool UpdatesAvailable { get; }
+	[ObservableAsProperty] public bool AllSelected { get; }
 	[ObservableAsProperty] public int TotalUpdates { get; }
-	[ObservableAsProperty] public Visibility UpdatesHeaderVisiblity { get; }
 
 	public ICommand UpdateModsCommand { get; }
-	public ICommand SelectAllNewModsCommand { get; }
-	public ICommand SelectAllUpdatesCommand { get; }
+	public ICommand ToggleSelectCommand { get; }
 
 	public Action<bool> CloseView { get; set; }
 
@@ -163,55 +155,30 @@ public class ModUpdatesViewData : ReactiveObject
 	public ModUpdatesViewData(MainWindowViewModel mainWindowViewModel)
 	{
 		Unlocked = true;
-		AllNewModsSelected = AllModUpdatesSelected = true;
+		AllSelected = true;
 
 		_mainWindowViewModel = mainWindowViewModel;
 
 		Mods.CountChanged.ToUIProperty(this, x => x.TotalUpdates);
 
 		var modsConnection = Mods.Connect();
-		var splitList = modsConnection.AutoRefresh(x => x.IsNewMod);
-		var newModsConnection = splitList.Filter(x => x.IsNewMod);
-		var updatedModsConnection = modsConnection.Filter(x => !x.IsNewMod);
 
-		newModsConnection.Bind(out _newMods).Subscribe();
-		updatedModsConnection.Bind(out _updatedMods).Subscribe();
-
-		var hasNewMods = newModsConnection.CountChanged().Select(_ => _newMods.Count > 0);
-		var hasUpdatedMods = updatedModsConnection.CountChanged().Select(_ => _updatedMods.Count > 0);
-		hasNewMods.ToUIProperty(this, x => x.NewAvailable);
-		hasUpdatedMods.ToUIProperty(this, x => x.UpdatesAvailable);
+		modsConnection.Bind(out _updates).Subscribe();
 
 		var selectedMods = modsConnection.AutoRefresh(x => x.IsSelected).ToCollection();
 		selectedMods.Select(x => x.Any(y => y.IsSelected)).ToUIProperty(this, x => x.AnySelected);
-
-		var newModsChangeSet = NewMods.ToObservableChangeSet().AutoRefresh(x => x.IsSelected).ToCollection();
-		var modUpdatesChangeSet = UpdatedMods.ToObservableChangeSet().AutoRefresh(x => x.IsSelected).ToCollection();
-
-		splitList.Filter(x => x.IsNewMod).ToCollection().Select(x => x.All(y => y.IsSelected)).ToUIPropertyImmediate(this, x => x.AllNewModsSelected);
-		splitList.Filter(x => !x.IsNewMod).ToCollection().Select(x => x.All(y => y.IsSelected)).ToUIPropertyImmediate(this, x => x.AllModUpdatesSelected);
+		selectedMods.Select(x => x.All(y => y.IsSelected)).ToUIProperty(this, x => x.AllSelected);
 
 		var anySelectedObservable = this.WhenAnyValue(x => x.AnySelected);
 
-		this.WhenAnyValue(x => x.NewAvailable, x => x.UpdatesAvailable).Select(x => x.Item1 && x.Item2 ? Visibility.Visible : Visibility.Collapsed)
-			.ToUIProperty(this, x => x.UpdatesHeaderVisiblity, Visibility.Collapsed);
-
 		UpdateModsCommand = ReactiveCommand.Create(UpdateSelectedMods, anySelectedObservable);
 
-		SelectAllNewModsCommand = ReactiveCommand.Create<bool>(b =>
+		ToggleSelectCommand = ReactiveCommand.Create<bool>(b =>
 		{
-			foreach (var x in NewMods)
+			foreach (var x in Updates)
 			{
 				x.IsSelected = b;
 			}
-		}, hasNewMods);
-
-		SelectAllUpdatesCommand = ReactiveCommand.Create<bool>(b =>
-		{
-			foreach (var x in UpdatedMods)
-			{
-				x.IsSelected = b;
-			}
-		}, hasUpdatedMods);
+		});
 	}
 }

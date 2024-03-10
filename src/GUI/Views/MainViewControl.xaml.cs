@@ -27,7 +27,7 @@ public partial class MainViewControl : MainViewControlViewBase
 {
 	private readonly MainWindow main;
 
-	private readonly Dictionary<string, MenuItem> menuItems = new();
+	private readonly Dictionary<string, MenuItem> menuItems = [];
 	public Dictionary<string, MenuItem> MenuItems => menuItems;
 
 	private void RegisterKeyBindings()

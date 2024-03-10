@@ -1258,8 +1258,7 @@ Directory the zip will be extracted to:
 								DownloadSourceType = ModSourceType.STEAM,
 								Version = workshopMod.Version.Version,
 								Date = workshopMod.LastModified
-							},
-							IsNewMod = false,
+							}
 						});
 						count++;
 					}
@@ -1283,7 +1282,7 @@ Directory the zip will be extracted to:
 						Version = workshopMod.Version.Version,
 						Date = workshopMod.LastModified
 					},
-					IsNewMod = true,
+					//IsNewMod = true,
 				});
 				count++;
 			}
@@ -5427,8 +5426,7 @@ Directory the zip will be extracted to:
 		var canExtractAdventure = this.WhenAnyValue(x => x.SelectedAdventureMod, x => x.Settings.GameMasterModeEnabled, (m, b) => !b && m != null && !m.IsEditorMod && !m.IsLarianMod);
 		Keys.ExtractSelectedAdventure.AddAction(ExtractSelectedAdventure, canExtractAdventure);
 
-		this.WhenAnyValue(x => x.ModUpdatesViewData.NewAvailable,
-			x => x.ModUpdatesViewData.UpdatesAvailable, (b1, b2) => b1 || b2).BindTo(this, x => x.ModUpdatesAvailable);
+		this.WhenAnyValue(x => x.ModUpdatesViewData.TotalUpdates, total => total > 0).BindTo(this, x => x.ModUpdatesAvailable);
 
 		ModUpdatesViewData.CloseView = new Action<bool>((bool refresh) =>
 		{

@@ -12,7 +12,6 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 	[Reactive] public DivinityModData Mod { get; set; }
 	[Reactive] public ModDownloadData DownloadData { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
-	[Reactive] public bool IsNewMod { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
 	[Reactive] public Visibility Visibility { get; set; }
 
