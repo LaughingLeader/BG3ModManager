@@ -45,6 +45,8 @@ public partial class App : Application
 		Services.RegisterSingleton<IModUpdaterService>(new ModUpdaterService(version));
 		Services.RegisterSingleton<IGameUtilitiesService>(new GameUtilitiesService());
 		Services.RegisterSingleton(new BackgroundCommandService());
+		Services.RegisterSingleton(new ModManagerService());
+		Services.RegisterSingleton(new PathwaysService());
 
 		// POCO type warning suppression
 		Services.Register<ICreatesObservableForProperty>(() => new DivinityModManager.Util.CustomPropertyResolver());

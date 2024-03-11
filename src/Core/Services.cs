@@ -1,4 +1,6 @@
-﻿using Splat;
+﻿using DivinityModManager.AppServices;
+
+using Splat;
 
 namespace DivinityModManager;
 
@@ -32,4 +34,6 @@ public static class Services
 
 	public static ISettingsService Settings => Get<ISettingsService>();
 	public static INexusModsService NexusMods => Get<INexusModsService>();
+	public static ModManagerService Mods => Get<ModManagerService>();
+	public static PathwaysService Pathways => Get<PathwaysService>();
 }

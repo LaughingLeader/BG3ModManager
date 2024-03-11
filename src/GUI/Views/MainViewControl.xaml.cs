@@ -5,6 +5,7 @@ using DivinityModManager.Models.App;
 using DivinityModManager.Util;
 using DivinityModManager.Util.ScreenReader;
 using DivinityModManager.ViewModels;
+using DivinityModManager.Views.Main;
 using DivinityModManager.Windows;
 
 using ReactiveUI;
@@ -44,9 +45,10 @@ public partial class MainViewControl : MainViewControlViewBase
 		//Initial keyboard focus by hitting up or down
 		var setInitialFocusCommand = ReactiveCommand.Create(() =>
 		{
-			if (!DivinityApp.IsKeyboardNavigating && this.ViewModel.ActiveSelected == 0 && this.ViewModel.InactiveSelected == 0)
+			var modManager = Services.Mods;
+			if (!DivinityApp.IsKeyboardNavigating && modManager.ActiveSelected == 0 && modManager.InactiveSelected == 0)
 			{
-				ModLayout.FocusInitialActiveSelected();
+				Services.Get<ModOrderView>()?.ModLayout?.FocusInitialActiveSelected();
 			}
 		});
 		main.InputBindings.Add(new KeyBinding(setInitialFocusCommand, Key.Up, ModifierKeys.None));
@@ -247,9 +249,6 @@ public partial class MainViewControl : MainViewControlViewBase
 		this.OneWayBind(ViewModel, vm => vm.HideModList, view => view.ModListRectangle.Visibility, BoolToVisibilityConverter.FromBool);
 		this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.MainBusyIndicator.IsBusy);
 
-		//this.OneWayBind(ViewModel, vm => vm, view => view.ModLayout.ViewModel);
-		this.WhenAnyValue(x => x.ViewModel).BindTo(this, x => x.ModLayout.ViewModel);
-
 		this.OneWayBind(ViewModel, vm => vm.StatusBarRightText, view => view.StatusBarLoadingOperationTextBlock.Text);
 		this.OneWayBind(ViewModel, vm => vm.NexusModsLimitsText, view => view.StatusBarNexusLimitsTextBlock.Text);
 		this.OneWayBind(ViewModel, vm => vm.NexusModsProfileAvatarVisibility, view => view.NexusModsProfileImage.Visibility);
@@ -270,7 +269,7 @@ public partial class MainViewControl : MainViewControlViewBase
 		this.OneWayBind(ViewModel, vm => vm.Profiles, view => view.ProfilesComboBox.ItemsSource);
 		this.Bind(ViewModel, vm => vm.SelectedProfileIndex, view => view.ProfilesComboBox.SelectedIndex);
 
-		this.OneWayBind(ViewModel, vm => vm.AdventureMods, view => view.AdventureModComboBox.ItemsSource);
+		this.OneWayBind(Services.Mods, vm => vm.AdventureMods, view => view.AdventureModComboBox.ItemsSource);
 		this.Bind(ViewModel, vm => vm.SelectedAdventureModIndex, view => view.AdventureModComboBox.SelectedIndex);
 		this.OneWayBind(ViewModel, vm => vm.AdventureModBoxVisibility, view => view.AdventureModComboBox.Visibility);
 		this.OneWayBind(ViewModel, vm => vm.SelectedAdventureMod, view => view.AdventureModComboBox.Tag);
@@ -359,8 +358,8 @@ public partial class MainViewControl : MainViewControlViewBase
 				if (!e.IsDeletingDuplicates)
 				{
 					var deletedUUIDs = e.DeletedFiles.Where(x => !x.IsWorkshop).Select(x => x.UUID).ToHashSet();
-					var deletedWorkshopUUIDs = e.DeletedFiles.Where(x => x.IsWorkshop).Select(x => x.UUID).ToHashSet();
-					ViewModel.RemoveDeletedMods(deletedUUIDs, deletedWorkshopUUIDs, e.RemoveFromLoadOrder);
+					//var deletedWorkshopUUIDs = e.DeletedFiles.Where(x => x.IsWorkshop).Select(x => x.UUID).ToHashSet();
+					ViewModel.RemoveDeletedMods(deletedUUIDs, e.RemoveFromLoadOrder);
 				}
 				main.Activate();
 			}

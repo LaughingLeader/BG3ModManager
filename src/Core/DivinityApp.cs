@@ -4,6 +4,7 @@ using DivinityModManager.Util;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -104,8 +105,6 @@ public static class DivinityApp
 		}
 	}
 
-	public static IObservable<Func<DivinityModDependencyData, bool>> DependencyFilter { get; set; }
-
 	public static string DateTimeColumnFormat { get; set; } = "MM/dd/yyyy";
 	public static string DateTimeTooltipFormat { get; set; } = "MMMM dd, yyyy";
 	public static string DateTimeExtenderBuildFormat { get; set; } = "MM/dd/yyyy hh:mm tt";
@@ -157,4 +156,9 @@ public static class DivinityApp
 
 	public static string GetExePath() => Process.GetCurrentProcess().MainModule.FileName;
 	public static string GetToolboxPath() => GetAppDirectory("Tools", "Toolbox.exe");
+
+	public static void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0)
+	{
+		DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout));
+	}
 }
