@@ -40,8 +40,6 @@ public class ModManagerService : ReactiveObject
 	public ReadOnlyObservableCollection<DivinityModData> UserMods => _userMods;
 	public ReadOnlyObservableCollection<DivinityModData> SelectedPakMods => _selectedPakMods;
 
-	[ObservableAsProperty] public bool HasForceLoadedMods { get; }
-
 	[ObservableAsProperty] public int ActiveSelected { get; }
 	[ObservableAsProperty] public int InactiveSelected { get; }
 	[ObservableAsProperty] public int OverrideModsSelected { get; }
@@ -198,7 +196,7 @@ public class ModManagerService : ReactiveObject
 		}
 	}
 
-	private async Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
+	public static async Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
 	{
 		var settings = Services.Settings.ManagerSettings;
 
@@ -268,16 +266,17 @@ public class ModManagerService : ReactiveObject
 			var dupeCount = modLoadingResults.Duplicates.Count;
 			if (dupeCount > 0)
 			{
-				await Observable.Start(() =>
-				{
-					DivinityApp.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
-					DivinityInteractions.DeleteMods.Handle(new DeleteModsRequestData(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
-				}, RxApp.MainThreadScheduler);
+				DivinityApp.Log($"{dupeCount} duplicate(s) found:");
+				DivinityApp.Log("=======");
+				DivinityApp.Log($"{String.Join(Environment.NewLine, modLoadingResults.Duplicates.Select(x => x.ToString()))}");
+				DivinityApp.Log("=======");
+				DivinityApp.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
+				await DivinityInteractions.DeleteMods.Handle(new DeleteModsRequestData(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
 			}
 		}
 		//if (projects != null) MergeModLists(ref finalMods, projects, true);
 
-		finalMods = finalMods.OrderBy(m => m.Name).ToList();
+		finalMods = [.. finalMods.OrderBy(m => m.Name)];
 		DivinityApp.Log($"Loaded '{finalMods.Count}' mods.");
 		return finalMods;
 	}
@@ -321,7 +320,6 @@ public class ModManagerService : ReactiveObject
 			.Filter(x => x.IsForceLoaded && !x.IsForceLoadedMergedMod && !x.ForceAllowInLoadOrder)
 			.ObserveOn(RxApp.MainThreadScheduler);
 		forceLoadedObs.Bind(out _forceLoadedMods).Subscribe();
-		forceLoadedObs.CountChanged().Select(_ => _forceLoadedMods.Count > 0).ToUIProperty(this, x => x.HasForceLoadedMods);
 
 		var selectedModsConnection = _modsConnection.AutoRefresh(x => x.IsSelected, TimeSpan.FromMilliseconds(25)).AutoRefresh(x => x.IsActive, TimeSpan.FromMilliseconds(25)).Filter(x => x.IsSelected);
 
@@ -329,5 +327,7 @@ public class ModManagerService : ReactiveObject
 		selectedModsConnection.Filter(x => x.IsActive).Count().ToUIProperty(this, x => x.ActiveSelected);
 		selectedModsConnection.Filter(x => !x.IsActive).Count().ToUIProperty(this, x => x.InactiveSelected);
 		forceLoadedObs.AutoRefresh(x => x.IsSelected).Filter(x => x.IsSelected).Count().ToUIProperty(this, x => x.OverrideModsSelected);
+
+		_modsConnection.Connect();
 	}
 }

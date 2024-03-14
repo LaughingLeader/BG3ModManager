@@ -36,4 +36,5 @@ public static class Services
 	public static INexusModsService NexusMods => Get<INexusModsService>();
 	public static ModManagerService Mods => Get<ModManagerService>();
 	public static PathwaysService Pathways => Get<PathwaysService>();
+	public static IModUpdaterService Updater => Get<IModUpdaterService>();
 }

@@ -1,4 +1,5 @@
-﻿using DivinityModManager.Models;
+﻿using DivinityModManager.AppServices;
+using DivinityModManager.Models;
 
 using GongSolutions.Wpf.DragDrop;
 using GongSolutions.Wpf.DragDrop.Utilities;
@@ -77,7 +78,6 @@ public class ModListDropHandler : DefaultDropHandler
 	{
 		if (!_viewModel.AllowDrop)
 		{
-			DivinityApp.Log($"[AllowDrop] IsRefreshing({_viewModel.IsRefreshing}) IsInitialized({_viewModel.IsInitialized}) IsLoadingOrder({_viewModel.IsLoadingOrder})");
 			dropInfo.Effects = DragDropEffects.None;
 			return;
 		}
@@ -88,7 +88,7 @@ public class ModListDropHandler : DefaultDropHandler
 			foreach (var file in files)
 			{
 				var ext = Path.GetExtension(file).ToLower();
-				if (MainWindowViewModel.IsImportableFile(ext))
+				if (ModImportService.IsImportableFile(ext))
 				{
 					dropInfo.Effects = DragDropEffects.Copy | DragDropEffects.Move;
 					dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
@@ -107,7 +107,10 @@ public class ModListDropHandler : DefaultDropHandler
 			return;
 		}
 
-		bool isActive = dropInfo.TargetCollection == _viewModel.ActiveMods;
+		var modImporter = Services.Get<ModImportService>();
+		var modOrderVM = _viewModel.Views.ModOrder;
+
+		bool isActive = dropInfo.TargetCollection == modOrderVM.ActiveMods;
 
 		if (dropInfo.Data is DataObject dropFileData)
 		{
@@ -116,7 +119,7 @@ public class ModListDropHandler : DefaultDropHandler
 				var files = dropFileData.GetFileDropList()?.Cast<string>().ToList();
 				if (files != null)
 				{
-					_viewModel.ImportMods(files, isActive);
+					modImporter.ImportMods(files, isActive);
 				}
 			}
 			return;
@@ -201,12 +204,12 @@ public class ModListDropHandler : DefaultDropHandler
 
 		var selectedUUIDs = data.Select(x => x.UUID).ToHashSet();
 
-		foreach (var mod in _viewModel.ActiveMods)
+		foreach (var mod in modOrderVM.ActiveMods)
 		{
-			mod.Index = _viewModel.ActiveMods.IndexOf(mod);
+			mod.Index = modOrderVM.ActiveMods.IndexOf(mod);
 		}
 
-		foreach (var mod in _viewModel.Mods)
+		foreach (var mod in Services.Mods.AllMods)
 		{
 			if (selectedUUIDs.Contains(mod.UUID))
 			{
@@ -221,25 +224,25 @@ public class ModListDropHandler : DefaultDropHandler
 
 		RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(20), () =>
 		{
-			_viewModel.Layout.SelectMods(data, isActive);
+			modOrderVM.Layout.SelectMods(data, isActive);
 		});
 
 		if (isActive)
 		{
-			_viewModel.OnFilterTextChanged(_viewModel.ActiveModFilterText, _viewModel.ActiveMods);
+			modOrderVM.OnFilterTextChanged(modOrderVM.ActiveModFilterText, modOrderVM.ActiveMods);
 			//_viewModel.Layout.FixActiveModsScrollbar();
 		}
 		else
 		{
-			_viewModel.OnFilterTextChanged(_viewModel.InactiveModFilterText, _viewModel.InactiveMods);
+			modOrderVM.OnFilterTextChanged(modOrderVM.InactiveModFilterText, modOrderVM.InactiveMods);
 		}
 
-		if (_viewModel.SelectedModOrder != null)
+		if (modOrderVM.SelectedModOrder != null)
 		{
-			_viewModel.SelectedModOrder.Order.Clear();
-			foreach (var x in _viewModel.ActiveMods)
+			modOrderVM.SelectedModOrder.Order.Clear();
+			foreach (var x in modOrderVM.ActiveMods)
 			{
-				_viewModel.SelectedModOrder.Add(x);
+				modOrderVM.SelectedModOrder.Add(x);
 			}
 		}
 	}

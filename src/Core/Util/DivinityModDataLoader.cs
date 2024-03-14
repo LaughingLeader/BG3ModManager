@@ -777,7 +777,7 @@ public static partial class DivinityModDataLoader
 		try
 		{
 			//RecursionFilter = (f) => !_IgnoredRecursiveFolders.Any(x => f.FullPath.Contains(x))
-			var allPaks = FileUtils.EnumerateFiles(modsFolderPath, FileUtils.RecursiveOptions, f => f.EndsWith(".pak", SCOMP) && !_IgnoredRecursiveFolders.Any(x => f.Contains(x)));
+			var allPaks = FileUtils.EnumerateFiles(modsFolderPath, FileUtils.FlatSearchOptions, f => f.EndsWith(".pak", SCOMP) && !_IgnoredRecursiveFolders.Any(x => f.Contains(x)));
 			_allPaksNames.UnionWith(allPaks.Select(p => Path.GetFileNameWithoutExtension(p)));
 			modPaks.AddRange(allPaks.Where(PakIsNotPartial));
 		}
@@ -786,7 +786,7 @@ public static partial class DivinityModDataLoader
 			DivinityApp.Log($"Error enumerating pak folder '{modsFolderPath}': {ex}");
 		}
 
-		DivinityApp.Log($"Mod Packages: {modPaks.Count()}");
+		DivinityApp.Log($"Mod Packages: {modPaks.Count}");
 
 		var loadedMods = new ConcurrentBag<DivinityModData>();
 

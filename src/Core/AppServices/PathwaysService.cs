@@ -48,7 +48,7 @@ public class PathwaysService
 	}
 
 	//TODO Make this work for both DOS2 and BG3
-	public void SetGamePathways(string currentGameDataPath, string gameDataFolderOverride = "")
+	public bool SetGamePathways(string currentGameDataPath, string gameDataFolderOverride = "")
 	{
 		var settings = Services.Settings;
 		try
@@ -183,39 +183,18 @@ public class PathwaysService
 
 			if (!Directory.Exists(settings.ManagerSettings.GameDataPath) || !File.Exists(settings.ManagerSettings.GameExecutablePath))
 			{
-				DivinityApp.Log("Failed to find game data path. Asking user for help.");
-
-				DivinityInteractions.OpenFolderBrowserDialog.Handle(new("Set the path to the Baldur's Gate 3 root installation folder", "", false)).Subscribe(result =>
-				{
-					if(result.Success)
-					{
-						var dataDirectory = Path.Join(result.File, settings.AppSettings.DefaultPathways.GameDataFolder);
-						var exePath = Path.Join(result.File, settings.AppSettings.DefaultPathways.Steam.ExePath);
-						if (!File.Exists(exePath))
-						{
-							exePath = Path.Join(result.File, settings.AppSettings.DefaultPathways.GOG.ExePath);
-						}
-						if (Directory.Exists(dataDirectory))
-						{
-							settings.ManagerSettings.GameDataPath = dataDirectory;
-						}
-						else
-						{
-							DivinityApp.ShowAlert("Failed to find Data folder with given installation directory", AlertType.Danger);
-						}
-						if (File.Exists(exePath))
-						{
-							settings.ManagerSettings.GameExecutablePath = exePath;
-						}
-						Data.InstallPath = result.File;
-					}
-				});
+				DivinityApp.Log("Failed to find game data path.");
+				return false;
 			}
+
+			return true;
 		}
 		catch (Exception ex)
 		{
 			DivinityApp.Log($"Error setting up game pathways: {ex}");
 		}
+
+		return false;
 	}
 
 	public PathwaysService()

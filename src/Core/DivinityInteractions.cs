@@ -12,7 +12,7 @@ namespace DivinityModManager;
 
 public record struct DeleteFilesViewConfirmationData(int Total, bool PermanentlyDelete, CancellationToken Token);
 public record struct ValidateModStatsResults(List<DivinityModData> Mods, List<StatLoadingError> Errors, Dictionary<string, string[]> FileText);
-public record DeleteModsRequestData(List<DivinityModData> TargetMods, bool IsDeletingDuplicates = false, List<DivinityModData> LoadedMods = null);
+public record DeleteModsRequestData(List<DivinityModData> TargetMods, bool IsDeletingDuplicates = false, IEnumerable<DivinityModData> LoadedMods = null);
 public record struct ShowAlertData(string Message, AlertType AlertType, int Timeout);
 public record struct ShowMessageBoxData(string Message, string Title, MessageBoxButton Button, MessageBoxImage Image, MessageBoxResult DefaultResult);
 public record struct OpenFolderBrowserDialogRequest(string Description, string StartingPath, bool MultiSelect = false, string Title = "");

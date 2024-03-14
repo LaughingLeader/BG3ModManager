@@ -60,7 +60,7 @@ public class DivinityGlobalCommands : ReactiveObject
 		}
 		else
 		{
-			_viewModel.ShowAlert($"Error opening '{path}': File does not exist!", AlertType.Danger, 10);
+			DivinityApp.ShowAlert($"Error opening '{path}': File does not exist!", AlertType.Danger, 10);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class DivinityGlobalCommands : ReactiveObject
 			}
 			else
 			{
-				_viewModel.ShowAlert($"Error opening '{path}': File does not exist!", AlertType.Danger, 10);
+				DivinityApp.ShowAlert($"Error opening '{path}': File does not exist!", AlertType.Danger, 10);
 			}
 		}
 	}
@@ -90,12 +90,12 @@ public class DivinityGlobalCommands : ReactiveObject
 			if (!String.IsNullOrEmpty(text))
 			{
 				Clipboard.SetText(text);
-				_viewModel.ShowAlert($"Copied to clipboard: {text}", 0, 10);
+				DivinityApp.ShowAlert($"Copied to clipboard: {text}", 0, 10);
 			}
 		}
 		catch (Exception ex)
 		{
-			_viewModel.ShowAlert($"Error copying text to clipboard: {ex}", AlertType.Danger, 10);
+			DivinityApp.ShowAlert($"Error copying text to clipboard: {ex}", AlertType.Danger, 10);
 		}
 	}
 
@@ -171,17 +171,17 @@ public class DivinityGlobalCommands : ReactiveObject
 			var safeName = System.Security.SecurityElement.Escape(mod.Name);
 			var text = String.Format(DivinityApp.XML_MODULE_SHORT_DESC_FORMATTED, mod.Folder, mod.MD5, safeName, mod.UUID, mod.Version.VersionInt);
 			Clipboard.SetText(text);
-			_viewModel.ShowAlert($"Copied ModuleShortDesc for mod '{mod.Name}' to clipboard", 0, 10);
+			DivinityApp.ShowAlert($"Copied ModuleShortDesc for mod '{mod.Name}' to clipboard", 0, 10);
 		}
 		catch (Exception ex)
 		{
-			_viewModel.ShowAlert($"Error copying text to clipboard: {ex}", AlertType.Danger, 10);
+			DivinityApp.ShowAlert($"Error copying text to clipboard: {ex}", AlertType.Danger, 10);
 		}
 	}
 
 	public static void OpenModProperties(DivinityModData mod)
 	{
-		RxApp.MainThreadScheduler.ScheduleAsync(async (sch, token) => await DivinityInteractions.OpenModProperties.Handle(mod));
+		DivinityInteractions.OpenModProperties.Handle(mod).Subscribe();
 	}
 
 	private static CancellationTokenSource _statValidatorTokenSource;
@@ -190,10 +190,7 @@ public class DivinityGlobalCommands : ReactiveObject
 	{
 		_statValidatorTokenSource ??= new();
 		var results = await ModUtils.ValidateStatsAsync([mod], Services.Settings.ManagerSettings.GameDataPath, _statValidatorTokenSource.Token);
-		await Observable.Start(async () =>
-		{
-			await DivinityInteractions.OpenValidateStatsResults.Handle(results);
-		}, RxApp.MainThreadScheduler);
+		await DivinityInteractions.OpenValidateStatsResults.Handle(results);
 	}
 
 	private static void StartValidateModStats(DivinityModData mod)
@@ -217,7 +214,7 @@ public class DivinityGlobalCommands : ReactiveObject
 		{
 			mod.DisplayFileForName = !mod.DisplayFileForName;
 			var b = mod.DisplayFileForName;
-			foreach (var m in _viewModel.Mods)
+			foreach (var m in Services.Mods.AllMods)
 			{
 				if (m.IsSelected)
 				{

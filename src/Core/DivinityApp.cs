@@ -159,6 +159,6 @@ public static class DivinityApp
 
 	public static void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0)
 	{
-		DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout));
+		DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout)).Subscribe();
 	}
 }

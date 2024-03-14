@@ -64,8 +64,8 @@
         </xc:WindowContainer>
         <xc:BusyIndicator
             x:Name="MainBusyIndicator"
-            Style="{StaticResource BusyIndicatorProgressStyle}"
-            Visibility="Hidden">
+			IsBusy="False"
+            Style="{StaticResource BusyIndicatorProgressStyle}">
             <xc:BusyIndicator.BusyContent>
                 <Grid
                     Margin="4"
@@ -107,24 +107,12 @@
                 </Grid>
             </xc:BusyIndicator.BusyContent>
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <local:DeleteFilesConfirmationView
-					Visibility="Collapsed"
-                    x:Name="DeleteFilesView"
-                    Grid.RowSpan="3"
-                    Panel.ZIndex="99" />
-                <Rectangle
-                    x:Name="ModListRectangle"
-                    Grid.RowSpan="3"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Panel.ZIndex="98"
-                    Fill="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}" />
-                <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
                     <Grid.Resources>
                         <!--<Color x:Key="WhiteColor">White</Color>
                         <Color x:Key="GoldColor">Gold</Color>-->
@@ -166,40 +154,35 @@
                         </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="1" />
-                        <ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Menu x:Name="TopMenuBar" Padding="2">
-                        <MenuItem Header="File" />
-                        <MenuItem Header="Edit" />
-                        <MenuItem Header="Settings" />
-                        <MenuItem Header="View" />
-                        <MenuItem Header="Go" />
-                        <MenuItem Header="Download">
-                            <MenuItem Header="Check For Mod Updates...">
-                                <MenuItem x:Name="UpdateAllSourcesMenuItem" Header="All" />
-                                <Separator />
-                                <MenuItem x:Name="UpdateGitHubMenuItem" Header="GitHub" />
-                                <MenuItem x:Name="UpdateNexusModsMenuItem" Header="Nexus Mods" />
-                                <MenuItem x:Name="UpdateSteamWorkshopMenuItem" Header="Steam Workshop" />
-                            </MenuItem>
-                            <Separator />
-                        </MenuItem>
-                        <MenuItem
+					<Menu Width="Auto" Height="28" x:Name="TopMenuBar">
+						<MenuItem Header="File" />
+						<MenuItem Header="Edit" />
+						<MenuItem Header="Settings" />
+						<MenuItem Header="View" />
+						<MenuItem Header="Go" />
+						<MenuItem Header="Download">
+							<MenuItem Header="Check For Mod Updates...">
+								<MenuItem x:Name="UpdateAllSourcesMenuItem" Header="All" />
+								<Separator />
+								<MenuItem x:Name="UpdateGitHubMenuItem" Header="GitHub" />
+								<MenuItem x:Name="UpdateNexusModsMenuItem" Header="Nexus Mods" />
+								<MenuItem x:Name="UpdateSteamWorkshopMenuItem" Header="Steam Workshop" />
+							</MenuItem>
+							<Separator />
+						</MenuItem>
+						<MenuItem
                             x:Name="ToolsMenuItem"
                             Header="Tools"
                             Style="{StaticResource MenuItemHightlightBlink}" />
-                        <MenuItem x:Name="HelpMenuItem" Header="Help" />
-                    </Menu>
-                    <StackPanel
-                        Grid.Column="3"
-                        Margin="2"
-                        Orientation="Horizontal" />
-                    <Border
+						<MenuItem x:Name="HelpMenuItem" Header="Help" />
+					</Menu>
+					<Border
                         x:Name="UpdatesButtonPanel"
-                        Grid.Column="2"
+                        Grid.Column="1"
                         Padding="8,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center">
@@ -347,258 +330,17 @@
                     Height="1"
                     Background="LightGray"
                     BorderThickness="0" />
-                <Grid
-                    x:Name="ModOrderPanel"
-                    Grid.Row="2"
-                    Loaded="ModOrderPanel_Loaded">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid Margin="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.Resources>
-                            <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Margin" Value="2,0,2,0" />
-                            </Style>
-                            <Style BasedOn="{StaticResource VerticalSeparator}" TargetType="Rectangle">
-                                <Setter Property="Margin" Value="8,0,6,0" />
-                            </Style>
-                            <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
-                                <Setter Property="Tag" Value="{Binding}" />
-                            </Style>
-                        </Grid.Resources>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Margin="0,0,4,0"
-                                VerticalAlignment="Center"
-                                Text="Profile" />
-                            <ComboBox
-                                x:Name="ProfilesComboBox"
-                                Grid.Column="1"
-                                MinWidth="125"
-                                MinHeight="16"
-                                MaxWidth="250"
-                                DisplayMemberPath="Name"
-                                IsEditable="False"
-                                IsTextSearchEnabled="False">
-                                <ComboBox.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem x:Name="ProfilesContextMenuOpenMenuItem" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
-                                        <MenuItem x:Name="ProfilesContextMenuCopyMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                    </ContextMenu>
-                                </ComboBox.ContextMenu>
-                            </ComboBox>
-                        </Grid>
-                        <Grid Grid.Column="1" Margin="4,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Margin="0,0,4,0"
-                                VerticalAlignment="Center"
-                                Text="Mod Order" />
-                            <ComboBox
-                                x:Name="OrdersComboBox"
-                                Grid.Column="1"
-                                MinWidth="140"
-                                MinHeight="16"
-                                MaxWidth="250"
-                                DisplayMemberPath="Name"
-                                IsTextSearchEnabled="False"
-                                KeyDown="ComboBox_KeyDown_LoseFocus"
-                                Loaded="OrdersComboBox_Loaded"
-                                LostFocus="OrdersComboBox_LostFocus">
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <EventSetter Event="ComboBoxItem.PreviewMouseDown" Handler="OrderComboBox_OnUserClick" />
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
-                                <ComboBox.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem
-                                            x:Name="OrdersContextMenuRenameMenuItem"
-                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=PlacementTarget}"
-                                            Header="Rename" />
-                                        <MenuItem x:Name="OrdersContextMenuOpenMenuItem" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
-                                        <MenuItem x:Name="OrdersContextMenuCopyMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                        <MenuItem x:Name="OrdersContextMenuDeleteMenuItem" Header="Delete Order" />
-                                    </ContextMenu>
-                                </ComboBox.ContextMenu>
-                            </ComboBox>
-                        </Grid>
-                        <Grid Grid.Column="2" Margin="1,0,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <Button x:Name="SaveButton" ToolTip="Save Load Order to File">
-                                    <Button.Resources>
-                                        <Style BasedOn="{StaticResource {x:Type controls:AutoGrayableImage}}" TargetType="{x:Type controls:AutoGrayableImage}">
-                                            <Style.Triggers>
-                                                <Trigger Property="IsEnabled" Value="True">
-                                                    <Setter Property="Source" Value="{StaticResource SaveImage}" />
-                                                </Trigger>
-                                                <Trigger Property="IsEnabled" Value="False">
-                                                    <Setter Property="Source" Value="{StaticResource SaveDisabledImage}" />
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Resources>
-                                    <controls:AutoGrayableImage />
-                                </Button>
-                                <Button x:Name="SaveAsButton" ToolTip="Save Order As...">
-                                    <controls:AutoGrayableImage Source="{StaticResource SaveAsImage}" />
-                                </Button>
-                                <Button x:Name="AddNewOrderButton" ToolTip="Add New Load Order">
-                                    <controls:AutoGrayableImage Source="{StaticResource AddItemImage}" />
-                                </Button>
-                            </StackPanel>
-                            <Rectangle
-                                Grid.Column="1"
-                                Margin="8,0,6,0"
-                                Style="{StaticResource VerticalSeparator}" />
-                            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                <StackPanel.Resources />
-                                <TextBlock Text="Export" />
-                                <Button x:Name="ExportToModSettingsButton" ToolTip="Export Order to Game">
-                                    <controls:AutoGrayableImage Source="{StaticResource ExportScriptImage}" />
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem x:Name="ExportContextMenuOpenDirectMenuItem" Style="{StaticResource MenuItemOpenFileStyle}" />
-                                            <MenuItem x:Name="ExportContextMenuOpenExplorerMenuItem" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
-                                            <MenuItem x:Name="ExportContextMenuCopyPathMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                            <MenuItem
-                                                x:Name="ExportContextMenuCopyOrderMenuItem"
-                                                Header="Copy Order to Clipboard"
-                                                Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                            <MenuItem x:Name="ExportContextMenuExportListMenuItem" Header="Export Order As List...">
-                                                <MenuItem.Icon>
-                                                    <Image Source="{StaticResource ExportDataImage}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                </Button>
-                                <Button x:Name="ExportOrderToArchiveButton" ToolTip="Export Active Mods to Zip">
-                                    <controls:AutoGrayableImage Source="{StaticResource ZipFileImage}" />
-                                </Button>
-                                <Button x:Name="ExportOrderToArchiveAsButton" ToolTip="Export Active Mods to Zip As...">
-                                    <controls:AutoGrayableImage Source="{StaticResource ZipFileAsImage}" />
-                                </Button>
-                                <Rectangle />
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Campaign" />
-                                    <ComboBox
-                                        x:Name="AdventureModComboBox"
-                                        Grid.Column="1"
-                                        MinWidth="100"
-                                        MinHeight="16"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        DisplayMemberPath="DisplayName"
-                                        IsTextSearchEnabled="False"
-                                        ToolTip="{StaticResource AdventureModTooltip}">
-                                        <ComboBox.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem x:Name="AdventureContextMenuOpenMenuItem" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
-                                                <MenuItem x:Name="AdventureContextMenuCopyMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                                <MenuItem x:Name="AdventureContextMenuModDeveloperMenuItem" Style="{StaticResource MenuItemModDeveloperStyle}" />
-                                            </ContextMenu>
-                                        </ComboBox.ContextMenu>
-                                    </ComboBox>
-                                </StackPanel>
-                                <Rectangle />
-                                <TextBlock Text="Refresh" />
-                                <Button x:Name="RefreshButton" ToolTip="Refresh Mods and Workshop Updates">
-                                    <controls:AutoGrayableImage Source="{StaticResource RefreshImage}" />
-                                </Button>
-                                <Rectangle />
-                                <TextBlock Text="Shortcuts" />
-                                <Button x:Name="OpenModsFolderButton" ToolTip="Open Mods Folder">
-                                    <controls:AutoGrayableImage Source="{StaticResource OpenFolderImage}" />
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem x:Name="OpenModsFolderButtonCopyMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                </Button>
-                                <Button x:Name="OpenWorkshopFolderButton" ToolTip="Open Workshop Folder">
-                                    <controls:AutoGrayableImage Source="{StaticResource OpenSteamWorkshopFolderImage}" />
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem x:Name="OpenWorkshopFolderButtonCopyMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                </Button>
-                                <Button x:Name="OpenExtenderLogsFolderButton" ToolTip="Open Logs Folder">
-                                    <controls:AutoGrayableImage
-                                        Width="16"
-                                        Height="16"
-                                        Source="{StaticResource LogImage}" />
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem x:Name="OpenExtenderLogsFolderButtonExplorerMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                </Button>
-                                <Button x:Name="OpenGameButton">
-                                    <Button.ToolTip>
-                                        <TextBlock x:Name="OpenGameButtonToolTipTextBlock" />
-                                    </Button.ToolTip>
-                                    <controls:AutoGrayableImage Source="{StaticResource OpenGameImage}" />
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem
-                                                x:Name="OpenGameButtonExplorerMenuItem"
-                                                Header="Open Game Folder..."
-                                                Style="{StaticResource MenuItemOpenInExplorerStyle}" />
-                                            <MenuItem x:Name="OpenGameButtonCopyMenuItem" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                </Button>
-                                <ComboBox
-                                    x:Name="GameLaunchActionComboBox"
-                                    DisplayMemberPath="Description"
-                                    ItemsSource="{Binding Source={ext:EnumExtension {x:Type dapp:DivinityGameLaunchWindowAction}}}"
-                                    SelectedValuePath="Value"
-                                    ToolTip="When the game launches through the mod manager, this action will be performed" />
-                                <Rectangle />
-                                <TextBlock Text="Support" />
-                                <Button x:Name="OpenDonationPageButton" ToolTip="Donate a Coffee to the Developer (LaughingLeader)">
-                                    <controls:AutoGrayableImage Source="{StaticResource OpenDonationLinkImage}" />
-                                </Button>
-                                <Button x:Name="OpenRepoPageButton" ToolTip="Open Project Page (GitHub)">
-                                    <controls:AutoGrayableImage Source="{StaticResource OpenRepoLinkImage}" />
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-                        <Grid Grid.Column="3" />
-                    </Grid>
-					<Separator
-                        Grid.Row="1"
-                        Height="1"
-                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BorderBrush}}" />
-				</Grid>
-                <local:ModUpdatesLayout
+				<reactiveui:RoutedViewHost Grid.Row="2" x:Name="RoutedViewHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+				<!--<local:ModUpdatesLayout
                     x:Name="ModUpdaterPanel"
                     Grid.Row="2"
                     Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
-            </Grid>
+				<local:DeleteFilesConfirmationView
+					Visibility="Collapsed"
+                    x:Name="DeleteFilesView"
+                    Grid.RowSpan="3"
+                    Panel.ZIndex="99" />-->
+			</Grid>
         </xc:BusyIndicator>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

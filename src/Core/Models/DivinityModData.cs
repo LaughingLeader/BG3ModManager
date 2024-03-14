@@ -420,7 +420,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 	public override string ToString()
 	{
-		return $"Name({Name}) Version({Version?.Version}) Author({Author}) UUID({UUID})";
+		return $"Name({Name}) Version({Version?.Version}) Author({Author}) UUID({UUID}) File({FilePath})";
 	}
 
 	public DivinityLoadOrderEntry ToOrderEntry()

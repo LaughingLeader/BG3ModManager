@@ -12,15 +12,16 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:reactiveui="clr-namespace:ReactiveUI;assembly=ReactiveUI"
 	xmlns:views="clr-namespace:DivinityModManager.Controls.Views"
-	xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
+	xmlns:vm="clr-namespace:DivinityModManager.ViewModels.Main"
 	x:Name="HorizontalModLayoutView"
 	d:DesignHeight="450"
 	d:DesignWidth="800"
+	d:DataContext="{d:DesignInstance Type=vm:ModOrderViewModel}"
 	mc:Ignorable="d">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
+				<ResourceDictionary Source="../../Themes/MainResourceDictionary.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 			<Style
 				x:Key="ListViewItemMouseEvents"
@@ -123,8 +124,6 @@
 					x:Name="ActiveModsListView"
 					MaxHeight="99999"
 					behavior:ScreenReaderHelperBehavior.Name="Active Mods"
-					dd:DragDrop.DragHandler="{Binding DragHandler}"
-					dd:DragDrop.DropHandler="{Binding DropHandler}"
 					GridViewColumnHeader.Click="ListView_Click"
 					ItemContainerStyle="{StaticResource ListViewItemMouseEvents}"
 					Style="{StaticResource ModOrderListViewWithDrag}"
@@ -301,8 +300,6 @@
 				Grid.Row="2"
 				MaxHeight="99999"
 				behavior:ScreenReaderHelperBehavior.Name="Inactive Mods"
-				dd:DragDrop.DragHandler="{Binding DragHandler}"
-				dd:DragDrop.DropHandler="{Binding DropHandler}"
 				GridViewColumnHeader.Click="ListView_Click"
 				ItemContainerStyle="{StaticResource ListViewItemMouseEvents}"
 				Style="{StaticResource ModOrderListViewWithDrag}"

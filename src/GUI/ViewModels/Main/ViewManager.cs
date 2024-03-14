@@ -27,9 +27,9 @@ namespace DivinityModManager.ViewModels.Main
 			DeleteFiles = new DeleteFilesViewData(vm);
 			ModUpdates = new ModUpdatesViewData(vm);
 
-			Locator.CurrentMutable.RegisterConstant(new ModOrderView(), typeof(IViewFor<ModOrderViewModel>));
-			Locator.CurrentMutable.RegisterLazySingleton(() => new DeleteFilesConfirmationView(), typeof(IViewFor<DeleteFilesViewData>));
-			Locator.CurrentMutable.RegisterLazySingleton(() => new ModUpdatesLayout(), typeof(IViewFor<DeleteFilesViewData>));
+			Locator.CurrentMutable.RegisterConstant(new ModOrderView() { ViewModel = ModOrder }, typeof(IViewFor<ModOrderViewModel>));
+			Locator.CurrentMutable.RegisterLazySingleton(() => new DeleteFilesConfirmationView() { ViewModel = DeleteFiles }, typeof(IViewFor<DeleteFilesViewData>));
+			Locator.CurrentMutable.RegisterLazySingleton(() => new ModUpdatesLayout() { ViewModel = ModUpdates }, typeof(IViewFor<DeleteFilesViewData>));
 		}
 	}
 }

@@ -12,7 +12,7 @@ public class ModIsAvailableConverter : IValueConverter
 	{
 		if (value is IDivinityModData data)
 		{
-			return MainWindow.Self?.ViewModel.ModIsAvailable(data);
+			return Services.Mods.ModIsAvailable(data);
 		}
 
 		return false;

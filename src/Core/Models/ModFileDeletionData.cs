@@ -12,7 +12,7 @@ public class ModFileDeletionData : ReactiveObject
 	[Reactive] public string UUID { get; set; }
 	[Reactive] public string Duplicates { get; set; }
 
-	public static ModFileDeletionData FromMod(DivinityModData mod, bool isWorkshopMod = false, bool isDeletingDuplicates = false, List<DivinityModData> loadedMods = null)
+	public static ModFileDeletionData FromMod(DivinityModData mod, bool isWorkshopMod = false, bool isDeletingDuplicates = false, IEnumerable<DivinityModData> loadedMods = null)
 	{
 		var data = new ModFileDeletionData { FilePath = mod.FilePath, DisplayName = mod.DisplayName, IsSelected = true, UUID = mod.UUID, IsWorkshop = isWorkshopMod };
 		if (isDeletingDuplicates && loadedMods != null)

@@ -33,7 +33,7 @@ public partial class StatsValidatorWindow : StatsValidatorWindowBase
 
 		ViewModel = new StatsValidatorWindowViewModel();
 
-		DivinityInteractions.OpenValidateStatsResults.RegisterHandler(OpenWindow);
+		DivinityInteractions.OpenValidateStatsResults.RegisterHandler(input => Observable.Start(() => OpenWindow(input), RxApp.MainThreadScheduler));
 
 		Locator.CurrentMutable.Register(() => new StatsValidatorFileEntryView(), typeof(IViewFor<StatsValidatorFileResults>));
 		Locator.CurrentMutable.Register(() => new StatsValidatorEntryView(), typeof(IViewFor<StatsValidatorErrorEntry>));

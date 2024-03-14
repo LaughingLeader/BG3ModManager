@@ -10,6 +10,7 @@ namespace DivinityModManager.Util;
 public static class FileUtils
 {
 	public static readonly EnumerationOptions RecursiveOptions = new() { RecurseSubdirectories = true };
+	public static readonly EnumerationOptions FlatSearchOptions = new() { RecurseSubdirectories = false };
 
 	/// <summary>
 	/// Gets the drive type of the given path.

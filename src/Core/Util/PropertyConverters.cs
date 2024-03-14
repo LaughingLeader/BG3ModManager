@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Windows;
+using System.Windows.Documents;
 
 namespace DivinityModManager.Util;
 
@@ -15,6 +16,8 @@ public static class PropertyConverters
 	/// <returns></returns>
 	public static Visibility StringToVisibility(string str) => !String.IsNullOrEmpty(str) ? Visibility.Visible : Visibility.Collapsed;
 	public static Visibility UriToVisibility(Uri uri) => !String.IsNullOrEmpty(uri?.ToString()) ? Visibility.Visible : Visibility.Collapsed;
+	public static Visibility IntToVisibility(int i) => i > 0 ? Visibility.Visible : Visibility.Collapsed;
 	public static bool StringToBool(string str) => !String.IsNullOrEmpty(str);
+	public static bool AnyBool(ValueTuple<bool, bool, bool> x) => x.Item1 || x.Item2 || x.Item3;
 	public static string DateToString(DateTimeOffset date) => date.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture);
 }
