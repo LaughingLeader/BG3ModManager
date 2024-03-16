@@ -27,7 +27,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
+                <ResourceDictionary Source="../../Themes/MainResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}" />
             <Style TargetType="{x:Type xc:MessageBox}">
