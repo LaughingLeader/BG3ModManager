@@ -45,6 +45,7 @@ public class WindowWrapper<T> where T : Window
 
 public class WindowManagerService
 {
+	public WindowWrapper<MainWindow> Main { get; }
 	public WindowWrapper<AboutWindow> About { get; }
 	public WindowWrapper<AppUpdateWindow> AppUpdate { get; }
 	public WindowWrapper<CollectionDownloadWindow> CollectionDownload { get; }
@@ -55,7 +56,7 @@ public class WindowManagerService
 	public WindowWrapper<VersionGeneratorWindow> VersionGenerator { get; }
 	public WindowWrapper<StatsValidatorWindow> StatsValidator { get; }
 
-	private readonly List<Window> _windows = new();
+	private readonly List<Window> _windows = [];
 
 	public void UpdateColorScheme(Uri theme)
 	{
@@ -65,8 +66,9 @@ public class WindowManagerService
 		}
 	}
 
-	public WindowManagerService()
+	public WindowManagerService(MainWindow main)
 	{
+		Main = new(main);
 		About = new(new AboutWindow());
 		AppUpdate = new(new AppUpdateWindow());
 		CollectionDownload = new(new CollectionDownloadWindow());
@@ -77,6 +79,7 @@ public class WindowManagerService
 		VersionGenerator = new(new VersionGeneratorWindow());
 		StatsValidator = new(new StatsValidatorWindow());
 
+		_windows.Add(Main.Window);
 		_windows.Add(About.Window);
 		_windows.Add(AppUpdate.Window);
 		_windows.Add(CollectionDownload.Window);
@@ -97,6 +100,12 @@ public class WindowManagerService
 				}
 			}
 			MainWindow.Self.ViewModel.Settings.SettingsWindowIsOpen = b;
+		});
+
+		Services.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
+		{
+			var theme = !darkMode ? App.LightTheme : App.DarkTheme;
+			UpdateColorScheme(theme);
 		});
 	}
 }

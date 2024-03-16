@@ -25,6 +25,9 @@ public partial class App : Application
 
 	private static string _appDir;
 
+	public static readonly Uri LightTheme = new("pack://application:,,,/BG3ModManager;component/Themes/Light.xaml", UriKind.Absolute);
+	public static readonly Uri DarkTheme = new("pack://application:,,,/BG3ModManager;component/Themes/Dark.xaml", UriKind.Absolute);
+
 	public App()
 	{
 		_appDir = DivinityApp.GetAppDirectory();

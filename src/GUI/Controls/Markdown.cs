@@ -1,4 +1,5 @@
-﻿using DivinityModManager.Windows;
+﻿using DivinityModManager.AppServices;
+using DivinityModManager.Windows;
 
 using System.Globalization;
 using System.Net.Cache;
@@ -209,7 +210,7 @@ public class Markdown : DependencyObject
 
 		var darkMode = Services.Get<ISettingsService>().ManagerSettings.DarkThemeEnabled;
 
-		AdonisUI.ResourceLocator.SetColorScheme(document.Resources, !darkMode ? MainWindow.LightTheme : MainWindow.DarkTheme);
+		AdonisUI.ResourceLocator.SetColorScheme(document.Resources, !darkMode ? App.LightTheme : App.DarkTheme);
 
 		return document;
 	}
