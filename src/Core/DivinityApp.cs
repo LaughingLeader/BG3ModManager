@@ -13,24 +13,37 @@ namespace DivinityModManager;
 public static class DivinityApp
 {
 	public const string DIR_DATA = "Data\\";
-	public const string URL_REPO = @"https://github.com/LaughingLeader/BG3ModManager";
-	public const string URL_CHANGELOG = @"https://github.com/LaughingLeader/BG3ModManager/wiki/Changelog";
-	public const string URL_CHANGELOG_RAW = @"https://raw.githubusercontent.com/wiki/LaughingLeader/BG3ModManager/Changelog.md";
-	public const string URL_UPDATE = @"https://raw.githubusercontent.com/LaughingLeader/BG3ModManager/master/Update.xml";
-	public const string URL_AUTHOR = @"https://github.com/LaughingLeader";
-	public const string URL_ISSUES = @"https://github.com/LaughingLeader/BG3ModManager/issues";
-	public const string URL_LICENSE = @"https://github.com/LaughingLeader/BG3ModManager/blob/master/LICENSE";
-	public const string URL_DONATION = @"https://ko-fi.com/laughingleader";
 
-	public const string XML_MOD_ORDER_MODULE = @"<node id=""Module""><attribute id=""UUID"" value=""{0}"" type=""FixedString""/></node>";
-	public const string XML_MODULE_SHORT_DESC = @"<node id=""ModuleShortDesc""><attribute id=""Folder"" value=""{0}"" type=""LSString""/><attribute id=""MD5"" value=""{1}"" type=""LSString""/><attribute id=""Name"" value=""{2}"" type=""LSString""/><attribute id=""UUID"" value=""{3}"" type=""FixedString"" /><attribute id=""Version64"" value=""{4}"" type=""int64""/></node>";
-	public const string XML_MODULE_SHORT_DESC_FORMATTED = "<node id=\"ModuleShortDesc\">\n\t<attribute id=\"Folder\" value=\"{0}\" type=\"LSString\"/>\n\t<attribute id=\"MD5\" value=\"{1}\" type=\"LSString\"/>\n\t<attribute id=\"Name\" value=\"{2}\" type=\"LSString\"/>\n\t<attribute id=\"UUID\" value=\"{3}\" type=\"FixedString\" />\n\t<attribute id=\"Version64\" value=\"{4}\" type=\"int64\"/>\n</node>";
-	public const string XML_MOD_SETTINGS_TEMPLATE = @"<?xml version=""1.0"" encoding=""UTF-8""?><save><version major=""4"" minor=""0"" revision=""9"" build=""331""/><region id=""ModuleSettings""><node id=""root""><children><node id=""ModOrder""><children>{0}</children></node><node id=""Mods""><children>{1}</children></node></children></node></region></save>";
+	public const string URL_DONATION = @"https://ko-fi.com/laughingleader";
+	public const string URL_AUTHOR = @"https://github.com/LaughingLeader";
 
 	public const string PATH_RESOURCES = "Resources";
 	public const string PATH_APP_FEATURES = "AppFeatures.json";
 	public const string PATH_DEFAULT_PATHWAYS = "DefaultPathways.json";
 	public const string PATH_IGNORED_MODS = "IgnoredMods.json";
+
+	public const int MAX_FILE_OVERRIDE_DISPLAY = 10;
+
+	public static string DateTimeColumnFormat { get; set; } = "MM/dd/yyyy";
+	public static string DateTimeTooltipFormat { get; set; } = "MMMM dd, yyyy";
+	public static string DateTimeExtenderBuildFormat { get; set; } = "MM/dd/yyyy hh:mm tt";
+
+#if !DOS2
+	public const string PIPE_ID = "bg3mm.server";
+
+	public const string HTTP_USER = "BG3ModManagerUser";
+
+	public const string URL_REPO = @"https://github.com/LaughingLeader/BG3ModManager";
+	public const string URL_CHANGELOG = @"https://github.com/LaughingLeader/BG3ModManager/wiki/Changelog";
+	public const string URL_CHANGELOG_RAW = @"https://raw.githubusercontent.com/wiki/LaughingLeader/BG3ModManager/Changelog.md";
+	public const string URL_UPDATE = @"https://raw.githubusercontent.com/LaughingLeader/BG3ModManager/master/Update.xml";
+	public const string URL_ISSUES = @"https://github.com/LaughingLeader/BG3ModManager/issues";
+	public const string URL_LICENSE = @"https://github.com/LaughingLeader/BG3ModManager/blob/master/LICENSE";
+
+	public const string XML_MOD_ORDER_MODULE = @"<node id=""Module""><attribute id=""UUID"" value=""{0}"" type=""FixedString""/></node>";
+	public const string XML_MODULE_SHORT_DESC = @"<node id=""ModuleShortDesc""><attribute id=""Folder"" value=""{0}"" type=""LSString""/><attribute id=""MD5"" value=""{1}"" type=""LSString""/><attribute id=""Name"" value=""{2}"" type=""LSString""/><attribute id=""UUID"" value=""{3}"" type=""FixedString"" /><attribute id=""Version64"" value=""{4}"" type=""int64""/></node>";
+	public const string XML_MODULE_SHORT_DESC_FORMATTED = "<node id=\"ModuleShortDesc\">\n\t<attribute id=\"Folder\" value=\"{0}\" type=\"LSString\"/>\n\t<attribute id=\"MD5\" value=\"{1}\" type=\"LSString\"/>\n\t<attribute id=\"Name\" value=\"{2}\" type=\"LSString\"/>\n\t<attribute id=\"UUID\" value=\"{3}\" type=\"FixedString\" />\n\t<attribute id=\"Version64\" value=\"{4}\" type=\"int64\"/>\n</node>";
+	public const string XML_MOD_SETTINGS_TEMPLATE = @"<?xml version=""1.0"" encoding=""UTF-8""?><save><version major=""4"" minor=""0"" revision=""9"" build=""331""/><region id=""ModuleSettings""><node id=""root""><children><node id=""ModOrder""><children>{0}</children></node><node id=""Mods""><children>{1}</children></node></children></node></region></save>";
 
 	public const string MAIN_CAMPAIGN_UUID = "28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8";
 	public const string GAMEMASTER_UUID = "NotYetAvailableInBG3";
@@ -53,13 +66,43 @@ public static class DivinityApp
 	public const string EXTENDER_UPDATER_CONFIG_FILE = "ScriptExtenderUpdaterConfig.json";
 	public const int EXTENDER_DEFAULT_VERSION = 6;
 
-	public const int MAX_FILE_OVERRIDE_DISPLAY = 10;
-
 	public const LSLib.LS.Enums.Game GAME = LSLib.LS.Enums.Game.BaldursGate3;
 	public const LSLib.LS.Story.Compiler.TargetGame GAME_COMPILER = LSLib.LS.Story.Compiler.TargetGame.BG3;
+#else
+	public const string PIPE_ID = "divinitymm.server";
 
-	public const string PIPE_ID = "bg3mm.server";
+	public const string HTTP_USER = "DivinityModManagerUser";
 
+	public const string URL_REPO = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager";
+	public const string URL_CHANGELOG = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager/wiki/Changelog";
+	public const string URL_CHANGELOG_RAW = @"https://raw.githubusercontent.com/wiki/LaughingLeader-DOS2-Mods/DivinityModManager/Changelog.md";
+	public const string URL_UPDATE = @"https://raw.githubusercontent.com/LaughingLeader-DOS2-Mods/DivinityModManager/master/Update.xml";
+	public const string URL_ISSUES = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager/issues";
+	public const string URL_LICENSE = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager/blob/master/LICENSE";
+
+	public const string XML_MOD_ORDER_MODULE = @"<node id=""Module""><attribute id=""UUID"" value=""{0}"" type=""22""/></node>";
+	public const string XML_MODULE_SHORT_DESC = @"<node id=""ModuleShortDesc""><attribute id=""Folder"" value=""{0}"" type=""30""/><attribute id=""MD5"" value=""{1}"" type=""23""/><attribute id=""Name"" value=""{2}"" type=""22""/><attribute id=""UUID"" value=""{3}"" type=""22"" /><attribute id=""Version"" value=""{4}"" type=""4""/></node>";
+	public const string XML_MODULE_SHORT_DESC_FORMATTED = "<node id=\"ModuleShortDesc\">\n\t<attribute id=\"Folder\" value=\"{0}\" type=\"30\"/>\n\t<attribute id=\"MD5\" value=\"{1}\" type=\"23\"/>\n\t<attribute id=\"Name\" value=\"{2}\" type=\"22\"/>\n\t<attribute id=\"UUID\" value=\"{3}\" type=\"22\" />\n\t<attribute id=\"Version\" value=\"{4}\" type=\"4\"/>\n</node>";
+	public const string XML_MOD_SETTINGS_TEMPLATE = @"<?xml version=""1.0"" encoding=""UTF-8""?><save><header version=""2""/><version major=""3"" minor=""6"" revision=""9"" build=""0""/><region id=""ModuleSettings""><node id=""root""><children><node id=""ModOrder""><children>{0}</children></node><node id=""Mods""><children>{1}</children></node></children></node></region></save>";
+
+	public const string MAIN_CAMPAIGN_UUID = "1301db3d-1f54-4e98-9be5-5094030916e4";
+	public const string GAMEMASTER_UUID = "00550ab2-ac92-410c-8d94-742f7629de0e";
+
+	public const string EXTENDER_REPO_URL = "Norbyte/ositools";
+	public const string EXTENDER_LATEST_URL = "https://github.com/Norbyte/ositools/releases/latest";
+	public const string EXTENDER_APPDATA_DLL_OLD = "OsirisExtender/OsiExtenderEoCApp.dll";
+	public const string EXTENDER_MOD_CONFIG = "OsiToolsConfig.json";
+	public const string EXTENDER_UPDATER_FILE = "DXGI.dll";
+	public const string EXTENDER_APPDATA_DIRECTORY = "DOS2ScriptExtender";
+	public const string EXTENDER_APPDATA_DLL = "OsiExtenderEoCPlugin.dll";
+	public const string EXTENDER_MANIFESTS_URL = "https://dbn4nit5dt5fw.cloudfront.net/Channels/{0}/Manifest2.json";
+	public const string EXTENDER_CONFIG_FILE = "ScriptExtenderSettings.json";
+	public const string EXTENDER_UPDATER_CONFIG_FILE = "ScriptExtenderUpdaterConfig.json";
+	public const int EXTENDER_DEFAULT_VERSION = 58;
+
+	public const LSLib.LS.Enums.Game GAME = LSLib.LS.Enums.Game.DivinityOriginalSin2DE;
+	public const LSLib.LS.Story.Compiler.TargetGame GAME_COMPILER = LSLib.LS.Story.Compiler.TargetGame.DOS2DE;
+#endif
 	public static HashSet<DivinityModData> IgnoredMods { get; private set; }
 	public static HashSet<DivinityModData> IgnoredDependencyMods { get; private set; }
 
@@ -104,10 +147,6 @@ public static class DivinityApp
 			NotifyStaticPropertyChanged();
 		}
 	}
-
-	public static string DateTimeColumnFormat { get; set; } = "MM/dd/yyyy";
-	public static string DateTimeTooltipFormat { get; set; } = "MMMM dd, yyyy";
-	public static string DateTimeExtenderBuildFormat { get; set; } = "MM/dd/yyyy hh:mm tt";
 
 	public delegate void LogFunction(string message);
 
