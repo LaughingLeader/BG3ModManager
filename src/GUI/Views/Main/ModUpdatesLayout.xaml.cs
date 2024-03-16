@@ -30,7 +30,6 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 
 		this.WhenActivated(d =>
 		{
-			DivinityApp.Log($"ModUpdatesLayout Activated | {ViewModel.Updates.Count} | {ViewModel.TotalUpdates} | {ViewModel}");
 			d(this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsManipulationEnabled));
 			d(this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsEnabled));
 
