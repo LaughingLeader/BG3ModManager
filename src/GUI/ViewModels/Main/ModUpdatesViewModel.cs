@@ -1,4 +1,5 @@
-﻿using DivinityModManager.Models.Updates;
+﻿using DivinityModManager.Models;
+using DivinityModManager.Models.Updates;
 using DivinityModManager.Windows;
 
 using DynamicData;
@@ -8,6 +9,8 @@ using Ookii.Dialogs.Wpf;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+
+using Splat;
 
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
@@ -27,7 +30,7 @@ public class CopyModUpdatesTask
 	public int TotalProcessed { get; set; }
 }
 
-public class ModUpdatesViewData : ReactiveObject, IRoutableViewModel
+public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 {
 	public string UrlPathSegment => "modupdates";
 	public IScreen HostScreen { get; }
@@ -155,17 +158,16 @@ public class ModUpdatesViewData : ReactiveObject, IRoutableViewModel
 		CloseView?.Invoke(true);
 	}
 
-	public ModUpdatesViewData(MainWindowViewModel mainWindowViewModel)
+	internal ModUpdatesViewModel(IScreen host = null)
 	{
-		HostScreen = mainWindowViewModel;
+		HostScreen = host ?? Locator.Current.GetService<IScreen>();
+
 		Unlocked = true;
 		AllSelected = true;
 
-		_mainWindowViewModel = mainWindowViewModel;
-
 		Mods.CountChanged.ToUIProperty(this, x => x.TotalUpdates);
 
-		var modsConnection = Mods.Connect();
+		var modsConnection = Mods.Connect().Publish();
 
 		modsConnection.Bind(out _updates).Subscribe();
 
@@ -184,5 +186,45 @@ public class ModUpdatesViewData : ReactiveObject, IRoutableViewModel
 				x.IsSelected = b;
 			}
 		});
+
+		modsConnection.Connect();
+	}
+
+	public ModUpdatesViewModel(MainWindowViewModel mainWindowViewModel) : this((IScreen)mainWindowViewModel)
+	{
+		_mainWindowViewModel = mainWindowViewModel;
 	}
 }
+
+
+public class DesignModUpdatesViewModel : ModUpdatesViewModel
+{
+	public DesignModUpdatesViewModel() : base()
+	{
+		Add(new DivinityModUpdateData()
+		{
+			Mod = new DivinityModData() { Name = "Test Mod", Author = "LaughingLeader", UUID = "0" },
+			DownloadData = new ModDownloadData()
+			{
+				DownloadPath = "",
+				DownloadPathType = ModDownloadPathType.URL,
+				DownloadSourceType = ModSourceType.GITHUB,
+				Version = "1.0.0.1",
+				Date = DateTimeOffset.Now
+			},
+		});
+		Add(new DivinityModUpdateData()
+		{
+			Mod = new DivinityModData() { Name = "Test Mod 2", Author = "LaughingLeader", UUID = "1" },
+			DownloadData = new ModDownloadData()
+			{
+				DownloadPath = "",
+				DownloadPathType = ModDownloadPathType.URL,
+				DownloadSourceType = ModSourceType.NEXUSMODS,
+				Version = "0.1.0.0",
+				Date = DateTimeOffset.Now
+			},
+		});
+	}
+}
+

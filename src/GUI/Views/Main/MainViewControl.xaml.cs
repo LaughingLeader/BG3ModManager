@@ -149,7 +149,7 @@ public partial class MainViewControl : MainViewControlViewBase
 			this.OneWayBind(ViewModel, vm => vm.ModUpdatesAvailable, view => view.UpdatesButtonPanel.IsEnabled);
 
 			this.OneWayBind(ViewModel, vm => vm.UpdatingBusyIndicatorVisibility, view => view.UpdatesToggleButtonBusyIndicator.Visibility);
-			this.OneWayBind(ViewModel, vm => vm.UpdatesViewVisibility, view => view.UpdatesToggleButtonExpandImage.Visibility);
+			this.OneWayBind(ViewModel, vm => vm.UpdatesViewIsVisible, view => view.UpdatesToggleButtonExpandImage.Visibility, PropertyConverters.BoolToVisibility);
 			this.OneWayBind(ViewModel, vm => vm.UpdateCountVisibility, view => view.UpdateCountTextBlock.Visibility);
 			this.OneWayBind(ViewModel, vm => vm.ModUpdatesViewData.TotalUpdates, view => view.UpdateCountTextBlock.Text);
 

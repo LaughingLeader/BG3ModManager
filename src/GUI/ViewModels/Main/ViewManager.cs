@@ -12,8 +12,8 @@ namespace DivinityModManager.ViewModels.Main
 		private readonly RoutingState Router;
 
 		public ModOrderViewModel ModOrder { get; }
-		public DeleteFilesViewData DeleteFiles { get; }
-		public ModUpdatesViewData ModUpdates { get; }
+		public DeleteFilesViewModel DeleteFiles { get; }
+		public ModUpdatesViewModel ModUpdates { get; }
 
 		public void SwitchToModOrderView() => Router.Navigate.Execute(ModOrder);
 		public void SwitchToDeleteView() => Router.Navigate.Execute(DeleteFiles);
@@ -24,12 +24,12 @@ namespace DivinityModManager.ViewModels.Main
 			Router = router;
 
 			ModOrder = new ModOrderViewModel(vm);
-			DeleteFiles = new DeleteFilesViewData(vm);
-			ModUpdates = new ModUpdatesViewData(vm);
+			DeleteFiles = new DeleteFilesViewModel(vm);
+			ModUpdates = new ModUpdatesViewModel(vm);
 
 			Locator.CurrentMutable.RegisterConstant(new ModOrderView() { ViewModel = ModOrder }, typeof(IViewFor<ModOrderViewModel>));
-			Locator.CurrentMutable.RegisterLazySingleton(() => new DeleteFilesConfirmationView() { ViewModel = DeleteFiles }, typeof(IViewFor<DeleteFilesViewData>));
-			Locator.CurrentMutable.RegisterLazySingleton(() => new ModUpdatesLayout() { ViewModel = ModUpdates }, typeof(IViewFor<DeleteFilesViewData>));
+			Locator.CurrentMutable.RegisterLazySingleton(() => new DeleteFilesConfirmationView() { ViewModel = DeleteFiles }, typeof(IViewFor<DeleteFilesViewModel>));
+			Locator.CurrentMutable.RegisterLazySingleton(() => new ModUpdatesLayout() { ViewModel = ModUpdates }, typeof(IViewFor<ModUpdatesViewModel>));
 		}
 	}
 }

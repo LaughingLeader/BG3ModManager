@@ -1183,7 +1183,7 @@
         BasedOn="{StaticResource {x:Type GridViewColumnHeader}}"
         TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="Margin" Value="4,0,0,0" />
+        <Setter Property="Padding" Value="4,0,0,0" />
     </Style>
     <Style
         x:Key="GridViewCenteredContainerStyle"
@@ -1191,7 +1191,7 @@
         TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Margin" Value="2" />
+		<Setter Property="Padding" Value="2,0" />
     </Style>
     <DataTemplate x:Key="GridViewTextblockHeaderTemplate">
         <TextBlock Padding="2,0,2,0" Text="{Binding}" />

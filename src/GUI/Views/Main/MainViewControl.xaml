@@ -18,8 +18,9 @@
     xmlns:reactiveui="http://reactiveui.net"
     xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
     xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+	d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
     d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignWidth="1600"
     mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="{x:Type xc:MessageBox}">
@@ -180,10 +181,10 @@
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ModUpdatesViewVisible}" Value="True">
+									<DataTrigger Binding="{Binding UpdatesViewIsVisible}" Value="True">
                                         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding ModUpdatesViewVisible}" Value="False">
+									<DataTrigger Binding="{Binding UpdatesViewIsVisible}" Value="False">
                                         <Setter Property="Background" Value="Transparent" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -282,7 +283,7 @@
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
                                                         <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding ModUpdatesViewVisible}" Value="False" />
+                                                            <Condition Binding="{Binding UpdatesViewIsVisible}" Value="False" />
                                                             <Condition Binding="{Binding ModUpdatesAvailable}" Value="True" />
                                                         </MultiDataTrigger.Conditions>
                                                         <MultiDataTrigger.Setters>
@@ -291,7 +292,7 @@
                                                     </MultiDataTrigger>
                                                     <MultiDataTrigger>
                                                         <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding ModUpdatesViewVisible}" Value="True" />
+                                                            <Condition Binding="{Binding UpdatesViewIsVisible}" Value="True" />
                                                             <Condition Binding="{Binding ModUpdatesAvailable}" Value="True" />
                                                         </MultiDataTrigger.Conditions>
                                                         <MultiDataTrigger.Setters>
@@ -300,7 +301,7 @@
                                                     </MultiDataTrigger>
                                                     <MultiDataTrigger>
                                                         <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding ModUpdatesViewVisible}" Value="False" />
+                                                            <Condition Binding="{Binding UpdatesViewIsVisible}" Value="False" />
                                                             <Condition Binding="{Binding ModUpdatesAvailable}" Value="False" />
                                                         </MultiDataTrigger.Conditions>
                                                         <MultiDataTrigger.Setters>

@@ -13,9 +13,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace DivinityModManager.Views;
+namespace DivinityModManager.Views.Main;
 
-public class ModUpdatesLayoutBase : ReactiveUserControl<ModUpdatesViewData> { }
+public class ModUpdatesLayoutBase : ReactiveUserControl<ModUpdatesViewModel> { }
 
 public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 {
@@ -28,19 +28,19 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 			UpdateBackgroundColors();
 		};
 
-		this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsManipulationEnabled);
-		this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsEnabled);
-
-		this.OneWayBind(ViewModel, vm => vm.Updates, view => view.UpdatesModListView.ItemsSource);
-
-		this.BindCommand(ViewModel, vm => vm.UpdateModsCommand, view => view.UpdateButton);
-
-		this.OneWayBind(ViewModel, vm => vm.AllSelected, view => view.ModUpdatesCheckboxHeader.IsChecked);
-		this.BindCommand(ViewModel, vm => vm.ToggleSelectCommand, view => view.ModUpdatesCheckboxHeader);
-
 		this.WhenActivated(d =>
 		{
+			this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsManipulationEnabled);
+			this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsEnabled);
 
+			this.OneWayBind(ViewModel, vm => vm.TotalUpdates, view => view.ViewTitleTextBlock.Text, x => $"Mod Updates ({x})");
+
+			this.OneWayBind(ViewModel, vm => vm.Updates, view => view.UpdatesModListView.ItemsSource);
+
+			this.BindCommand(ViewModel, vm => vm.UpdateModsCommand, view => view.UpdateButton);
+
+			this.OneWayBind(ViewModel, vm => vm.AllSelected, view => view.ModUpdatesCheckboxHeader.IsChecked);
+			this.BindCommand(ViewModel, vm => vm.ToggleSelectCommand, view => view.ModUpdatesCheckboxHeader);
 		});
 	}
 

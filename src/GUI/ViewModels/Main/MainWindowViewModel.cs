@@ -66,7 +66,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	[Reactive] public bool IsInitialized { get; private set; }
 
-	public ModUpdatesViewData ModUpdatesViewData { get; private set; }
+	public ModUpdatesViewModel ModUpdatesViewData { get; private set; }
 
 	public AppSettings AppSettings { get; private set; }
 	public ModManagerSettings Settings { get; private set; }
@@ -86,7 +86,6 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[Reactive] public string StatusBarRightText { get; set; }
 
 	[Reactive] public bool ModUpdatesAvailable { get; set; }
-	[Reactive] public bool ModUpdatesViewVisible { get; set; }
 	[Reactive] public bool HighlightExtenderDownload { get; set; }
 	[Reactive] public bool GameDirectoryFound { get; set; }
 
@@ -150,6 +149,8 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[Reactive] public bool CanCancelProgress { get; set; }
 
 	#endregion
+	[ObservableAsProperty] public bool UpdatesViewIsVisible { get; }
+
 	[Reactive] public Visibility StatusBarBusyIndicatorVisibility { get; set; }
 	[ObservableAsProperty] public bool GitHubModSupportEnabled { get; }
 	[ObservableAsProperty] public bool NexusModsSupportEnabled { get; }
@@ -159,7 +160,6 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[ObservableAsProperty] public Visibility NexusModsProfileAvatarVisibility { get; }
 	[ObservableAsProperty] public Visibility UpdatingBusyIndicatorVisibility { get; }
 	[ObservableAsProperty] public Visibility UpdateCountVisibility { get; }
-	[ObservableAsProperty] public Visibility UpdatesViewVisibility { get; }
 	[ObservableAsProperty] public Visibility DeveloperModeVisibility { get; }
 
 	public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
@@ -188,7 +188,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			Services.Mods.Refresh();
 			Views.ModUpdates.Clear();
 			Services.Get<ModOrderView>()?.ModLayout.SaveLayout();
-			ModUpdatesViewVisible = ModUpdatesAvailable = false;
+			ModUpdatesAvailable = false;
 			Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
 			Window.TaskbarItemInfo.ProgressValue = 0;
 		}, RxApp.MainThreadScheduler);
@@ -2008,7 +2008,7 @@ Directory the zip will be extracted to:
 		exceptionHandler = new MainWindowExceptionHandler(this);
 		RxApp.DefaultExceptionHandler = exceptionHandler;
 
-		this.ModUpdatesViewData = new ModUpdatesViewData(this);
+		this.ModUpdatesViewData = new ModUpdatesViewModel(this);
 
 		var assembly = Assembly.GetExecutingAssembly();
 		var productName = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute), false)).Product;
@@ -2122,7 +2122,6 @@ Directory the zip will be extracted to:
 		var whenRefreshing = _updater.WhenAnyValue(x => x.IsRefreshing);
 		whenRefreshing.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.UpdatingBusyIndicatorVisibility);
 		whenRefreshing.Select(PropertyConverters.BoolToVisibilityReversed).ToUIProperty(this, x => x.UpdateCountVisibility);
-		this.WhenAnyValue(x => x.ModUpdatesViewVisible).Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.UpdatesViewVisibility, Visibility.Collapsed);
 
 		this.WhenAnyValue(x => x.Settings.DebugModeEnabled, x => x.Settings.ExtenderSettings.DeveloperMode)
 		.Select(x => PropertyConverters.BoolToVisibility(x.Item1 || x.Item2)).ToUIProperty(this, x => x.DeveloperModeVisibility);
@@ -2139,7 +2138,7 @@ Directory the zip will be extracted to:
 		RefreshModUpdatesCommand = ReactiveCommand.Create(() =>
 		{
 			ModUpdatesViewData?.Clear();
-			ModUpdatesViewVisible = ModUpdatesAvailable = false;
+			ModUpdatesAvailable = false;
 			RefreshAllModUpdatesBackground();
 		}, canRefreshModUpdates, RxApp.MainThreadScheduler);
 
@@ -2190,10 +2189,19 @@ Directory the zip will be extracted to:
 
 		#endregion
 
-		var canToggleUpdatesView = this.WhenAnyValue(x => x.ModUpdatesViewVisible, x => x.ModUpdatesAvailable, (isVisible, hasUpdates) => isVisible || hasUpdates);
+		this.WhenAnyValue(x => x.Router.CurrentViewModel).Select(x => x == Views.ModUpdates).ToUIProperty(this, x => x.UpdatesViewIsVisible, false);
+
+		var canToggleUpdatesView = this.WhenAnyValue(x => x.ModUpdatesAvailable);
 		void toggleUpdatesView()
 		{
-			ModUpdatesViewVisible = !ModUpdatesViewVisible;
+			if(Router.GetCurrentViewModel() != Views.ModUpdates)
+			{
+				Views.SwitchToModUpdates();
+			}
+			else
+			{
+				Views.SwitchToModOrderView();
+			}
 		};
 		Keys.ToggleUpdatesView.AddAction(toggleUpdatesView, canToggleUpdatesView);
 		ToggleUpdatesViewCommand = ReactiveCommand.Create(toggleUpdatesView, canToggleUpdatesView);
@@ -2247,7 +2255,6 @@ Directory the zip will be extracted to:
 		{
 			ModUpdatesViewData.Clear();
 			if (refresh) RefreshCommand.Execute(Unit.Default).Subscribe();
-			ModUpdatesViewVisible = false;
 			Window.Activate();
 		});
 

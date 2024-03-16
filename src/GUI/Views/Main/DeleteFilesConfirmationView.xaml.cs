@@ -7,9 +7,9 @@ using ReactiveUI;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.Views;
+namespace DivinityModManager.Views.Main;
 
-public class DeleteFilesConfirmationViewBase : ReactiveUserControl<DeleteFilesViewData> { }
+public class DeleteFilesConfirmationViewBase : ReactiveUserControl<DeleteFilesViewModel> { }
 
 /// <summary>
 /// Interaction logic for DeleteFilesConfirmationView.xaml

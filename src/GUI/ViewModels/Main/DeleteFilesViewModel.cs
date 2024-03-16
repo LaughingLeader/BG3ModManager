@@ -26,11 +26,11 @@ public class FileDeletionCompleteEventArgs : EventArgs
 
 	public FileDeletionCompleteEventArgs()
 	{
-		DeletedFiles = new List<ModFileDeletionData>();
+		DeletedFiles = [];
 	}
 }
 
-public class DeleteFilesViewData : BaseProgressViewModel, IRoutableViewModel
+public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 {
 	public string UrlPathSegment => "deletefiles";
 	public IScreen HostScreen { get; }
@@ -127,7 +127,7 @@ public class DeleteFilesViewData : BaseProgressViewModel, IRoutableViewModel
 
 	private bool IsClosingAllowed(bool isDeletingDupes, int totalFiles) => !isDeletingDupes || totalFiles <= 0;
 
-	public DeleteFilesViewData(IScreen hostScreen)
+	public DeleteFilesViewModel(IScreen hostScreen)
 	{
 		HostScreen = hostScreen ?? Locator.Current.GetService<IScreen>();
 
