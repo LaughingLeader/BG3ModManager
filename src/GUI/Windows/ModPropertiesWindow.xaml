@@ -124,49 +124,30 @@
 
 						<Separator Grid.ColumnSpan="2" Margin="4,8" />
 
-						<TextBlock Text="NexusMods ID:" />
+						<TextBlock Text="NexusMods ID:" VerticalAlignment="Center" />
 						<xc:LongUpDown
+							MinWidth="64"
 							x:Name="ModNexusModsIDUpDown"
 							HorizontalAlignment="Right"
 							Watermark="ID" />
 
-						<TextBlock Text="GitHub:" />
-						<TextBlock HorizontalAlignment="Right">
-							<Run BaselineAlignment="Center" Text="https://github.com/" />
-							<Grid>
-								<controls:UnfocusableTextBox
-									x:Name="ModGitHubAuthorText"
-									VerticalAlignment="Bottom"
-									Text="" />
-								<TextBlock
-									x:Name="AuthorLabel"
-									Width="{Binding ElementName=ModGitHubAuthorText, Path=Width}"
-									Padding="24,4"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Bottom"
-									Background="Transparent"
-									IsHitTestVisible="False"
-									Opacity="0.5"
-									Text="Author" />
-							</Grid>
-							<Run BaselineAlignment="Center" Text="/" />
-							<Grid>
-								<controls:UnfocusableTextBox
-									x:Name="ModGitHubRepositoryText"
-									VerticalAlignment="Bottom"
-									Text="" />
-								<TextBlock
-									x:Name="RepoLabel"
-									Width="{Binding ElementName=ModGitHubAuthorText, Path=Width}"
-									Padding="24,4"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Bottom"
-									Background="Transparent"
-									IsHitTestVisible="False"
-									Opacity="0.5"
-									Text="Repo" />
-							</Grid>
-						</TextBlock>
+						<TextBlock Text="GitHub URL:" VerticalAlignment="Center" />
+						<Grid>
+							<controls:UnfocusableTextBox
+								x:Name="ModGitHubText"
+								VerticalAlignment="Bottom"
+								Text="" />
+							<TextBlock
+								x:Name="GitHubPlaceholderLabel"
+								Width="{Binding ElementName=ModGitHubText, Path=Width}"
+								Padding="24,4"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Bottom"
+								Background="Transparent"
+								IsHitTestVisible="False"
+								Opacity="0.5"
+								Text="https://github.com/Author/Repository" />
+						</Grid>
 
 						<Separator Grid.ColumnSpan="2" Margin="4,8" />
 						<!--<TextBlock Text="Steam Workshop ID" />

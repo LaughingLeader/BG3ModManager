@@ -1,5 +1,7 @@
 ﻿using DivinityModManager.Models;
 using DivinityModManager.Models.GitHub;
+using DivinityModManager.Models.GitHub.Json;
+using DivinityModManager.Util;
 
 using Octokit;
 
@@ -62,10 +64,31 @@ namespace DivinityModManager.AppServices
 				{
 					if (mod.GitHubData.IsEnabled)
 					{
-						var result = await GetLatestReleaseAsync(mod.GitHubData.Author, mod.GitHubData.Repository);
-						if (result != null)
+						//For repositories set up with a "Repository.json" file.
+						if(mod.GitHubData.Url.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
 						{
-							results.Add(mod.UUID, result);
+							var contents = await WebHelper.DownloadUrlAsStringAsync(mod.GitHubData.Url, token);
+							if (!String.IsNullOrEmpty(contents) && DivinityJsonUtils.TrySafeDeserialize<GitHubRepositoryJsonData>(contents, out var data))
+							{
+								var latest = data.GetLatest(mod.UUID);
+								if(latest != null)
+								{
+									results.Add(mod.UUID, new GitHubLatestReleaseData() { 
+										BrowserDownloadLink = latest.DownloadUrl,
+										Date = DateTimeOffset.Now,
+										Version = latest.Version,
+										Description = ""
+									});
+								}
+							}
+						}
+						else
+						{
+							var result = await GetLatestReleaseAsync(mod.GitHubData.Author, mod.GitHubData.Repository);
+							if (result != null)
+							{
+								results.Add(mod.UUID, result);
+							}
 						}
 					}
 

@@ -22,8 +22,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 	[Reactive] public bool HasChanges { get; private set; }
 	[Reactive] public DivinityModData Mod { get; set; }
 	[Reactive] public string Notes { get; set; }
-	[Reactive] public string GitHubAuthor { get; set; }
-	[Reactive] public string GitHubRepository { get; set; }
+	[Reactive] public string GitHub { get; set; }
 	[Reactive] public long NexusModsId { get; set; }
 	[Reactive] public long SteamWorkshopId { get; set; }
 
@@ -31,8 +30,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 	[ObservableAsProperty] public string ModSizeText { get; }
 	[ObservableAsProperty] public string ModFilePath { get; }
 	[ObservableAsProperty] public bool IsEditorMod { get; }
-	[ObservableAsProperty] public Visibility AuthorLabelVisibility { get; }
-	[ObservableAsProperty] public Visibility RepoLabelVisibility { get; }
+	[ObservableAsProperty] public Visibility GitHubPlaceholderLabelVisibility { get; }
 
 	public ICommand OKCommand { get; set; }
 	public ICommand CancelCommand { get; set; }
@@ -52,16 +50,14 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 		{
 			if (mod.ModManagerConfig != null && mod.ModManagerConfig.IsLoaded)
 			{
-				GitHubAuthor = mod.ModManagerConfig.GitHubAuthor;
-				GitHubRepository = mod.ModManagerConfig.GitHubRepository;
+				GitHub = mod.ModManagerConfig.GitHub;
 				NexusModsId = mod.ModManagerConfig.NexusModsId;
 				SteamWorkshopId = mod.ModManagerConfig.SteamWorkshopId;
 				Notes = mod.ModManagerConfig.Notes;
 			}
 			else
 			{
-				GitHubAuthor = mod.GitHubData.Author;
-				GitHubRepository = mod.GitHubData.Repository;
+				GitHub = mod.GitHubData.Url;
 				NexusModsId = mod.NexusModsData.ModId;
 				SteamWorkshopId = mod.WorkshopData.ModId;
 				Notes = "";
@@ -80,8 +76,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 
 		modConfigService.Mods.AddOrUpdate(Mod.ModManagerConfig);
 
-		Mod.ModManagerConfig.GitHubAuthor = GitHubAuthor;
-		Mod.ModManagerConfig.GitHubRepository = GitHubRepository;
+		Mod.ModManagerConfig.GitHub = GitHub;
 		Mod.ModManagerConfig.NexusModsId = NexusModsId;
 		Mod.ModManagerConfig.SteamWorkshopId = SteamWorkshopId;
 		Mod.ModManagerConfig.Notes = Notes;
@@ -128,8 +123,6 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 		return "0 bytes";
 	}
 
-	public static Visibility LabelVisibility(string str) => String.IsNullOrEmpty(str) ? Visibility.Visible : Visibility.Hidden;
-
 	public ModConfigPropertiesViewModel()
 	{
 		Title = "Mod Properties";
@@ -148,8 +141,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 		var whenConfig = Observable.FromEventPattern<PropertyChangedEventArgs>(this, nameof(ReactiveObject.PropertyChanged));
 		var autoSaveProperties = new HashSet<string>()
 		{
-			nameof(GitHubAuthor),
-			nameof(GitHubRepository),
+			nameof(GitHub),
 			nameof(NexusModsId),
 			nameof(SteamWorkshopId),
 			nameof(Notes),
@@ -160,9 +152,8 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 			if (IsActive && !Locked) HasChanges = true;
 		});
 
-
-		this.WhenAnyValue(x => x.GitHubAuthor).Select(LabelVisibility).ToUIProperty(this, x => x.AuthorLabelVisibility, Visibility.Visible);
-		this.WhenAnyValue(x => x.GitHubRepository).Select(LabelVisibility).ToUIProperty(this, x => x.RepoLabelVisibility, Visibility.Visible);
+		this.WhenAnyValue(x => x.GitHub).Select(x => PropertyConverters.StringToVisibilityReversed(x, Visibility.Hidden))
+			.ToUIProperty(this, x => x.GitHubPlaceholderLabelVisibility, Visibility.Visible);
 
 		ApplyCommand = ReactiveCommand.Create(Apply, this.WhenAnyValue(x => x.HasChanges));
 		/*whenConfig.Where(e => autoSaveProperties.Contains(e.EventArgs.PropertyName))

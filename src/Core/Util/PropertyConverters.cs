@@ -14,7 +14,10 @@ public static class PropertyConverters
 	/// </summary>
 	/// <param name="str"></param>
 	/// <returns></returns>
-	public static Visibility StringToVisibility(string str) => !String.IsNullOrEmpty(str) ? Visibility.Visible : Visibility.Collapsed;
+	public static Visibility StringToVisibility(string str, Visibility fallback = Visibility.Collapsed) => !String.IsNullOrEmpty(str) ? Visibility.Visible : fallback;
+	public static Visibility StringToVisibility(string str) => StringToVisibility(str, Visibility.Collapsed);
+	public static Visibility StringToVisibilityReversed(string str, Visibility fallback = Visibility.Collapsed) => String.IsNullOrEmpty(str) ? Visibility.Visible : fallback;
+	public static Visibility StringToVisibilityReversed(string str) => StringToVisibilityReversed(str, Visibility.Collapsed);
 	public static Visibility UriToVisibility(Uri uri) => !String.IsNullOrEmpty(uri?.ToString()) ? Visibility.Visible : Visibility.Collapsed;
 	public static Visibility IntToVisibility(int i) => i > 0 ? Visibility.Visible : Visibility.Collapsed;
 	public static bool StringToBool(string str) => !String.IsNullOrEmpty(str);

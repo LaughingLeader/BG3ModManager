@@ -64,15 +64,13 @@ public partial class ModPropertiesWindow : ModPropertiesWindowBase
 			this.OneWayBind(ViewModel, vm => vm.ModFilePath, v => v.ModPathText.Text);
 
 			this.Bind(ViewModel, vm => vm.NexusModsId, v => v.ModNexusModsIDUpDown.Value);
-			this.Bind(ViewModel, vm => vm.GitHubAuthor, v => v.ModGitHubAuthorText.Text);
-			this.Bind(ViewModel, vm => vm.GitHubRepository, v => v.ModGitHubRepositoryText.Text);
+			this.Bind(ViewModel, vm => vm.GitHub, v => v.ModGitHubText.Text);
+			this.OneWayBind(ViewModel, vm => vm.GitHubPlaceholderLabelVisibility, v => v.GitHubPlaceholderLabel.Visibility);
 
 			this.Bind(ViewModel, vm => vm.Notes, v => v.ModNotesTextBox.Text);
 
 			this.OneWayBind(ViewModel, vm => vm.ModType, v => v.ModTypeText.Text);
 			this.OneWayBind(ViewModel, vm => vm.ModSizeText, v => v.ModSizeText.Text);
-			this.OneWayBind(ViewModel, vm => vm.AuthorLabelVisibility, v => v.AuthorLabel.Visibility);
-			this.OneWayBind(ViewModel, vm => vm.RepoLabelVisibility, v => v.RepoLabel.Visibility);
 
 			this.OneWayBind(ViewModel, vm => vm.Mod.IsEditorMod, v => v.ModTypeIconControl.Content, GetModTypeIcon);
 

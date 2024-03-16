@@ -509,8 +509,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 					this.WhenAnyValue(x => x.NexusModsData.ModId).BindTo(this, x => x.ModManagerConfig.NexusModsId).DisposeWith(_modConfigDisposables);
 					this.WhenAnyValue(x => x.WorkshopData.ModId).BindTo(this, x => x.ModManagerConfig.SteamWorkshopId).DisposeWith(_modConfigDisposables);
-					this.WhenAnyValue(x => x.GitHubData.Author).BindTo(this, x => x.ModManagerConfig.GitHubAuthor).DisposeWith(_modConfigDisposables);
-					this.WhenAnyValue(x => x.GitHubData.Repository).BindTo(this, x => x.ModManagerConfig.GitHubRepository).DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.GitHubData.Url).BindTo(this, x => x.ModManagerConfig.GitHub).DisposeWith(_modConfigDisposables);
 				}
 			}
 			else
@@ -533,8 +532,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 		if (config.NexusModsId > DivinityApp.NEXUSMODS_MOD_ID_START) NexusModsData.ModId = config.NexusModsId;
 		if (config.SteamWorkshopId > DivinityApp.WORKSHOP_MOD_ID_START) WorkshopData.ModId = config.SteamWorkshopId;
-		if (!String.IsNullOrWhiteSpace(config.GitHubAuthor)) GitHubData.Author = config.GitHubAuthor;
-		if (!String.IsNullOrWhiteSpace(config.GitHubRepository)) GitHubData.Repository = config.GitHubRepository;
+		if (!String.IsNullOrWhiteSpace(config.GitHub)) GitHubData.Url = config.GitHub;
 	}
 
 	private static string GetAuthor(ValueTuple<string, string, string, bool> x)
