@@ -62,6 +62,12 @@
 			<Setter Property="VerticalContentAlignment" Value="Center" />
 		</Style.Setters>
 	</Style>
+	<Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}" x:Key="DefaultMenuItemStyle">
+		<Style.Setters>
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style.Setters>
+	</Style>
 	<Style
 		x:Key="MenuItemCopyToClipboardStyle"
 		BasedOn="{StaticResource {x:Type MenuItem}}"
@@ -126,11 +132,13 @@
 			Style="{StaticResource MenuItemCopyToClipboardStyle}"
 			ToolTip="Copy the mod's information as a ModuleShortDesc node, typically for dependencies in a meta.lsx" />
 		<Separator />
+		<!-- Fixed RelativeSource Ancestor ItemsControl binding error by setting a style -->
 		<MenuItem
 			Command="{Binding Path=ValidateStatsCommand, Source={x:Static dapp:DivinityApp.Commands}}"
 			CommandParameter="{Binding}"
 			Header="Validate Stats"
 			Icon="{StaticResource ValidateModelIcon}"
+			Style="{StaticResource DefaultMenuItemStyle}"
 			ToolTip="Run lslib's stats validator on this specific mod" />
 	</Collections:ArrayList>
 	<Style
