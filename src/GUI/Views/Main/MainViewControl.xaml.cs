@@ -20,18 +20,16 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace DivinityModManager.Views;
+namespace DivinityModManager.Views.Main;
 
 public class MainViewControlViewBase : ReactiveUserControl<MainWindowViewModel> { }
 
 public partial class MainViewControl : MainViewControlViewBase
 {
-	private readonly MainWindow main;
-
 	private readonly Dictionary<string, MenuItem> menuItems = [];
 	public Dictionary<string, MenuItem> MenuItems => menuItems;
 
-	private void RegisterKeyBindings()
+	private void RegisterKeyBindings(MainWindow main)
 	{
 		foreach (var key in ViewModel.Keys.All)
 		{
@@ -126,72 +124,63 @@ public partial class MainViewControl : MainViewControlViewBase
 		return new CachedAutomationPeer(this);
 	}
 
-	public void UpdateColorTheme(bool darkMode)
-	{
-		ResourceLocator.SetColorScheme(this.Resources, !darkMode ? MainWindow.LightTheme : MainWindow.DarkTheme);
-		main.UpdateColorTheme(darkMode);
-	}
-
-	public void OnActivated()
-	{
-		this.OneWayBind(ViewModel, vm => vm.Router, view => view.RoutedViewHost.Router);
-
-		this.WhenAnyValue(x => x.ViewModel.MainProgressIsActive).Take(1).Delay(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe(b =>
-		{
-			this.MainBusyIndicator.Visibility = Visibility.Visible;
-		});
-
-		this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.MainBusyIndicator.IsBusy);
-
-		this.OneWayBind(ViewModel, vm => vm.StatusBarRightText, view => view.StatusBarLoadingOperationTextBlock.Text);
-		this.OneWayBind(ViewModel, vm => vm.NexusModsLimitsText, view => view.StatusBarNexusLimitsTextBlock.Text);
-		this.OneWayBind(ViewModel, vm => vm.NexusModsProfileAvatarVisibility, view => view.NexusModsProfileImage.Visibility);
-		this.OneWayBind(ViewModel, vm => vm.NexusModsProfileBitmapImage, view => view.NexusModsProfileImage.Source);
-
-		this.OneWayBind(ViewModel, vm => vm.ModUpdatesAvailable, view => view.UpdatesButtonPanel.IsEnabled);
-
-		this.OneWayBind(ViewModel, vm => vm.UpdatingBusyIndicatorVisibility, view => view.UpdatesToggleButtonBusyIndicator.Visibility);
-		this.OneWayBind(ViewModel, vm => vm.UpdatesViewVisibility, view => view.UpdatesToggleButtonExpandImage.Visibility);
-		this.OneWayBind(ViewModel, vm => vm.UpdateCountVisibility, view => view.UpdateCountTextBlock.Visibility);
-		this.OneWayBind(ViewModel, vm => vm.ModUpdatesViewData.TotalUpdates, view => view.UpdateCountTextBlock.Text);
-
-		this.BindCommand(ViewModel, vm => vm.ToggleUpdatesViewCommand, view => view.UpdateViewToggleButton);
-
-		this.BindCommand(ViewModel, vm => vm.RefreshModUpdatesCommand, view => view.UpdateAllSourcesMenuItem);
-		this.BindCommand(ViewModel, vm => vm.CheckForGitHubModUpdatesCommand, view => view.UpdateGitHubMenuItem);
-		this.BindCommand(ViewModel, vm => vm.CheckForNexusModsUpdatesCommand, view => view.UpdateNexusModsMenuItem);
-		this.BindCommand(ViewModel, vm => vm.CheckForSteamWorkshopUpdatesCommand, view => view.UpdateSteamWorkshopMenuItem);
-
-		/*this.OneWayBind(ViewModel, vm => vm.UpdatesViewVisibility, view => view.ModUpdaterPanel.Visibility);
-		var whenUpdatesViewData = ViewModel.WhenAnyValue(x => x.ModUpdatesViewData);
-		whenUpdatesViewData.BindTo(this, x => x.ModUpdaterPanel.ViewModel);
-		whenUpdatesViewData.BindTo(this, x => x.ModUpdaterPanel.DataContext);*/
-
-		RegisterKeyBindings();
-
-		/*this.DeleteFilesView.ViewModel.FileDeletionComplete += (o, e) =>
-		{
-			DivinityApp.Log($"Deleted {e.TotalFilesDeleted} file(s).");
-			if (e.TotalFilesDeleted > 0)
-			{
-				if (!e.IsDeletingDuplicates)
-				{
-					var deletedUUIDs = e.DeletedFiles.Where(x => !x.IsWorkshop).Select(x => x.UUID).ToHashSet();
-					//var deletedWorkshopUUIDs = e.DeletedFiles.Where(x => x.IsWorkshop).Select(x => x.UUID).ToHashSet();
-					ViewModel.Views.ModOrder.RemoveDeletedMods(deletedUUIDs, e.RemoveFromLoadOrder);
-				}
-				main.Activate();
-			}
-		};*/
-	}
-
-	public MainViewControl(MainWindow window, MainWindowViewModel vm)
+	public MainViewControl()
 	{
 		InitializeComponent();
 
-		main = window;
-		ViewModel = vm;
+		this.WhenActivated(d =>
+		{
+			ViewModel.WhenAnyValue(x => x.DownloadBar).BindTo(this, view => view.DownloadBar.ViewModel);
 
-		DownloadBar.ViewModel = vm.DownloadBar;
+			this.OneWayBind(ViewModel, vm => vm.Router, view => view.RoutedViewHost.Router);
+
+			this.WhenAnyValue(x => x.ViewModel.MainProgressIsActive).Take(1).Delay(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe(b =>
+			{
+				this.MainBusyIndicator.Visibility = Visibility.Visible;
+			});
+
+			this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.MainBusyIndicator.IsBusy);
+
+			this.OneWayBind(ViewModel, vm => vm.StatusBarRightText, view => view.StatusBarLoadingOperationTextBlock.Text);
+			this.OneWayBind(ViewModel, vm => vm.NexusModsLimitsText, view => view.StatusBarNexusLimitsTextBlock.Text);
+			this.OneWayBind(ViewModel, vm => vm.NexusModsProfileAvatarVisibility, view => view.NexusModsProfileImage.Visibility);
+			this.OneWayBind(ViewModel, vm => vm.NexusModsProfileBitmapImage, view => view.NexusModsProfileImage.Source);
+
+			this.OneWayBind(ViewModel, vm => vm.ModUpdatesAvailable, view => view.UpdatesButtonPanel.IsEnabled);
+
+			this.OneWayBind(ViewModel, vm => vm.UpdatingBusyIndicatorVisibility, view => view.UpdatesToggleButtonBusyIndicator.Visibility);
+			this.OneWayBind(ViewModel, vm => vm.UpdatesViewVisibility, view => view.UpdatesToggleButtonExpandImage.Visibility);
+			this.OneWayBind(ViewModel, vm => vm.UpdateCountVisibility, view => view.UpdateCountTextBlock.Visibility);
+			this.OneWayBind(ViewModel, vm => vm.ModUpdatesViewData.TotalUpdates, view => view.UpdateCountTextBlock.Text);
+
+			this.BindCommand(ViewModel, vm => vm.ToggleUpdatesViewCommand, view => view.UpdateViewToggleButton);
+
+			this.BindCommand(ViewModel, vm => vm.RefreshModUpdatesCommand, view => view.UpdateAllSourcesMenuItem);
+			this.BindCommand(ViewModel, vm => vm.CheckForGitHubModUpdatesCommand, view => view.UpdateGitHubMenuItem);
+			this.BindCommand(ViewModel, vm => vm.CheckForNexusModsUpdatesCommand, view => view.UpdateNexusModsMenuItem);
+			this.BindCommand(ViewModel, vm => vm.CheckForSteamWorkshopUpdatesCommand, view => view.UpdateSteamWorkshopMenuItem);
+
+			/*this.OneWayBind(ViewModel, vm => vm.UpdatesViewVisibility, view => view.ModUpdaterPanel.Visibility);
+			var whenUpdatesViewData = ViewModel.WhenAnyValue(x => x.ModUpdatesViewData);
+			whenUpdatesViewData.BindTo(this, x => x.ModUpdaterPanel.ViewModel);
+			whenUpdatesViewData.BindTo(this, x => x.ModUpdaterPanel.DataContext);*/
+
+			RegisterKeyBindings(App.WM.Main.Window);
+
+			/*this.DeleteFilesView.ViewModel.FileDeletionComplete += (o, e) =>
+			{
+				DivinityApp.Log($"Deleted {e.TotalFilesDeleted} file(s).");
+				if (e.TotalFilesDeleted > 0)
+				{
+					if (!e.IsDeletingDuplicates)
+					{
+						var deletedUUIDs = e.DeletedFiles.Where(x => !x.IsWorkshop).Select(x => x.UUID).ToHashSet();
+						//var deletedWorkshopUUIDs = e.DeletedFiles.Where(x => x.IsWorkshop).Select(x => x.UUID).ToHashSet();
+						ViewModel.Views.ModOrder.RemoveDeletedMods(deletedUUIDs, e.RemoveFromLoadOrder);
+					}
+					main.Activate();
+				}
+			};*/
+		});
 	}
 }

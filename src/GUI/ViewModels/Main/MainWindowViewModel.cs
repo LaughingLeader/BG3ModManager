@@ -1,25 +1,23 @@
 ﻿using AutoUpdaterDotNET;
 
+using DivinityModManager.AppServices;
 using DivinityModManager.Extensions;
 using DivinityModManager.Models;
 using DivinityModManager.Models.App;
-using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.NexusMods;
 using DivinityModManager.Models.Settings;
 using DivinityModManager.Models.Updates;
 using DivinityModManager.ModUpdater.Cache;
 using DivinityModManager.Util;
+using DivinityModManager.ViewModels.Main;
 using DivinityModManager.Views.Main;
 using DivinityModManager.Windows;
-using DivinityModManager.ViewModels.Main;
 
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Binding;
 
 using Microsoft.Win32;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Reactive.Bindings.Extensions;
@@ -27,16 +25,7 @@ using Reactive.Bindings.Extensions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-using SharpCompress.Archives;
-using SharpCompress.Common;
-using SharpCompress.Compressors.BZip2;
-using SharpCompress.Compressors.Xz;
-using SharpCompress.Readers;
-using SharpCompress.Writers;
-
-using Splat;
-
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -46,17 +35,10 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
-using ZstdSharp;
-using System.Collections.Immutable;
-using DivinityModManager.AppServices;
 
 namespace DivinityModManager.ViewModels;
 
@@ -70,7 +52,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	public ModImportService ModImporter { get; }
 
     [Reactive] public MainWindow Window { get; private set; }
-	[Reactive] public DivinityModManager.Views.MainViewControl View { get; private set; }
+	[Reactive] public MainViewControl View { get; private set; }
 	public DownloadActivityBarViewModel DownloadBar { get; private set; }
 
 	private readonly IModUpdaterService _updater;
@@ -826,12 +808,6 @@ Directory the zip will be extracted to:
 		Settings.WhenAnyValue(x => x.LogEnabled).Subscribe((logEnabled) =>
 		{
 			Window.ToggleLogging(logEnabled);
-		});
-
-		Settings.WhenAnyValue(x => x.DarkThemeEnabled).Skip(1).ObserveOn(RxApp.MainThreadScheduler).Subscribe((b) =>
-		{
-			View.UpdateColorTheme(b);
-			SaveSettings();
 		});
 
 		// Updating extender requirement display
@@ -1629,7 +1605,7 @@ Directory the zip will be extracted to:
 		_userInvokedUpdate = false;
 	}
 
-	public void OnViewActivated(MainWindow window, DivinityModManager.Views.MainViewControl parentView)
+	public void OnViewActivated(MainWindow window, MainViewControl parentView)
 	{
 		Window = window;
 		View = parentView;

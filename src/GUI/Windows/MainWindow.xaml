@@ -14,6 +14,7 @@
 	xmlns:dutil="clr-namespace:DivinityModManager.Util;assembly=DivinityModManagerCore"
 	xmlns:ext="clr-namespace:DivinityModManager.Controls.Extensions"
 	xmlns:local="clr-namespace:DivinityModManager.Windows"
+	xmlns:views="clr-namespace:DivinityModManager.Views.Main"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:reactiveui="http://reactiveui.net"
 	xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
@@ -60,5 +61,7 @@
 	<Grid
 		x:Name="MainGrid"
 		HorizontalAlignment="Stretch"
-		VerticalAlignment="Stretch" />
+		VerticalAlignment="Stretch">
+		<views:MainViewControl x:Name="MainView" />
+	</Grid>
 </local:MainWindowBase>

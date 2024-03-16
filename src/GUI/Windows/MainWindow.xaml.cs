@@ -47,8 +47,6 @@ public partial class MainWindow : MainWindowBase
 
 	[DllImport("user32")] public static extern int FlashWindow(IntPtr hwnd, bool bInvert);
 
-	public MainViewControl MainView { get; private set; }
-
 	private readonly System.Windows.Interop.WindowInteropHelper _hwnd;
 
 	public LogTraceListener DebugLogListener { get; private set; }
@@ -212,15 +210,6 @@ public partial class MainWindow : MainWindowBase
 		return new CachedAutomationPeer(this);
 	}
 
-	public static readonly Uri LightTheme = new("pack://application:,,,/BG3ModManager;component/Themes/Light.xaml", UriKind.Absolute);
-	public static readonly Uri DarkTheme = new("pack://application:,,,/BG3ModManager;component/Themes/Dark.xaml", UriKind.Absolute);
-
-	public void UpdateColorTheme(bool darkMode)
-	{
-		var theme = !darkMode ? LightTheme : DarkTheme;
-		ResourceLocator.SetColorScheme(Resources, theme);
-		App.WM.UpdateColorScheme(theme);
-	}
 
 	private void OnClosing()
 	{
@@ -263,10 +252,8 @@ public partial class MainWindow : MainWindowBase
 		DivinityApp.DateTimeTooltipFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
 
 		ViewModel = new MainWindowViewModel();
-		MainView = new MainViewControl(this, ViewModel);
-		MainGrid.Children.Add(MainView);
 
-		Services.RegisterSingleton(new WindowManagerService());
+		Services.RegisterSingleton(new WindowManagerService(this));
 
 		if (File.Exists(Path.Join(System.AppDomain.CurrentDomain.BaseDirectory, "debug")))
 		{
@@ -279,7 +266,7 @@ public partial class MainWindow : MainWindowBase
 
 		Closed += (o, e) => OnClosing();
 		AutoUpdater.ApplicationExitEvent += AutoUpdater_OnClosing;
-		AutoUpdater.HttpUserAgent = "DivinityModManagerUser";
+		AutoUpdater.HttpUserAgent = DivinityApp.URL_AUTHOR;
 		AutoUpdater.RunUpdateAsAdmin = false;
 
 		DataContext = ViewModel;
@@ -293,6 +280,8 @@ public partial class MainWindow : MainWindowBase
 			modProperties.Toggle(true);
 			interaction.SetOutput(true);
 		});
+
+		this.WhenAnyValue(x => x.ViewModel).BindTo(this, view => view.MainView.ViewModel);
 
 		this.WhenActivated(d =>
 		{
@@ -311,8 +300,6 @@ public partial class MainWindow : MainWindowBase
 			ViewModel.Keys.ToggleVersionGeneratorWindow.AddAction(() => App.WM.VersionGenerator.Toggle());
 
 			this.WhenAnyValue(x => x.ViewModel.MainProgressValue).BindTo(this, view => view.TaskbarItemInfo.ProgressValue);
-
-			MainView.OnActivated();
 
 			//Allow launching the game if single instance mode is enabled, but the shift key is held
 			Observable.Merge(
