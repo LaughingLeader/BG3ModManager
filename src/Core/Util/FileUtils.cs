@@ -366,7 +366,7 @@ public static class FileUtils
 		{
 			if (!String.IsNullOrEmpty(path))
 			{
-				Process.Start(path, args);
+				Process.Start(new ProcessStartInfo(path) { UseShellExecute = true, Arguments = args });
 			}
 		}
 		catch (Exception ex)
