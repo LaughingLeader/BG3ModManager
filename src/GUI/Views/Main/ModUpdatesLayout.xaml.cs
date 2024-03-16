@@ -30,17 +30,18 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 
 		this.WhenActivated(d =>
 		{
-			this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsManipulationEnabled);
-			this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsEnabled);
+			DivinityApp.Log($"ModUpdatesLayout Activated | {ViewModel.Updates.Count} | {ViewModel.TotalUpdates} | {ViewModel}");
+			d(this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsManipulationEnabled));
+			d(this.OneWayBind(ViewModel, vm => vm.Unlocked, view => view.IsEnabled));
 
-			this.OneWayBind(ViewModel, vm => vm.TotalUpdates, view => view.ViewTitleTextBlock.Text, x => $"Mod Updates ({x})");
+			d(this.OneWayBind(ViewModel, vm => vm.TotalUpdates, view => view.ViewTitleTextBlock.Text, x => $"Mod Updates ({x})"));
 
-			this.OneWayBind(ViewModel, vm => vm.Updates, view => view.UpdatesModListView.ItemsSource);
+			d(this.OneWayBind(ViewModel, vm => vm.Updates, view => view.UpdatesModListView.ItemsSource));
 
-			this.BindCommand(ViewModel, vm => vm.UpdateModsCommand, view => view.UpdateButton);
+			d(this.BindCommand(ViewModel, vm => vm.UpdateModsCommand, view => view.UpdateButton));
 
-			this.OneWayBind(ViewModel, vm => vm.AllSelected, view => view.ModUpdatesCheckboxHeader.IsChecked);
-			this.BindCommand(ViewModel, vm => vm.ToggleSelectCommand, view => view.ModUpdatesCheckboxHeader);
+			d(this.OneWayBind(ViewModel, vm => vm.AllSelected, view => view.ModUpdatesCheckboxHeader.IsChecked));
+			d(this.BindCommand(ViewModel, vm => vm.ToggleSelectCommand, view => view.ModUpdatesCheckboxHeader));
 		});
 	}
 

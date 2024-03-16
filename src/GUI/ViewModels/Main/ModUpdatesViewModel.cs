@@ -167,9 +167,9 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 
 		Mods.CountChanged.ToUIProperty(this, x => x.TotalUpdates);
 
-		var modsConnection = Mods.Connect().Publish();
+		var modsConnection = Mods.Connect();
 
-		modsConnection.Bind(out _updates).Subscribe();
+		modsConnection.ObserveOn(RxApp.MainThreadScheduler).Bind(out _updates).DisposeMany().Subscribe();
 
 		var selectedMods = modsConnection.AutoRefresh(x => x.IsSelected).ToCollection();
 		selectedMods.Select(x => x.Any(y => y.IsSelected)).ToUIProperty(this, x => x.AnySelected);
@@ -186,8 +186,6 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 				x.IsSelected = b;
 			}
 		});
-
-		modsConnection.Connect();
 	}
 
 	public ModUpdatesViewModel(MainWindowViewModel mainWindowViewModel) : this((IScreen)mainWindowViewModel)

@@ -151,7 +151,8 @@ public partial class MainViewControl : MainViewControlViewBase
 			this.OneWayBind(ViewModel, vm => vm.UpdatingBusyIndicatorVisibility, view => view.UpdatesToggleButtonBusyIndicator.Visibility);
 			this.OneWayBind(ViewModel, vm => vm.UpdatesViewIsVisible, view => view.UpdatesToggleButtonExpandImage.Visibility, PropertyConverters.BoolToVisibility);
 			this.OneWayBind(ViewModel, vm => vm.UpdateCountVisibility, view => view.UpdateCountTextBlock.Visibility);
-			this.OneWayBind(ViewModel, vm => vm.ModUpdatesViewData.TotalUpdates, view => view.UpdateCountTextBlock.Text);
+
+			ViewModel.Views.ModUpdates.WhenAnyValue(x => x.TotalUpdates).BindTo(this, view => view.UpdateCountTextBlock.Text);
 
 			this.BindCommand(ViewModel, vm => vm.ToggleUpdatesViewCommand, view => view.UpdateViewToggleButton);
 
@@ -159,11 +160,6 @@ public partial class MainViewControl : MainViewControlViewBase
 			this.BindCommand(ViewModel, vm => vm.CheckForGitHubModUpdatesCommand, view => view.UpdateGitHubMenuItem);
 			this.BindCommand(ViewModel, vm => vm.CheckForNexusModsUpdatesCommand, view => view.UpdateNexusModsMenuItem);
 			this.BindCommand(ViewModel, vm => vm.CheckForSteamWorkshopUpdatesCommand, view => view.UpdateSteamWorkshopMenuItem);
-
-			/*this.OneWayBind(ViewModel, vm => vm.UpdatesViewVisibility, view => view.ModUpdaterPanel.Visibility);
-			var whenUpdatesViewData = ViewModel.WhenAnyValue(x => x.ModUpdatesViewData);
-			whenUpdatesViewData.BindTo(this, x => x.ModUpdaterPanel.ViewModel);
-			whenUpdatesViewData.BindTo(this, x => x.ModUpdaterPanel.DataContext);*/
 
 			RegisterKeyBindings(App.WM.Main.Window);
 

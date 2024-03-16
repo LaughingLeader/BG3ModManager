@@ -66,8 +66,6 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	[Reactive] public bool IsInitialized { get; private set; }
 
-	public ModUpdatesViewModel ModUpdatesViewData { get; private set; }
-
 	public AppSettings AppSettings { get; private set; }
 	public ModManagerSettings Settings { get; private set; }
 	public UserModConfig UserModConfig { get; private set; }
@@ -1168,7 +1166,7 @@ Directory the zip will be extracted to:
 								Date = kvp.Value.Date
 							},
 						};
-						ModUpdatesViewData.Add(updateData);
+						Views.ModUpdates.Add(updateData);
 					}
 				}
 			}, RxApp.MainThreadScheduler);
@@ -1219,7 +1217,7 @@ Directory the zip will be extracted to:
 						updateData.DownloadData.IsIndirectDownload = true;
 						updateData.DownloadData.DownloadPath = $"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={update.File.FileId}{nxmEnabled}&game_id={DivinityApp.NEXUSMODS_GAME_ID}";
 					}
-					ModUpdatesViewData.Add(updateData);
+					Views.ModUpdates.Add(updateData);
 				}
 			}, RxApp.MainThreadScheduler);
 		}
@@ -1260,7 +1258,7 @@ Directory the zip will be extracted to:
 							Date = mod.LastModified
 						},
 					};
-					ModUpdatesViewData.Add(updateData);
+					Views.ModUpdates.Add(updateData);
 				}
 			}, RxApp.MainThreadScheduler);
 		}
@@ -2008,8 +2006,6 @@ Directory the zip will be extracted to:
 		exceptionHandler = new MainWindowExceptionHandler(this);
 		RxApp.DefaultExceptionHandler = exceptionHandler;
 
-		this.ModUpdatesViewData = new ModUpdatesViewModel(this);
-
 		var assembly = Assembly.GetExecutingAssembly();
 		var productName = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute), false)).Product;
 		Version = assembly.GetName().Version.ToString();
@@ -2137,7 +2133,7 @@ Directory the zip will be extracted to:
 
 		RefreshModUpdatesCommand = ReactiveCommand.Create(() =>
 		{
-			ModUpdatesViewData?.Clear();
+			Views.ModUpdates?.Clear();
 			ModUpdatesAvailable = false;
 			RefreshAllModUpdatesBackground();
 		}, canRefreshModUpdates, RxApp.MainThreadScheduler);
@@ -2249,15 +2245,6 @@ Directory the zip will be extracted to:
 		var anyPakModSelectedObservable = modManager.SelectedPakMods.ToObservableChangeSet().CountChanged().Select(x => modManager.SelectedPakMods.Count > 0);
 		Keys.ExtractSelectedMods.AddAction(ExtractSelectedMods_Start, anyPakModSelectedObservable);
 
-		this.WhenAnyValue(x => x.ModUpdatesViewData.TotalUpdates, total => total > 0).BindTo(this, x => x.ModUpdatesAvailable);
-
-		ModUpdatesViewData.CloseView = new Action<bool>((bool refresh) =>
-		{
-			ModUpdatesViewData.Clear();
-			if (refresh) RefreshCommand.Execute(Unit.Default).Subscribe();
-			Window.Activate();
-		});
-
 		SaveSettingsSilentlyCommand = ReactiveCommand.Create(SaveSettings);
 
 		DivinityInteractions.ConfirmModDeletion.RegisterHandler(async interaction =>
@@ -2284,5 +2271,14 @@ Directory the zip will be extracted to:
 		Keys.ExtractSelectedAdventure.AddAction(ExtractSelectedAdventure, canExtractAdventure);
 
 		Views.DeleteFiles.WhenAnyValue(x => x.IsVisible).ToUIProperty(this, x => x.IsDeletingFiles);
+		Views.ModUpdates.WhenAnyValue(x => x.TotalUpdates, total => total > 0).BindTo(this, x => x.ModUpdatesAvailable);
+
+		Views.ModUpdates.CloseView = new Action<bool>((bool refresh) =>
+		{
+			Views.ModUpdates.Clear();
+			//TODO Replace with reloading the individual mods that changed
+			if (refresh) RefreshCommand.Execute(Unit.Default).Subscribe();
+			Window.Activate();
+		});
 	}
 }

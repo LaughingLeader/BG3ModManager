@@ -48,14 +48,14 @@
                     Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
                     FontSize="24"
                     Padding="0,2"
-                    Text="{Binding TotalUpdates, StringFormat={}Mod Updates ({0}), FallbackValue='Mod Updates'}"
+                    d:Text="{Binding TotalUpdates, StringFormat={}Mod Updates ({0}), FallbackValue='Mod Updates'}"
                     x:Name="ViewTitleTextBlock"
                     TextAlignment="Center" />
                 <Rectangle Height="2" Fill="LightGray" />
             </StackPanel>
             <views:ModListView
                 Grid.IsSharedSizeScope="True"
-                ItemsSource="{Binding Updates}"
+                d:ItemsSource="{Binding Updates}"
                 x:Name="UpdatesModListView"
                 BorderThickness="0"
                 GridViewColumnHeader.Click="SortModUpdatesGridView"
@@ -66,7 +66,7 @@
                         AllowsColumnReorder="True"
                         ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
                         <GridView.Columns>
-                            <GridViewColumn Width="Auto" HeaderContainerStyle="{StaticResource GridViewCenteredContainerStyle}">
+                            <GridViewColumn Width="36" HeaderContainerStyle="{StaticResource GridViewCenteredContainerStyle}">
                                 <GridViewColumn.Header>
                                     <CheckBox
                                         x:Name="ModUpdatesCheckboxHeader"
