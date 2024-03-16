@@ -31,7 +31,6 @@
             MinHeight="16"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            adonisExtensions:ProgressBarExtension.IsProgressAnimationEnabled="{Binding IsAnimating}"
             Maximum="100"
             Minimum="0" />
 		<TextBlock

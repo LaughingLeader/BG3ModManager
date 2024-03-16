@@ -1,6 +1,10 @@
-﻿using DivinityModManager.ViewModels;
+﻿using AdonisUI.Extensions;
+
+using DivinityModManager.ViewModels;
 
 using ReactiveUI;
+
+using System.Windows.Data;
 
 namespace DivinityModManager.Controls;
 
@@ -21,6 +25,9 @@ public partial class DownloadActivityBar : DownloadActivityBarBase
 				this.OneWayBind(ViewModel, vm => vm.CurrentText, view => view.TaskProgressWorkText.Text);
 				this.OneWayBind(ViewModel, vm => vm.IsVisible, view => view.Visibility);
 				this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CancelButton);
+
+				SetBinding(ProgressBarExtension.IsProgressAnimationEnabledProperty, 
+					new Binding(nameof(DownloadActivityBarViewModel.IsAnimating)){ Source = ViewModel });
 			}
 		});
 	}
