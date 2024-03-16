@@ -71,7 +71,7 @@ namespace DivinityModManager.AppServices
 							if (!String.IsNullOrEmpty(contents) && DivinityJsonUtils.TrySafeDeserialize<GitHubRepositoryJsonData>(contents, out var data))
 							{
 								var latest = data.GetLatest(mod.UUID);
-								if(latest != null)
+								if(latest != null && mod.Version < latest.Version)
 								{
 									results.Add(mod.UUID, new GitHubLatestReleaseData() { 
 										BrowserDownloadLink = latest.DownloadUrl,
@@ -84,10 +84,10 @@ namespace DivinityModManager.AppServices
 						}
 						else
 						{
-							var result = await GetLatestReleaseAsync(mod.GitHubData.Author, mod.GitHubData.Repository);
-							if (result != null)
+							var latest = await GetLatestReleaseAsync(mod.GitHubData.Author, mod.GitHubData.Repository);
+							if (latest != null && mod.Version < latest.Version)
 							{
-								results.Add(mod.UUID, result);
+								results.Add(mod.UUID, latest);
 							}
 						}
 					}
