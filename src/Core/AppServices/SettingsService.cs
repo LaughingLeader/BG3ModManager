@@ -142,7 +142,7 @@ namespace DivinityModManager.AppServices
 								{
 									version = Convert.ToUInt64(vObj);
 								}
-								mod.Version = new DivinityModVersion2(version);
+								mod.Version = new LarianVersion(version);
 							}
 							if (dict.TryGetValue("Tags", out var tags))
 							{

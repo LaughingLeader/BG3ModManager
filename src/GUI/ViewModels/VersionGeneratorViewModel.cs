@@ -13,7 +13,7 @@ namespace DivinityModManager.ViewModels;
 
 public class VersionGeneratorViewModel : ReactiveObject
 {
-	[Reactive] public DivinityModVersion2 Version { get; set; }
+	[Reactive] public LarianVersion Version { get; set; }
 	[Reactive] public string Text { get; set; }
 
 	public ICommand CopyCommand { get; private set; }
@@ -22,7 +22,7 @@ public class VersionGeneratorViewModel : ReactiveObject
 
 	public VersionGeneratorViewModel(AlertBar alert)
 	{
-		Version = new DivinityModVersion2(36028797018963968);
+		Version = new LarianVersion(36028797018963968);
 
 		CopyCommand = ReactiveCommand.Create(() =>
 		{

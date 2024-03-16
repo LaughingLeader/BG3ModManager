@@ -27,7 +27,7 @@ public interface IDivinityModData
 	string Name { get; set; }
 	string Folder { get; set; }
 	string MD5 { get; set; }
-	DivinityModVersion2 Version { get; set; }
+	LarianVersion Version { get; set; }
 	public DateTimeOffset? LastModified { get; }
 }
 
@@ -45,9 +45,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 	[Reactive, DataMember] public string Author { get; set; }
 	[Reactive, DataMember] public string ModType { get; set; }
 	[Reactive] public string MD5 { get; set; }
-	[Reactive, DataMember] public DivinityModVersion2 Version { get; set; }
-	[Reactive] public DivinityModVersion2 HeaderVersion { get; set; }
-	[Reactive] public DivinityModVersion2 PublishVersion { get; set; }
+	[Reactive, DataMember] public LarianVersion Version { get; set; }
+	[Reactive] public LarianVersion HeaderVersion { get; set; }
+	[Reactive] public LarianVersion PublishVersion { get; set; }
 	public List<string> Tags { get; set; } = new List<string>();
 
 	public ObservableCollectionExtended<string> Modes { get; private set; } = new ObservableCollectionExtended<string>();
@@ -594,9 +594,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 	public DivinityModData()
 	{
-		Version = DivinityModVersion2.Empty;
-		HeaderVersion = DivinityModVersion2.Empty;
-		PublishVersion = DivinityModVersion2.Empty;
+		Version = LarianVersion.Empty;
+		HeaderVersion = LarianVersion.Empty;
+		PublishVersion = LarianVersion.Empty;
 		MD5 = "";
 		Author = "";
 		Folder = "";
@@ -741,9 +741,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 			UUID = mod.UUID,
 			Name = mod.Name,
 			Author = mod.Author,
-			Version = new DivinityModVersion2(mod.Version.VersionInt),
-			HeaderVersion = new DivinityModVersion2(mod.HeaderVersion.VersionInt),
-			PublishVersion = new DivinityModVersion2(mod.PublishVersion.VersionInt),
+			Version = new LarianVersion(mod.Version.VersionInt),
+			HeaderVersion = new LarianVersion(mod.HeaderVersion.VersionInt),
+			PublishVersion = new LarianVersion(mod.PublishVersion.VersionInt),
 			Folder = mod.Folder,
 			Description = mod.Description,
 			MD5 = mod.MD5,

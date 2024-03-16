@@ -234,12 +234,12 @@ public static partial class DivinityModDataLoader
 					UUID = uuid,
 					Name = name,
 					Author = author,
-					Version = DivinityModVersion2.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(moduleInfoNode, VersionAttributes, ""))),
+					Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(moduleInfoNode, VersionAttributes, ""))),
 					Folder = GetAttributeWithId(moduleInfoNode, "Folder", ""),
 					Description = description,
 					MD5 = GetAttributeWithId(moduleInfoNode, "MD5", ""),
 					ModType = GetAttributeWithId(moduleInfoNode, "Type", ""),
-					HeaderVersion = new DivinityModVersion2(headerMajor, headerMinor, headerRevision, headerBuild)
+					HeaderVersion = new LarianVersion(headerMajor, headerMinor, headerRevision, headerBuild)
 				};
 
 				var tagsText = GetAttributeWithId(moduleInfoNode, "Tags", "");
@@ -258,7 +258,7 @@ public static partial class DivinityModDataLoader
 						{
 							UUID = GetAttributeWithId(node, "UUID", ""),
 							Name = UnescapeXml(GetAttributeWithId(node, "Name", "")),
-							Version = DivinityModVersion2.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
+							Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							Folder = GetAttributeWithId(node, "Folder", ""),
 							MD5 = GetAttributeWithId(node, "MD5", "")
 						};
@@ -273,7 +273,7 @@ public static partial class DivinityModDataLoader
 				var publishVersionNode = moduleInfoNode.Descendants("node").Where(n => n.Attribute("id")?.Value == "PublishVersion").FirstOrDefault();
 				if (publishVersionNode != null)
 				{
-					var publishVersion = DivinityModVersion2.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(publishVersionNode, VersionAttributes, "")));
+					var publishVersion = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(publishVersionNode, VersionAttributes, "")));
 					modData.PublishVersion = publishVersion;
 					//DivinityApp.LogMessage($"{modData.Folder} PublishVersion is {publishVersion.Version}");
 				}
@@ -884,11 +884,11 @@ public static partial class DivinityModDataLoader
 					UUID = GetNodeAttribute(moduleInfoNode, "UUID", ""),
 					Name = GetNodeAttribute(moduleInfoNode, "Name", ""),
 					Author = GetNodeAttribute(moduleInfoNode, "Author", ""),
-					Version = DivinityModVersion2.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(moduleInfoNode, "Version64", ""))),
+					Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(moduleInfoNode, "Version64", ""))),
 					Folder = GetNodeAttribute(moduleInfoNode, "Folder", ""),
 					Description = GetNodeAttribute(moduleInfoNode, "Description", ""),
 					MD5 = GetNodeAttribute(moduleInfoNode, "MD5", ""),
-					HeaderVersion = new DivinityModVersion2(headerMajor, headerMinor, headerRevision, headerBuild)
+					HeaderVersion = new LarianVersion(headerMajor, headerMinor, headerRevision, headerBuild)
 				};
 				var tagsText = GetNodeAttribute(moduleInfoNode, "Tags", "");
 				if (!String.IsNullOrWhiteSpace(tagsText))
@@ -907,7 +907,7 @@ public static partial class DivinityModDataLoader
 							{
 								UUID = GetNodeAttribute(node, "UUID", ""),
 								Name = GetNodeAttribute(node, "Name", ""),
-								Version = DivinityModVersion2.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(node, "Version64", ""))),
+								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(node, "Version64", ""))),
 								Folder = GetNodeAttribute(node, "Folder", ""),
 								MD5 = GetNodeAttribute(node, "MD5", "")
 							};
@@ -922,7 +922,7 @@ public static partial class DivinityModDataLoader
 
 				if (moduleInfoNode.Children.TryGetValue("PublishVersion", out var publishVersionList))
 				{
-					var publishVersion = DivinityModVersion2.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(publishVersionList.First(), "Version64", "")));
+					var publishVersion = LarianVersion.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(publishVersionList.First(), "Version64", "")));
 					data.PublishVersion = publishVersion;
 				}
 

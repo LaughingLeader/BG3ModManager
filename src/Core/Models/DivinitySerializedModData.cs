@@ -13,7 +13,7 @@ public class DivinitySerializedModData : IDivinityModData
 	[DataMember] public string Description { get; set; }
 	[DataMember] public string Author { get; set; }
 
-	[DataMember] public DivinityModVersion2 Version { get; set; }
+	[DataMember] public LarianVersion Version { get; set; }
 
 	[DataMember] public string Type { get; set; }
 	[DataMember] public List<string> Modes { get; set; }
