@@ -1,73 +1,63 @@
 ﻿<UserControl
-	x:Class="DivinityModManager.Controls.HotkeyEditorControl"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-	xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:local="clr-namespace:DivinityModManager.Controls"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	x:Name="HotkeyUserControl"
-	d:DesignHeight="75"
-	d:DesignWidth="200"
-	KeyboardNavigation.IsTabStop="False"
-	mc:Ignorable="d">
-	<UserControl.Style>
-		<Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-	</UserControl.Style>
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<Button
-		x:Name="HotkeyButton"
-		Grid.Column="1"
-		HorizontalContentAlignment="Center"
-		VerticalContentAlignment="Center"
-		Click="HotkeyButton_Click">
-		<Button.Style>
-			<Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-				<Style.Triggers>
-					<DataTrigger Binding="{Binding IsFocused, ElementName=HotkeyTextBox}" Value="True">
-						<Setter Property="Background" Value="OrangeRed" />
-					</DataTrigger>
-					<MultiDataTrigger>
-						<MultiDataTrigger.Conditions>
-							<Condition Binding="{Binding IsFocused, ElementName=HotkeyTextBox}" Value="True" />
-							<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
-						</MultiDataTrigger.Conditions>
-						<MultiDataTrigger.Setters>
-							<Setter Property="Background" Value="OrangeRed" />
-							<Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="Coral" />
-						</MultiDataTrigger.Setters>
-					</MultiDataTrigger>
-				</Style.Triggers>
-			</Style>
-		</Button.Style>
+    x:Class="DivinityModManager.Controls.HotkeyEditorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DivinityModManager.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="HotkeyUserControl"
+    d:DesignHeight="75"
+    d:DesignWidth="200"
+    KeyboardNavigation.IsTabStop="False"
+    mc:Ignorable="d">
+    <Button
+        x:Name="HotkeyButton"
+        Grid.Column="1"
+        HorizontalContentAlignment="Center"
+        VerticalContentAlignment="Center"
+        Click="HotkeyButton_Click">
+        <Button.Style>
+            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsFocused, ElementName=HotkeyTextBox}" Value="True">
+                        <Setter Property="Background" Value="OrangeRed" />
+                    </DataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsFocused, ElementName=HotkeyTextBox}" Value="True" />
+                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.Setters>
+                            <Setter Property="Background" Value="OrangeRed" />
+                            <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="Coral" />
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Button.Style>
 
-		<Button.Content>
-			<TextBox
-				x:Name="HotkeyTextBox"
-				Background="Transparent"
-				BorderBrush="Transparent"
-				BorderThickness="0"
-				Focusable="{Binding Path=Hotkey.CanEdit, ElementName=HotkeyUserControl, FallbackValue=True}"
-				IsHitTestVisible="False"
-				IsReadOnly="True"
-				IsReadOnlyCaretVisible="False"
-				IsUndoEnabled="False"
-				KeyboardNavigation.IsTabStop="False"
-				PreviewKeyUp="HotkeyTextBox_PreviewKeyUp"
-				PreviewMouseRightButtonDown="HotkeyTextBox_PreviewMouseRightButtonDown"
-				Text="{Binding Path=Hotkey.DisplayBindingText, ElementName=HotkeyUserControl, Mode=OneWay}">
-				<TextBox.ContextMenu>
-					<ContextMenu IsHitTestVisible="False" Visibility="Collapsed" />
-				</TextBox.ContextMenu>
-			</TextBox>
-		</Button.Content>
-	</Button>
+        <Button.Content>
+            <TextBox
+                x:Name="HotkeyTextBox"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                BorderThickness="0"
+                Focusable="{Binding Path=Hotkey.CanEdit, ElementName=HotkeyUserControl, FallbackValue=True}"
+                IsHitTestVisible="False"
+                IsReadOnly="True"
+                IsReadOnlyCaretVisible="False"
+                IsUndoEnabled="False"
+                KeyboardNavigation.IsTabStop="False"
+                PreviewKeyUp="HotkeyTextBox_PreviewKeyUp"
+                PreviewMouseRightButtonDown="HotkeyTextBox_PreviewMouseRightButtonDown"
+                Text="{Binding Path=Hotkey.DisplayBindingText, ElementName=HotkeyUserControl, Mode=OneWay}">
+                <TextBox.ContextMenu>
+                    <ContextMenu IsHitTestVisible="False" Visibility="Collapsed" />
+                </TextBox.ContextMenu>
+            </TextBox>
+        </Button.Content>
+    </Button>
 
 </UserControl>

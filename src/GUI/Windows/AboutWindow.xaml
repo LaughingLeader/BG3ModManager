@@ -1,101 +1,91 @@
 ﻿<local:AboutWindowBase
-	x:Class="DivinityModManager.Windows.AboutWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:app="clr-namespace:DivinityModManager;assembly=DivinityModManagerCore"
-	xmlns:c="clr-namespace:DivinityModManager.Controls"
-	xmlns:controls="clr-namespace:DivinityModManager.Controls"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:ext="clr-namespace:DivinityModManager.Controls.Extensions"
-	xmlns:local="clr-namespace:DivinityModManager.Windows"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	Title="About"
-	Width="600"
-	Height="300"
-	WindowStartupLocation="CenterOwner"
-	mc:Ignorable="d">
-	<Window.Style>
-		<Style BasedOn="{StaticResource {x:Type Window}}" TargetType="Window" />
-	</Window.Style>
-	<Window.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</Window.Resources>
-	<controls:AutoGrid
-		Margin="16"
-		Columns="*"
-		RowCount="4"
-		Rows="auto,auto,auto,*">
-		<TextBlock
-			x:Name="TitleText"
-			HorizontalAlignment="Center"
-			FontSize="18"
-			TextAlignment="Center" />
-		<Separator Margin="0,4" />
-		<controls:AutoGrid
-			HorizontalAlignment="Center"
-			ColumnCount="2"
-			Columns="1*,3*"
-			RowCount="3"
-			Rows="auto,auto,auto">
-			<TextBlock HorizontalAlignment="Right" Text="Home Page:" />
-			<c:HyperlinkText
-				Margin="10,0,0,4"
-				HorizontalAlignment="Left"
-				URL="{x:Static app:DivinityApp.URL_REPO}"
-				UseUrlForDisplayText="True" />
-			<TextBlock
-				Margin="0,0,0,4"
-				HorizontalAlignment="Right"
-				Text="Author:"
-				TextAlignment="Left" />
-			<c:HyperlinkText
-				Margin="10,0,0,0"
-				HorizontalAlignment="Left"
-				DisplayText="LaughingLeader"
-				URL="{x:Static app:DivinityApp.URL_AUTHOR}" />
-			<TextBlock HorizontalAlignment="Right" Text="License" />
-			<c:HyperlinkText
-				Margin="10,0,0,4"
-				HorizontalAlignment="Left"
-				DisplayText="MIT 2019"
-				URL="{x:Static app:DivinityApp.URL_LICENSE}" />
-		</controls:AutoGrid>
-		<StackPanel Orientation="Vertical">
-			<TextBlock
-				HorizontalAlignment="Center"
-				FontSize="16"
-				Text="Support Links"
-				TextAlignment="Center" />
-			<Separator Margin="0,4" />
-			<controls:AutoGrid
-				HorizontalAlignment="Center"
-				ColumnCount="2"
-				Columns="1*,3*"
-				RowCount="3"
-				Rows="auto,auto,auto">
-				<TextBlock HorizontalAlignment="Right" Text="Donate a Coffee:" />
-				<c:HyperlinkText
-					Margin="10,0,0,4"
-					HorizontalAlignment="Left"
-					URL="{x:Static app:DivinityApp.URL_DONATION}"
-					UseUrlForDisplayText="True" />
-				<TextBlock HorizontalAlignment="Right" Text="Report an Issue:" />
-				<c:HyperlinkText
-					Margin="10,0,0,4"
-					HorizontalAlignment="Left"
-					URL="{x:Static app:DivinityApp.URL_ISSUES}"
-					UseUrlForDisplayText="True" />
-				<TextBlock HorizontalAlignment="Right" Text="Changelog:" />
-				<c:HyperlinkText
-					Margin="10,0,0,4"
-					HorizontalAlignment="Left"
-					URL="{x:Static app:DivinityApp.URL_CHANGELOG}"
-					UseUrlForDisplayText="True" />
-			</controls:AutoGrid>
-		</StackPanel>
-	</controls:AutoGrid>
+    x:Class="DivinityModManager.Windows.AboutWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="clr-namespace:DivinityModManager;assembly=DivinityModManagerCore"
+    xmlns:c="clr-namespace:DivinityModManager.Controls"
+    xmlns:controls="clr-namespace:DivinityModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ext="clr-namespace:DivinityModManager.Controls.Extensions"
+    xmlns:local="clr-namespace:DivinityModManager.Windows"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="About"
+    Width="600"
+    Height="300"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <controls:AutoGrid
+        Margin="16"
+        Columns="*"
+        RowCount="4"
+        Rows="auto,auto,auto,*">
+        <TextBlock
+            x:Name="TitleText"
+            HorizontalAlignment="Center"
+            FontSize="18"
+            TextAlignment="Center" />
+        <Separator Margin="0,4" />
+        <controls:AutoGrid
+            HorizontalAlignment="Center"
+            ColumnCount="2"
+            Columns="1*,3*"
+            RowCount="3"
+            Rows="auto,auto,auto">
+            <TextBlock HorizontalAlignment="Right" Text="Home Page:" />
+            <c:HyperlinkText
+                Margin="10,0,0,4"
+                HorizontalAlignment="Left"
+                URL="{x:Static app:DivinityApp.URL_REPO}"
+                UseUrlForDisplayText="True" />
+            <TextBlock
+                Margin="0,0,0,4"
+                HorizontalAlignment="Right"
+                Text="Author:"
+                TextAlignment="Left" />
+            <c:HyperlinkText
+                Margin="10,0,0,0"
+                HorizontalAlignment="Left"
+                DisplayText="LaughingLeader"
+                URL="{x:Static app:DivinityApp.URL_AUTHOR}" />
+            <TextBlock HorizontalAlignment="Right" Text="License" />
+            <c:HyperlinkText
+                Margin="10,0,0,4"
+                HorizontalAlignment="Left"
+                DisplayText="MIT 2019"
+                URL="{x:Static app:DivinityApp.URL_LICENSE}" />
+        </controls:AutoGrid>
+        <StackPanel Orientation="Vertical">
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="16"
+                Text="Support Links"
+                TextAlignment="Center" />
+            <Separator Margin="0,4" />
+            <controls:AutoGrid
+                HorizontalAlignment="Center"
+                ColumnCount="2"
+                Columns="1*,3*"
+                RowCount="3"
+                Rows="auto,auto,auto">
+                <TextBlock HorizontalAlignment="Right" Text="Donate a Coffee:" />
+                <c:HyperlinkText
+                    Margin="10,0,0,4"
+                    HorizontalAlignment="Left"
+                    URL="{x:Static app:DivinityApp.URL_DONATION}"
+                    UseUrlForDisplayText="True" />
+                <TextBlock HorizontalAlignment="Right" Text="Report an Issue:" />
+                <c:HyperlinkText
+                    Margin="10,0,0,4"
+                    HorizontalAlignment="Left"
+                    URL="{x:Static app:DivinityApp.URL_ISSUES}"
+                    UseUrlForDisplayText="True" />
+                <TextBlock HorizontalAlignment="Right" Text="Changelog:" />
+                <c:HyperlinkText
+                    Margin="10,0,0,4"
+                    HorizontalAlignment="Left"
+                    URL="{x:Static app:DivinityApp.URL_CHANGELOG}"
+                    UseUrlForDisplayText="True" />
+            </controls:AutoGrid>
+        </StackPanel>
+    </controls:AutoGrid>
 </local:AboutWindowBase>

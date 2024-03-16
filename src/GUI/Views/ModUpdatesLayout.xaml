@@ -18,21 +18,13 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            <Style
-                x:Key="DivinityModUpdateListItem"
-                BasedOn="{StaticResource DivinityModUpdateNewListItem}"
-                TargetType="{x:Type ListViewItem}">
-                <Setter Property="Tag" Value="{Binding Mod}" />
-            </Style>
-        </ResourceDictionary>
+        <Style
+            x:Key="DivinityModUpdateListItem"
+            BasedOn="{StaticResource DivinityModUpdateNewListItem}"
+            TargetType="{x:Type ListViewItem}">
+            <Setter Property="Tag" Value="{Binding Mod}" />
+        </Style>
     </UserControl.Resources>
-    <UserControl.Style>
-        <Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-    </UserControl.Style>
     <Border BorderBrush="LightGray" BorderThickness="1">
         <controls:AutoGrid x:Name="UpdateGrid" RowCount="3" Columns="*" Rows="auto,*,auto">
             <controls:AutoGrid.Resources>

@@ -1,0 +1,56 @@
+﻿<UserControl
+    x:Class="DivinityModManager.Views.Main.VerticalModLayout"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:DivinityModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:local="clr-namespace:DivinityModManager.Views.Main"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="clr-namespace:DivinityModManager.Controls.Views"
+    xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid x:Name="VerticalGridLayout">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Padding="4" Text="Active Mods" />
+            <views:ModListView
+                Grid.Row="1"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.IsDropTarget="True"
+                ItemsSource="{Binding ActiveMods}"
+                Style="{StaticResource ModOrderListView}"
+                View="{DynamicResource ModGridView}" />
+        </Grid>
+        <GridSplitter
+            Grid.Row="1"
+            Height="4"
+            HorizontalAlignment="Stretch" />
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Padding="4" Text="Inactive Mods" />
+            <views:ModListView
+                Grid.Row="1"
+                dd:DragDrop.DropHandler="{Binding}"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.IsDropTarget="True"
+                ItemsSource="{Binding InactiveMods}"
+                Style="{StaticResource ModOrderListView}"
+                View="{DynamicResource InactiveModGridView}" />
+        </Grid>
+    </Grid>
+</UserControl>

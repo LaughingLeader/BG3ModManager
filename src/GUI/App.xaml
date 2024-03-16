@@ -9,6 +9,7 @@
 				<ResourceDictionary Source="pack://application:,,,/BG3ModManager;component/Themes/Light.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/BG3ModManager;component/Themes/Dark.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/BG3ModManager;component/Themes/MainResourceDictionary.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>

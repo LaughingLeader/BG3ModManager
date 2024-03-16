@@ -1,311 +1,297 @@
 <local:HorizontalModLayoutBase
-	x:Class="DivinityModManager.Views.Main.HorizontalModLayout"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
-	xmlns:behavior="clr-namespace:DivinityModManager.Controls.Behavior"
-	xmlns:c="clr-namespace:DivinityModManager.Controls"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
-	xmlns:dd="urn:gong-wpf-dragdrop"
-	xmlns:local="clr-namespace:DivinityModManager.Views.Main"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:reactiveui="clr-namespace:ReactiveUI;assembly=ReactiveUI"
-	xmlns:views="clr-namespace:DivinityModManager.Controls.Views"
-	xmlns:vm="clr-namespace:DivinityModManager.ViewModels.Main"
-	x:Name="HorizontalModLayoutView"
-	d:DesignHeight="450"
-	d:DesignWidth="800"
-	d:DataContext="{d:DesignInstance Type=vm:ModOrderViewModel}"
-	mc:Ignorable="d">
+    x:Class="DivinityModManager.Views.Main.HorizontalModLayout"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:behavior="clr-namespace:DivinityModManager.Controls.Behavior"
+    xmlns:c="clr-namespace:DivinityModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:local="clr-namespace:DivinityModManager.Views.Main"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveui="clr-namespace:ReactiveUI;assembly=ReactiveUI"
+    xmlns:views="clr-namespace:DivinityModManager.Controls.Views"
+    xmlns:vm="clr-namespace:DivinityModManager.ViewModels.Main"
+    x:Name="HorizontalModLayoutView"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance Type=vm:ModOrderViewModel}"
+    mc:Ignorable="d">
 	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-			<Style
-				x:Key="ListViewItemMouseEvents"
-				BasedOn="{StaticResource DivinityModDataListItem}"
-				TargetType="{x:Type ListViewItem}">
-				<!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_ModifySelection" />-->
-			</Style>
-			<Style
-				x:Key="ModOrderListViewWithDrag"
-				BasedOn="{StaticResource ModOrderListView}"
-				TargetType="ListView">
-				<Setter Property="dd:DragDrop.DragDirectlySelectedOnly" Value="True" />
-				<Setter Property="dd:DragDrop.IsDragSource" Value="True" />
-				<Setter Property="dd:DragDrop.IsDropTarget" Value="True" />
-			</Style>
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<UserControl.Style>
-		<Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-	</UserControl.Style>
-	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="4" />
-			<ColumnDefinition Width="*" />
-		</Grid.ColumnDefinitions>
-		<Grid Grid.Column="0" HorizontalAlignment="Stretch">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<Grid Margin="4,0,0,4">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="4" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				<TextBlock Padding="4" Text="Active Mods" />
-				<c:UnfocusableTextBox
-					x:Name="ActiveModsFilterTextBox"
-					Grid.Column="1"
-					Width="200"
-					Padding="4,0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					behavior:ScreenReaderHelperBehavior.Name="Active Mods Filter"
-					AcceptsReturn="False"
-					AcceptsTab="False"
-					CanUndoTextOnEscape="True"
-					TextAlignment="Left"
-					ToolTip="Filter Active Mods"
-					UpdateBindingOnFocusLost="True" />
-				<TextBlock
-					Grid.Column="1"
-					Margin="0"
-					Padding="4,0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					Foreground="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}"
-					IsHitTestVisible="False"
-					Text="Filter Active Mods">
-					<TextBlock.Style>
-						<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
-							<Setter Property="Visibility" Value="Collapsed" />
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding Text, ElementName=ActiveModsFilterTextBox}" Value="">
-									<Setter Property="Visibility" Value="Visible" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</TextBlock.Style>
-				</TextBlock>
-				<TextBlock
-					x:Name="ActiveModsFilterResultText"
-					Grid.Column="3"
-					Margin="0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					behavior:ScreenReaderHelperBehavior.Name="Total Hidden Active Mods"
-					AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
-				<TextBlock
-					x:Name="ActiveSelectedText"
-					Grid.Column="4"
-					Margin="0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}"
-					AutomationProperties.Name="Active Mods" />
-			</Grid>
-			<Grid x:Name="ActiveModListGrid" Grid.Row="1">
-				<Grid.RowDefinitions>
-					<RowDefinition Name="ActiveModsListRow" Height="10*" />
-					<RowDefinition Name="ActiveModsListGridRow" Height="Auto" />
-					<RowDefinition Name="ActiveModsListForcedModsRow" Height="2*" />
-				</Grid.RowDefinitions>
-				<views:ModListView
-					x:Name="ActiveModsListView"
-					MaxHeight="99999"
-					behavior:ScreenReaderHelperBehavior.Name="Active Mods"
-					GridViewColumnHeader.Click="ListView_Click"
-					ItemContainerStyle="{StaticResource ListViewItemMouseEvents}"
-					Style="{StaticResource ModOrderListViewWithDrag}"
-					View="{DynamicResource ModGridView}"
-					VirtualizingPanel.IsVirtualizing="True"
-					VirtualizingPanel.VirtualizationMode="Recycling" />
-				<GridSplitter
-					x:Name="ActiveModListViewGridSplitter"
-					Grid.Row="1"
-					Height="4"
-					HorizontalAlignment="Stretch"
-					VerticalAlignment="Stretch"
-					Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" />
-				<Grid Grid.Row="2">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<Grid Margin="4,0,0,4">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="4" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-						<TextBlock
-							Padding="4"
-							Text="Active Override Mods"
-							ToolTip="Override mods are always active just from being in the Mods folder, and do not need to be included in the load order" />
-						<c:UnfocusableTextBox
-							x:Name="OverrideModsFilterTextBox"
-							Grid.Column="1"
-							Width="200"
-							Padding="4,0"
-							HorizontalAlignment="Left"
-							VerticalAlignment="Center"
-							behavior:ScreenReaderHelperBehavior.Name="Override Mods Filter"
-							AcceptsReturn="False"
-							AcceptsTab="False"
-							CanUndoTextOnEscape="True"
-							TextAlignment="Left"
-							ToolTip="Filter Override Mods"
-							UpdateBindingOnFocusLost="True" />
-						<TextBlock
-							Grid.Column="1"
-							Margin="0"
-							Padding="4,0"
-							HorizontalAlignment="Left"
-							VerticalAlignment="Center"
-							Foreground="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}"
-							IsHitTestVisible="False"
-							Text="Filter Override Mods">
-							<TextBlock.Style>
-								<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
-									<Setter Property="Visibility" Value="Collapsed" />
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding Text, ElementName=OverrideModsFilterTextBox}" Value="">
-											<Setter Property="Visibility" Value="Visible" />
-										</DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</TextBlock.Style>
-						</TextBlock>
-						<TextBlock
-							x:Name="OverrideModsFilterResultText"
-							Grid.Column="3"
-							Margin="0"
-							HorizontalAlignment="Left"
-							VerticalAlignment="Center"
-							behavior:ScreenReaderHelperBehavior.Name="Total Hidden Override Mods"
-							AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
-						<TextBlock
-							x:Name="OverrideModsSelectedText"
-							Grid.Column="4"
-							Margin="0"
-							HorizontalAlignment="Left"
-							VerticalAlignment="Center"
-							AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}"
-							AutomationProperties.Name="Override Mods" />
-					</Grid>
-					<views:ModListView
-						x:Name="ForceLoadedModsListView"
-						Grid.Row="1"
-						MaxHeight="99999"
-						behavior:ScreenReaderHelperBehavior.Name="Active Override Mods"
-						HideHeader="True"
-						ItemContainerStyle="{StaticResource DivinityModDataListItem}"
-						LinkedHeaderListView="{Binding ElementName=ActiveModsListView}"
-						View="{DynamicResource HeaderlessModGridView}" />
-				</Grid>
-			</Grid>
-		</Grid>
-		<GridSplitter
-			Grid.Column="1"
-			Width="4"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch" />
-		<Grid
-			x:Name="InactiveModListGrid"
-			Grid.Column="2"
-			HorizontalAlignment="Stretch">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="2" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<Grid Margin="4,0,0,4">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="4" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				<TextBlock Padding="4" Text="Inactive Mods" />
-				<c:UnfocusableTextBox
-					x:Name="InactiveModsFilterTextBox"
-					Grid.Column="1"
-					Width="200"
-					Padding="4,0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					behavior:ScreenReaderHelperBehavior.Name="Inactive Mods Filter"
-					AcceptsReturn="False"
-					AcceptsTab="False"
-					CanUndoTextOnEscape="True"
-					TextAlignment="Left"
-					ToolTip="Filter Inactive Mods"
-					UpdateBindingOnFocusLost="True" />
-				<TextBlock
-					Grid.Column="1"
-					Width="200"
-					Margin="0"
-					Padding="4,0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					Foreground="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}"
-					IsHitTestVisible="False"
-					Text="Filter Inactive Mods">
-					<TextBlock.Style>
-						<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
-							<Setter Property="Visibility" Value="Collapsed" />
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding Text, ElementName=InactiveModsFilterTextBox}" Value="">
-									<Setter Property="Visibility" Value="Visible" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</TextBlock.Style>
-				</TextBlock>
-				<TextBlock
-					x:Name="InactiveModsFilterResultText"
-					Grid.Column="3"
-					Margin="0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					behavior:ScreenReaderHelperBehavior.Name="Total Hidden Inactive Mods"
-					AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
-				<TextBlock
-					x:Name="InactiveSelectedText"
-					Grid.Column="4"
-					Margin="0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					behavior:ScreenReaderHelperBehavior.Name="Total Inactive Mods Selected"
-					AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}"
-					AutomationProperties.Name="Inactive Mods" />
-			</Grid>
-			<views:ModListView
-				x:Name="InactiveModsListView"
-				Grid.Row="2"
-				MaxHeight="99999"
-				behavior:ScreenReaderHelperBehavior.Name="Inactive Mods"
-				GridViewColumnHeader.Click="ListView_Click"
-				ItemContainerStyle="{StaticResource ListViewItemMouseEvents}"
-				Style="{StaticResource ModOrderListViewWithDrag}"
-				View="{DynamicResource InactiveModGridView}"
-				VirtualizingPanel.IsVirtualizing="True"
-				VirtualizingPanel.VirtualizationMode="Recycling" />
-		</Grid>
-	</Grid>
+		<Style
+            x:Key="ModOrderListViewWithDrag"
+            BasedOn="{StaticResource ModOrderListView}"
+            TargetType="ListView">
+            <Setter Property="dd:DragDrop.DragDirectlySelectedOnly" Value="True" />
+            <Setter Property="dd:DragDrop.IsDragSource" Value="True" />
+            <Setter Property="dd:DragDrop.IsDropTarget" Value="True" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="4" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Margin="4,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Padding="4" Text="Active Mods" />
+                <c:UnfocusableTextBox
+                    x:Name="ActiveModsFilterTextBox"
+                    Grid.Column="1"
+                    Width="200"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    behavior:ScreenReaderHelperBehavior.Name="Active Mods Filter"
+                    AcceptsReturn="False"
+                    AcceptsTab="False"
+                    CanUndoTextOnEscape="True"
+                    TextAlignment="Left"
+                    ToolTip="Filter Active Mods"
+                    UpdateBindingOnFocusLost="True" />
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="0"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}"
+                    IsHitTestVisible="False"
+                    Text="Filter Active Mods">
+                    <TextBlock.Style>
+                        <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=ActiveModsFilterTextBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock
+                    x:Name="ActiveModsFilterResultText"
+                    Grid.Column="3"
+                    Margin="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    behavior:ScreenReaderHelperBehavior.Name="Total Hidden Active Mods"
+                    AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                <TextBlock
+                    x:Name="ActiveSelectedText"
+                    Grid.Column="4"
+                    Margin="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}"
+                    AutomationProperties.Name="Active Mods" />
+            </Grid>
+            <Grid x:Name="ActiveModListGrid" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Name="ActiveModsListRow" Height="10*" />
+                    <RowDefinition Name="ActiveModsListGridRow" Height="Auto" />
+                    <RowDefinition Name="ActiveModsListForcedModsRow" Height="2*" />
+                </Grid.RowDefinitions>
+                <views:ModListView
+                    x:Name="ActiveModsListView"
+                    MaxHeight="99999"
+                    behavior:ScreenReaderHelperBehavior.Name="Active Mods"
+                    GridViewColumnHeader.Click="ListView_Click"
+                    ItemContainerStyle="{StaticResource DivinityModDataListItem}"
+                    Style="{StaticResource ModOrderListViewWithDrag}"
+                    View="{DynamicResource ModGridView}"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling" />
+                <GridSplitter
+                    x:Name="ActiveModListViewGridSplitter"
+                    Grid.Row="1"
+                    Height="4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" />
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="4,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Padding="4"
+                            Text="Active Override Mods"
+                            ToolTip="Override mods are always active just from being in the Mods folder, and do not need to be included in the load order" />
+                        <c:UnfocusableTextBox
+                            x:Name="OverrideModsFilterTextBox"
+                            Grid.Column="1"
+                            Width="200"
+                            Padding="4,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            behavior:ScreenReaderHelperBehavior.Name="Override Mods Filter"
+                            AcceptsReturn="False"
+                            AcceptsTab="False"
+                            CanUndoTextOnEscape="True"
+                            TextAlignment="Left"
+                            ToolTip="Filter Override Mods"
+                            UpdateBindingOnFocusLost="True" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Margin="0"
+                            Padding="4,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}"
+                            IsHitTestVisible="False"
+                            Text="Filter Override Mods">
+                            <TextBlock.Style>
+                                <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=OverrideModsFilterTextBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock
+                            x:Name="OverrideModsFilterResultText"
+                            Grid.Column="3"
+                            Margin="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            behavior:ScreenReaderHelperBehavior.Name="Total Hidden Override Mods"
+                            AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                        <TextBlock
+                            x:Name="OverrideModsSelectedText"
+                            Grid.Column="4"
+                            Margin="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}"
+                            AutomationProperties.Name="Override Mods" />
+                    </Grid>
+                    <views:ModListView
+                        x:Name="ForceLoadedModsListView"
+                        Grid.Row="1"
+                        MaxHeight="99999"
+                        behavior:ScreenReaderHelperBehavior.Name="Active Override Mods"
+                        HideHeader="True"
+                        ItemContainerStyle="{StaticResource DivinityModDataListItem}"
+                        LinkedHeaderListView="{Binding ElementName=ActiveModsListView}"
+                        View="{DynamicResource HeaderlessModGridView}" />
+                </Grid>
+            </Grid>
+        </Grid>
+        <GridSplitter
+            Grid.Column="1"
+            Width="4"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch" />
+        <Grid
+            x:Name="InactiveModListGrid"
+            Grid.Column="2"
+            HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Margin="4,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Padding="4" Text="Inactive Mods" />
+                <c:UnfocusableTextBox
+                    x:Name="InactiveModsFilterTextBox"
+                    Grid.Column="1"
+                    Width="200"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    behavior:ScreenReaderHelperBehavior.Name="Inactive Mods Filter"
+                    AcceptsReturn="False"
+                    AcceptsTab="False"
+                    CanUndoTextOnEscape="True"
+                    TextAlignment="Left"
+                    ToolTip="Filter Inactive Mods"
+                    UpdateBindingOnFocusLost="True" />
+                <TextBlock
+                    Grid.Column="1"
+                    Width="200"
+                    Margin="0"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}"
+                    IsHitTestVisible="False"
+                    Text="Filter Inactive Mods">
+                    <TextBlock.Style>
+                        <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=InactiveModsFilterTextBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock
+                    x:Name="InactiveModsFilterResultText"
+                    Grid.Column="3"
+                    Margin="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    behavior:ScreenReaderHelperBehavior.Name="Total Hidden Inactive Mods"
+                    AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                <TextBlock
+                    x:Name="InactiveSelectedText"
+                    Grid.Column="4"
+                    Margin="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    behavior:ScreenReaderHelperBehavior.Name="Total Inactive Mods Selected"
+                    AutomationProperties.HelpText="{Binding Text, RelativeSource={RelativeSource Self}}"
+                    AutomationProperties.Name="Inactive Mods" />
+            </Grid>
+            <views:ModListView
+                x:Name="InactiveModsListView"
+                Grid.Row="2"
+                MaxHeight="99999"
+                behavior:ScreenReaderHelperBehavior.Name="Inactive Mods"
+                GridViewColumnHeader.Click="ListView_Click"
+                ItemContainerStyle="{StaticResource DivinityModDataListItem}"
+                Style="{StaticResource ModOrderListViewWithDrag}"
+                View="{DynamicResource InactiveModGridView}"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.VirtualizationMode="Recycling" />
+        </Grid>
+    </Grid>
 </local:HorizontalModLayoutBase>

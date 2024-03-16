@@ -1,416 +1,408 @@
 ﻿<local:SettingsWindowBase
-	x:Class="DivinityModManager.Windows.SettingsWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-	xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
-	xmlns:behavior="clr-namespace:DivinityModManager.Controls.Behavior"
-	xmlns:controls="clr-namespace:DivinityModManager.Controls"
-	xmlns:conv="clr-namespace:DivinityModManager.Converters"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:dapp="clr-namespace:DivinityModManager;assembly=DivinityModManagerCore"
-	xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
-	xmlns:dd="urn:gong-wpf-dragdrop"
-	xmlns:ext="clr-namespace:DivinityModManager.Controls.Extensions"
-	xmlns:extdata="clr-namespace:DivinityModManager.Models.Extender;assembly=DivinityModManagerCore"
-	xmlns:extenum="clr-namespace:DivinityModManager.Enums.Extender;assembly=DivinityModManagerCore"
-	xmlns:local="clr-namespace:DivinityModManager.Windows"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:reactiveui="http://reactiveui.net"
-	xmlns:settings="clr-namespace:DivinityModManager.Models.Settings;assembly=DivinityModManagerCore"
-	xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
-	xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
-	Title="Preferences"
-	Width="800"
-	Height="900"
-	TitleBarBackground="#4e38c9"
-	TitleBarForeground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
-	mc:Ignorable="d">
-	<Window.Style>
-		<Style BasedOn="{StaticResource {x:Type Window}}" TargetType="Window" />
-	</Window.Style>
-	<Window.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-			<controls:AutomationTooltip x:Key="ExtenderUpdateEntryToolTip" DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
-				<controls:AutomationTooltip.Resources>
-					<DataTemplate x:Key="RegularVersionTooltip">
-						<controls:AutoGrid
-							Margin="10,0"
-							ChildMargin="4"
-							ColumnCount="2"
-							Columns="auto,*"
-							RowCount="4"
-							RowHeight="*"
-							Rows="auto,auto,auto,auto">
-							<TextBlock Text="Build Date:" />
-							<TextBlock Text="{Binding BuildDateDisplayString}" />
-							<TextBlock Text="Game Version:" />
-							<TextBlock Text="{Binding MinGameVersion}" />
-							<TextBlock Text="Extender Version:" />
-							<TextBlock Text="{Binding Version}" />
-							<TextBlock Text="URL:" />
-							<TextBlock Text="{Binding URL}" />
-						</controls:AutoGrid>
-					</DataTemplate>
-					<DataTemplate x:Key="EmptyVersionTooltip">
-						<TextBlock Text="The extender will automatically update to the latest version of the selected UpdateChannel" />
-					</DataTemplate>
-				</controls:AutomationTooltip.Resources>
-				<controls:AutomationTooltip.Style>
-					<Style BasedOn="{StaticResource {x:Type ToolTip}}" TargetType="controls:AutomationTooltip" />
-				</controls:AutomationTooltip.Style>
-				<ContentControl Content="{Binding}">
-					<ContentControl.Style>
-						<Style TargetType="{x:Type ContentControl}">
-							<Setter Property="ContentTemplate" Value="{StaticResource RegularVersionTooltip}" />
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding IsEmpty}" Value="True">
-									<Setter Property="ContentTemplate" Value="{StaticResource EmptyVersionTooltip}" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</ContentControl.Style>
-				</ContentControl>
-			</controls:AutomationTooltip>
-			<Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-				<Setter Property="Padding" Value="20,2" />
-				<Setter Property="Margin" Value="2,0,2,0" />
-			</Style>
-			<Style TargetType="StackPanel">
-				<Setter Property="VerticalAlignment" Value="Center" />
-				<Setter Property="Orientation" Value="Horizontal" />
-				<Setter Property="Margin" Value="10" />
-			</Style>
-			<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
-				<Setter Property="VerticalAlignment" Value="Center" />
-			</Style>
-			<Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox" />
-			<Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="CheckBox">
-				<Setter Property="VerticalAlignment" Value="Center" />
-			</Style>
-			<Style TargetType="controls:AutoGrid">
-				<Setter Property="Margin" Value="10,0" />
-				<Setter Property="ChildMargin" Value="4" />
-				<Setter Property="ColumnCount" Value="2" />
-				<Setter Property="Columns" Value="*,*" />
-				<Setter Property="RowCount" Value="1" />
-				<Setter Property="RowHeight" Value="*" />
-				<Setter Property="Rows" Value="auto" />
-			</Style>
-			<Style
-				x:Key="TabItemWithContextMenu"
-				BasedOn="{StaticResource {x:Type TextBlock}}"
-				TargetType="TextBlock">
-				<Setter Property="ContextMenu">
-					<Setter.Value>
-						<ContextMenu DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
-							<MenuItem CommandParameter="{Binding}" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
-							<MenuItem CommandParameter="{Binding}" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-						</ContextMenu>
-					</Setter.Value>
-				</Setter>
-			</Style>
-		</ResourceDictionary>
-	</Window.Resources>
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
-		<Grid Margin="4">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="2*" />
-				<ColumnDefinition Width="1*" />
-			</Grid.ColumnDefinitions>
-			<StackPanel
-				Margin="0"
-				HorizontalAlignment="Left"
-				Orientation="Horizontal">
-				<Button
-					x:Name="SaveSettingsButton"
-					Style="{StaticResource IconButtonStyle}"
-					ToolTip="Save Settings (CTRL + S)">
-					<controls:AutoGrayableImage Source="{StaticResource SaveImage}" />
-				</Button>
-				<Rectangle Margin="2,0" Style="{StaticResource VerticalSeparator}" />
-				<Button
-					x:Name="OpenSettingsFolderButton"
-					Style="{StaticResource IconButtonStyle}"
-					ToolTip="Open Settings Folder">
-					<controls:AutoGrayableImage Source="{StaticResource OpenFolderImage}" />
-				</Button>
-			</StackPanel>
-			<Button
-				x:Name="ResetSettingsButton"
-				Grid.Column="2"
-				HorizontalAlignment="Right"
-				Style="{StaticResource IconButtonStyle}">
-				<controls:AutoGrayableImage Source="{StaticResource DefaultIcon}" />
-			</Button>
-		</Grid>
+    x:Class="DivinityModManager.Windows.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:behavior="clr-namespace:DivinityModManager.Controls.Behavior"
+    xmlns:controls="clr-namespace:DivinityModManager.Controls"
+    xmlns:conv="clr-namespace:DivinityModManager.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dapp="clr-namespace:DivinityModManager;assembly=DivinityModManagerCore"
+    xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:ext="clr-namespace:DivinityModManager.Controls.Extensions"
+    xmlns:extdata="clr-namespace:DivinityModManager.Models.Extender;assembly=DivinityModManagerCore"
+    xmlns:extenum="clr-namespace:DivinityModManager.Enums.Extender;assembly=DivinityModManagerCore"
+    xmlns:local="clr-namespace:DivinityModManager.Windows"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:settings="clr-namespace:DivinityModManager.Models.Settings;assembly=DivinityModManagerCore"
+    xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
+    xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+    Title="Preferences"
+    Width="800"
+    Height="900"
+    TitleBarBackground="#4e38c9"
+    TitleBarForeground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <controls:AutomationTooltip x:Key="ExtenderUpdateEntryToolTip" DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
+            <controls:AutomationTooltip.Resources>
+                <DataTemplate x:Key="RegularVersionTooltip">
+                    <controls:AutoGrid
+                        Margin="10,0"
+                        ChildMargin="4"
+                        ColumnCount="2"
+                        Columns="auto,*"
+                        RowCount="4"
+                        RowHeight="*"
+                        Rows="auto,auto,auto,auto">
+                        <TextBlock Text="Build Date:" />
+                        <TextBlock Text="{Binding BuildDateDisplayString}" />
+                        <TextBlock Text="Game Version:" />
+                        <TextBlock Text="{Binding MinGameVersion}" />
+                        <TextBlock Text="Extender Version:" />
+                        <TextBlock Text="{Binding Version}" />
+                        <TextBlock Text="URL:" />
+                        <TextBlock Text="{Binding URL}" />
+                    </controls:AutoGrid>
+                </DataTemplate>
+                <DataTemplate x:Key="EmptyVersionTooltip">
+                    <TextBlock Text="The extender will automatically update to the latest version of the selected UpdateChannel" />
+                </DataTemplate>
+            </controls:AutomationTooltip.Resources>
+            <controls:AutomationTooltip.Style>
+                <Style BasedOn="{StaticResource {x:Type ToolTip}}" TargetType="controls:AutomationTooltip" />
+            </controls:AutomationTooltip.Style>
+            <ContentControl Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource RegularVersionTooltip}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource EmptyVersionTooltip}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+        </controls:AutomationTooltip>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+            <Setter Property="Padding" Value="20,2" />
+            <Setter Property="Margin" Value="2,0,2,0" />
+        </Style>
+        <Style TargetType="StackPanel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="10" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox" />
+        <Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="controls:AutoGrid">
+            <Setter Property="Margin" Value="10,0" />
+            <Setter Property="ChildMargin" Value="4" />
+            <Setter Property="ColumnCount" Value="2" />
+            <Setter Property="Columns" Value="*,*" />
+            <Setter Property="RowCount" Value="1" />
+            <Setter Property="RowHeight" Value="*" />
+            <Setter Property="Rows" Value="auto" />
+        </Style>
+        <Style
+            x:Key="TabItemWithContextMenu"
+            BasedOn="{StaticResource {x:Type TextBlock}}"
+            TargetType="TextBlock">
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
+                        <MenuItem CommandParameter="{Binding}" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
+                        <MenuItem CommandParameter="{Binding}" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel
+                Margin="0"
+                HorizontalAlignment="Left"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="SaveSettingsButton"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTip="Save Settings (CTRL + S)">
+                    <controls:AutoGrayableImage Source="{StaticResource SaveImage}" />
+                </Button>
+                <Rectangle Margin="2,0" Style="{StaticResource VerticalSeparator}" />
+                <Button
+                    x:Name="OpenSettingsFolderButton"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTip="Open Settings Folder">
+                    <controls:AutoGrayableImage Source="{StaticResource OpenFolderImage}" />
+                </Button>
+            </StackPanel>
+            <Button
+                x:Name="ResetSettingsButton"
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                Style="{StaticResource IconButtonStyle}">
+                <controls:AutoGrayableImage Source="{StaticResource DefaultIcon}" />
+            </Button>
+        </Grid>
 
-		<TabControl x:Name="PreferencesTabControl" Grid.Row="1">
-			<TabItem x:Name="GeneralSettingssTab" FocusManager.FocusedElement="{Binding ElementName=SettingsAutoGrid}">
-				<TabItem.Header>
-					<TextBlock
-						x:Name="GeneralSettingsTabHeader"
-						Style="{StaticResource TabItemWithContextMenu}"
-						Text="General"
-						ToolTip="Mod Manager Settings (Data/settings.json)" />
-				</TabItem.Header>
-				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-					<controls:AutoGrid x:Name="SettingsAutoGrid" />
-				</ScrollViewer>
-			</TabItem>
-			<TabItem x:Name="UpdateSettingsTab" FocusManager.FocusedElement="{Binding ElementName=UpdateSettingsAutoGrid}">
-				<TabItem.Header>
-					<TextBlock
-						x:Name="UpdateSettingsTabHeader"
-						Style="{StaticResource TabItemWithContextMenu}"
-						Text="Update Settings"
-						ToolTip="Update Settings (Data/settings.json)" />
-				</TabItem.Header>
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="*" />
-						<RowDefinition Height="auto" />
-					</Grid.RowDefinitions>
-					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-						<controls:AutoGrid x:Name="UpdateSettingsAutoGrid" />
-					</ScrollViewer>
-					<StackPanel Grid.Row="1">
-						<Button x:Name="AssociateWithNXMButton" Content="Associate with &quot;Download with manager&quot; links (nxm://)" />
-					</StackPanel>
-				</Grid>
-			</TabItem>
-			<TabItem x:Name="ScriptExtenderTab" FocusManager.FocusedElement="{Binding ElementName=ExtenderSettingsAutoGrid}">
-				<TabItem.Header>
-					<TextBlock
-						x:Name="ScriptExtenderTabHeader"
-						Style="{StaticResource TabItemWithContextMenu}"
-						Text="Script Extender"
-						ToolTip="Script Extender Settings (ScriptExtenderSettings.json)" />
-				</TabItem.Header>
-				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-					<controls:AutoGrid x:Name="ExtenderSettingsAutoGrid" />
-				</ScrollViewer>
-			</TabItem>
-			<TabItem x:Name="ScriptExtenderUpdaterTab" FocusManager.FocusedElement="{Binding ElementName=ExtenderUpdaterSettingsAutoGrid}">
-				<TabItem.Header>
-					<TextBlock
-						x:Name="UpdaterTabHeader"
-						Style="{StaticResource TabItemWithContextMenu}"
-						Text="Script Extender Updater"
-						ToolTip="Script Extender Updater Settings (ScriptExtenderUpdaterConfig.json)" />
-				</TabItem.Header>
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="*" />
-						<RowDefinition Height="auto" />
-					</Grid.RowDefinitions>
-					<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-						<controls:AutoGrid x:Name="ExtenderUpdaterSettingsAutoGrid">
-							<TextBlock
-								x:Name="UpdateChannelTextBlock"
-								Grid.Column="0"
-								behavior:TextBlockSettingsEntryAttributeBehavior.Property="UpdateChannel"
-								behavior:TextBlockSettingsEntryAttributeBehavior.TargetType="{x:Type settings:ScriptExtenderUpdateConfig}"
-								Text="Update Channel" />
-							<ComboBox
-								x:Name="UpdateChannelComboBox"
-								DisplayMemberPath="Description"
-								ItemsSource="{Binding Source={ext:EnumExtension {x:Type extenum:ExtenderUpdateChannel}}}"
-								SelectedValuePath="Value"
-								ToolTip="{Binding ElementName=UpdateChannelTextBlock, Path=ToolTip}" />
-							<TextBlock
-								x:Name="SelectVersionTextBlock"
-								Grid.Column="0"
-								Text="Select Version"
-								ToolTip="Select a version to automatically set the Target Version and Target Digest&#x0a;This list is automatically populated from the online extender manifest data, using the selected Update Channel" />
-							<ComboBox
-								x:Name="UpdaterTargetVersionComboBox"
-								Grid.Column="1"
-								DisplayMemberPath="DisplayName"
-								ToolTip="{StaticResource ExtenderUpdateEntryToolTip}">
-								<ComboBox.ContextMenu>
-									<ContextMenu>
-										<MenuItem x:Name="TargetVersionContextOpenMenuItem" Style="{StaticResource MenuItemOpenURLStyle}" />
-										<MenuItem
-											x:Name="TargetVersionContextCopyMenuItem"
-											Header="Copy URL to Clipboard"
-											Style="{StaticResource MenuItemCopyToClipboardStyle}" />
-									</ContextMenu>
-								</ComboBox.ContextMenu>
-							</ComboBox>
-						</controls:AutoGrid>
-					</ScrollViewer>
-				</Grid>
-			</TabItem>
-			<TabItem x:Name="KeybindingsTabItem" FocusManager.FocusedElement="{Binding ElementName=KeybindingsListView}">
-				<TabItem.Header>
-					<TextBlock
-						x:Name="KeybindingsTabHeader"
-						Style="{StaticResource TabItemWithContextMenu}"
-						Text="Keyboard Shortcuts"
-						ToolTip="Mod Manager Settings (Data/keybindings.json)" />
-				</TabItem.Header>
-				<ListView
-					x:Name="KeybindingsListView"
-					KeyboardNavigation.TabNavigation="Continue"
-					MouseDoubleClick="HotkeyListViewItem_MouseDoubleClick"
-					ScrollViewer.VerticalScrollBarVisibility="Auto">
-					<ListView.ItemContainerStyle>
-						<Style BasedOn="{StaticResource {x:Type ListViewItem}}" TargetType="ListViewItem">
-							<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-							<Setter Property="Tag" Value="{Binding}" />
-							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-							<Setter Property="VerticalContentAlignment" Value="Stretch" />
-							<Setter Property="ToolTip" Value="{Binding ToolTip}" />
-							<Setter Property="ContextMenu">
-								<Setter.Value>
-									<ContextMenu>
-										<MenuItem
-											x:Name="ResetHotkeyMenuItem"
-											Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.ResetCommand}"
-											Header="Reset Keybinding" />
-										<MenuItem
-											x:Name="ClearHotkeyMenuItem"
-											Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.ClearCommand}"
-											Header="Remove Keybinding" />
-									</ContextMenu>
-								</Setter.Value>
-							</Setter>
-						</Style>
-					</ListView.ItemContainerStyle>
-					<ListView.View>
-						<GridView AllowsColumnReorder="False" ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
-							<GridView.Columns>
-								<GridViewColumn
-									Width="450"
-									Header="Command"
-									HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
-									<GridViewColumn.CellTemplate>
-										<DataTemplate>
-											<TextBlock
-												Margin="0,4"
-												Padding="0"
-												HorizontalAlignment="Stretch"
-												VerticalAlignment="Bottom"
-												IsHitTestVisible="False"
-												TextAlignment="Left">
-												<Run Foreground="Lime" Text="{Binding ModifiedText, Mode=OneWay}" />
-												<Run Text="{Binding DisplayName, Mode=OneWay}" /></TextBlock>
-										</DataTemplate>
-									</GridViewColumn.CellTemplate>
-								</GridViewColumn>
-								<GridViewColumn
-									Width="200"
-									Header="Keybinding"
-									HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
-									<GridViewColumn.CellTemplate>
-										<DataTemplate>
-											<controls:HotkeyEditorControl
-												HorizontalAlignment="Left"
-												FocusReturnTarget="{Binding ElementName=KeybindingsListView}"
-												GotFocus="HotkeyEditorControl_GotFocus"
-												Hotkey="{Binding}"
-												LostFocus="HotkeyEditorControl_LostFocus" />
-										</DataTemplate>
-									</GridViewColumn.CellTemplate>
-								</GridViewColumn>
-							</GridView.Columns>
-						</GridView>
-					</ListView.View>
-				</ListView>
-			</TabItem>
-			<TabItem x:Name="AdvancedSettingsTab" FocusManager.FocusedElement="{Binding ElementName=AdvancedSettingsAutoGrid}">
-				<TabItem.Header>
-					<TextBlock
-						x:Name="AdvancedSettingsTabHeader"
-						Style="{StaticResource TabItemWithContextMenu}"
-						Text="Advanced"
-						ToolTip="Advanced Mod Manager Settings (Data/settings.json)" />
-				</TabItem.Header>
-				<controls:AutoGrid
-					x:Name="AdvancedSettingsAutoGrid"
-					Margin="10,0"
-					ChildMargin="8,4"
-					ColumnCount="2"
-					Columns="auto,*"
-					RowCount="4"
-					RowHeight="*"
-					Rows="auto,auto,auto,auto">
-					<TextBlock
-						x:Name="DebugModeTextBlock"
-						behavior:TextBlockSettingsEntryAttributeBehavior.Property="DebugModeEnabled"
-						behavior:TextBlockSettingsEntryAttributeBehavior.TargetType="{x:Type settings:ModManagerSettings}" />
-					<CheckBox
-						x:Name="DebugModeCheckBox"
-						VerticalAlignment="Center"
-						ToolTip="{Binding ElementName=DebugModeTextBlock, Path=ToolTip}" />
-					<TextBlock Text="Enable Mod Manager Logs" ToolTip="Automatically save logs to _Logs" />
-					<CheckBox x:Name="LogEnabledCheckBox" VerticalAlignment="Center" />
-					<Button
-						x:Name="GameLaunchParamsMainButton"
-						VerticalAlignment="Center"
-						Content="Launch Params"
-						ToolTip="Parameters to pass to the game executable when launching the game through the mod manager">
-						<Button.ContextMenu>
-							<ContextMenu x:Name="GameLaunchParamsMainMenu">
-								<ContextMenu.ItemTemplate>
-									<DataTemplate DataType="vm:GameLaunchParamEntry">
-										<TextBlock Text="{Binding}" />
-									</DataTemplate>
-								</ContextMenu.ItemTemplate>
-								<ContextMenu.ItemContainerStyle>
-									<Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
-										<Setter Property="Header" Value="{Binding Name}" />
-										<Setter Property="ToolTip" Value="{Binding Description}" />
-										<Setter Property="ToolTipService.IsEnabled" Value="{Binding HasToolTip, FallbackValue=False}" />
-										<Setter Property="ToolTipService.InitialShowDelay" Value="250" />
-										<Setter Property="Command" Value="{Binding Path=DataContext.AddLaunchParamCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsWindow}}}" />
-										<Setter Property="CommandParameter" Value="{Binding Name}" />
-									</Style>
-								</ContextMenu.ItemContainerStyle>
-							</ContextMenu>
-						</Button.ContextMenu>
-					</Button>
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<TextBox
-							x:Name="GameLaunchParamsTextBox"
-							VerticalAlignment="Center"
-							TextWrapping="Wrap"
-							ToolTip="Parameters to pass to the game executable when launching the game through the mod manager" />
-						<Button
-							x:Name="ClearLaunchParamsMenuItem"
-							Grid.Column="1"
-							Style="{StaticResource IconButtonStyle}"
-							ToolTip="Clear current params">
-							<controls:AutoGrayableImage Source="{StaticResource AlertBar_Close}" />
-						</Button>
-					</Grid>
-					<TextBlock Text="Experimental" />
-					<Button
-						x:Name="ClearCacheButton"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						Content="Delete Cache"
-						ToolTip="Delete the local mod cache, located in the mod manager's Data folder" />
-				</controls:AutoGrid>
-			</TabItem>
-		</TabControl>
-		<StatusBar Grid.Row="2" MinHeight="16">
-			<StatusBarItem HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-				<controls:AlertBar x:Name="AlertBar" Theme="Standard" />
-			</StatusBarItem>
-		</StatusBar>
-	</Grid>
+        <TabControl x:Name="PreferencesTabControl" Grid.Row="1">
+            <TabItem x:Name="GeneralSettingssTab" FocusManager.FocusedElement="{Binding ElementName=SettingsAutoGrid}">
+                <TabItem.Header>
+                    <TextBlock
+                        x:Name="GeneralSettingsTabHeader"
+                        Style="{StaticResource TabItemWithContextMenu}"
+                        Text="General"
+                        ToolTip="Mod Manager Settings (Data/settings.json)" />
+                </TabItem.Header>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <controls:AutoGrid x:Name="SettingsAutoGrid" />
+                </ScrollViewer>
+            </TabItem>
+            <TabItem x:Name="UpdateSettingsTab" FocusManager.FocusedElement="{Binding ElementName=UpdateSettingsAutoGrid}">
+                <TabItem.Header>
+                    <TextBlock
+                        x:Name="UpdateSettingsTabHeader"
+                        Style="{StaticResource TabItemWithContextMenu}"
+                        Text="Update Settings"
+                        ToolTip="Update Settings (Data/settings.json)" />
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <controls:AutoGrid x:Name="UpdateSettingsAutoGrid" />
+                    </ScrollViewer>
+                    <StackPanel Grid.Row="1">
+                        <Button x:Name="AssociateWithNXMButton" Content="Associate with &quot;Download with manager&quot; links (nxm://)" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="ScriptExtenderTab" FocusManager.FocusedElement="{Binding ElementName=ExtenderSettingsAutoGrid}">
+                <TabItem.Header>
+                    <TextBlock
+                        x:Name="ScriptExtenderTabHeader"
+                        Style="{StaticResource TabItemWithContextMenu}"
+                        Text="Script Extender"
+                        ToolTip="Script Extender Settings (ScriptExtenderSettings.json)" />
+                </TabItem.Header>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <controls:AutoGrid x:Name="ExtenderSettingsAutoGrid" />
+                </ScrollViewer>
+            </TabItem>
+            <TabItem x:Name="ScriptExtenderUpdaterTab" FocusManager.FocusedElement="{Binding ElementName=ExtenderUpdaterSettingsAutoGrid}">
+                <TabItem.Header>
+                    <TextBlock
+                        x:Name="UpdaterTabHeader"
+                        Style="{StaticResource TabItemWithContextMenu}"
+                        Text="Script Extender Updater"
+                        ToolTip="Script Extender Updater Settings (ScriptExtenderUpdaterConfig.json)" />
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <controls:AutoGrid x:Name="ExtenderUpdaterSettingsAutoGrid">
+                            <TextBlock
+                                x:Name="UpdateChannelTextBlock"
+                                Grid.Column="0"
+                                behavior:TextBlockSettingsEntryAttributeBehavior.Property="UpdateChannel"
+                                behavior:TextBlockSettingsEntryAttributeBehavior.TargetType="{x:Type settings:ScriptExtenderUpdateConfig}"
+                                Text="Update Channel" />
+                            <ComboBox
+                                x:Name="UpdateChannelComboBox"
+                                DisplayMemberPath="Description"
+                                ItemsSource="{Binding Source={ext:EnumExtension {x:Type extenum:ExtenderUpdateChannel}}}"
+                                SelectedValuePath="Value"
+                                ToolTip="{Binding ElementName=UpdateChannelTextBlock, Path=ToolTip}" />
+                            <TextBlock
+                                x:Name="SelectVersionTextBlock"
+                                Grid.Column="0"
+                                Text="Select Version"
+                                ToolTip="Select a version to automatically set the Target Version and Target Digest&#x0a;This list is automatically populated from the online extender manifest data, using the selected Update Channel" />
+                            <ComboBox
+                                x:Name="UpdaterTargetVersionComboBox"
+                                Grid.Column="1"
+                                DisplayMemberPath="DisplayName"
+                                ToolTip="{StaticResource ExtenderUpdateEntryToolTip}">
+                                <ComboBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem x:Name="TargetVersionContextOpenMenuItem" Style="{StaticResource MenuItemOpenURLStyle}" />
+                                        <MenuItem
+                                            x:Name="TargetVersionContextCopyMenuItem"
+                                            Header="Copy URL to Clipboard"
+                                            Style="{StaticResource MenuItemCopyToClipboardStyle}" />
+                                    </ContextMenu>
+                                </ComboBox.ContextMenu>
+                            </ComboBox>
+                        </controls:AutoGrid>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="KeybindingsTabItem" FocusManager.FocusedElement="{Binding ElementName=KeybindingsListView}">
+                <TabItem.Header>
+                    <TextBlock
+                        x:Name="KeybindingsTabHeader"
+                        Style="{StaticResource TabItemWithContextMenu}"
+                        Text="Keyboard Shortcuts"
+                        ToolTip="Mod Manager Settings (Data/keybindings.json)" />
+                </TabItem.Header>
+                <ListView
+                    x:Name="KeybindingsListView"
+                    KeyboardNavigation.TabNavigation="Continue"
+                    MouseDoubleClick="HotkeyListViewItem_MouseDoubleClick"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListView.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource {x:Type ListViewItem}}" TargetType="ListViewItem">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="Tag" Value="{Binding}" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                            <Setter Property="ToolTip" Value="{Binding ToolTip}" />
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem
+                                            x:Name="ResetHotkeyMenuItem"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.ResetCommand}"
+                                            Header="Reset Keybinding" />
+                                        <MenuItem
+                                            x:Name="ClearHotkeyMenuItem"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.ClearCommand}"
+                                            Header="Remove Keybinding" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView AllowsColumnReorder="False" ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
+                            <GridView.Columns>
+                                <GridViewColumn
+                                    Width="450"
+                                    Header="Command"
+                                    HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Margin="0,4"
+                                                Padding="0"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Bottom"
+                                                IsHitTestVisible="False"
+                                                TextAlignment="Left">
+                                                <Run Foreground="Lime" Text="{Binding ModifiedText, Mode=OneWay}" />
+                                                <Run Text="{Binding DisplayName, Mode=OneWay}" /></TextBlock>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn
+                                    Width="200"
+                                    Header="Keybinding"
+                                    HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <controls:HotkeyEditorControl
+                                                HorizontalAlignment="Left"
+                                                FocusReturnTarget="{Binding ElementName=KeybindingsListView}"
+                                                GotFocus="HotkeyEditorControl_GotFocus"
+                                                Hotkey="{Binding}"
+                                                LostFocus="HotkeyEditorControl_LostFocus" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem x:Name="AdvancedSettingsTab" FocusManager.FocusedElement="{Binding ElementName=AdvancedSettingsAutoGrid}">
+                <TabItem.Header>
+                    <TextBlock
+                        x:Name="AdvancedSettingsTabHeader"
+                        Style="{StaticResource TabItemWithContextMenu}"
+                        Text="Advanced"
+                        ToolTip="Advanced Mod Manager Settings (Data/settings.json)" />
+                </TabItem.Header>
+                <controls:AutoGrid
+                    x:Name="AdvancedSettingsAutoGrid"
+                    Margin="10,0"
+                    ChildMargin="8,4"
+                    ColumnCount="2"
+                    Columns="auto,*"
+                    RowCount="4"
+                    RowHeight="*"
+                    Rows="auto,auto,auto,auto">
+                    <TextBlock
+                        x:Name="DebugModeTextBlock"
+                        behavior:TextBlockSettingsEntryAttributeBehavior.Property="DebugModeEnabled"
+                        behavior:TextBlockSettingsEntryAttributeBehavior.TargetType="{x:Type settings:ModManagerSettings}" />
+                    <CheckBox
+                        x:Name="DebugModeCheckBox"
+                        VerticalAlignment="Center"
+                        ToolTip="{Binding ElementName=DebugModeTextBlock, Path=ToolTip}" />
+                    <TextBlock Text="Enable Mod Manager Logs" ToolTip="Automatically save logs to _Logs" />
+                    <CheckBox x:Name="LogEnabledCheckBox" VerticalAlignment="Center" />
+                    <Button
+                        x:Name="GameLaunchParamsMainButton"
+                        VerticalAlignment="Center"
+                        Content="Launch Params"
+                        ToolTip="Parameters to pass to the game executable when launching the game through the mod manager">
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="GameLaunchParamsMainMenu">
+                                <ContextMenu.ItemTemplate>
+                                    <DataTemplate DataType="vm:GameLaunchParamEntry">
+                                        <TextBlock Text="{Binding}" />
+                                    </DataTemplate>
+                                </ContextMenu.ItemTemplate>
+                                <ContextMenu.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
+                                        <Setter Property="Header" Value="{Binding Name}" />
+                                        <Setter Property="ToolTip" Value="{Binding Description}" />
+                                        <Setter Property="ToolTipService.IsEnabled" Value="{Binding HasToolTip, FallbackValue=False}" />
+                                        <Setter Property="ToolTipService.InitialShowDelay" Value="250" />
+                                        <Setter Property="Command" Value="{Binding Path=DataContext.AddLaunchParamCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsWindow}}}" />
+                                        <Setter Property="CommandParameter" Value="{Binding Name}" />
+                                    </Style>
+                                </ContextMenu.ItemContainerStyle>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                            x:Name="GameLaunchParamsTextBox"
+                            VerticalAlignment="Center"
+                            TextWrapping="Wrap"
+                            ToolTip="Parameters to pass to the game executable when launching the game through the mod manager" />
+                        <Button
+                            x:Name="ClearLaunchParamsMenuItem"
+                            Grid.Column="1"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="Clear current params">
+                            <controls:AutoGrayableImage Source="{StaticResource AlertBar_Close}" />
+                        </Button>
+                    </Grid>
+                    <TextBlock Text="Experimental" />
+                    <Button
+                        x:Name="ClearCacheButton"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="Delete Cache"
+                        ToolTip="Delete the local mod cache, located in the mod manager's Data folder" />
+                </controls:AutoGrid>
+            </TabItem>
+        </TabControl>
+        <StatusBar Grid.Row="2" MinHeight="16">
+            <StatusBarItem HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <controls:AlertBar x:Name="AlertBar" Theme="Standard" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
 </local:SettingsWindowBase>

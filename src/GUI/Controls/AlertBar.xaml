@@ -9,16 +9,6 @@
 	d:DesignHeight="450"
 	d:DesignWidth="800"
 	mc:Ignorable="d">
-	<UserControl.Style>
-		<Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-	</UserControl.Style>
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</UserControl.Resources>
 	<UserControl.Triggers>
 		<EventTrigger RoutedEvent="{x:Static local:AlertBar.ShowEvent}">
 			<BeginStoryboard>

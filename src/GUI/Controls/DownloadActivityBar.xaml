@@ -9,22 +9,12 @@
     xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
-	d:DataContext="{d:DesignInstance Type=vm:DownloadActivityBarViewModel}"
-	d:DesignHeight="200"
+    d:DataContext="{d:DesignInstance Type=vm:DownloadActivityBarViewModel}"
+    d:DesignHeight="200"
     d:DesignWidth="800"
     mc:Ignorable="d">
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<UserControl.Style>
-		<Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-	</UserControl.Style>
-	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-		<ProgressBar
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+        <ProgressBar
             Padding="0,8"
             Value="50"
             x:Name="TaskProgressBar"
@@ -33,30 +23,30 @@
             VerticalAlignment="Stretch"
             Maximum="100"
             Minimum="0" />
-		<TextBlock
+        <TextBlock
             x:Name="TaskProgressWorkText"
             Text="Downloading..."
-			Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
+            Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             TextAlignment="Center" />
-		<Button
+        <Button
             x:Name="CancelButton"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Background="Transparent"
             BorderBrush="Transparent"
-			ToolTip="Cancel Download"
+            ToolTip="Cancel Download"
             BorderThickness="0" Content="{StaticResource RedCloseIcon}">
-			<Button.Style>
-				<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-					<Style.Triggers>
-						<Trigger Property="Button.IsMouseOver" Value="True">
-							<Setter Property="Content" Value="{StaticResource RedCloseIconHover}" />
-						</Trigger>
-					</Style.Triggers>
-				</Style>
-			</Button.Style>
-		</Button>
-	</Grid>
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Style.Triggers>
+                        <Trigger Property="Button.IsMouseOver" Value="True">
+                            <Setter Property="Content" Value="{StaticResource RedCloseIconHover}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+    </Grid>
 </local:DownloadActivityBarBase>

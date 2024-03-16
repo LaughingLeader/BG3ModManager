@@ -115,7 +115,6 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 
 		}), new KeyGesture(Key.D, ModifierKeys.Control)));
 
-		listView.ItemContainerStyle = this.FindResource("ListViewItemMouseEvents") as Style;
 		listView.GotFocus += (object sender, RoutedEventArgs e) =>
 		{
 			_focusedList = sender;

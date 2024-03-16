@@ -21,34 +21,25 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <UserControl.Style>
-        <Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-    </UserControl.Style>
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Themes/MainResourceDictionary.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}" />
-            <Style TargetType="{x:Type xc:MessageBox}">
-                <Setter Property="Width" Value="600" />
-                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}" />
-                <Setter Property="ButtonRegionBackground" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
-                <Setter Property="CaptionForeground" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
-                <Setter Property="WindowBackground" Value="#4e38c9" />
-                <Setter Property="WindowBorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}" />
-                <Setter Property="CloseButtonStyle">
-                    <Setter.Value>
-                        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-                            <Setter Property="IsEnabled" Value="False" />
-                            <Setter Property="Opacity" Value="0" />
-                        </Style>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </ResourceDictionary>
+        <Style TargetType="{x:Type xc:MessageBox}">
+            <Setter Property="Width" Value="600" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}" />
+            <Setter Property="ButtonRegionBackground" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+            <Setter Property="CaptionForeground" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+            <Setter Property="WindowBackground" Value="#4e38c9" />
+            <Setter Property="WindowBorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}" />
+            <Setter Property="CloseButtonStyle">
+                <Setter.Value>
+                    <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                        <Setter Property="IsEnabled" Value="False" />
+                        <Setter Property="Opacity" Value="0" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -64,7 +55,7 @@
         </xc:WindowContainer>
         <xc:BusyIndicator
             x:Name="MainBusyIndicator"
-			IsBusy="False"
+            IsBusy="False"
             Style="{StaticResource BusyIndicatorProgressStyle}">
             <xc:BusyIndicator.BusyContent>
                 <Grid
@@ -107,12 +98,12 @@
                 </Grid>
             </xc:BusyIndicator.BusyContent>
             <Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
-				<Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
                     <Grid.Resources>
                         <!--<Color x:Key="WhiteColor">White</Color>
                         <Color x:Key="GoldColor">Gold</Color>-->
@@ -154,33 +145,33 @@
                         </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-					<Menu Width="Auto" Height="28" x:Name="TopMenuBar">
-						<MenuItem Header="File" />
-						<MenuItem Header="Edit" />
-						<MenuItem Header="Settings" />
-						<MenuItem Header="View" />
-						<MenuItem Header="Go" />
-						<MenuItem Header="Download">
-							<MenuItem Header="Check For Mod Updates...">
-								<MenuItem x:Name="UpdateAllSourcesMenuItem" Header="All" />
-								<Separator />
-								<MenuItem x:Name="UpdateGitHubMenuItem" Header="GitHub" />
-								<MenuItem x:Name="UpdateNexusModsMenuItem" Header="Nexus Mods" />
-								<MenuItem x:Name="UpdateSteamWorkshopMenuItem" Header="Steam Workshop" />
-							</MenuItem>
-							<Separator />
-						</MenuItem>
-						<MenuItem
+                    <Menu Width="Auto" Height="28" x:Name="TopMenuBar">
+                        <MenuItem Header="File" />
+                        <MenuItem Header="Edit" />
+                        <MenuItem Header="Settings" />
+                        <MenuItem Header="View" />
+                        <MenuItem Header="Go" />
+                        <MenuItem Header="Download">
+                            <MenuItem Header="Check For Mod Updates...">
+                                <MenuItem x:Name="UpdateAllSourcesMenuItem" Header="All" />
+                                <Separator />
+                                <MenuItem x:Name="UpdateGitHubMenuItem" Header="GitHub" />
+                                <MenuItem x:Name="UpdateNexusModsMenuItem" Header="Nexus Mods" />
+                                <MenuItem x:Name="UpdateSteamWorkshopMenuItem" Header="Steam Workshop" />
+                            </MenuItem>
+                            <Separator />
+                        </MenuItem>
+                        <MenuItem
                             x:Name="ToolsMenuItem"
                             Header="Tools"
                             Style="{StaticResource MenuItemHightlightBlink}" />
-						<MenuItem x:Name="HelpMenuItem" Header="Help" />
-					</Menu>
-					<Border
+                        <MenuItem x:Name="HelpMenuItem" Header="Help" />
+                    </Menu>
+                    <Border
                         x:Name="UpdatesButtonPanel"
                         Grid.Column="1"
                         Padding="8,0"
@@ -330,17 +321,17 @@
                     Height="1"
                     Background="LightGray"
                     BorderThickness="0" />
-				<reactiveui:RoutedViewHost Grid.Row="2" x:Name="RoutedViewHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
-				<!--<local:ModUpdatesLayout
-                    x:Name="ModUpdaterPanel"
-                    Grid.Row="2"
-                    Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
-				<local:DeleteFilesConfirmationView
-					Visibility="Collapsed"
-                    x:Name="DeleteFilesView"
-                    Grid.RowSpan="3"
-                    Panel.ZIndex="99" />-->
-			</Grid>
+                <reactiveui:RoutedViewHost Grid.Row="2" x:Name="RoutedViewHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                <!--<local:ModUpdatesLayout
+                x:Name="ModUpdaterPanel"
+                Grid.Row="2"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
+                <local:DeleteFilesConfirmationView
+                Visibility="Collapsed"
+                x:Name="DeleteFilesView"
+                Grid.RowSpan="3"
+                Panel.ZIndex="99" />-->
+            </Grid>
         </xc:BusyIndicator>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

@@ -1,108 +1,103 @@
 ﻿<local:AppUpdateWindowBase
-	x:Class="DivinityModManager.Windows.AppUpdateWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-	xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
-	xmlns:controls="clr-namespace:DivinityModManager.Controls"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:local="clr-namespace:DivinityModManager.Windows"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:updater="clr-namespace:AutoUpdaterDotNET;assembly=AutoUpdater.NET"
-	Title="Updater"
-	Width="1200"
-	Height="600"
-	TitleBarBackground="#4e38c9"
-	TitleBarForeground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
-	mc:Ignorable="d">
-	<Window.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-			<Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-				<Setter Property="Width" Value="120" />
-				<Setter Property="Margin" Value="10,0" />
-			</Style>
-			<Style TargetType="StackPanel">
-				<Setter Property="VerticalAlignment" Value="Center" />
-				<Setter Property="Orientation" Value="Horizontal" />
-				<Setter Property="Margin" Value="10" />
-			</Style>
-		</ResourceDictionary>
-	</Window.Resources>
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
-		<Separator
-			Grid.Row="1"
-			Margin="0,18,0,4"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch" />
-		<TextBlock
-			Grid.Row="2"
-			Padding="4"
-			FontSize="24"
-			Text="Changelog"
-			TextAlignment="Center" />
-		<FlowDocumentScrollViewer
-			x:Name="UpdateChangelogView"
-			Grid.Row="3"
-			ScrollViewer.CanContentScroll="True"
-			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-			ScrollViewer.VerticalScrollBarVisibility="Auto">
-			<FlowDocumentScrollViewer.Resources>
-				<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
-					<Setter Property="TextWrapping" Value="Wrap" />
-				</Style>
-			</FlowDocumentScrollViewer.Resources>
-		</FlowDocumentScrollViewer>
-		<Grid Grid.Row="0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*" />
-				<RowDefinition Height="4*" />
-			</Grid.RowDefinitions>
-			<TextBlock
-				x:Name="UpdateDescription"
-				Padding="0,10"
-				FontSize="18"
-				Foreground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
-				Text=""
-				TextAlignment="Center" />
-			<StackPanel
-				Grid.Row="1"
-				Margin="4,0,4,0"
-				HorizontalAlignment="Center"
-				Background="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}"
-				Orientation="Horizontal">
-				<Button
-					x:Name="ConfirmButton"
-					HorizontalAlignment="Center"
-					Background="#FF267E26"
-					Content="Download"
-					ToolTip="Download Update">
-					<Button.Resources>
-						<Style TargetType="Border">
-							<Setter Property="CornerRadius" Value="5" />
-						</Style>
-					</Button.Resources>
-				</Button>
-				<Button
-					x:Name="SkipButton"
-					HorizontalAlignment="Center"
-					Content="Skip"
-					ToolTip="Skip Update">
-					<Button.Resources>
-						<Style TargetType="Border">
-							<Setter Property="CornerRadius" Value="5" />
-						</Style>
-					</Button.Resources>
-				</Button>
-			</StackPanel>
-		</Grid>
-	</Grid>
+    x:Class="DivinityModManager.Windows.AppUpdateWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:controls="clr-namespace:DivinityModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DivinityModManager.Windows"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:updater="clr-namespace:AutoUpdaterDotNET;assembly=AutoUpdater.NET"
+    Title="Updater"
+    Width="1200"
+    Height="600"
+    TitleBarBackground="#4e38c9"
+    TitleBarForeground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Margin" Value="10,0" />
+        </Style>
+        <Style TargetType="StackPanel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="10" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Separator
+            Grid.Row="1"
+            Margin="0,18,0,4"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch" />
+        <TextBlock
+            Grid.Row="2"
+            Padding="4"
+            FontSize="24"
+            Text="Changelog"
+            TextAlignment="Center" />
+        <FlowDocumentScrollViewer
+            x:Name="UpdateChangelogView"
+            Grid.Row="3"
+            ScrollViewer.CanContentScroll="True"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <FlowDocumentScrollViewer.Resources>
+                <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+            </FlowDocumentScrollViewer.Resources>
+        </FlowDocumentScrollViewer>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="4*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                x:Name="UpdateDescription"
+                Padding="0,10"
+                FontSize="18"
+                Foreground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
+                Text=""
+                TextAlignment="Center" />
+            <StackPanel
+                Grid.Row="1"
+                Margin="4,0,4,0"
+                HorizontalAlignment="Center"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="ConfirmButton"
+                    HorizontalAlignment="Center"
+                    Background="#FF267E26"
+                    Content="Download"
+                    ToolTip="Download Update">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5" />
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button
+                    x:Name="SkipButton"
+                    HorizontalAlignment="Center"
+                    Content="Skip"
+                    ToolTip="Skip Update">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5" />
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
 </local:AppUpdateWindowBase>

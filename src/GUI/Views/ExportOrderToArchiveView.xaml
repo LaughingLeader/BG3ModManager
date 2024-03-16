@@ -1,183 +1,173 @@
 ﻿<local:ExportOrderToArchiveViewViewBase
-	x:Class="DivinityModManager.Views.ExportOrderToArchiveView"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
-	xmlns:behavior="clr-namespace:DivinityModManager.Controls.Behavior"
-	xmlns:controls="clr-namespace:DivinityModManager.Controls"
-	xmlns:conv="clr-namespace:DivinityModManager.Converters"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
-	xmlns:dd="urn:gong-wpf-dragdrop"
-	xmlns:local="clr-namespace:DivinityModManager.Views"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:reactiveui="http://reactiveui.net"
-	xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
-	xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
-	mc:Ignorable="d">
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Themes/MainResourceDictionary.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<UserControl.Style>
-		<Style BasedOn="{StaticResource {x:Type UserControl}}" TargetType="UserControl" />
-	</UserControl.Style>
-	<xc:BusyIndicator x:Name="ProgressIndicator" Style="{StaticResource BusyIndicatorProgressStyle}">
-		<xc:BusyIndicator.BusyContent>
-			<Grid
-				Margin="4"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<TextBlock
-					x:Name="TaskProgressTitleText"
-					HorizontalAlignment="Center"
-					FontSize="16"
-					FontWeight="Bold" />
-				<DockPanel Grid.Row="1" Margin="8">
-					<TextBlock
-						x:Name="TaskProgressWorkText"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						DockPanel.Dock="Bottom"
-						TextAlignment="Center" />
-					<ProgressBar
-						x:Name="TaskProgressBar"
-						MinHeight="15"
-						VerticalAlignment="Center"
-						DockPanel.Dock="Top"
-						Maximum="1" />
-				</DockPanel>
-				<Button
-					x:Name="CancelProgressButton"
-					Grid.Row="2"
-					Margin="8,0,8,8"
-					Padding="20,4"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center"
-					Content="Cancel" />
-			</Grid>
-		</xc:BusyIndicator.BusyContent>
-		<Grid>
-			<Grid.Resources>
-				<ControlTemplate x:Key="VerticalGridSplitter" TargetType="{x:Type GridSplitter}">
-					<Border
-						Margin="0,-5"
-						HorizontalAlignment="Stretch"
-						Background="Transparent">
-						<TextBlock
-							Height="1"
-							HorizontalAlignment="Stretch"
-							Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}" />
-					</Border>
-				</ControlTemplate>
-			</Grid.Resources>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="1*" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
-			<StackPanel Orientation="Vertical">
-				<TextBlock
-					Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}"
-					FontSize="24"
-					Text="Mods"
-					TextAlignment="Center" />
-				<Rectangle Height="2" Fill="LightGray" />
-			</StackPanel>
-			<ListView
-				x:Name="FilesListView"
-				Grid.Row="1"
-				BorderThickness="0">
-				<ListView.View>
-					<GridView
-						x:Name="FileListGridView"
-						AllowsColumnReorder="True"
-						ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
-						<GridView.Columns>
-							<GridViewColumn Width="Auto" HeaderContainerStyle="{StaticResource GridViewCenteredContainerStyle}">
-								<GridViewColumn.Header>
-									<CheckBox
-										Command="{Binding SelectAllCommand}"
-										IsChecked="{Binding AllSelected, Mode=OneWay}"
-										ToolTip="{Binding SelectAllTooltip}" />
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<CheckBox
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											IsChecked="{Binding IsSelected}" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn Width="Auto">
-								<GridViewColumn.Header>
-									<TextBlock Text="Name" />
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<TextBlock
-											HorizontalAlignment="Stretch"
-											Text="{Binding Mod.DisplayName}"
-											ToolTip="{Binding Mod.Description}" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn
-								Width="Auto"
-								Header="Path"
-								HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<TextBlock Text="{Binding Mod.FilePath}" ToolTip="{Binding Mod.FilePath}" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-						</GridView.Columns>
-					</GridView>
-				</ListView.View>
-			</ListView>
-			<Grid
-				Grid.Row="2"
-				Margin="4"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
-					<StackPanel Orientation="Horizontal">
-						<CheckBox
-							x:Name="IncludeOverridesCheckbox"
-							Margin="8"
-							HorizontalAlignment="Center"
-							Content="Include Overrides"
-							ToolTip="Add all override paks to the archive." />
-						<ComboBox Name="OrderTypeComboBox" />
-					</StackPanel>
-					<StackPanel Grid.Row="2" Orientation="Horizontal">
-						<Button
-							x:Name="ConfirmButton"
-							Margin="4,0"
-							Padding="12,2"
-							Content="Delete" />
-						<Button
-							x:Name="CancelButton"
-							Margin="4,0"
-							Padding="12,2"
-							Content="Cancel" />
-					</StackPanel>
-				</Grid>
-			</Grid>
-		</Grid>
-	</xc:BusyIndicator>
+    x:Class="DivinityModManager.Views.ExportOrderToArchiveView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:behavior="clr-namespace:DivinityModManager.Controls.Behavior"
+    xmlns:controls="clr-namespace:DivinityModManager.Controls"
+    xmlns:conv="clr-namespace:DivinityModManager.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:local="clr-namespace:DivinityModManager.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
+    xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+    mc:Ignorable="d">
+    <xc:BusyIndicator x:Name="ProgressIndicator" Style="{StaticResource BusyIndicatorProgressStyle}">
+        <xc:BusyIndicator.BusyContent>
+            <Grid
+                Margin="4"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    x:Name="TaskProgressTitleText"
+                    HorizontalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="Bold" />
+                <DockPanel Grid.Row="1" Margin="8">
+                    <TextBlock
+                        x:Name="TaskProgressWorkText"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Bottom"
+                        TextAlignment="Center" />
+                    <ProgressBar
+                        x:Name="TaskProgressBar"
+                        MinHeight="15"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Top"
+                        Maximum="1" />
+                </DockPanel>
+                <Button
+                    x:Name="CancelProgressButton"
+                    Grid.Row="2"
+                    Margin="8,0,8,8"
+                    Padding="20,4"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Content="Cancel" />
+            </Grid>
+        </xc:BusyIndicator.BusyContent>
+        <Grid>
+            <Grid.Resources>
+                <ControlTemplate x:Key="VerticalGridSplitter" TargetType="{x:Type GridSplitter}">
+                    <Border
+                        Margin="0,-5"
+                        HorizontalAlignment="Stretch"
+                        Background="Transparent">
+                        <TextBlock
+                            Height="1"
+                            HorizontalAlignment="Stretch"
+                            Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}" />
+                    </Border>
+                </ControlTemplate>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical">
+                <TextBlock
+                    Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}"
+                    FontSize="24"
+                    Text="Mods"
+                    TextAlignment="Center" />
+                <Rectangle Height="2" Fill="LightGray" />
+            </StackPanel>
+            <ListView
+                x:Name="FilesListView"
+                Grid.Row="1"
+                BorderThickness="0">
+                <ListView.View>
+                    <GridView
+                        x:Name="FileListGridView"
+                        AllowsColumnReorder="True"
+                        ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
+                        <GridView.Columns>
+                            <GridViewColumn Width="Auto" HeaderContainerStyle="{StaticResource GridViewCenteredContainerStyle}">
+                                <GridViewColumn.Header>
+                                    <CheckBox
+                                        Command="{Binding SelectAllCommand}"
+                                        IsChecked="{Binding AllSelected, Mode=OneWay}"
+                                        ToolTip="{Binding SelectAllTooltip}" />
+                                </GridViewColumn.Header>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding IsSelected}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="Auto">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Name" />
+                                </GridViewColumn.Header>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            HorizontalAlignment="Stretch"
+                                            Text="{Binding Mod.DisplayName}"
+                                            ToolTip="{Binding Mod.Description}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn
+                                Width="Auto"
+                                Header="Path"
+                                HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Mod.FilePath}" ToolTip="{Binding Mod.FilePath}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Grid
+                Grid.Row="2"
+                Margin="4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox
+                            x:Name="IncludeOverridesCheckbox"
+                            Margin="8"
+                            HorizontalAlignment="Center"
+                            Content="Include Overrides"
+                            ToolTip="Add all override paks to the archive." />
+                        <ComboBox Name="OrderTypeComboBox" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button
+                            x:Name="ConfirmButton"
+                            Margin="4,0"
+                            Padding="12,2"
+                            Content="Delete" />
+                        <Button
+                            x:Name="CancelButton"
+                            Margin="4,0"
+                            Padding="12,2"
+                            Content="Cancel" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </xc:BusyIndicator>
 </local:ExportOrderToArchiveViewViewBase>

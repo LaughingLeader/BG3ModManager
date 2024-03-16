@@ -1,26 +1,26 @@
 ﻿<ResourceDictionary
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-	xmlns:local="clr-namespace:DivinityModManager.Themes"
-	xmlns:xcthemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit.NET5">
-	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml" />
-	</ResourceDictionary.MergedDictionaries>
-	<!--  colors  -->
-	<Color x:Key="{x:Static local:DivinityColors.TagBackgroundColor}">#495588</Color>
-	<Color x:Key="{x:Static local:DivinityColors.CustomTagBackgroundColor}">#497688</Color>
-	<Color x:Key="{x:Static local:DivinityColors.ModeTagBackgroundColor}">#5e4988</Color>
-	<Color x:Key="{x:Static local:DivinityColors.ListInactiveColor}">#10000000</Color>
-	<Style x:Key="{x:Static local:DivinityColors.ListInactiveRectangle}" TargetType="Rectangle">
-		<Setter Property="Fill" Value="Red" />
-		<Setter Property="Opacity" Value="0.1" />
-	</Style>
-	<!--  brushes  -->
-	<SolidColorBrush x:Key="{x:Static local:DivinityColors.TagBackgroundBrush}" Color="{DynamicResource {x:Static local:DivinityColors.TagBackgroundColor}}" />
-	<SolidColorBrush x:Key="{x:Static local:DivinityColors.CustomTagBackgroundBrush}" Color="{DynamicResource {x:Static local:DivinityColors.CustomTagBackgroundColor}}" />
-	<SolidColorBrush x:Key="{x:Static local:DivinityColors.ModeTagBackgroundBrush}" Color="{DynamicResource {x:Static local:DivinityColors.ModeTagBackgroundColor}}" />
-	<SolidColorBrush x:Key="{x:Static local:DivinityColors.ListInactiveBrush}" Color="{DynamicResource {x:Static local:DivinityColors.ListInactiveColor}}" />
-	<SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=GlyphNormalForegroundKey}" Color="#FF575757" />
-	<SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=GlyphDisabledForegroundKey}" Color="#FFC5C5C5" />
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:local="clr-namespace:DivinityModManager.Themes"
+    xmlns:xcthemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit.NET5">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <!--  colors  -->
+    <Color x:Key="{x:Static local:DivinityColors.TagBackgroundColor}">#495588</Color>
+    <Color x:Key="{x:Static local:DivinityColors.CustomTagBackgroundColor}">#497688</Color>
+    <Color x:Key="{x:Static local:DivinityColors.ModeTagBackgroundColor}">#5e4988</Color>
+    <Color x:Key="{x:Static local:DivinityColors.ListInactiveColor}">#10000000</Color>
+    <Style x:Key="{x:Static local:DivinityColors.ListInactiveRectangle}" TargetType="Rectangle">
+        <Setter Property="Fill" Value="Red" />
+        <Setter Property="Opacity" Value="0.1" />
+    </Style>
+    <!--  brushes  -->
+    <SolidColorBrush x:Key="{x:Static local:DivinityColors.TagBackgroundBrush}" Color="{DynamicResource {x:Static local:DivinityColors.TagBackgroundColor}}" />
+    <SolidColorBrush x:Key="{x:Static local:DivinityColors.CustomTagBackgroundBrush}" Color="{DynamicResource {x:Static local:DivinityColors.CustomTagBackgroundColor}}" />
+    <SolidColorBrush x:Key="{x:Static local:DivinityColors.ModeTagBackgroundBrush}" Color="{DynamicResource {x:Static local:DivinityColors.ModeTagBackgroundColor}}" />
+    <SolidColorBrush x:Key="{x:Static local:DivinityColors.ListInactiveBrush}" Color="{DynamicResource {x:Static local:DivinityColors.ListInactiveColor}}" />
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=GlyphNormalForegroundKey}" Color="#FF575757" />
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=GlyphDisabledForegroundKey}" Color="#FFC5C5C5" />
 </ResourceDictionary>
