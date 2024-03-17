@@ -189,20 +189,14 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			ModUpdatesAvailable = false;
 			Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
 			Window.TaskbarItemInfo.ProgressValue = 0;
+
+			LoadAppConfig();
 		}, RxApp.MainThreadScheduler);
 
 		await Views.ModOrder.RefreshAsync(this, token);
 
 		await Observable.Start(() =>
 		{
-			LoadAppConfig();
-
-			if (!GameDirectoryFound)
-			{
-				ShowAlert("Game Data folder is not valid. Please set it in the preferences window and refresh", AlertType.Danger);
-				App.WM.Settings.Toggle(true);
-			}
-
 			OnMainProgressComplete();
 
 			if (AppSettings.Features.ScriptExtender)
@@ -211,12 +205,17 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			}
 
 			RefreshModUpdatesCommand.Execute().Subscribe();
+
+			if (!GameDirectoryFound)
+			{
+				ShowAlert("Game Data folder is not valid. Please set it in the preferences window and refresh", AlertType.Danger);
+				App.WM.Settings.Toggle(true);
+			}
 		}, RxApp.MainThreadScheduler);
 	}
 
 	private IObservable<Unit> StartRefreshAsyncObs()
 	{
-		DivinityApp.Log("StartRefreshAsyncObs");
 		//var obs = ObservableEx.CreateAndStartAsync(token => RefreshAsync(token), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
 		//obs.Subscribe();
 		var obs = Observable.StartAsync(RefreshAsync, RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
@@ -599,7 +598,7 @@ Directory the zip will be extracted to:
 
 			CheckExtenderUpdaterVersion();
 			CheckExtenderInstalledVersion(token);
-			//UpdateExtenderVersionForAllMods();
+			UpdateExtenderVersionForAllMods();
 
 			return Unit.Default;
 		}, RxApp.MainThreadScheduler);
