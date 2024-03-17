@@ -101,11 +101,13 @@ public class PathwaysService
 					Directory.CreateDirectory(modPakFolder);
 				}
 
+#if DOS2
 				if (!Directory.Exists(gmCampaignsFolder))
 				{
 					DivinityApp.Log($"No GM campaigns folder found at '{gmCampaignsFolder}'. Creating folder.");
 					Directory.CreateDirectory(gmCampaignsFolder);
 				}
+#endif
 
 				if (!Directory.Exists(profileFolder))
 				{

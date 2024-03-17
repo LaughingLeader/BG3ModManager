@@ -937,43 +937,53 @@ Directory the zip will be extracted to:
 		if(!Services.Pathways.SetGamePathways(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
 		{
 			GameDirectoryFound = false;
-			var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog()
-			{
-				Multiselect = false,
-				Description = "Set the path to the Baldur's Gate 3 root installation folder",
-				UseDescriptionForTitle = true,
-				SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer)
-			};
 
-			if (dialog.ShowDialog(Window) == true)
+			if(!FileUtils.HasReadPermission(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
 			{
-				var data = PathwayData;
-				var dir = dialog.SelectedPath;
-				var dataDirectory = Path.Join(dir, AppSettings.DefaultPathways.GameDataFolder);
-				var exePath = Path.Join(dir, AppSettings.DefaultPathways.Steam.ExePath);
-				if (!File.Exists(exePath))
+				var message = $"BG3MM lacks permission to read one or both of the following paths:\nGame Data Path: ({Settings.GameDataPath})\nGame Executable Path: ({Settings.GameExecutablePath})";
+				var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window, message, "File Permission Issue",
+				MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, Window.MessageBoxStyle);
+			}
+			else
+			{
+				var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog()
 				{
-					exePath = Path.Join(dir, AppSettings.DefaultPathways.GOG.ExePath);
-				}
-				if (Directory.Exists(dataDirectory))
+					Multiselect = false,
+					Description = "Set the path to the Baldur's Gate 3 root installation folder",
+					UseDescriptionForTitle = true,
+					SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer)
+				};
+
+				if (dialog.ShowDialog(Window) == true)
 				{
-					Settings.GameDataPath = dataDirectory;
-					GameDirectoryFound = true;
+					var data = PathwayData;
+					var dir = dialog.SelectedPath;
+					var dataDirectory = Path.Join(dir, AppSettings.DefaultPathways.GameDataFolder);
+					var exePath = Path.Join(dir, AppSettings.DefaultPathways.Steam.ExePath);
+					if (!File.Exists(exePath))
+					{
+						exePath = Path.Join(dir, AppSettings.DefaultPathways.GOG.ExePath);
+					}
+					if (Directory.Exists(dataDirectory))
+					{
+						Settings.GameDataPath = dataDirectory;
+						GameDirectoryFound = true;
+					}
+					else
+					{
+						DivinityApp.ShowAlert("Failed to find Data folder with given installation directory", AlertType.Danger);
+					}
+					if (File.Exists(exePath))
+					{
+						Settings.GameExecutablePath = exePath;
+					}
+					else
+					{
+						DivinityApp.ShowAlert("Failed to find bg3.exe path with given installation directory", AlertType.Danger);
+					}
+					data.InstallPath = dir;
+					//Services.Settings.TrySaveAll(out _);
 				}
-				else
-				{
-					DivinityApp.ShowAlert("Failed to find Data folder with given installation directory", AlertType.Danger);
-				}
-				if (File.Exists(exePath))
-				{
-					Settings.GameExecutablePath = exePath;
-				}
-				else
-				{
-					DivinityApp.ShowAlert("Failed to find bg3.exe path with given installation directory", AlertType.Danger);
-				}
-				data.InstallPath = dir;
-				//Services.Settings.TrySaveAll(out _);
 			}
 		}
 		else
