@@ -1060,8 +1060,8 @@
     <DataTemplate x:Key="ModNameTemplate" DataType="{x:Type data:DivinityModData}">
         <controls:ModEntryGrid>
             <controls:ModEntryGrid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="50" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ModPropertiesImageColumn" />
             </controls:ModEntryGrid.ColumnDefinitions>
             <TextBlock
                 x:Name="ModNameText"
@@ -1074,7 +1074,7 @@
                 Grid.Column="1"
                 Padding="0,0,4,0"
                 BorderThickness="0">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <!--<Image
                     Width="16"
                     Height="16"
@@ -1102,34 +1102,6 @@
                     </FlowDocumentScrollViewer>
                     </Image.ToolTip>
                     </Image>-->
-                    <Image
-                        x:Name="OsirisStatusImage"
-                        Width="16"
-                        Height="16"
-                        MaxWidth="16"
-                        MaxHeight="16"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        DataContext="{Binding}"
-                        RenderOptions.BitmapScalingMode="HighQuality"
-                        Stretch="UniformToFill"
-                        ToolTip="{Binding OsirisStatusToolTipText}"
-                        Visibility="{Binding OsirisStatusVisibility}">
-                        <Image.Style>
-                            <Style TargetType="{x:Type Image}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=OsirisModStatus}" Value="{x:Static dapp:DivinityOsirisModStatus.SCRIPTS}">
-                                        <Setter Property="Source" Value="{StaticResource OsirisImage}" />
-                                        <Setter Property="Opacity" Value="1.0" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Path=OsirisModStatus}" Value="{x:Static dapp:DivinityOsirisModStatus.MODFIXER}">
-                                        <Setter Property="Source" Value="{StaticResource OsirisModFixerImage}" />
-                                        <Setter Property="Opacity" Value="1.0" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Image.Style>
-                    </Image>
                     <Image
                         x:Name="ExtenderStatusImage"
                         Width="16"
@@ -1169,6 +1141,34 @@
                                     <DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.SUPPORTS}">
                                         <Setter Property="Source" Value="{StaticResource DivinityEngine2}" />
                                         <Setter Property="Opacity" Value="0.5" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                    <Image
+                        x:Name="OsirisStatusImage"
+                        Width="16"
+                        Height="16"
+                        MaxWidth="16"
+                        MaxHeight="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        DataContext="{Binding}"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Stretch="UniformToFill"
+                        ToolTip="{Binding OsirisStatusToolTipText}"
+                        Visibility="{Binding OsirisStatusVisibility}">
+                        <Image.Style>
+                            <Style TargetType="{x:Type Image}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=OsirisModStatus}" Value="{x:Static dapp:DivinityOsirisModStatus.SCRIPTS}">
+                                        <Setter Property="Source" Value="{StaticResource OsirisImage}" />
+                                        <Setter Property="Opacity" Value="1.0" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=OsirisModStatus}" Value="{x:Static dapp:DivinityOsirisModStatus.MODFIXER}">
+                                        <Setter Property="Source" Value="{StaticResource OsirisModFixerImage}" />
+                                        <Setter Property="Opacity" Value="1.0" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

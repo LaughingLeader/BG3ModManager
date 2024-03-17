@@ -110,6 +110,9 @@ public class ModListView : ListView
 
 	public ModListView() : base()
 	{
+		//This is so the grid that displays images like "Has Mod Fixer" and "Script Extender" stay lined up
+		Grid.SetIsSharedSizeScope(this, true);
+
 		if (!HideHeader)
 		{
 			Loaded += (o, e) =>
