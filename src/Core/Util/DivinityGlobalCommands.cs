@@ -14,11 +14,11 @@ namespace DivinityModManager.Util;
 
 public class DivinityGlobalCommands : ReactiveObject
 {
-	private IDivinityAppViewModel _viewModel;
+	private IModOrderViewModel _viewModel;
 
-	public IDivinityAppViewModel ViewModel => _viewModel;
+	public IModOrderViewModel ViewModel => _viewModel;
 
-	public void SetViewModel(IDivinityAppViewModel vm)
+	public void SetViewModel(IModOrderViewModel vm)
 	{
 		_viewModel = vm;
 		this.RaisePropertyChanged(nameof(ViewModel));
