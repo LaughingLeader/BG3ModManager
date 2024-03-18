@@ -6,11 +6,11 @@ using System.Collections.ObjectModel;
 
 namespace DivinityModManager.ViewModels;
 
-public interface IDivinityAppViewModel
+public interface IModOrderViewModel
 {
 	ObservableCollectionExtended<DivinityModData> ActiveMods { get; }
 	ObservableCollectionExtended<DivinityModData> InactiveMods { get; }
-	ObservableCollectionExtended<DivinityProfileData> Profiles { get; }
+	ReadOnlyObservableCollection<DivinityProfileData> Profiles { get; }
 	//ReadOnlyObservableCollection<DivinityModData> Mods { get; }
 	//ReadOnlyObservableCollection<DivinityModData> WorkshopMods { get; }
 
