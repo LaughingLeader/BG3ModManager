@@ -157,8 +157,11 @@ namespace DivinityModManager.AppServices
 				if (!GitHub.CacheData.CacheUpdated)
 				{
 					await GitHub.LoadCacheAsync(currentAppVersion, token);
-					await GitHub.Update(mods, token);
-					await GitHub.SaveCacheAsync(true, currentAppVersion, token);
+					if(GitHub.IsEnabled)
+					{
+						await GitHub.Update(mods, token);
+						await GitHub.SaveCacheAsync(true, currentAppVersion, token);
+					}
 
 					await Observable.Start(() =>
 					{
@@ -191,8 +194,11 @@ namespace DivinityModManager.AppServices
 				if (!NexusMods.CacheData.CacheUpdated)
 				{
 					await NexusMods.LoadCacheAsync(currentAppVersion, token);
-					await NexusMods.Update(mods, token);
-					await NexusMods.SaveCacheAsync(true, currentAppVersion, token);
+					if (NexusMods.IsEnabled)
+					{
+						await NexusMods.Update(mods, token);
+						await NexusMods.SaveCacheAsync(true, currentAppVersion, token);
+					}
 					await Observable.Start(() =>
 					{
 						foreach (var mod in mods)
@@ -223,8 +229,11 @@ namespace DivinityModManager.AppServices
 				if (!SteamWorkshop.CacheData.CacheUpdated)
 				{
 					await SteamWorkshop.LoadCacheAsync(currentAppVersion, token);
-					await SteamWorkshop.Update(mods, token);
-					await SteamWorkshop.SaveCacheAsync(true, currentAppVersion, token);
+					if (SteamWorkshop.IsEnabled)
+					{
+						await SteamWorkshop.Update(mods, token);
+						await SteamWorkshop.SaveCacheAsync(true, currentAppVersion, token);
+					}
 					await Observable.Start(() =>
 					{
 						foreach (var mod in mods)
