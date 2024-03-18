@@ -59,7 +59,7 @@ using System.Collections.Immutable;
 using DivinityModManager.AppServices;
 
 namespace DivinityModManager.ViewModels.Main;
-public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivinityAppViewModel
+public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModOrderViewModel
 {
 	public string UrlPathSegment => "modorder";
 	public IScreen HostScreen { get; }
@@ -71,7 +71,11 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 	public ModListDropHandler DropHandler { get; }
 	public ModListDragHandler DragHandler { get; }
 
-	public ObservableCollectionExtended<DivinityProfileData> Profiles { get; }
+	private readonly SourceCache<DivinityProfileData, string> profiles = new(x => x.FilePath);
+
+	private readonly ReadOnlyObservableCollection<DivinityProfileData> _uiprofiles;
+	public ReadOnlyObservableCollection<DivinityProfileData> Profiles => _uiprofiles;
+
 	public ObservableCollectionExtended<DivinityModData> ActiveMods { get; }
 	public ObservableCollectionExtended<DivinityModData> InactiveMods { get; }
 
@@ -79,8 +83,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 	public ReadOnlyObservableCollection<DivinityModData> ForceLoadedMods => _forceLoadedMods;
 
 	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
-
-	public List<DivinityLoadOrder> SavedModOrderList { get; }
+	public List<DivinityLoadOrder> ExternalModOrders { get; }
 
 	private readonly Regex filterPropertyPattern = new("@([^\\s]+?)([\\s]+)([^@\\s]*)");
 	private readonly Regex filterPropertyPatternWithQuotes = new("@([^\\s]+?)([\\s\"]+)([^@\"]*)");
@@ -404,11 +407,10 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;
 
-		Profiles = [];
 		ActiveMods = [];
 		InactiveMods = [];
 		ModOrderList = [];
-		SavedModOrderList = [];
+		ExternalModOrders = [];
 
 		DropHandler = new(host);
 		DragHandler = new(host);
@@ -419,13 +421,15 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 
 		var modManager = Services.Mods;
 
-		var isRefreshing = host.RefreshCommand.IsExecuting;
+		var isRefreshing = host.WhenAnyValue(x => x.IsRefreshing);
 
 		host.WhenAnyValue(x => x.IsLocked).BindTo(this, x => x.IsLocked);
 
 		var isActive = HostScreen.Router.CurrentViewModel.Select(x => x == this);
 		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
 		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
+
+		profiles.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out _uiprofiles).Subscribe();
 
 		modManager.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
 		modManager.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
@@ -712,7 +716,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 		string lastOrderName = "";
 		if (SelectedModOrder != null)
 		{
-			lastActiveOrder = SelectedModOrder.Order.ToList();
+			lastActiveOrder = [.. SelectedModOrder.Order];
 			lastOrderName = SelectedModOrder.Name;
 		}
 
@@ -779,10 +783,11 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 				Services.Mods.SetLoadedMods(loadedMods, main.NexusModsSupportEnabled);
 				//SetLoadedGMCampaigns(loadedGMCampaigns);
 
-				Profiles.AddRange(loadedProfiles);
+				profiles.Clear();
+				profiles.AddOrUpdate(loadedProfiles);
 
-				SavedModOrderList.Clear();
-				SavedModOrderList.AddRange(savedModOrderList);
+				ExternalModOrders.Clear();
+				ExternalModOrders.AddRange(savedModOrderList);
 
 				var index = Profiles.IndexOf(Profiles.FirstOrDefault(p => p.ProfileName == "Public"));
 				if (index > -1)
@@ -1393,7 +1398,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 
 			DivinityApp.Log($"Profile order: {String.Join(";", SelectedProfile.SavedLoadOrder.Order.Select(x => x.Name))}");
 
-			ModOrderList.AddRange(SavedModOrderList);
+			ModOrderList.AddRange(ExternalModOrders);
 
 			if (!String.IsNullOrEmpty(lastOrderName))
 			{
@@ -1659,12 +1664,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 		{
 			SelectedProfile.SavedLoadOrder
 		};
-		nextOrders.AddRange(SavedModOrderList);
+		nextOrders.AddRange(ExternalModOrders);
 
 		void undo()
 		{
-			SavedModOrderList.Clear();
-			SavedModOrderList.AddRange(lastOrders);
+			ExternalModOrders.Clear();
+			ExternalModOrders.AddRange(lastOrders);
 			BuildModOrderList(lastIndex);
 		};
 
@@ -1679,8 +1684,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 				};
 				newOrder.FilePath = Path.Join(Settings.LoadOrderPath, DivinityModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
 			}
-			SavedModOrderList.Add(newOrder);
-			BuildModOrderList(SavedModOrderList.Count); // +1 due to Current being index 0
+			ExternalModOrders.Add(newOrder);
+			BuildModOrderList(ExternalModOrders.Count); // +1 due to Current being index 0
 		};
 
 		this.CreateSnapshot(undo, redo);
