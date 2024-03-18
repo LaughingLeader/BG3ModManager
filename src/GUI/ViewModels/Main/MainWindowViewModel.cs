@@ -126,7 +126,8 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	public void StartMainProgress(string title)
 	{
-		MainProgressToken ??= new CancellationTokenSource();
+		MainProgressToken?.Dispose();
+		MainProgressToken = new CancellationTokenSource();
 		MainProgressTitle = title;
 		MainProgressWorkText = "";
 		MainProgressValue = 0d;
@@ -140,7 +141,6 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 		{
 			StartMainProgress(title);
 		}, RxApp.MainThreadScheduler);
-		await Task.Delay(TimeSpan.FromMilliseconds(250));
 	}
 
 	[Reactive] public CancellationTokenSource MainProgressToken { get; set; }
@@ -160,7 +160,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[ObservableAsProperty] public Visibility UpdateCountVisibility { get; }
 	[ObservableAsProperty] public Visibility DeveloperModeVisibility { get; }
 
-	public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
+	public ReactiveCommand<Unit, Task> RefreshCommand { get; }
 	public ReactiveCommand<Unit, Unit> CancelMainProgressCommand { get; }
 	public ICommand ToggleUpdatesViewCommand { get; private set; }
 	public ICommand CheckForAppUpdatesCommand { get; set; }
@@ -175,10 +175,12 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	public bool DebugMode { get; set; }
 
-	private async Task RefreshAsync(CancellationToken token)
+	private async Task RefreshAsync()
 	{
 		DivinityApp.Log("Refreshing...");
 		await StartMainProgressAsync(!IsInitialized ? "Loading..." : "Refreshing...");
+
+		var token = MainProgressToken.Token;
 
 		await Observable.Start(() =>
 		{
@@ -193,14 +195,13 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			LoadAppConfig();
 		}, RxApp.MainThreadScheduler);
 
-		await RxApp.MainThreadScheduler.Yield(token);
-		//await Task.Delay(TimeSpan.FromSeconds(5));
+		await Task.Delay(250, token);
 
 		await Views.ModOrder.RefreshAsync(this, token);
 
 		await Observable.Start(() =>
 		{
-			OnMainProgressComplete(250);
+			OnMainProgressComplete();
 
 			if (AppSettings.Features.ScriptExtender)
 			{
@@ -219,10 +220,10 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	private IObservable<Unit> StartRefreshAsyncObs()
 	{
-		var obs = ObservableEx.CreateAndStartAsync(token => RefreshAsync(token), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
+		//var obs = ObservableEx.CreateAndStartAsync(token => RefreshAsync(token), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
 		//var obs = ObservableEx.CreateAndStartAsync(async token => await Task.Delay(30), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
 		//obs.Subscribe();
-		//var obs = Observable.StartAsync(RefreshAsync, RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
+		var obs = Observable.StartAsync(RefreshAsync, RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
 		return obs;
 	}
 
@@ -928,10 +929,6 @@ Directory the zip will be extracted to:
 			Settings.WorkshopPath = "";
 		}
 
-		_updater.GitHub.IsEnabled = githubSupportEnabled;
-		_updater.NexusMods.IsEnabled = nexusModsSupportEnabled;
-		_updater.SteamWorkshop.IsEnabled = workshopSupportEnabled;
-
 		if (Settings.LogEnabled)
 		{
 			Window.ToggleLogging(true);
@@ -1294,9 +1291,9 @@ Directory the zip will be extracted to:
 		_refreshAllModUpdatesBackgroundTask?.Dispose();
 		_refreshAllModUpdatesBackgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
 		{
-			await RefreshGitHubModsUpdatesBackgroundAsync(sch, token);
-			await RefreshNexusModsUpdatesBackgroundAsync(sch, token);
-			await RefreshSteamWorkshopUpdatesBackgroundAsync(sch, token);
+			if(Settings.UpdateSettings.UpdateGitHubMods) await RefreshGitHubModsUpdatesBackgroundAsync(sch, token);
+			if (Settings.UpdateSettings.UpdateNexusMods) await RefreshNexusModsUpdatesBackgroundAsync(sch, token);
+			if (Settings.UpdateSettings.UpdateSteamWorkshopMods) await RefreshSteamWorkshopUpdatesBackgroundAsync(sch, token);
 
 			IsRefreshingModUpdates = false;
 		});
@@ -1672,8 +1669,8 @@ Directory the zip will be extracted to:
 		{
 			StartMainProgress("Loading...");
 			Views.SwitchToModOrderView();
-			RxApp.TaskpoolScheduler.ScheduleAsync(async (_, token) => {
-				await RefreshAsync(token);
+			RxApp.TaskpoolScheduler.ScheduleAsync(async (_,_) => {
+				await RefreshAsync();
 				await Observable.Start(() =>
 				{
 					View.Visibility = Visibility.Visible;
@@ -1934,7 +1931,8 @@ Directory the zip will be extracted to:
 		ModImporter = new(this);
 		Services.RegisterSingleton(ModImporter);
 
-		RefreshCommand = ReactiveCommand.CreateFromObservable(StartRefreshAsyncObs, this.WhenAnyValue(x => x.IsLocked, b => !b));
+		//RefreshCommand = ReactiveCommand.CreateFromObservable(StartRefreshAsyncObs, this.WhenAnyValue(x => x.IsLocked, b => !b));
+		RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b), RxApp.TaskpoolScheduler, RxApp.TaskpoolScheduler);
 		RefreshCommand.IsExecuting.ToUIProperty(this, x => x.IsRefreshing);
 
 		this.WhenAnyValue(x => x.IsRefreshing, x => x.MainProgressIsActive, x => x.IsDragging).Select(PropertyConverters.AnyBool).BindTo(this, x => x.IsLocked);
