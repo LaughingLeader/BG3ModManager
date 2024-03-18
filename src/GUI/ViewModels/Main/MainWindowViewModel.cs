@@ -72,6 +72,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[Reactive] public bool AppSettingsLoaded { get; set; }
 	[Reactive] public bool GameIsRunning { get; private set; }
 	[Reactive] public bool CanForceLaunchGame { get; set; }
+	[Reactive] public bool IsRefreshing { get; private set; }
 	[Reactive] public bool IsRefreshingModUpdates { get; private set; }
 
 	/// <summary>Used to locked certain functionality when data is loading or the user is dragging an item.</summary>
@@ -86,7 +87,6 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[Reactive] public bool HighlightExtenderDownload { get; set; }
 	[Reactive] public bool GameDirectoryFound { get; set; }
 
-	[ObservableAsProperty] public bool IsRefreshing { get; }
 	[ObservableAsProperty] public bool CanLaunchGame { get; }
 	[ObservableAsProperty] public bool IsDeletingFiles { get; }
 
@@ -184,6 +184,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 		await Observable.Start(() =>
 		{
+			IsRefreshing = true;
 			CanCancelProgress = false;
 			Services.Mods.Refresh();
 			Views.ModUpdates.Clear();
@@ -199,6 +200,8 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 		await Views.ModOrder.RefreshAsync(this, token);
 
+		await _updater.LoadCacheAsync(Services.Mods.AllMods, Version, token);
+
 		await Observable.Start(() =>
 		{
 			OnMainProgressComplete();
@@ -208,23 +211,16 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 				LoadExtenderSettingsBackground();
 			}
 
-			RefreshModUpdatesCommand.Execute().Subscribe();
-
 			if (!GameDirectoryFound)
 			{
 				ShowAlert("Game Data folder is not valid. Please set it in the preferences window and refresh", AlertType.Danger);
 				App.WM.Settings.Toggle(true);
 			}
-		}, RxApp.MainThreadScheduler);
-	}
 
-	private IObservable<Unit> StartRefreshAsyncObs()
-	{
-		//var obs = ObservableEx.CreateAndStartAsync(token => RefreshAsync(token), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
-		//var obs = ObservableEx.CreateAndStartAsync(async token => await Task.Delay(30), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
-		//obs.Subscribe();
-		var obs = Observable.StartAsync(RefreshAsync, RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
-		return obs;
+			IsRefreshing = false;
+
+			RefreshModUpdatesCommand.Execute().Subscribe();
+		}, RxApp.MainThreadScheduler);
 	}
 
 	private void DownloadScriptExtender(string exeDir)
@@ -1931,9 +1927,7 @@ Directory the zip will be extracted to:
 		ModImporter = new(this);
 		Services.RegisterSingleton(ModImporter);
 
-		//RefreshCommand = ReactiveCommand.CreateFromObservable(StartRefreshAsyncObs, this.WhenAnyValue(x => x.IsLocked, b => !b));
-		RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b), RxApp.TaskpoolScheduler, RxApp.TaskpoolScheduler);
-		RefreshCommand.IsExecuting.ToUIProperty(this, x => x.IsRefreshing);
+		RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b));
 
 		this.WhenAnyValue(x => x.IsRefreshing, x => x.MainProgressIsActive, x => x.IsDragging).Select(PropertyConverters.AnyBool).BindTo(this, x => x.IsLocked);
 		this.WhenAnyValue(x => x.IsLocked, x => x.IsInitialized, (b1, b2) => !b1 && b2).BindTo(this, x => x.AllowDrop);
@@ -1944,7 +1938,7 @@ Directory the zip will be extracted to:
 		{
 			if (MainProgressToken != null && MainProgressToken.Token.CanBeCanceled)
 			{
-				MainProgressToken.Token.Register(() => { MainProgressIsActive = false; });
+				MainProgressToken.Token.Register(() => { MainProgressIsActive = IsRefreshing = false; });
 				MainProgressToken.Cancel();
 			}
 		}, canCancelProgress);
