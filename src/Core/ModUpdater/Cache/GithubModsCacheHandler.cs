@@ -26,7 +26,6 @@ public class GitHubModsCacheHandler : ReactiveObject, IExternalModCacheHandler<G
 	public GitHubModsCacheHandler()
 	{
 		CacheData = new GitHubModsCachedData();
-		IsEnabled = false;
 	}
 
 	public void OnCacheUpdated(GitHubModsCachedData cachedData)

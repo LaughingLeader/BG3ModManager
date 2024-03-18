@@ -71,57 +71,36 @@ namespace DivinityModManager.AppServices
 
 		public async Task<bool> LoadCacheAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token)
 		{
-			if (SteamWorkshop.IsEnabled)
-			{
-				if ((DateTimeOffset.Now.ToUnixTimeSeconds() - SteamWorkshop.CacheData.LastUpdated >= 3600))
-				{
-					await SteamWorkshop.LoadCacheAsync(currentAppVersion, token);
-				}
-			}
-			if (NexusMods.IsEnabled)
-			{
-				await NexusMods.LoadCacheAsync(currentAppVersion, token);
-			}
-			if (GitHub.IsEnabled)
-			{
-				await GitHub.LoadCacheAsync(currentAppVersion, token);
-			}
+			await SteamWorkshop.LoadCacheAsync(currentAppVersion, token);
+			await NexusMods.LoadCacheAsync(currentAppVersion, token);
+			await GitHub.LoadCacheAsync(currentAppVersion, token);
 
 			await Observable.Start(() =>
 			{
 				foreach (var mod in mods)
 				{
-					if (SteamWorkshop.IsEnabled)
+					if (SteamWorkshop.CacheData.Mods.TryGetValue(mod.UUID, out var workshopData))
 					{
-						if (SteamWorkshop.CacheData.Mods.TryGetValue(mod.UUID, out var workshopData))
+						if (mod.WorkshopData.ModId == 0 || mod.WorkshopData.ModId == workshopData.ModId)
 						{
-							if (mod.WorkshopData.ModId == 0 || mod.WorkshopData.ModId == workshopData.ModId)
+							mod.WorkshopData.ModId = workshopData.ModId;
+							mod.WorkshopData.CreatedDate = DateUtils.UnixTimeStampToDateTime(workshopData.Created);
+							mod.WorkshopData.UpdatedDate = DateUtils.UnixTimeStampToDateTime(workshopData.LastUpdated);
+							mod.WorkshopData.Tags = workshopData.Tags;
+							mod.AddTags(workshopData.Tags);
+							if (workshopData.LastUpdated > 0)
 							{
-								mod.WorkshopData.ModId = workshopData.ModId;
-								mod.WorkshopData.CreatedDate = DateUtils.UnixTimeStampToDateTime(workshopData.Created);
-								mod.WorkshopData.UpdatedDate = DateUtils.UnixTimeStampToDateTime(workshopData.LastUpdated);
-								mod.WorkshopData.Tags = workshopData.Tags;
-								mod.AddTags(workshopData.Tags);
-								if (workshopData.LastUpdated > 0)
-								{
-									mod.LastUpdated = mod.WorkshopData.UpdatedDate;
-								}
+								mod.LastUpdated = mod.WorkshopData.UpdatedDate;
 							}
 						}
 					}
-					if (NexusMods.IsEnabled)
+					if (NexusMods.CacheData.Mods.TryGetValue(mod.UUID, out var nexusData))
 					{
-						if (NexusMods.CacheData.Mods.TryGetValue(mod.UUID, out var nexusData))
-						{
-							mod.NexusModsData.Update(nexusData);
-						}
+						mod.NexusModsData.Update(nexusData);
 					}
-					if (GitHub.IsEnabled)
+					if (GitHub.CacheData.Mods.TryGetValue(mod.UUID, out var githubData))
 					{
-						if (GitHub.CacheData.Mods.TryGetValue(mod.UUID, out var githubData))
-						{
-							mod.GitHubData.Update(githubData);
-						}
+						mod.GitHubData.Update(githubData);
 					}
 				}
 				return Unit.Default;
@@ -175,7 +154,6 @@ namespace DivinityModManager.AppServices
 			var results = new Dictionary<string, GitHubLatestReleaseData>();
 			try
 			{
-				if (!GitHub.IsEnabled) return results;
 				if (!GitHub.CacheData.CacheUpdated)
 				{
 					await GitHub.LoadCacheAsync(currentAppVersion, token);
@@ -195,7 +173,7 @@ namespace DivinityModManager.AppServices
 						return Unit.Default;
 					}, RxApp.MainThreadScheduler);
 				}
-
+				if (!GitHub.IsEnabled) return results;
 				return await Services.Get<IGitHubService>().GetLatestDownloadsForModsAsync(mods, token);
 			}
 			catch (Exception ex)
@@ -210,7 +188,6 @@ namespace DivinityModManager.AppServices
 			var results = new Dictionary<string, NexusModsModDownloadLink>();
 			try
 			{
-				if (!NexusMods.IsEnabled) return results;
 				if (!NexusMods.CacheData.CacheUpdated)
 				{
 					await NexusMods.LoadCacheAsync(currentAppVersion, token);
@@ -228,6 +205,7 @@ namespace DivinityModManager.AppServices
 						return Unit.Default;
 					}, RxApp.MainThreadScheduler);
 				}
+				if (!NexusMods.IsEnabled) return results;
 				return await Services.Get<INexusModsService>().GetLatestDownloadsForModsAsync(mods, token);
 			}
 			catch (Exception ex)
@@ -242,7 +220,6 @@ namespace DivinityModManager.AppServices
 			var results = new Dictionary<string, DivinityModData>();
 			try
 			{
-				if (!SteamWorkshop.IsEnabled) return results;
 				if (!SteamWorkshop.CacheData.CacheUpdated)
 				{
 					await SteamWorkshop.LoadCacheAsync(currentAppVersion, token);
@@ -271,7 +248,7 @@ namespace DivinityModManager.AppServices
 						return Unit.Default;
 					}, RxApp.MainThreadScheduler);
 				}
-
+				if (!SteamWorkshop.IsEnabled) return results;
 				var workshopMods = await DivinityModDataLoader.LoadModPackageDataAsync(settings.WorkshopPath, token);
 				foreach (var mod in workshopMods.Mods)
 				{
