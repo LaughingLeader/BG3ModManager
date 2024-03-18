@@ -106,6 +106,11 @@ public static class WorkshopDataLoader
 
 	public static async Task<bool> GetAllWorkshopDataAsync(SteamWorkshopCachedData cachedData, string appid, string apiKey, CancellationToken token)
 	{
+		if (String.IsNullOrEmpty(apiKey))
+		{
+			DivinityApp.Log($"Steam Web API key not set. Skipping.");
+			return false;
+		}
 		DivinityApp.Log($"Attempting to get workshop data for mods missing workshop folders.");
 		int totalFound = 0;
 
