@@ -319,7 +319,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 		var canExecuteSaveCommand = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.CanSaveOrder));
 		keys.Save.AddAction(() => SaveLoadOrder(), canExecuteSaveCommand);
 
-		keys.SaveAs.AddAction(SaveLoadOrderAs, AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.CanSaveOrder)));
+		canExecuteSaveCommand.Subscribe(b =>
+		{
+			DivinityApp.Log($"canExecuteSaveCommand: {b}");
+		});
+
+		keys.SaveAs.AddAction(SaveLoadOrderAs, canExecuteSaveCommand);
 		keys.ImportMod.AddAction(modImporter.OpenModImportDialog, canExecuteCommands);
 		keys.ImportNexusModsIds.AddAction(modImporter.OpenModIdsImportDialog, canExecuteCommands);
 		keys.NewOrder.AddAction(() => AddNewModOrder(), canExecuteCommands);
@@ -418,7 +423,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 
 		host.WhenAnyValue(x => x.IsLocked).BindTo(this, x => x.IsLocked);
 
-		var isActive = this.WhenAnyValue(x => x.HostScreen.Router.CurrentViewModel).Select(x => x == this);
+		var isActive = HostScreen.Router.CurrentViewModel.Select(x => x == this);
 		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
 		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
 
@@ -952,10 +957,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 				var message = String.Join("\n", missingMods.OrderBy(x => x.Index));
 				var title = "Missing Mods in Load Order";
 				DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
-				//View.MainWindowMessageBox_OK.WindowBackground = new SolidColorBrush(Color.FromRgb(219, 40, 40));
-				//View.MainWindowMessageBox_OK.Closed += MainWindowMessageBox_Closed_ResetColor;
-				//View.MainWindowMessageBox_OK.ShowMessageBox(String.Join("\n", missingMods.OrderBy(x => x.Index)),
-				//	"Missing Mods in Load Order", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 			}
 			else
 			{
@@ -1018,10 +1019,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 				var message = "Functionality may be limited without the Script Extender.\n" + String.Join("\n", extenderRequiredMods.OrderBy(x => x.Index));
 				var title = "Mods Require the Script Extender";
 				DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
-				//View.MainWindowMessageBox_OK.WindowBackground = new SolidColorBrush(Color.FromRgb(219, 40, 40));
-				//View.MainWindowMessageBox_OK.Closed += MainWindowMessageBox_Closed_ResetColor;
-				//View.MainWindowMessageBox_OK.ShowMessageBox("Functionality may be limited without the Script Extender.\n" + String.Join("\n", extenderRequiredMods.OrderBy(x => x.Index)),
-				//	"Mods Require the Script Extender", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 			}
 		}
 	}
@@ -1268,10 +1265,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 					var title = "Mod Order Export Failed";
 					DivinityApp.ShowAlert(message, AlertType.Danger);
 					await DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK));
-
-					//View.MainWindowMessageBox_OK.WindowBackground = new SolidColorBrush(Color.FromRgb(219, 40, 40));
-					//View.MainWindowMessageBox_OK.Closed += this.MainWindowMessageBox_Closed_ResetColor;
-					//View.MainWindowMessageBox_OK.ShowMessageBox(msg, "Mod Order Export Failed", MessageBoxButton.OK);
 				}
 			}
 			else
@@ -1330,9 +1323,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 						string message = $"Problem exporting load order to '{SelectedGameMasterCampaign.FilePath}'";
 						DivinityApp.ShowAlert(message, AlertType.Danger);
 						DivinityInteractions.ShowMessageBox.Handle(new(message, "Mod Order Export Failed", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
-						//this.View.MainWindowMessageBox_OK.WindowBackground = new SolidColorBrush(Color.FromRgb(219, 40, 40));
-						//this.View.MainWindowMessageBox_OK.Closed += this.MainWindowMessageBox_Closed_ResetColor;
-						//this.View.MainWindowMessageBox_OK.ShowMessageBox(msg, "Mod Order Export Failed", MessageBoxButton.OK);
 					}
 				}
 			}
@@ -1802,10 +1792,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IDivi
 			else
 			{
 				DivinityInteractions.ShowMessageBox.Handle(new(String.Join("\n", orderedMissingMods), "Missing Mods in Load Order", MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK)).Subscribe();
-				//View.MainWindowMessageBox_OK.WindowBackground = new SolidColorBrush(Color.FromRgb(219, 40, 40));
-				//View.MainWindowMessageBox_OK.Closed += MainWindowMessageBox_Closed_ResetColor;
-				//View.MainWindowMessageBox_OK.ShowMessageBox(String.Join("\n", orderedMissingMods),
-				//	"Missing Mods in Load Order", MessageBoxButton.OK);
 			}
 		}
 

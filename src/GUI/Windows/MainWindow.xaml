@@ -22,7 +22,7 @@
     Title="{Binding Title}"
     Width="1600"
     Height="800"
-    d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
+    d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}"
     TitleBarBackground="#4e38c9"
     TitleBarForeground="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"
     mc:Ignorable="d">
@@ -50,10 +50,63 @@
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo />
     </Window.TaskbarItemInfo>
-    <Grid
-        x:Name="MainGrid"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch">
-        <views:MainViewControl x:Name="MainView" />
+    <Grid>
+        <xc:WindowContainer
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <xc:MessageBox x:Name="MainWindowMessageBox" Template="{StaticResource MessageBoxSelectableText}" />
+        </xc:WindowContainer>
+        <xc:BusyIndicator
+            x:Name="MainBusyIndicator"
+            IsBusy="True"
+			HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+            Style="{StaticResource BusyIndicatorProgressStyle}">
+            <xc:BusyIndicator.BusyContent>
+                <Grid
+                    Margin="4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        x:Name="ProgressTitleTextBlock"
+                        HorizontalAlignment="Center"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        d:Text="Loading..."/>
+                    <DockPanel Grid.Row="1" Margin="8">
+                        <TextBlock
+                            x:Name="ProgressWorkTextBlock"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Bottom"
+                            TextAlignment="Center"
+                            d:Text="Loading mods 1/10..."/>
+                        <ProgressBar
+                            x:Name="ProgressValueBar"
+                            MinHeight="15"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Top"
+                            Maximum="1"
+                            d:Value="0.5"/>
+                    </DockPanel>
+                    <Button
+                        x:Name="ProgressCancelButton"
+                        Grid.Row="2"
+                        Margin="8,0,8,8"
+                        Padding="20,4"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="Cancel" />
+                </Grid>
+            </xc:BusyIndicator.BusyContent>
+            <xc:BusyIndicator.Content>
+				<views:MainViewControl x:Name="MainView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+			</xc:BusyIndicator.Content>
+        </xc:BusyIndicator>
     </Grid>
+
 </local:MainWindowBase>

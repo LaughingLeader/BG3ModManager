@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -42,10 +43,7 @@ public class MainWindowBase : HideWindowBase<MainWindowViewModel>
 
 public partial class MainWindow : MainWindowBase
 {
-	private static MainWindow self;
-	public static MainWindow Self => self;
-
-	[DllImport("user32")] public static extern int FlashWindow(IntPtr hwnd, bool bInvert);
+	[LibraryImport("user32")] public static partial int FlashWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool bInvert);
 
 	private readonly System.Windows.Interop.WindowInteropHelper _hwnd;
 
@@ -55,7 +53,7 @@ public partial class MainWindow : MainWindowBase
 	private readonly string _logFileName;
 
 	public AlertBar AlertBar => MainView.AlertBar;
-	public Style MessageBoxStyle => MainView.MainWindowMessageBox_OK.Style;
+	public Style MessageBoxStyle => MainWindowMessageBox.Style;
 
 	public void ToggleLogging(bool enabled)
 	{
@@ -233,8 +231,6 @@ public partial class MainWindow : MainWindowBase
 	public MainWindow()
 	{
 		InitializeComponent();
-		self = this;
-
 		_hwnd = new System.Windows.Interop.WindowInteropHelper(this);
 
 		_logsDir = DivinityApp.GetAppDirectory("_Logs");
@@ -283,31 +279,45 @@ public partial class MainWindow : MainWindowBase
 
 		this.WhenAnyValue(x => x.ViewModel).BindTo(this, view => view.MainView.ViewModel);
 
+		MainBusyIndicator.Visibility = Visibility.Visible;
+		MainBusyIndicator.IsBusy = true;
+		MainView.Visibility = Visibility.Hidden;
+
+		this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.MainBusyIndicator.IsBusy);
+		this.OneWayBind(ViewModel, vm => vm.MainProgressTitle, view => view.ProgressTitleTextBlock.Text);
+		this.OneWayBind(ViewModel, vm => vm.MainProgressWorkText, view => view.ProgressWorkTextBlock.Text);
+		this.OneWayBind(ViewModel, vm => vm.MainProgressValue, view => view.ProgressValueBar.Value);
+
+		this.OneWayBind(ViewModel, vm => vm.CanCancelProgress, view => view.ProgressCancelButton.Visibility, PropertyConverters.BoolToVisibility);
+		this.BindCommand(ViewModel, vm => vm.CancelMainProgressCommand, view => view.ProgressCancelButton);
+
+		this.WhenAnyValue(x => x.ViewModel.Title).BindTo(this, view => view.Title);
+		this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.TaskbarItemInfo.ProgressState, BoolToTaskbarItemProgressState);
+		this.WhenAnyValue(x => x.ViewModel.MainProgressValue).BindTo(this, view => view.TaskbarItemInfo.ProgressValue);
+
+		ViewModel.Keys.OpenPreferences.AddAction(() => App.WM.Settings.Toggle());
+		ViewModel.Keys.OpenKeybindings.AddAction(() =>
+		{
+			App.WM.Settings.Toggle();
+			if (App.WM.Settings.Window.IsVisible) App.WM.Settings.Window.ViewModel.SelectedTabIndex = SettingsWindowTab.Keybindings;
+		});
+		ViewModel.Keys.OpenAboutWindow.AddAction(() => App.WM.About.Toggle());
+		ViewModel.Keys.ToggleVersionGeneratorWindow.AddAction(() => App.WM.VersionGenerator.Toggle());
+
+		//Allow launching the game if single instance mode is enabled, but the shift key is held
+		Observable.Merge(
+			Observable.FromEventPattern<KeyEventArgs>(this, nameof(KeyDown)),
+			Observable.FromEventPattern<KeyEventArgs>(this, nameof(KeyUp))
+		)
+		.Select(e => (e.EventArgs.Key == Key.LeftShift || e.EventArgs.Key == Key.RightShift) && e.EventArgs.IsDown)
+		.BindTo(ViewModel, x => x.CanForceLaunchGame);
+
 		this.WhenActivated(d =>
 		{
 			ViewModel.OnViewActivated(this, MainView);
-			this.WhenAnyValue(x => x.ViewModel.Title).BindTo(this, view => view.Title);
-			this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.TaskbarItemInfo.ProgressState, BoolToTaskbarItemProgressState);
-
-			ViewModel.Keys.OpenPreferences.AddAction(() => App.WM.Settings.Toggle());
-			ViewModel.Keys.OpenKeybindings.AddAction(() =>
-			{
-				App.WM.Settings.Toggle();
-				if (App.WM.Settings.Window.IsVisible) App.WM.Settings.Window.ViewModel.SelectedTabIndex = SettingsWindowTab.Keybindings;
-			});
-			ViewModel.Keys.OpenAboutWindow.AddAction(() => App.WM.About.Toggle());
-
-			ViewModel.Keys.ToggleVersionGeneratorWindow.AddAction(() => App.WM.VersionGenerator.Toggle());
-
-			this.WhenAnyValue(x => x.ViewModel.MainProgressValue).BindTo(this, view => view.TaskbarItemInfo.ProgressValue);
-
-			//Allow launching the game if single instance mode is enabled, but the shift key is held
-			Observable.Merge(
-				Observable.FromEventPattern<KeyEventArgs>(this, nameof(KeyDown)),
-				Observable.FromEventPattern<KeyEventArgs>(this, nameof(KeyUp))
-			)
-			.Select(e => (e.EventArgs.Key == Key.LeftShift || e.EventArgs.Key == Key.RightShift) && e.EventArgs.IsDown)
-			.BindTo(ViewModel, x => x.CanForceLaunchGame);
+			MainView.RegisterKeyBindings(this);
+			Dispatcher.BeginInvoke(ViewModel.LoadInitial, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+			//RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(999), ViewModel.LoadInitial);
 		});
 
 		Show();

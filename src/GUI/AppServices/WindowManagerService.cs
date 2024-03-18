@@ -12,6 +12,8 @@ namespace DivinityModManager.AppServices;
 
 public class WindowWrapper<T> where T : Window
 {
+	private readonly Window _owner;
+
 	public T Window { get; }
 
 	private readonly Subject<bool> _onToggle = new();
@@ -28,7 +30,7 @@ public class WindowWrapper<T> where T : Window
 			if (b)
 			{
 				Window.Show();
-				Window.Owner = MainWindow.Self;
+				if (Window != _owner) Window.Owner = _owner;
 			}
 			else
 			{
@@ -37,9 +39,10 @@ public class WindowWrapper<T> where T : Window
 		});
 	}
 
-	public WindowWrapper(T window)
+	public WindowWrapper(T window, Window ownerWindow = null)
 	{
 		Window = window;
+		_owner = ownerWindow ?? window;
 	}
 }
 
@@ -69,15 +72,15 @@ public class WindowManagerService
 	public WindowManagerService(MainWindow main)
 	{
 		Main = new(main);
-		About = new(new AboutWindow());
-		AppUpdate = new(new AppUpdateWindow());
-		CollectionDownload = new(new CollectionDownloadWindow());
-		Help = new(new HelpWindow());
-		ModProperties = new(new ModPropertiesWindow());
-		NxmDownload = new(new NxmDownloadWindow());
-		Settings = new(new SettingsWindow());
-		VersionGenerator = new(new VersionGeneratorWindow());
-		StatsValidator = new(new StatsValidatorWindow());
+		About = new(new AboutWindow(), main);
+		AppUpdate = new(new AppUpdateWindow(), main);
+		CollectionDownload = new(new CollectionDownloadWindow(), main);
+		Help = new(new HelpWindow(), main);
+		ModProperties = new(new ModPropertiesWindow(), main);
+		NxmDownload = new(new NxmDownloadWindow(), main);
+		Settings = new(new SettingsWindow(), main);
+		VersionGenerator = new(new VersionGeneratorWindow(), main);
+		StatsValidator = new(new StatsValidatorWindow(), main);
 
 		_windows.Add(Main.Window);
 		_windows.Add(About.Window);
@@ -96,10 +99,10 @@ public class WindowManagerService
 			{
 				if (Settings.Window.ViewModel == null)
 				{
-					Settings.Window.Init(MainWindow.Self.ViewModel);
+					Settings.Window.Init(Main.Window.ViewModel);
 				}
 			}
-			MainWindow.Self.ViewModel.Settings.SettingsWindowIsOpen = b;
+			Main.Window.ViewModel.Settings.SettingsWindowIsOpen = b;
 		});
 
 		Services.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>

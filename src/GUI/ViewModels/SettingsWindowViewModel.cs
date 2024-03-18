@@ -344,7 +344,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		var result = Xceed.Wpf.Toolkit.MessageBox.Show(View,
 		_associateNXMMessage,
 		"Associate BG3MM with nxm:// links?",
-		MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, Main.View.MainWindowMessageBox_OK.Style);
+		MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, App.WM.Main.Window.MainWindowMessageBox.Style);
 		if (result == MessageBoxResult.Yes)
 		{
 			if (DivinityRegistryHelper.AssociateWithNXMProtocol(DivinityApp.GetExePath()))
@@ -449,7 +449,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		{
 			var tabName = TabToName(SelectedTabIndex);
 			MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(View, $"Reset {tabName} to Default?\nCurrent settings will be lost.", $"Confirm {tabName} Reset",
-				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, Main.View.MainWindowMessageBox_OK.Style);
+				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, App.WM.Main.Window.MessageBoxStyle);
 			if (result == MessageBoxResult.Yes)
 			{
 				switch (SelectedTabIndex)
@@ -478,7 +478,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		ClearCacheCommand = ReactiveCommand.Create(() =>
 		{
 			MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(View, $"Delete local mod cache?\nThis cannot be undone.", "Confirm Delete Cache",
-				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, Main.View.MainWindowMessageBox_OK.Style);
+				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, App.WM.Main.Window.MessageBoxStyle);
 			if (result == MessageBoxResult.Yes)
 			{
 				try

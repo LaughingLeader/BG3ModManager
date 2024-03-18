@@ -93,7 +93,7 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 			Content = "Download / copy updates? Previous pak files will be moved to the Recycle Bin.",
 			MainIcon = TaskDialogIcon.Warning
 		};
-		var result = dialog.ShowDialog(MainWindow.Self);
+		var result = dialog.ShowDialog(App.WM.Main.Window);
 		if (result.ButtonType == ButtonType.Yes)
 		{
 			var updates = Mods.Items.Where(x => x.IsSelected).ToList();

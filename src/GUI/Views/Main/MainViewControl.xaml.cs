@@ -29,7 +29,7 @@ public partial class MainViewControl : MainViewControlViewBase
 	private readonly Dictionary<string, MenuItem> menuItems = [];
 	public Dictionary<string, MenuItem> MenuItems => menuItems;
 
-	private void RegisterKeyBindings(MainWindow main)
+	public void RegisterKeyBindings(MainWindow main)
 	{
 		foreach (var key in ViewModel.Keys.All)
 		{
@@ -134,13 +134,6 @@ public partial class MainViewControl : MainViewControlViewBase
 
 			this.OneWayBind(ViewModel, vm => vm.Router, view => view.RoutedViewHost.Router);
 
-			this.WhenAnyValue(x => x.ViewModel.MainProgressIsActive).Take(1).Delay(TimeSpan.FromMilliseconds(25)).ObserveOn(RxApp.MainThreadScheduler).Subscribe(b =>
-			{
-				this.MainBusyIndicator.Visibility = Visibility.Visible;
-			});
-
-			this.OneWayBind(ViewModel, vm => vm.MainProgressIsActive, view => view.MainBusyIndicator.IsBusy);
-
 			this.OneWayBind(ViewModel, vm => vm.StatusBarRightText, view => view.StatusBarLoadingOperationTextBlock.Text);
 			this.OneWayBind(ViewModel, vm => vm.NexusModsLimitsText, view => view.StatusBarNexusLimitsTextBlock.Text);
 			this.OneWayBind(ViewModel, vm => vm.NexusModsProfileAvatarVisibility, view => view.NexusModsProfileImage.Visibility);
@@ -152,7 +145,7 @@ public partial class MainViewControl : MainViewControlViewBase
 			this.OneWayBind(ViewModel, vm => vm.UpdatesViewIsVisible, view => view.UpdatesToggleButtonExpandImage.Visibility, PropertyConverters.BoolToVisibility);
 			this.OneWayBind(ViewModel, vm => vm.UpdateCountVisibility, view => view.UpdateCountTextBlock.Visibility);
 
-			ViewModel.Views.ModUpdates.WhenAnyValue(x => x.TotalUpdates).BindTo(this, view => view.UpdateCountTextBlock.Text);
+			ViewModel.WhenAnyValue(x => x.Views.ModUpdates.TotalUpdates).BindTo(this, view => view.UpdateCountTextBlock.Text);
 
 			this.BindCommand(ViewModel, vm => vm.ToggleUpdatesViewCommand, view => view.UpdateViewToggleButton);
 
@@ -160,8 +153,6 @@ public partial class MainViewControl : MainViewControlViewBase
 			this.BindCommand(ViewModel, vm => vm.CheckForGitHubModUpdatesCommand, view => view.UpdateGitHubMenuItem);
 			this.BindCommand(ViewModel, vm => vm.CheckForNexusModsUpdatesCommand, view => view.UpdateNexusModsMenuItem);
 			this.BindCommand(ViewModel, vm => vm.CheckForSteamWorkshopUpdatesCommand, view => view.UpdateSteamWorkshopMenuItem);
-
-			RegisterKeyBindings(App.WM.Main.Window);
 
 			/*this.DeleteFilesView.ViewModel.FileDeletionComplete += (o, e) =>
 			{

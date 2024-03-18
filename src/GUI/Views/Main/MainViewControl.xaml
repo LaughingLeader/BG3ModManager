@@ -18,7 +18,7 @@
     xmlns:reactiveui="http://reactiveui.net"
     xmlns:vm="clr-namespace:DivinityModManager.ViewModels"
     xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
-	d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
+    d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="1600"
     mc:Ignorable="d">
@@ -47,293 +47,232 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <xc:WindowContainer
-            Grid.Row="0"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Panel.ZIndex="99">
-            <xc:MessageBox x:Name="MainWindowMessageBox_OK" Template="{StaticResource MessageBoxSelectableText}" />
-        </xc:WindowContainer>
-        <xc:BusyIndicator
-            x:Name="MainBusyIndicator"
-            IsBusy="False"
-            Style="{StaticResource BusyIndicatorProgressStyle}">
-            <xc:BusyIndicator.BusyContent>
-                <Grid
-                    Margin="4"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Text="{Binding MainProgressTitle, FallbackValue='Archiving...'}" />
-                    <DockPanel Grid.Row="1" Margin="8">
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            DockPanel.Dock="Bottom"
-                            Text="{Binding MainProgressWorkText, FallbackValue='Archiving pak 4/10...'}"
-                            TextAlignment="Center" />
-                        <ProgressBar
-                            MinHeight="15"
-                            VerticalAlignment="Center"
-                            DockPanel.Dock="Top"
-                            Maximum="1"
-                            Value="{Binding MainProgressValue, FallbackValue='0'}" />
-                    </DockPanel>
-                    <Button
-                        Grid.Row="2"
-                        Margin="8,0,8,8"
-                        Padding="20,4"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Command="{Binding CancelMainProgressCommand}"
-                        Content="Cancel"
-                        Visibility="{Binding CanCancelProgress, Converter={StaticResource BoolToVisibilityConverter}}" />
-                </Grid>
-            </xc:BusyIndicator.BusyContent>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
-                    <Grid.Resources>
-                        <!--<Color x:Key="WhiteColor">White</Color>
-                        <Color x:Key="GoldColor">Gold</Color>-->
-                        <Style
-                            x:Key="MenuItemHightlightBlink"
-                            BasedOn="{StaticResource {x:Type MenuItem}}"
-                            TargetType="{x:Type MenuItem}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
+                <Grid.Resources>
+                    <!--<Color x:Key="WhiteColor">White</Color>
+                    <Color x:Key="GoldColor">Gold</Color>-->
+                    <Style
+                        x:Key="MenuItemHightlightBlink"
+                        BasedOn="{StaticResource {x:Type MenuItem}}"
+                        TargetType="{x:Type MenuItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HighlightExtenderDownload}" Value="True">
+                                <Setter Property="Foreground" Value="Gold" />
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard Name="BlinkyMenuItemStoryboard">
+                                        <Storyboard
+                                            AutoReverse="True"
+                                            BeginTime="00:00:00"
+                                            FillBehavior="Stop"
+                                            RepeatBehavior="Forever"
+                                            Duration="0:0:0.5">
+                                            <!--<ColorAnimation
+                                            Storyboard.TargetProperty="Foreground.Color"
+                                            From="{StaticResource WhiteColor}"
+                                            To="{StaticResource GoldColor}" />-->
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                From="1.0"
+                                                To="0.5" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="BlinkyMenuItemStoryboard" />
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding HighlightExtenderDownload}" Value="False">
+                                <Setter Property="Opacity" Value="1.0" />
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Menu Width="Auto" Height="28" x:Name="TopMenuBar">
+                    <MenuItem Header="File" />
+                    <MenuItem Header="Edit" />
+                    <MenuItem Header="Settings" />
+                    <MenuItem Header="View" />
+                    <MenuItem Header="Go" />
+                    <MenuItem Header="Download">
+                        <MenuItem Header="Check For Mod Updates...">
+                            <MenuItem x:Name="UpdateAllSourcesMenuItem" Header="All" />
+                            <Separator />
+                            <MenuItem x:Name="UpdateGitHubMenuItem" Header="GitHub" />
+                            <MenuItem x:Name="UpdateNexusModsMenuItem" Header="Nexus Mods" />
+                            <MenuItem x:Name="UpdateSteamWorkshopMenuItem" Header="Steam Workshop" />
+                        </MenuItem>
+                        <Separator />
+                    </MenuItem>
+                    <MenuItem
+                        x:Name="ToolsMenuItem"
+                        Header="Tools"
+                        Style="{StaticResource MenuItemHightlightBlink}" />
+                    <MenuItem x:Name="HelpMenuItem" Header="Help" />
+                </Menu>
+                <Border
+                    x:Name="UpdatesButtonPanel"
+                    Grid.Column="1"
+                    Padding="8,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                    <Border.Style>
+                        <Style TargetType="Border">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightExtenderDownload}" Value="True">
-                                    <Setter Property="Foreground" Value="Gold" />
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard Name="BlinkyMenuItemStoryboard">
-                                            <Storyboard
-                                                AutoReverse="True"
-                                                BeginTime="00:00:00"
-                                                FillBehavior="Stop"
-                                                RepeatBehavior="Forever"
-                                                Duration="0:0:0.5">
-                                                <!--<ColorAnimation
-                                                Storyboard.TargetProperty="Foreground.Color"
-                                                From="{StaticResource WhiteColor}"
-                                                To="{StaticResource GoldColor}" />-->
-                                                <DoubleAnimation
-                                                    Storyboard.TargetProperty="Opacity"
-                                                    From="1.0"
-                                                    To="0.5" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                    <DataTrigger.ExitActions>
-                                        <StopStoryboard BeginStoryboardName="BlinkyMenuItemStoryboard" />
-                                    </DataTrigger.ExitActions>
+                                <DataTrigger Binding="{Binding UpdatesViewIsVisible}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding HighlightExtenderDownload}" Value="False">
-                                    <Setter Property="Opacity" Value="1.0" />
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+                                <DataTrigger Binding="{Binding UpdatesViewIsVisible}" Value="False">
+                                    <Setter Property="Background" Value="Transparent" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Grid.Resources>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Menu Width="Auto" Height="28" x:Name="TopMenuBar">
-                        <MenuItem Header="File" />
-                        <MenuItem Header="Edit" />
-                        <MenuItem Header="Settings" />
-                        <MenuItem Header="View" />
-                        <MenuItem Header="Go" />
-                        <MenuItem Header="Download">
-                            <MenuItem Header="Check For Mod Updates...">
-                                <MenuItem x:Name="UpdateAllSourcesMenuItem" Header="All" />
-                                <Separator />
-                                <MenuItem x:Name="UpdateGitHubMenuItem" Header="GitHub" />
-                                <MenuItem x:Name="UpdateNexusModsMenuItem" Header="Nexus Mods" />
-                                <MenuItem x:Name="UpdateSteamWorkshopMenuItem" Header="Steam Workshop" />
-                            </MenuItem>
-                            <Separator />
-                        </MenuItem>
-                        <MenuItem
-                            x:Name="ToolsMenuItem"
-                            Header="Tools"
-                            Style="{StaticResource MenuItemHightlightBlink}" />
-                        <MenuItem x:Name="HelpMenuItem" Header="Help" />
-                    </Menu>
-                    <Border
-                        x:Name="UpdatesButtonPanel"
-                        Grid.Column="1"
-                        Padding="8,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center">
-                        <Border.Style>
-                            <Style TargetType="Border">
+                    </Border.Style>
+                    <Button
+                        x:Name="UpdateViewToggleButton"
+                        MinWidth="20"
+                        Margin="0"
+                        Padding="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        BorderThickness="0"
+                        ToolTip="Toggle the Mod Updates View">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                                 <Style.Triggers>
-									<DataTrigger Binding="{Binding UpdatesViewIsVisible}" Value="True">
-                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
-                                    </DataTrigger>
-									<DataTrigger Binding="{Binding UpdatesViewIsVisible}" Value="False">
-                                        <Setter Property="Background" Value="Transparent" />
-                                    </DataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="LightGreen" />
+                                    </Trigger>
                                 </Style.Triggers>
                             </Style>
-                        </Border.Style>
-                        <Button
-                            x:Name="UpdateViewToggleButton"
-                            MinWidth="20"
-                            Margin="0"
-                            Padding="0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            BorderThickness="0"
-                            ToolTip="Toggle the Mod Updates View">
-                            <Button.Style>
-                                <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="LightGreen" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Button.Content>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock
-                                        Padding="4,0"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
-                                        Text="Updates:"
-                                        TextAlignment="Center" />
-                                    <controls:BusyIndicator
-                                        x:Name="UpdatesToggleButtonBusyIndicator"
-                                        Grid.Column="1"
-                                        Width="16"
-                                        Height="16"
-                                        Margin="2" />
-                                    <TextBlock
-                                        x:Name="UpdateCountTextBlock"
-                                        Grid.Column="1"
-                                        Padding="4,0"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
-                                        TextAlignment="Center">
-                                        <TextBlock.Style>
-                                            <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ModUpdatesAvailable}" Value="True">
-                                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ErrorBrush}}" />
-                                                        <Setter Property="FontWeight" Value="Bold" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ModUpdatesAvailable}" Value="False">
-                                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}" />
-                                                        <Setter Property="FontWeight" Value="Normal" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect
-                                                BlurRadius="4"
-                                                Direction="330"
-                                                Opacity="0.5"
-                                                ShadowDepth="1"
-                                                Color="Black" />
-                                        </TextBlock.Effect>
-                                    </TextBlock>
-                                    <Image
-                                        x:Name="UpdatesToggleButtonExpandImage"
-                                        Grid.Column="3"
-                                        Width="16"
-                                        Height="16"
-                                        RenderOptions.BitmapScalingMode="Fant"
-                                        Source="{StaticResource ExpandDownImage}"
-                                        Stretch="Uniform"
-                                        StretchDirection="UpOnly">
-                                        <Image.Style>
-                                            <Style TargetType="Image">
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding UpdatesViewIsVisible}" Value="False" />
-                                                            <Condition Binding="{Binding ModUpdatesAvailable}" Value="True" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <MultiDataTrigger.Setters>
-                                                            <Setter Property="Source" Value="{StaticResource ExpandDownImage}" />
-                                                        </MultiDataTrigger.Setters>
-                                                    </MultiDataTrigger>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding UpdatesViewIsVisible}" Value="True" />
-                                                            <Condition Binding="{Binding ModUpdatesAvailable}" Value="True" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <MultiDataTrigger.Setters>
-                                                            <Setter Property="Source" Value="{StaticResource ExpandUpImage}" />
-                                                        </MultiDataTrigger.Setters>
-                                                    </MultiDataTrigger>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding UpdatesViewIsVisible}" Value="False" />
-                                                            <Condition Binding="{Binding ModUpdatesAvailable}" Value="False" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <MultiDataTrigger.Setters>
-                                                            <Setter Property="Source" Value="{StaticResource ExpandDownImageDisabled}" />
-                                                        </MultiDataTrigger.Setters>
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Image.Style>
-                                    </Image>
-                                </Grid>
-                            </Button.Content>
-                        </Button>
-                    </Border>
-                </Grid>
-                <Separator
-                    Grid.Row="1"
-                    Height="1"
-                    Background="LightGray"
-                    BorderThickness="0" />
-                <reactiveui:RoutedViewHost Grid.Row="2" x:Name="RoutedViewHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
-                <!--<local:ModUpdatesLayout
-                x:Name="ModUpdaterPanel"
-                Grid.Row="2"
-                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
-                <local:DeleteFilesConfirmationView
-                Visibility="Collapsed"
-                x:Name="DeleteFilesView"
-                Grid.RowSpan="3"
-                Panel.ZIndex="99" />-->
+                        </Button.Style>
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Padding="4,0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
+                                    Text="Updates:"
+                                    TextAlignment="Center" />
+                                <controls:BusyIndicator
+                                    x:Name="UpdatesToggleButtonBusyIndicator"
+                                    Grid.Column="1"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="2" />
+                                <TextBlock
+                                    x:Name="UpdateCountTextBlock"
+                                    Grid.Column="1"
+                                    Padding="4,0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}"
+                                    TextAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ModUpdatesAvailable}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ErrorBrush}}" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ModUpdatesAvailable}" Value="False">
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}" />
+                                                    <Setter Property="FontWeight" Value="Normal" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect
+                                            BlurRadius="4"
+                                            Direction="330"
+                                            Opacity="0.5"
+                                            ShadowDepth="1"
+                                            Color="Black" />
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                                <Image
+                                    x:Name="UpdatesToggleButtonExpandImage"
+                                    Grid.Column="3"
+                                    Width="16"
+                                    Height="16"
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    Source="{StaticResource ExpandDownImage}"
+                                    Stretch="Uniform"
+                                    StretchDirection="UpOnly">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding UpdatesViewIsVisible}" Value="False" />
+                                                        <Condition Binding="{Binding ModUpdatesAvailable}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Source" Value="{StaticResource ExpandDownImage}" />
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding UpdatesViewIsVisible}" Value="True" />
+                                                        <Condition Binding="{Binding ModUpdatesAvailable}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Source" Value="{StaticResource ExpandUpImage}" />
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding UpdatesViewIsVisible}" Value="False" />
+                                                        <Condition Binding="{Binding ModUpdatesAvailable}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Source" Value="{StaticResource ExpandDownImageDisabled}" />
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                </Border>
             </Grid>
-        </xc:BusyIndicator>
+            <Separator
+                Grid.Row="1"
+                Height="1"
+                Background="LightGray"
+                BorderThickness="0" />
+            <reactiveui:RoutedViewHost Grid.Row="2" x:Name="RoutedViewHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

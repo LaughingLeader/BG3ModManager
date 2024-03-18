@@ -81,7 +81,7 @@ public class AppUpdateWindowViewModel : ReactiveObject
 			}
 			catch (Exception ex)
 			{
-				MainWindow.Self.DisplayError($"Error occurred while updating:\n{ex}");
+				App.WM.Main.Window.DisplayError($"Error occurred while updating:\n{ex}");
 				_view.Hide();
 			}
 		}, canConfirm, RxApp.MainThreadScheduler);
