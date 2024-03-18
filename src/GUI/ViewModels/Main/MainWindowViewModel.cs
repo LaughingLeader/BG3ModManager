@@ -69,7 +69,6 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	public AppSettings AppSettings { get; private set; }
 	public ModManagerSettings Settings { get; private set; }
 	public UserModConfig UserModConfig { get; private set; }
-
 	[Reactive] public bool AppSettingsLoaded { get; set; }
 	[Reactive] public bool GameIsRunning { get; private set; }
 	[Reactive] public bool CanForceLaunchGame { get; set; }
@@ -141,6 +140,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 		{
 			StartMainProgress(title);
 		}, RxApp.MainThreadScheduler);
+		await Task.Delay(TimeSpan.FromMilliseconds(250));
 	}
 
 	[Reactive] public CancellationTokenSource MainProgressToken { get; set; }
@@ -193,11 +193,14 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			LoadAppConfig();
 		}, RxApp.MainThreadScheduler);
 
+		await RxApp.MainThreadScheduler.Yield(token);
+		//await Task.Delay(TimeSpan.FromSeconds(5));
+
 		await Views.ModOrder.RefreshAsync(this, token);
 
 		await Observable.Start(() =>
 		{
-			OnMainProgressComplete();
+			OnMainProgressComplete(250);
 
 			if (AppSettings.Features.ScriptExtender)
 			{
@@ -216,9 +219,10 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	private IObservable<Unit> StartRefreshAsyncObs()
 	{
-		//var obs = ObservableEx.CreateAndStartAsync(token => RefreshAsync(token), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
+		var obs = ObservableEx.CreateAndStartAsync(token => RefreshAsync(token), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
+		//var obs = ObservableEx.CreateAndStartAsync(async token => await Task.Delay(30), RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
 		//obs.Subscribe();
-		var obs = Observable.StartAsync(RefreshAsync, RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
+		//var obs = Observable.StartAsync(RefreshAsync, RxApp.TaskpoolScheduler).TakeUntil(CancelMainProgressCommand);
 		return obs;
 	}
 
@@ -1601,11 +1605,11 @@ Directory the zip will be extracted to:
 		{
 			if (e.Error is System.Net.WebException)
 			{
-				MainWindow.Self.DisplayError("Update Check Failed", "There was a problem reaching the update server. Please check your internet connection and try again later.", false);
+				App.WM.Main.Window.DisplayError("Update Check Failed", "There was a problem reaching the update server. Please check your internet connection and try again later.", false);
 			}
 			else
 			{
-				MainWindow.Self.DisplayError($"Error occurred while checking for updates:\n{e.Error}");
+				App.WM.Main.Window.DisplayError($"Error occurred while checking for updates:\n{e.Error}");
 			}
 		}
 
@@ -1660,15 +1664,23 @@ Directory the zip will be extracted to:
 				Window.WindowState = WindowState.Maximized;
 			}
 		}
+	}
 
-		MainProgressToken = new CancellationTokenSource();
-		RxApp.TaskpoolScheduler.ScheduleAsync(async (_, _) => {
-			await RefreshAsync(MainProgressToken.Token);
-			await Observable.Start(() =>
-			{
-				Views.SwitchToModOrderView();
-			}, RxApp.MainThreadScheduler);
-		});
+	public void LoadInitial()
+	{
+		if(!IsInitialized)
+		{
+			StartMainProgress("Loading...");
+			Views.SwitchToModOrderView();
+			RxApp.TaskpoolScheduler.ScheduleAsync(async (_, token) => {
+				await RefreshAsync(token);
+				await Observable.Start(() =>
+				{
+					View.Visibility = Visibility.Visible;
+					IsInitialized = true;
+				}, RxApp.MainThreadScheduler);
+			});
+		}
 	}
 
 	private readonly MainWindowExceptionHandler exceptionHandler;
@@ -2194,7 +2206,7 @@ Directory the zip will be extracted to:
 
 		#endregion
 
-		this.WhenAnyValue(x => x.Router.CurrentViewModel).Select(x => x == Views.ModUpdates).ToUIProperty(this, x => x.UpdatesViewIsVisible, false);
+		Router.CurrentViewModel.Select(x => x == Views.ModUpdates).ToUIProperty(this, x => x.UpdatesViewIsVisible, false);
 
 		var canToggleUpdatesView = this.WhenAnyValue(x => x.ModUpdatesAvailable);
 		void toggleUpdatesView()
