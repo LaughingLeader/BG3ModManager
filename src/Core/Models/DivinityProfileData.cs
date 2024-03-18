@@ -9,6 +9,7 @@ namespace DivinityModManager.Models;
 public class DivinityProfileData : ReactiveObject
 {
 	[Reactive] public string Name { get; set; }
+	[Reactive] public string FolderName { get; set; }
 
 	/// <summary>
 	/// The stored name in the profile.lsb or profile5.lsb file.

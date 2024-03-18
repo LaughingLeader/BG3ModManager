@@ -1107,7 +1107,7 @@ public static partial class DivinityModDataLoader
 
 	public static async Task<List<DivinityProfileData>> LoadProfileDataAsync(string profilePath)
 	{
-		List<DivinityProfileData> profiles = new();
+		List<DivinityProfileData> profiles = [];
 		if (Directory.Exists(profilePath))
 		{
 			var profileDirectories = Directory.EnumerateDirectories(profilePath);
@@ -1152,6 +1152,7 @@ public static partial class DivinityModDataLoader
 				var profileData = new DivinityProfileData()
 				{
 					Name = name,
+					FolderName = folderName,
 					ProfileName = displayedName,
 					UUID = profileUUID,
 					FilePath = Path.GetFullPath(folder)
