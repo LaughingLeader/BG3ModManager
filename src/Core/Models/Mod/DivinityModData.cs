@@ -1,12 +1,13 @@
 ﻿using DivinityModManager.Extensions;
 using DivinityModManager.Models.GitHub;
-using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.NexusMods;
 using DivinityModManager.Models.Steam;
 using DivinityModManager.Util;
 
 using DynamicData;
 using DynamicData.Binding;
+
+using Newtonsoft.Json;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -19,22 +20,14 @@ using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 
-namespace DivinityModManager.Models;
-
-public interface IDivinityModData
-{
-	string UUID { get; set; }
-	string Name { get; set; }
-	string Folder { get; set; }
-	string MD5 { get; set; }
-	LarianVersion Version { get; set; }
-	public DateTimeOffset? LastModified { get; }
-}
+namespace DivinityModManager.Models.Mod;
 
 [DataContract]
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
-public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
+public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISelectable
 {
+	public ModEntryType EntryType => ModEntryType.Mod;
+
 	[Reactive] public string FilePath { get; set; }
 
 	#region meta.lsx Properties
@@ -306,7 +299,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 	public void AddTag(string tag)
 	{
-		if (!String.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
+		if (!string.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
 		{
 			Tags.Add(tag);
 			Tags.Sort((x, y) => string.Compare(x, y, true));
@@ -319,10 +312,10 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 		{
 			return;
 		}
-		bool addedTags = false;
+		var addedTags = false;
 		foreach (var tag in tags)
 		{
-			if (!String.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
+			if (!string.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
 			{
 				Tags.Add(tag);
 				addedTags = true;
@@ -337,7 +330,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 	public bool PakEquals(string fileName, StringComparison comparison = StringComparison.Ordinal)
 	{
-		string outputPackage = Path.ChangeExtension(Folder, "pak");
+		var outputPackage = Path.ChangeExtension(Folder, "pak");
 		//Imported Classic Projects
 		if (!Folder.Contains(UUID))
 		{
@@ -384,7 +377,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 			case ModSourceType.NEXUSMODS:
 				if (NexusModsData.IsEnabled)
 				{
-					return String.Format(DivinityApp.NEXUSMODS_MOD_URL, NexusModsData.ModId);
+					return string.Format(DivinityApp.NEXUSMODS_MOD_URL, NexusModsData.ModId);
 				}
 				break;
 			case ModSourceType.GITHUB:
@@ -401,17 +394,17 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 	{
 		var urls = new List<string>();
 		var steamUrl = GetURL(ModSourceType.STEAM, asProtocol);
-		if (!String.IsNullOrEmpty(steamUrl))
+		if (!string.IsNullOrEmpty(steamUrl))
 		{
 			urls.Add(steamUrl);
 		}
 		var nexusUrl = GetURL(ModSourceType.NEXUSMODS, asProtocol);
-		if (!String.IsNullOrEmpty(nexusUrl))
+		if (!string.IsNullOrEmpty(nexusUrl))
 		{
 			urls.Add(nexusUrl);
 		}
 		var githubUrl = GetURL(ModSourceType.GITHUB, asProtocol);
-		if (!String.IsNullOrEmpty(githubUrl))
+		if (!string.IsNullOrEmpty(githubUrl))
 		{
 			urls.Add(githubUrl);
 		}
@@ -427,8 +420,8 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 	{
 		return new DivinityLoadOrderEntry
 		{
-			UUID = this.UUID,
-			Name = this.Name
+			UUID = UUID,
+			Name = Name
 		};
 	}
 
@@ -484,7 +477,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 			lines.Add($"Last updated on {createdDate.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture)}");
 		}
 
-		return String.Join("\n", lines);
+		return string.Join("\n", lines);
 	}
 
 
@@ -532,7 +525,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 		if (config.NexusModsId > DivinityApp.NEXUSMODS_MOD_ID_START) NexusModsData.ModId = config.NexusModsId;
 		if (config.SteamWorkshopId > DivinityApp.WORKSHOP_MOD_ID_START) WorkshopData.ModId = config.SteamWorkshopId;
-		if (!String.IsNullOrWhiteSpace(config.GitHub)) GitHubData.Url = config.GitHub;
+		if (!string.IsNullOrWhiteSpace(config.GitHub)) GitHubData.Url = config.GitHub;
 	}
 
 	private static string GetAuthor(ValueTuple<string, string, string, bool> x)
@@ -542,13 +535,13 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 		var githubAuthor = x.Item3;
 		var isLarianMod = x.Item4;
 
-		if (!String.IsNullOrEmpty(metaAuthor)) return metaAuthor;
-		if (!String.IsNullOrEmpty(nexusAuthor)) return nexusAuthor;
-		if (!String.IsNullOrEmpty(githubAuthor)) return githubAuthor;
+		if (!string.IsNullOrEmpty(metaAuthor)) return metaAuthor;
+		if (!string.IsNullOrEmpty(nexusAuthor)) return nexusAuthor;
+		if (!string.IsNullOrEmpty(githubAuthor)) return githubAuthor;
 
 		if (isLarianMod) return "Larian Studios";
 
-		return String.Empty;
+		return string.Empty;
 	}
 
 	private static bool CanAddToLoadOrderCheck(ValueTuple<string, bool, bool, bool, bool> x)
@@ -559,7 +552,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 		var isForceLoaded = x.Item3;
 		var isForceLoadedMergedMod = x.Item4;
 		var forceAllowInLoadOrder = x.Item5;
-		return modType != "Adventure" && !isHidden && ((!isForceLoaded || isForceLoadedMergedMod) || forceAllowInLoadOrder);
+		return modType != "Adventure" && !isHidden && (!isForceLoaded || isForceLoadedMergedMod || forceAllowInLoadOrder);
 	}
 
 	//Green
@@ -581,15 +574,34 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 			SelectedColor = EditorProjectBackgroundSelectedColor;
 			ListColor = EditorProjectBackgroundColor;
 		}
-		else if (isForceLoadedMergedMod || (isForceLoadedMod && isActive))
+		else if (isForceLoadedMergedMod || isForceLoadedMod && isActive)
 		{
 			SelectedColor = ForceLoadedBackgroundSelectedColor;
 			ListColor = ForceLoadedBackgroundColor;
 		}
 		else
 		{
-			ListColor = SelectedColor = String.Empty;
+			ListColor = SelectedColor = string.Empty;
 		}
+	}
+
+	private static readonly JsonSerializerSettings _serializerSettings = new()
+	{
+		NullValueHandling = NullValueHandling.Ignore,
+		Formatting = Formatting.Indented,
+	};
+
+	public string Export(ModExportType exportType)
+	{
+		string result = exportType switch
+		{
+			ModExportType.XML => String.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt),
+			ModExportType.JSON => JsonConvert.SerializeObject(this, _serializerSettings),
+			ModExportType.TXT => StringUtils.ModToTextLine(this),
+			ModExportType.TSV => StringUtils.ModToTSVLine(this),
+			_ => String.Empty,
+		};
+		return result;
 	}
 
 	public DivinityModData()
@@ -626,7 +638,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 
 		this.WhenAnyValue(x => x.UUID).BindTo(NexusModsData, x => x.UUID);
 		this.WhenAnyValue(x => x.NexusModsData.PictureUrl)
-			.Select(uri => uri != null && !String.IsNullOrEmpty(uri.AbsolutePath) ? Visibility.Visible : Visibility.Collapsed)
+			.Select(uri => uri != null && !string.IsNullOrEmpty(uri.AbsolutePath) ? Visibility.Visible : Visibility.Collapsed)
 			.ToUIProperty(this, x => x.NexusImageVisibility, Visibility.Collapsed);
 
 		this.WhenAnyValue(x => x.NexusModsData.IsUpdated)
@@ -679,18 +691,18 @@ public class DivinityModData : ReactiveObject, IDivinityModData, ISelectable
 		});
 
 		this.WhenAnyValue(x => x.ListColor, x => x.SelectedColor)
-			.Select(x => !String.IsNullOrEmpty(x.Item1) || !String.IsNullOrEmpty(x.Item2))
+			.Select(x => !string.IsNullOrEmpty(x.Item1) || !string.IsNullOrEmpty(x.Item2))
 			.BindTo(this, x => x.HasColorOverride);
 		this.WhenAnyValue(x => x.IsForceLoadedMergedMod, x => x.IsEditorMod, x => x.IsForceLoaded, x => x.ForceAllowInLoadOrder, x => x.IsActive)
 			.ObserveOn(RxApp.MainThreadScheduler).Subscribe(UpdateColors);
 
 		// If a screen reader is active, don't bother making tooltips for the mod item entry
 		this.WhenAnyValue(x => x.Description, x => x.HasDependencies, x => x.UUID).
-			Select(x => !DivinityApp.IsScreenReaderActive() && (!String.IsNullOrEmpty(x.Item1) || x.Item2 || !String.IsNullOrEmpty(x.Item3)))
+			Select(x => !DivinityApp.IsScreenReaderActive() && (!string.IsNullOrEmpty(x.Item1) || x.Item2 || !string.IsNullOrEmpty(x.Item3)))
 			.ToUIProperty(this, x => x.HasToolTip, true);
 
 		this.WhenAnyValue(x => x.IsEditorMod, x => x.IsHidden, x => x.FilePath,
-			(isEditorMod, isHidden, path) => !isEditorMod && !isHidden && !String.IsNullOrEmpty(path)).ToUIPropertyImmediate(this, x => x.CanDelete);
+			(isEditorMod, isHidden, path) => !isEditorMod && !isHidden && !string.IsNullOrEmpty(path)).ToUIPropertyImmediate(this, x => x.CanDelete);
 
 		var whenExtenderProp = this.WhenAnyValue(x => x.ExtenderModStatus, x => x.ScriptExtenderData.RequiredVersion, x => x.CurrentExtenderVersion);
 		whenExtenderProp.Select(x => ExtenderStatusToToolTipText(x.Item1, x.Item2, x.Item3)).ToUIProperty(this, x => x.ScriptExtenderSupportToolTipText);

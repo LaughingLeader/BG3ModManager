@@ -246,6 +246,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 	#endregion
 
 	[Reactive] public bool IsRenamingOrder { get; set; }
+	[Reactive] public bool IsRefreshing { get; private set; }
 	[Reactive] public bool IsLoadingOrder { get; set; }
 	[Reactive] public bool IsLocked { get; private set; }
 
@@ -400,6 +401,29 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		}, canExecuteCommands);
 	}
 
+	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
+
+	private IDisposable _profileChangesDisp;
+
+	private void ListenForProfileChanges(bool enabled)
+	{
+		_profileChangesDisp?.Dispose();
+		if(enabled)
+		{
+			_profileChangesDisp = this.WhenAnyValue(x => x.SelectedProfileIndex).SubscribeOn(RxApp.MainThreadScheduler).Subscribe(index =>
+			{
+				if (index < Profiles.Count)
+				{
+					var nextProfile = Profiles.ElementAtOrDefault(index);
+					if (nextProfile != null)
+					{
+						SelectedProfile = nextProfile;
+					}
+				}
+			});
+		}
+	}
+
 	public ModOrderViewModel(MainWindowViewModel host)
 	{
 		DivinityApp.Commands.SetViewModel(this);
@@ -429,7 +453,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
 		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
 
-		profiles.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out _uiprofiles).Subscribe();
+		profiles.Connect().Sort(_profileSort).ObserveOnDispatcher().Bind(out _uiprofiles).DisposeMany().Subscribe();
 
 		modManager.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
 		modManager.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
@@ -439,7 +463,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		this.WhenAnyValue(x => x.TotalInactiveModsHidden).Select(x => HiddenToLabel(x, InactiveMods.Count)).ToUIProperty(this, x => x.InactiveModsFilterResultText);
 		this.WhenAnyValue(x => x.TotalOverrideModsHidden).Select(x => HiddenToLabel(x, modManager.ForceLoadedMods.Count)).ToUIProperty(this, x => x.OverrideModsFilterResultText);
 
-		this.WhenAnyValue(x => x.SelectedProfileIndex).Select(x => Profiles.ElementAtOrDefault(x)).BindTo(this, x => x.SelectedProfile);
 		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
 		var hasNonNullProfile = whenProfile.Select(x => x != null);
 		hasNonNullProfile.ToUIProperty(this, x => x.HasProfile);
@@ -706,6 +729,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	public async Task RefreshAsync(MainWindowViewModel main, CancellationToken token)
 	{
+		IsRefreshing = true;
+		ListenForProfileChanges(false);
 		DivinityApp.Log($"Refreshing data asynchronously...");
 
 		double taskStepAmount = 1.0 / 10;
@@ -789,34 +814,32 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				ExternalModOrders.Clear();
 				ExternalModOrders.AddRange(savedModOrderList);
 
-				var index = Profiles.IndexOf(Profiles.FirstOrDefault(p => p.ProfileName == "Public"));
-				if (index > -1)
+				var publicProfile = profiles.Items.FirstOrDefault(p => p.FolderName == "Public");
+				var defaultIndex = 0;
+
+				var sortedProfiles = loadedProfiles.OrderBy(x => x.FolderName != "Public").ThenBy(x => x.Name).ToList();
+
+				if (String.IsNullOrWhiteSpace(selectedProfileUUID) || selectedProfileUUID == publicProfile?.UUID)
 				{
-					SelectedProfileIndex = index;
+					SelectedProfileIndex = defaultIndex;
 				}
 				else
 				{
-					if (!String.IsNullOrWhiteSpace(selectedProfileUUID))
+					var index = sortedProfiles.IndexOf(sortedProfiles.FirstOrDefault(p => p.UUID == selectedProfileUUID));
+					if (index > -1)
 					{
-
-						index = Profiles.IndexOf(Profiles.FirstOrDefault(p => p.UUID == selectedProfileUUID));
-						if (index > -1)
-						{
-							SelectedProfileIndex = index;
-						}
-						else
-						{
-							SelectedProfileIndex = 0;
-							DivinityApp.Log($"Profile '{selectedProfileUUID}' not found {Profiles.Count}/{loadedProfiles.Count}.");
-						}
+						SelectedProfileIndex = index;
 					}
 					else
 					{
-						SelectedProfileIndex = 0;
+						SelectedProfileIndex = defaultIndex;
+						DivinityApp.Log($"Profile '{selectedProfileUUID}' not found {profiles.Count}/{loadedProfiles.Count}.");
 					}
 				}
 
-				DivinityApp.Log($"Set profile to ({SelectedProfile?.Name})[{SelectedProfileIndex}]");
+				SelectedProfile = sortedProfiles.ElementAt(SelectedProfileIndex);
+
+				DivinityApp.Log($"Set profile to ({SelectedProfile?.Name})[{SelectedProfileIndex}] ({Profiles.Count})");
 
 				main.MainProgressWorkText = "Building mod order list...";
 
@@ -893,6 +916,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			IsLoadingOrder = false;
 
 			Services.Mods.ApplyUserModConfig();
+			IsRefreshing = false;
+			ListenForProfileChanges(true);
 		}, RxApp.MainThreadScheduler);
 	}
 
@@ -1346,7 +1371,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		{
 			IsLoadingOrder = true;
 
-			List<DivinityMissingModData> missingMods = new();
+			DivinityApp.Log($"Changing profile to ({SelectedProfile.FolderName})");
+
+			List<DivinityMissingModData> missingMods = [];
 
 			DivinityLoadOrder currentOrder = new() { Name = "Current", FilePath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx"), IsModSettings = true };
 
@@ -1925,28 +1952,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		}
 	}
 
-	private static string ModToTSVLine(DivinityModData mod)
-	{
-		var index = mod.Index.ToString();
-		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
-		{
-			index = "Override";
-		}
-		var urls = String.Join(";", mod.GetAllURLs());
-		return $"{index}\t{mod.Name}\t{mod.AuthorDisplayName}\t{mod.OutputPakName}\t{String.Join(", ", mod.Tags)}\t{String.Join(", ", mod.Dependencies.Items.Select(y => y.Name))}\t{urls}";
-	}
-
-	private static string ModToTextLine(DivinityModData mod)
-	{
-		var index = mod.Index.ToString() + ".";
-		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
-		{
-			index = "Override";
-		}
-		var urls = String.Join(";", mod.GetAllURLs());
-		return $"{index} {mod.Name} ({mod.OutputPakName}) {urls}";
-	}
-
 	private void ExportLoadOrderToTextFileAs()
 	{
 		if (SelectedProfile != null && SelectedModOrder != null)
@@ -1976,14 +1981,15 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			if (dialog.ShowDialog(App.Current.MainWindow) == true)
 			{
-				var exportMods = new List<DivinityModData>(ActiveMods);
+				var exportMods = new List<IModEntry>(ActiveMods);
 				exportMods.AddRange(Services.Mods.ForceLoadedMods.ToList().OrderBy(x => x.Name));
 
 				var fileType = Path.GetExtension(dialog.FileName);
 				string outputText = "";
 				if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 				{
-					outputText = JsonConvert.SerializeObject(exportMods.Select(x => DivinitySerializedModData.FromMod(x)).ToList(), Formatting.Indented, new JsonSerializerSettings
+					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => DivinitySerializedModData.FromMod((DivinityModData)x)).ToList();
+					outputText = JsonConvert.SerializeObject(serializedMods, Formatting.Indented, new JsonSerializerSettings
 					{
 						NullValueHandling = NullValueHandling.Ignore
 					});
@@ -1991,12 +1997,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				else if (fileType.Equals(".tsv", StringComparison.OrdinalIgnoreCase))
 				{
 					outputText = "Index\tName\tAuthor\tFileName\tTags\tDependencies\tURL\n";
-					outputText += String.Join("\n", exportMods.Select(ModToTSVLine));
+					outputText += String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(x => !String.IsNullOrEmpty(x)));
 				}
 				else
 				{
 					//Text file format
-					outputText = String.Join("\n", exportMods.Select(ModToTextLine));
+					outputText = String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(x => !String.IsNullOrEmpty(x)));
 				}
 				try
 				{

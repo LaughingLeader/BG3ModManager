@@ -4,6 +4,7 @@ using DivinityModManager.AppServices;
 using DivinityModManager.Extensions;
 using DivinityModManager.Models;
 using DivinityModManager.Models.App;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.NexusMods;
 using DivinityModManager.Models.Settings;
 using DivinityModManager.Models.Updates;

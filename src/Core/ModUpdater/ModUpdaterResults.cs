@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.GitHub;
+﻿using DivinityModManager.Models.GitHub;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.NexusMods;
 
 namespace DivinityModManager.ModUpdater;

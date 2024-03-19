@@ -1,4 +1,6 @@
-﻿using NexusModsNET.DataModels;
+﻿using DivinityModManager.Models.Mod;
+
+using NexusModsNET.DataModels;
 
 namespace DivinityModManager.Models.NexusMods;
 

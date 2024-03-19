@@ -1548,7 +1548,7 @@ public static partial class DivinityModDataLoader
 		return order;
 	}
 
-	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<DivinityModData> order)
+	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<IModEntry> order)
 	{
 		if (Directory.Exists(folder))
 		{
@@ -1684,7 +1684,7 @@ public static partial class DivinityModDataLoader
 		return orderList;
 	}
 
-	public static string GenerateModSettingsFile(IEnumerable<DivinityModData> orderList)
+	public static string GenerateModSettingsFile(IEnumerable<IModEntry> orderList)
 	{
 		/* Active mods are contained within the "ModOrder" node.*/
 		string modulesText = "";
@@ -1695,9 +1695,13 @@ public static partial class DivinityModDataLoader
 		{
 			if (!String.IsNullOrWhiteSpace(mod.UUID))
 			{
-				modulesText += String.Format(DivinityApp.XML_MOD_ORDER_MODULE, mod.UUID) + Environment.NewLine;
-				string safeName = System.Security.SecurityElement.Escape(mod.Name);
-				modShortDescText += String.Format(DivinityApp.XML_MODULE_SHORT_DESC, mod.Folder, mod.MD5, safeName, mod.UUID, mod.Version.VersionInt) + Environment.NewLine;
+				//Use Export to support lists with categories/things that don't need exporting
+				var modText = mod.Export(ModExportType.XML);
+				if(!String.IsNullOrEmpty(modText))
+				{
+					modulesText += String.Format(DivinityApp.XML_MOD_ORDER_MODULE, mod.UUID) + Environment.NewLine;
+					modShortDescText += modText + Environment.NewLine;
+				}
 			}
 		}
 

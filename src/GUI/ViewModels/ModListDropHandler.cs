@@ -1,5 +1,5 @@
 ﻿using DivinityModManager.AppServices;
-using DivinityModManager.Models;
+using DivinityModManager.Models.Mod;
 
 using GongSolutions.Wpf.DragDrop;
 using GongSolutions.Wpf.DragDrop.Utilities;

@@ -1,4 +1,5 @@
 ﻿using DivinityModManager.Extensions;
+using DivinityModManager.Models.Mod;
 
 using LSLib.LS;
 

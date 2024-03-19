@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using DivinityModManager.Models.Mod;
+
+using System.Globalization;
 
 namespace DivinityModManager.Util;
 
@@ -77,5 +79,27 @@ public static class StringUtils
 			return new Uri(value);
 		}
 		return null;
+	}
+
+	public static string ModToTSVLine(DivinityModData mod)
+	{
+		var index = mod.Index.ToString();
+		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
+		{
+			index = "Override";
+		}
+		var urls = String.Join(";", mod.GetAllURLs());
+		return $"{index}\t{mod.Name}\t{mod.AuthorDisplayName}\t{mod.OutputPakName}\t{String.Join(", ", mod.Tags)}\t{String.Join(", ", mod.Dependencies.Items.Select(y => y.Name))}\t{urls}";
+	}
+
+	public static string ModToTextLine(DivinityModData mod)
+	{
+		var index = mod.Index.ToString() + ".";
+		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
+		{
+			index = "Override";
+		}
+		var urls = String.Join(";", mod.GetAllURLs());
+		return $"{index} {mod.Name} ({mod.OutputPakName}) {urls}";
 	}
 }

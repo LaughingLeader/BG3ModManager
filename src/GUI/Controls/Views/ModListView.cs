@@ -1,5 +1,5 @@
 ﻿using DivinityModManager.Extensions;
-using DivinityModManager.Models;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Util.ScreenReader;
 
 using DynamicData.Binding;

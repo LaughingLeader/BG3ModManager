@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models;
+﻿using DivinityModManager.Models.Mod;
 using DivinityModManager.Windows;
 
 using System.Globalization;

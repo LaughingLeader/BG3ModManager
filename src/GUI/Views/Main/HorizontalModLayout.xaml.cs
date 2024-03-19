@@ -1,6 +1,7 @@
 ﻿using DivinityModManager.Controls.Views;
 using DivinityModManager.Converters;
 using DivinityModManager.Models;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Util;
 using DivinityModManager.ViewModels;
 using DivinityModManager.ViewModels.Main;

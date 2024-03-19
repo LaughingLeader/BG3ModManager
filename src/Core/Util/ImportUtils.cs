@@ -1,5 +1,6 @@
 ﻿using DivinityModManager.Models;
 using DivinityModManager.Models.App;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.NexusMods;
 
 using SharpCompress.Archives;

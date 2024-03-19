@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.GitHub;
+﻿using DivinityModManager.Models.GitHub;
 using DivinityModManager.Models.GitHub.Json;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Util;
 
 using Octokit;

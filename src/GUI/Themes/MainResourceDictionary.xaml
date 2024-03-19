@@ -12,6 +12,7 @@
     xmlns:conv="clr-namespace:DivinityModManager.Converters"
     xmlns:dapp="clr-namespace:DivinityModManager;assembly=DivinityModManagerCore"
     xmlns:data="clr-namespace:DivinityModManager.Models;assembly=DivinityModManagerCore"
+    xmlns:moddata="clr-namespace:DivinityModManager.Models.Mod;assembly=DivinityModManagerCore"
     xmlns:dd="urn:gong-wpf-dragdrop"
     xmlns:divThemes="clr-namespace:DivinityModManager.Themes"
     xmlns:dmcore="clr-namespace:DivinityModManager;assembly=DivinityModManagerCore"
@@ -1057,7 +1058,7 @@
             </StackPanel>
         </StackPanel>
     </controls:AutomationTooltip>
-    <DataTemplate x:Key="ModNameTemplate" DataType="{x:Type data:DivinityModData}">
+    <DataTemplate x:Key="ModNameTemplate" DataType="{x:Type moddata:DivinityModData}">
         <controls:ModEntryGrid>
             <controls:ModEntryGrid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="50" />

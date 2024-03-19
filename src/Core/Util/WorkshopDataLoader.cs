@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.Cache;
+﻿using DivinityModManager.Models.Cache;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.Steam;
 
 using Newtonsoft.Json;
@@ -13,7 +13,12 @@ public static class WorkshopDataLoader
 	private static readonly string STEAM_API_GET_WORKSHOP_DATA_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?";
 	private static readonly string STEAM_API_GET_WORKSHOP_MODS_URL = "https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/?";
 
-	private static readonly List<string> ignoredTags = new() { "Add-on", "Adventure", "GM", "Arena", "Story", "Definitive Edition" };
+#if !DOS2
+	private static readonly List<string> ignoredTags = ["Add-on", "Adventure"];
+#else
+	private static readonly List<string> ignoredTags = ["Add-on", "Adventure", "GM", "Arena", "Story", "Definitive Edition"];
+#endif
+
 	private static List<string> GetWorkshopTags(IWorkshopPublishFileDetails data)
 	{
 		var tags = data.Tags.Where(t => !ignoredTags.Contains(t.Tag)).Select(x => x.Tag).ToList();
@@ -21,7 +26,7 @@ public static class WorkshopDataLoader
 		{
 			return tags;
 		}
-		return new List<string>();
+		return [];
 	}
 
 	public static async Task<int> LoadAllWorkshopDataAsync(List<DivinityModData> workshopMods, SteamWorkshopCachedData cachedData)

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using DivinityModManager.Models.Mod;
+
+using Newtonsoft.Json;
 
 namespace DivinityModManager.Models;
 

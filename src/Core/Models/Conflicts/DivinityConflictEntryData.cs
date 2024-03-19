@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using DivinityModManager.Models.Mod;
+
+using ReactiveUI;
 
 namespace DivinityModManager.Models.Conflicts;
 

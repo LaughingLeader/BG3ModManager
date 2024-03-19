@@ -1,4 +1,6 @@
-﻿namespace DivinityModManager.Models.App;
+﻿using DivinityModManager.Models.Mod;
+
+namespace DivinityModManager.Models.App;
 
 public class ModLoadingResults
 {

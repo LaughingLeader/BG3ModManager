@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.Cache;
+﻿using DivinityModManager.Models.Cache;
+using DivinityModManager.Models.Mod;
 
 using Newtonsoft.Json;
 

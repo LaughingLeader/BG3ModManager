@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using DivinityModManager.Models.Mod;
+
+using System.Globalization;
 
 namespace DivinityModManager.Models;
 

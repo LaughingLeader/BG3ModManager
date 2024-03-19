@@ -1,5 +1,5 @@
 ﻿using DivinityModManager.AppServices.Data;
-using DivinityModManager.Models;
+using DivinityModManager.Models.Mod;
 using DivinityModManager.Models.NexusMods;
 using DivinityModManager.Models.NexusMods.NXM;
 using DivinityModManager.Models.Updates;

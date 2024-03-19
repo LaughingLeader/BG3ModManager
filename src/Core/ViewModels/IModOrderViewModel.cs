@@ -1,4 +1,5 @@
 ﻿using DivinityModManager.Models;
+using DivinityModManager.Models.Mod;
 
 using DynamicData.Binding;
 

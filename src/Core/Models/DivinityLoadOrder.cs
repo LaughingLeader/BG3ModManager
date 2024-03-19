@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using DivinityModManager.Models.Mod;
+
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System.Reactive.Linq;

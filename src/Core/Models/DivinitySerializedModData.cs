@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using DivinityModManager.Models.Mod;
+
+using System.Runtime.Serialization;
 
 namespace DivinityModManager.Models;
 
