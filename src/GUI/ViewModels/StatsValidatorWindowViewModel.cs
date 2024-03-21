@@ -29,7 +29,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 	[ObservableAsProperty] public Visibility LockScreenVisibility { get; }
 
 	public ReactiveCommand<DivinityModData, Unit> ValidateCommand { get; }
-	public ReactiveCommand<Unit, Unit> CancelValidateCommand { get; }
+	public RxCommandUnit CancelValidateCommand { get; }
 
 	private static string FormatMessage(StatLoadingError message)
 	{

@@ -54,7 +54,7 @@ public class ExportOrderToArchiveViewModel : BaseProgressViewModel
 	[ObservableAsProperty] public bool AllSelected { get; }
 	[ObservableAsProperty] public string SelectAllTooltip { get; }
 
-	public ReactiveCommand<Unit, Unit> SelectAllCommand { get; private set; }
+	public RxCommandUnit SelectAllCommand { get; private set; }
 
 	public override async Task<bool> Run(CancellationToken cts)
 	{

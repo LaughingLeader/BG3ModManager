@@ -48,7 +48,7 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 	[ObservableAsProperty] public string Title { get; }
 	[ObservableAsProperty] public Visibility RemoveFromLoadOrderVisibility { get; }
 
-	public ReactiveCommand<Unit, Unit> SelectAllCommand { get; private set; }
+	public RxCommandUnit SelectAllCommand { get; private set; }
 
 	public event EventHandler<FileDeletionCompleteEventArgs> FileDeletionComplete;
 
