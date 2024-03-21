@@ -161,17 +161,17 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[ObservableAsProperty] public Visibility UpdateCountVisibility { get; }
 	[ObservableAsProperty] public Visibility DeveloperModeVisibility { get; }
 
-	public ReactiveCommand<Unit, Task> RefreshCommand { get; }
-	public ReactiveCommand<Unit, Unit> CancelMainProgressCommand { get; }
-	public ICommand ToggleUpdatesViewCommand { get; private set; }
-	public ICommand CheckForAppUpdatesCommand { get; set; }
+	public ReactiveCommand<Unit,Task> RefreshCommand { get; }
+	public RxCommandUnit CancelMainProgressCommand { get; }
+	public RxCommandUnit ToggleUpdatesViewCommand { get; }
+	public RxCommandUnit CheckForAppUpdatesCommand { get; set; }
 	public ReactiveCommand<UpdateInfoEventArgs, Unit> OnAppUpdateCheckedCommand { get; set; }
-	public ICommand RenameSaveCommand { get; private set; }
-	public ICommand SaveSettingsSilentlyCommand { get; private set; }
-	public ReactiveCommand<Unit, Unit> RefreshModUpdatesCommand { get; private set; }
-	public ICommand CheckForGitHubModUpdatesCommand { get; private set; }
-	public ICommand CheckForNexusModsUpdatesCommand { get; private set; }
-	public ICommand CheckForSteamWorkshopUpdatesCommand { get; private set; }
+	public RxCommandUnit RenameSaveCommand { get; }
+	public RxCommandUnit SaveSettingsSilentlyCommand { get; }
+	public RxCommandUnit RefreshModUpdatesCommand { get; }
+	public RxCommandUnit CheckForGitHubModUpdatesCommand { get; }
+	public RxCommandUnit CheckForNexusModsUpdatesCommand { get; }
+	public RxCommandUnit CheckForSteamWorkshopUpdatesCommand { get; }
 	public EventHandler OnRefreshed { get; set; }
 
 	public bool DebugMode { get; set; }
@@ -197,7 +197,8 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			LoadAppConfig();
 		}, RxApp.MainThreadScheduler);
 
-		await Task.Delay(250, token);
+		//Wait for UI to update
+		await View.Dispatcher.InvokeAsync(() => {}, System.Windows.Threading.DispatcherPriority.Background);
 
 		await Views.ModOrder.RefreshAsync(this, token);
 
@@ -1001,14 +1002,12 @@ Directory the zip will be extracted to:
 		return success;
 	}
 
-	public bool SaveSettings()
+	public void SaveSettings()
 	{
-		var success = true;
 		if (!_settings.TrySaveAll(out var errors))
 		{
 			var errorMessage = String.Join("\n", errors.Select(x => x.ToString()));
 			ShowAlert($"Error saving settings: {errorMessage}", AlertType.Danger);
-			success = false;
 		}
 		else
 		{
@@ -1016,10 +1015,8 @@ Directory the zip will be extracted to:
 			if (!Keys.SaveKeybindings(out var errorMsg))
 			{
 				ShowAlert(errorMsg, AlertType.Danger);
-				success = false;
 			}
 		}
-		return success;
 	}
 
 	private IDisposable _deferSave;
@@ -1929,6 +1926,7 @@ Directory the zip will be extracted to:
 		Services.RegisterSingleton(ModImporter);
 
 		RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b));
+		//RefreshCommand = ReactiveCommand.CreateFromObservable(() => ObservableEx.CreateAndStartAsync(async (token) => await RefreshAsync(), RxApp.TaskpoolScheduler), this.WhenAnyValue(x => x.IsLocked, b => !b));
 
 		this.WhenAnyValue(x => x.IsRefreshing, x => x.MainProgressIsActive, x => x.IsDragging).Select(PropertyConverters.AnyBool).BindTo(this, x => x.IsLocked);
 		this.WhenAnyValue(x => x.IsLocked, x => x.IsInitialized, (b1, b2) => !b1 && b2).BindTo(this, x => x.AllowDrop);
