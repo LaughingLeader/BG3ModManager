@@ -27,14 +27,16 @@ public enum SettingsWindowTab
 {
 	[Description("Mod Manager Settings")]
 	Default = 0,
+	[Description("Update Settings")]
+	Update = 1,
 	[Description("Script Extender Settings")]
-	Extender = 1,
+	Extender = 2,
 	[Description("Script Extender Updater Settings")]
-	ExtenderUpdater = 2,
+	ExtenderUpdater = 3,
 	[Description("Keybindings")]
-	Keybindings = 3,
+	Keybindings = 4,
 	[Description("Advanced Settings")]
-	Advanced = 4
+	Advanced = 5
 }
 
 public class GameLaunchParamEntry : ReactiveObject
@@ -298,16 +300,17 @@ public class SettingsWindowViewModel : ReactiveObject
 		}
 		catch (Exception) { }
 
-		var savedMainSettings = Main.SaveSettings();
+		Main.SaveSettings();
 
 		if (View.IsVisible)
 		{
 			switch (SelectedTabIndex)
 			{
 				case SettingsWindowTab.Default:
+				case SettingsWindowTab.Update:
 				case SettingsWindowTab.Advanced:
 					//Handled in Main.SaveSettings
-					if (savedMainSettings) ShowAlert("Saved settings.", AlertType.Success, 10);
+					ShowAlert("Saved settings.", AlertType.Success, 10);
 					break;
 				case SettingsWindowTab.Extender:
 					ExportExtenderSettings();
