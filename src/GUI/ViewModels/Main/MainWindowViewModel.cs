@@ -161,7 +161,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 	[ObservableAsProperty] public Visibility UpdateCountVisibility { get; }
 	[ObservableAsProperty] public Visibility DeveloperModeVisibility { get; }
 
-	public ReactiveCommand<Unit,Task> RefreshCommand { get; }
+	public RxCommandUnit RefreshCommand { get; }
 	public RxCommandUnit CancelMainProgressCommand { get; }
 	public RxCommandUnit ToggleUpdatesViewCommand { get; }
 	public RxCommandUnit CheckForAppUpdatesCommand { get; set; }
@@ -176,29 +176,28 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 
 	public bool DebugMode { get; set; }
 
+	private void RefreshStart()
+	{
+		StartMainProgress(!IsInitialized ? "Loading..." : "Refreshing...");
+		IsRefreshing = true;
+		CanCancelProgress = false;
+		Services.Mods.Refresh();
+		Views.ModUpdates.Clear();
+		Services.Get<ModOrderView>()?.ModLayout.SaveLayout();
+		ModUpdatesAvailable = false;
+		Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
+		Window.TaskbarItemInfo.ProgressValue = 0;
+		LoadAppConfig();
+		RxApp.TaskpoolScheduler.ScheduleAsync(async (_,_) => await RefreshAsync());
+	}
+
 	private async Task RefreshAsync()
 	{
 		DivinityApp.Log("Refreshing...");
-		await StartMainProgressAsync(!IsInitialized ? "Loading..." : "Refreshing...");
-
 		var token = MainProgressToken.Token;
 
-		await Observable.Start(() =>
-		{
-			IsRefreshing = true;
-			CanCancelProgress = false;
-			Services.Mods.Refresh();
-			Views.ModUpdates.Clear();
-			Services.Get<ModOrderView>()?.ModLayout.SaveLayout();
-			ModUpdatesAvailable = false;
-			Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
-			Window.TaskbarItemInfo.ProgressValue = 0;
-
-			LoadAppConfig();
-		}, RxApp.MainThreadScheduler);
-
 		//Wait for UI to update
-		await View.Dispatcher.InvokeAsync(() => {}, System.Windows.Threading.DispatcherPriority.Background);
+		//await View.Dispatcher.InvokeAsync(() => {}, System.Windows.Threading.DispatcherPriority.Background);
 
 		await Views.ModOrder.RefreshAsync(this, token);
 
@@ -222,6 +221,12 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			IsRefreshing = false;
 
 			RefreshModUpdatesCommand.Execute().Subscribe();
+
+			if(!IsInitialized)
+			{
+				View.Visibility = Visibility.Visible;
+				IsInitialized = true;
+			}
 		}, RxApp.MainThreadScheduler);
 	}
 
@@ -1663,14 +1668,7 @@ Directory the zip will be extracted to:
 		{
 			StartMainProgress("Loading...");
 			Views.SwitchToModOrderView();
-			RxApp.TaskpoolScheduler.ScheduleAsync(async (_,_) => {
-				await RefreshAsync();
-				await Observable.Start(() =>
-				{
-					View.Visibility = Visibility.Visible;
-					IsInitialized = true;
-				}, RxApp.MainThreadScheduler);
-			});
+			RefreshStart();
 		}
 	}
 
@@ -1925,7 +1923,8 @@ Directory the zip will be extracted to:
 		ModImporter = new(this);
 		Services.RegisterSingleton(ModImporter);
 
-		RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b));
+		RefreshCommand = ReactiveCommand.Create(RefreshStart, this.WhenAnyValue(x => x.IsLocked, b => !b));
+		//RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b));
 		//RefreshCommand = ReactiveCommand.CreateFromObservable(() => ObservableEx.CreateAndStartAsync(async (token) => await RefreshAsync(), RxApp.TaskpoolScheduler), this.WhenAnyValue(x => x.IsLocked, b => !b));
 
 		this.WhenAnyValue(x => x.IsRefreshing, x => x.MainProgressIsActive, x => x.IsDragging).Select(PropertyConverters.AnyBool).BindTo(this, x => x.IsLocked);
