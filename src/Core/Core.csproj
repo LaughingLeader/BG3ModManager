@@ -34,6 +34,7 @@
 		<PackageReference Include="ReactiveProperty" Version="9.5.0" />
 		<PackageReference Include="ReactiveUI" Version="19.5.72" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Reactive" Version="6.0.0" />
 		<PackageReference Include="SharpCompress" Version="0.36.0" />
