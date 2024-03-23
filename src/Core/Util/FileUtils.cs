@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
@@ -422,20 +423,23 @@ public static class FileUtils
 
 	private static readonly FileSystemRights _readAccessRights = FileSystemRights.Read | FileSystemRights.Synchronize;
 
-	public static bool HasReadPermission(params string[] paths)
+	public static bool HasFileReadPermission(params string[] paths)
 	{
 		foreach(var path in paths)
 		{
 			try
 			{
-				var info = new FileInfo(path);
-				var security = info.GetAccessControl();
-				var usersSid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-				var rules = security.GetAccessRules(true, true, usersSid.GetType()).OfType<FileSystemAccessRule>();
-				if (!rules.Any(r => r.FileSystemRights == _readAccessRights))
+				if(!String.IsNullOrEmpty(path) && File.Exists(path))
 				{
-					DivinityApp.Log($"Lacking permission for file '{path}'");
-					return false;
+					var info = new FileInfo(path);
+					var security = info.GetAccessControl();
+					var usersSid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+					var rules = security.GetAccessRules(true, true, usersSid.GetType()).OfType<FileSystemAccessRule>();
+					if (!rules.Any(r => r.FileSystemRights == _readAccessRights || r.FileSystemRights == FileSystemRights.FullControl))
+					{
+						DivinityApp.Log($"Lacking permission for file '{path}'");
+						return false;
+					}
 				}
 			}
 			catch (UnauthorizedAccessException ex)
@@ -443,7 +447,42 @@ public static class FileUtils
 				DivinityApp.Log($"Lacking permission for file '{path}':\n{ex}");
 				return false;
 			}
-			finally { }
+			catch (Exception ex)
+			{
+				DivinityApp.Log($"Error checking permissions for '{path}':\n{ex}");
+			}
+		}
+		return true;
+	}
+
+	public static bool HasDirectoryReadPermission(params string[] paths)
+	{
+		foreach (var path in paths)
+		{
+			try
+			{
+				if (!String.IsNullOrEmpty(path) && Directory.Exists(path))
+				{
+					var info = new DirectoryInfo(path);
+					var security = info.GetAccessControl();
+					var usersSid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+					var rules = security.GetAccessRules(true, true, usersSid.GetType()).OfType<FileSystemAccessRule>();
+					if (!rules.Any(r => r.FileSystemRights == _readAccessRights || r.FileSystemRights == FileSystemRights.FullControl))
+					{
+						DivinityApp.Log($"Lacking permission for directory '{path}'. Rights({String.Join(";", rules.Select(x => x.FileSystemRights))})");
+						return false;
+					}
+				}
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				DivinityApp.Log($"Lacking permission for directory '{path}':\n{ex}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				DivinityApp.Log($"Error checking permissions for '{path}':\n{ex}");
+			}
 		}
 		return true;
 	}
