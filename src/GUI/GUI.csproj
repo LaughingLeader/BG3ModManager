@@ -19,25 +19,25 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>$(SolutionDir)\bin\$(Configuration)\</OutputPath>
 		<OutputType>WinExe</OutputType>
-		<PlatformTarget>x64</PlatformTarget>
 		<Platforms>AnyCPU</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
 		<NeutralLanguage>en</NeutralLanguage>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<SupportedCultures>en-US</SupportedCultures>
-		<DebugType>none</DebugType>
-		<Optimize>True</Optimize>
 		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DebugType>none</DebugType>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<Optimize>False</Optimize>
 		<DebugType>full</DebugType>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
+	<PropertyGroup Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
 		<TidyRelease>True</TidyRelease>
 	</PropertyGroup>
 
@@ -72,6 +72,7 @@
 	</Target>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
 		<ProjectReference Include="..\..\src\Core\Core.csproj" />
 		<ProjectReference Include="..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
@@ -89,7 +90,7 @@
 		<PackageReference Include="ReactiveUI" Version="19.5.72" TreatAsUsed="true"/>
 		<PackageReference Include="ReactiveUI.Events.WPF" Version="15.1.1" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
-		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="ReactiveUI.WPF" Version="19.5.72" />
 		<PackageReference Include="SharpCompress" Version="0.36.0" />
 		<PackageReference Include="SharpVectors.Wpf" Version="1.8.4" />

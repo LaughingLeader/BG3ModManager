@@ -8,6 +8,7 @@
 		<AssemblyName>DivinityModManagerCore</AssemblyName>
 		<AssemblyTitle>BG3MM Core</AssemblyTitle>
 		<Platforms>AnyCPU</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
 		<Configurations>Debug;Release;Publish;PublishTest</Configurations>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<SupportedCultures>en-US</SupportedCultures>
@@ -22,6 +23,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
+		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
 	</ItemGroup>
 	
@@ -34,7 +36,7 @@
 		<PackageReference Include="ReactiveProperty" Version="9.5.0" />
 		<PackageReference Include="ReactiveUI" Version="19.5.72" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
-		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Reactive" Version="6.0.0" />
 		<PackageReference Include="SharpCompress" Version="0.36.0" />
