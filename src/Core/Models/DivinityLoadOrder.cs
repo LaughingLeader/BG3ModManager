@@ -32,6 +32,7 @@ public class DivinityLoadOrder : ReactiveObject
 	[Reactive] public string Name { get; set; }
 	[Reactive] public string FilePath { get; set; }
 	[Reactive] public DateTime LastModifiedDate { get; set; }
+	[Reactive] public bool IsLoaded { get; set; }
 
 	[Reactive] public bool IsModSettings { get; set; }
 

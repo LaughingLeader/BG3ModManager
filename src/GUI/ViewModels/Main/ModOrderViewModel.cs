@@ -410,7 +410,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		_profileChangesDisp?.Dispose();
 		if(enabled)
 		{
-			_profileChangesDisp = this.WhenAnyValue(x => x.SelectedProfileIndex).SubscribeOn(RxApp.MainThreadScheduler).Subscribe(index =>
+			var profileChanged = Profiles.ToObservableChangeSet().CountChanged().Throttle(TimeSpan.FromMilliseconds(50)).CombineLatest(this.WhenAnyValue(x => x.SelectedProfileIndex)).Select(x => x.Second);
+
+			_profileChangesDisp = profileChanged.Subscribe(index =>
 			{
 				if (index < Profiles.Count)
 				{
@@ -549,56 +551,33 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
 		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
 
-		var lastProfileIndex = -1;
-		var lastModOrderIndex = -1;
-
-		this.WhenAnyValue(x => x.SelectedProfileIndex, x => x.SelectedModOrderIndex).Throttle(TimeSpan.FromMilliseconds(25))
-			.ObserveOn(RxApp.MainThreadScheduler).Subscribe(data =>
+		this.WhenAnyValue(x => x.SelectedModOrder).Buffer(2, 1).Subscribe(changes =>
+		{
+			if (changes[0] is { } previous && previous != null)
 			{
-				var profileIndex = data.Item1;
-				var orderIndex = data.Item2;
-				if (!host.IsLocked && !IsLoadingOrder && !IsRefreshing)
-				{
-					if (lastProfileIndex != profileIndex)
-					{
-						lastProfileIndex = profileIndex;
-						if (profileIndex > -1 && Profiles.ElementAtOrDefault(profileIndex) is var profile && profile != null)
-						{
-							if (orderIndex > -1)
-							{
-								BuildModOrderList(profile, orderIndex);
-							}
-							else
-							{
-								BuildModOrderList(profile, 0);
-							}
-						}
-					}
-					else if (orderIndex != lastModOrderIndex)
-					{
-						lastModOrderIndex = orderIndex;
+				previous.IsLoaded = false;
+			}
+		});
 
-						if (orderIndex > -1 && ModOrderList.ElementAtOrDefault(orderIndex) is var order && order != null)
-						{
-							if (!order.OrderEquals(ActiveMods.Select(x => x.UUID)))
-							{
-								if (LoadModOrder(order))
-								{
-									DivinityApp.Log($"Successfully loaded order {order.Name}.");
-								}
-								else
-								{
-									DivinityApp.Log($"Failed to load order {order.Name}.");
-								}
-							}
-							else
-							{
-								DivinityApp.Log($"Order changed to {order.Name}. Skipping list loading since the orders match.");
-							}
-						}
-					}
+		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(profile =>
+		{
+			BuildModOrderList(profile, Math.Max(0, SelectedModOrderIndex));
+		});
+
+		this.WhenAnyValue(x => x.SelectedModOrder).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(order =>
+		{
+			if(!order.IsLoaded)
+			{
+				if (LoadModOrder(order))
+				{
+					DivinityApp.Log($"Successfully loaded order {order.Name}.");
 				}
-			});
+				else
+				{
+					DivinityApp.Log($"Failed to load order {order.Name}.");
+				}
+			}
+		});
 
 		//Throttle filters so they only happen when typing stops for 500ms
 
@@ -740,7 +719,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		ListenForProfileChanges(false);
 		DivinityApp.Log($"Refreshing data asynchronously...");
 
-		double taskStepAmount = 1.0 / 10;
+		double taskStepAmount = 1.0 / 9;
 
 		var modManager = Services.Mods;
 
@@ -808,7 +787,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			}
 
 			DivinityApp.Log("Setting up mod lists...");
-			await main.SetMainProgressTextAsync("Setting up mod lists...");
+			await main.SetMainProgressTextAsync("Setting up profiles & orders...");
 
 			await Observable.Start(() =>
 			{
@@ -817,53 +796,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 				profiles.AddOrUpdate(loadedProfiles);
 				ExternalModOrders.AddRange(savedModOrderList);
-
-				if(loadedProfiles.Count > 0)
-				{
-					main.MainProgressWorkText = "Building mod order list...";
-
-					var publicProfile = profiles.Items.FirstOrDefault(p => p.FolderName == "Public");
-					var defaultIndex = 0;
-
-					var sortedProfiles = loadedProfiles.OrderBy(x => x.FolderName != "Public").ThenBy(x => x.Name).ToList();
-
-					IsLoadingOrder = true;
-
-					if (String.IsNullOrWhiteSpace(selectedProfileUUID) || selectedProfileUUID == publicProfile?.UUID)
-					{
-						SelectedProfileIndex = defaultIndex;
-					}
-					else
-					{
-						var index = sortedProfiles.IndexOf(sortedProfiles.FirstOrDefault(p => p.UUID == selectedProfileUUID));
-						if (index > -1)
-						{
-							SelectedProfileIndex = index;
-						}
-						else
-						{
-							SelectedProfileIndex = defaultIndex;
-							DivinityApp.Log($"Profile '{selectedProfileUUID}' not found {profiles.Count}/{loadedProfiles.Count}.");
-						}
-					}
-
-					var profile = sortedProfiles.ElementAt(SelectedProfileIndex);
-					SelectedProfile = profile;
-
-					DivinityApp.Log($"Set profile to ({profile?.Name})[{SelectedProfileIndex}] ({profiles.Count})");
-
-					if (lastActiveOrder != null && lastActiveOrder.Count > 0)
-					{
-						SelectedModOrder?.SetOrder(lastActiveOrder);
-					}
-					BuildModOrderList(profile, 0, lastOrderName);
-
-					App.WM.Main.Window.Dispatcher.BeginInvoke(() =>
-					{
-						
-					}, System.Windows.Threading.DispatcherPriority.Background);
-				}
-				main.MainProgressValue += taskStepAmount;
 			}, RxApp.MainThreadScheduler);
 
 			await main.IncreaseMainProgressValueAsync(taskStepAmount);
@@ -933,6 +865,38 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			Services.Mods.ApplyUserModConfig();
 			IsRefreshing = false;
 			ListenForProfileChanges(true);
+
+			if (profiles.Count > 0)
+			{
+				App.WM.Main.Window.Dispatcher.BeginInvoke(() =>
+				{
+					var publicProfile = Profiles.FirstOrDefault(p => p.FolderName == "Public");
+					var defaultIndex = 0;
+
+					if (String.IsNullOrWhiteSpace(selectedProfileUUID) || selectedProfileUUID == publicProfile?.UUID)
+					{
+						SelectedProfileIndex = defaultIndex;
+					}
+					else
+					{
+						var index = Profiles.IndexOf(Profiles.FirstOrDefault(p => p.UUID == selectedProfileUUID));
+						if (index > -1)
+						{
+							SelectedProfileIndex = index;
+						}
+						else
+						{
+							SelectedProfileIndex = defaultIndex;
+							DivinityApp.Log($"Profile '{selectedProfileUUID}' not found.");
+						}
+					}
+
+					if (lastActiveOrder != null && lastActiveOrder.Count > 0)
+					{
+						SelectedModOrder?.SetOrder(lastActiveOrder);
+					}
+				}, System.Windows.Threading.DispatcherPriority.Background);
+			}
 		}, RxApp.MainThreadScheduler);
 	}
 
@@ -1394,36 +1358,29 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			var modManager = Services.Mods;
 
-			if (SelectedModOrder != null && SelectedModOrder.IsModSettings)
+			foreach (var uuid in profile.ModOrder)
 			{
-				currentOrder.SetOrder(SelectedModOrder);
-			}
-			else
-			{
-				foreach (var uuid in profile.ModOrder)
+				var activeModData = profile.ActiveMods.FirstOrDefault(y => y.UUID == uuid);
+				if (activeModData != null)
 				{
-					var activeModData = profile.ActiveMods.FirstOrDefault(y => y.UUID == uuid);
-					if (activeModData != null)
+					if (modManager.TryGetMod(uuid, out var mod))
 					{
-						if (modManager.TryGetMod(uuid, out var mod))
-						{
-							currentOrder.Add(mod);
-						}
-						else
-						{
-							var x = new DivinityMissingModData
-							{
-								Index = profile.ModOrder.IndexOf(uuid),
-								Name = activeModData.Name,
-								UUID = activeModData.UUID
-							};
-							missingMods.Add(x);
-						}
+						currentOrder.Add(mod);
 					}
 					else
 					{
-						DivinityApp.Log($"UUID {uuid} is missing from the profile's active mod list.");
+						var x = new DivinityMissingModData
+						{
+							Index = profile.ModOrder.IndexOf(uuid),
+							Name = activeModData.Name,
+							UUID = activeModData.UUID
+						};
+						missingMods.Add(x);
 					}
+				}
+				else
+				{
+					DivinityApp.Log($"UUID {uuid} is missing from the profile's active mod list.");
 				}
 			}
 
@@ -1448,7 +1405,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				if (lastOrderIndex != -1) selectIndex = lastOrderIndex;
 			}
 
-			RxApp.MainThreadScheduler.Schedule(_ =>
+			RxApp.MainThreadScheduler.Schedule(() =>
 			{
 				if (selectIndex != -1)
 				{
@@ -1457,9 +1414,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 					try
 					{
 						SelectedModOrderIndex = selectIndex;
-						var nextOrder = ModOrderList.ElementAtOrDefault(selectIndex);
+						//var nextOrder = ModOrderList.ElementAtOrDefault(selectIndex);
 
-						LoadModOrder(nextOrder, missingMods);
+						//LoadModOrder(nextOrder, missingMods);
 
 						/*if (nextOrder.IsModSettings && Settings.GameMasterModeEnabled && SelectedGameMasterCampaign != null)
 						{
@@ -1467,7 +1424,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 						}
 						*/
 
-						Services.Settings.ManagerSettings.LastOrder = nextOrder?.Name ?? "";
+						//Services.Settings.ManagerSettings.LastOrder = nextOrder?.Name ?? "";
 					}
 					catch (Exception ex)
 					{
@@ -1845,6 +1802,11 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		IsLoadingOrder = false;
 		OrderJustLoadedCommand.Execute(order);
+
+		order.IsLoaded = true;
+
+		Services.Settings.ManagerSettings.LastOrder = order.Name;
+
 		return true;
 	}
 
