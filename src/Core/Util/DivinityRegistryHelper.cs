@@ -143,7 +143,7 @@ public static class DivinityRegistryHelper
 		return "";
 	}
 
-	public static string GetGameInstallPath(string steamGameInstallPath, string gogRegKey32, string gogRegKey64)
+	public static string GetGameInstallPath(string steamGameInstallPath, string gogRegKey32, string gogRegKey64, string steamAppId)
 	{
 		try
 		{
@@ -153,6 +153,29 @@ public static class DivinityRegistryHelper
 				{
 					return lastGamePath;
 				}
+
+				var appManifest = Path.Join(LastSteamInstallPath, "steamapps", $"appmanifest_{steamAppId}.acf");
+				if (File.Exists(appManifest))
+				{
+					var manifestData = VdfConvert.Deserialize(File.ReadAllText(appManifest));
+					if (manifestData != null)
+					{
+						foreach (var prop in manifestData.Value.Children().OfType<VProperty>())
+						{
+							if (prop.Key == "installdir")
+							{
+								var installDir = prop.Value?.Value<string>();
+								if (!String.IsNullOrEmpty(installDir))
+								{
+									steamGameInstallPath = installDir;
+									DivinityApp.Log($"Using appmanifest installDir '{installDir}'");
+								}
+								break;
+							}
+						}
+					}
+				}
+
 				string folder = Path.Join(LastSteamInstallPath, "steamapps", "common", steamGameInstallPath);
 				DivinityApp.Log($"Looking for game at '{folder}'.");
 				if (Directory.Exists(folder))

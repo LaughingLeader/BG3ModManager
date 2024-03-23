@@ -123,8 +123,9 @@ public class PathwaysService
 
 			if (String.IsNullOrWhiteSpace(currentGameDataPath) || !Directory.Exists(currentGameDataPath))
 			{
-				string installPath = DivinityRegistryHelper.GetGameInstallPath(settings.AppSettings.DefaultPathways.Steam.RootFolderName,
-					settings.AppSettings.DefaultPathways.GOG.Registry_32, settings.AppSettings.DefaultPathways.GOG.Registry_64);
+				var defaultPathways = settings.AppSettings.DefaultPathways;
+				string installPath = DivinityRegistryHelper.GetGameInstallPath(defaultPathways.Steam.RootFolderName,
+					defaultPathways.GOG.Registry_32, defaultPathways.GOG.Registry_64, defaultPathways.Steam.AppID);
 
 				if (!String.IsNullOrEmpty(installPath) && Directory.Exists(installPath))
 				{
