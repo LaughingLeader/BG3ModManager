@@ -183,6 +183,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 		CanCancelProgress = false;
 		Services.Mods.Refresh();
 		Views.ModUpdates.Clear();
+		Views.ModOrder.Clear();
 		Services.Get<ModOrderView>()?.ModLayout.SaveLayout();
 		ModUpdatesAvailable = false;
 		Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
@@ -215,7 +216,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 			if (!GameDirectoryFound)
 			{
 				ShowAlert("Game Data folder is not valid. Please set it in the preferences window and refresh", AlertType.Danger);
-				App.WM.Settings.Toggle(true);
+				//App.WM.Settings.Toggle(true);
 			}
 
 			IsRefreshing = false;
@@ -879,7 +880,7 @@ Directory the zip will be extracted to:
 		if (!_settings.TryLoadAll(out var errors))
 		{
 			var errorMessage = String.Join("\n", errors.Select(x => x.ToString()));
-			ShowAlert($"Error saving settings: {errorMessage}", AlertType.Danger);
+			ShowAlert($"Error loading settings: {errorMessage}", AlertType.Danger);
 			success = false;
 		}
 
@@ -932,16 +933,13 @@ Directory the zip will be extracted to:
 			Settings.WorkshopPath = "";
 		}
 
-		if (Settings.LogEnabled)
-		{
-			Window.ToggleLogging(true);
-		}
+		if (Settings.LogEnabled) Window.ToggleLogging(true);
 
-		if(!Services.Pathways.SetGamePathways(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
+		if (!Services.Pathways.SetGamePathways(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
 		{
 			GameDirectoryFound = false;
 
-			if(!FileUtils.HasReadPermission(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
+			if(!FileUtils.HasDirectoryReadPermission(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
 			{
 				var message = $"BG3MM lacks permission to read one or both of the following paths:\nGame Data Path: ({Settings.GameDataPath})\nGame Executable Path: ({Settings.GameExecutablePath})";
 				var result = Xceed.Wpf.Toolkit.MessageBox.Show(Window, message, "File Permission Issue",
