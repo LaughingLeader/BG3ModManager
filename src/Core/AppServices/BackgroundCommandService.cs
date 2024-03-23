@@ -17,28 +17,31 @@ public class BackgroundCommandService
 
 	private async Task WaitForCommandAsync(IScheduler sch, CancellationToken token)
 	{
-		try
+		if (_pipe != null)
 		{
-			await _pipe.WaitForConnectionAsync(token);
-
-			if (token.IsCancellationRequested) return;
-
-			using (var sr = new StreamReader(_pipe, Encoding.UTF8))
+			try
 			{
-				var message = await sr.ReadToEndAsync();
-				if (!String.IsNullOrEmpty(message))
+				await _pipe.WaitForConnectionAsync(token);
+
+				if (token.IsCancellationRequested) return;
+
+				using (var sr = new StreamReader(_pipe, Encoding.UTF8))
 				{
-					if (message.IndexOf("nxm://") > -1)
+					var message = await sr.ReadToEndAsync();
+					if (!String.IsNullOrEmpty(message))
 					{
-						var nexusMods = Services.Get<INexusModsService>();
-						nexusMods.ProcessNXMLinkBackground(message);
+						if (message.IndexOf("nxm://") > -1)
+						{
+							var nexusMods = Services.Get<INexusModsService>();
+							nexusMods.ProcessNXMLinkBackground(message);
+						}
 					}
 				}
 			}
-		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log($"Error with server pipe:\n{ex}");
+			catch (Exception ex)
+			{
+				DivinityApp.Log($"Error with server pipe:\n{ex}");
+			}
 		}
 
 		if (token.IsCancellationRequested) return;
@@ -50,8 +53,16 @@ public class BackgroundCommandService
 	{
 		_backgroundTask?.Dispose();
 		_pipe?.Dispose();
-		_pipe = new NamedPipeServerStream(DivinityApp.PIPE_ID, PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
-		_backgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(WaitForCommandAsync);
+		try
+		{
+			_pipe = new NamedPipeServerStream(DivinityApp.PIPE_ID, PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+			_backgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(WaitForCommandAsync);
+		}
+		catch(IOException)
+		{
+			//Pipe already exists in another instance
+			DivinityApp.Log($"Pipe already exists with id '{DivinityApp.PIPE_ID}'. Currently only one running instance can receive command args.");
+		}
 	}
 
 	public BackgroundCommandService()
