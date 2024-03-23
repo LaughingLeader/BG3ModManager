@@ -453,7 +453,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
 		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
 
-		profiles.Connect().Sort(_profileSort).ObserveOnDispatcher().Bind(out _uiprofiles).DisposeMany().Subscribe();
+		profiles.Connect().Sort(_profileSort).Bind(out _uiprofiles).DisposeMany().Subscribe();
 
 		modManager.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
 		modManager.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
