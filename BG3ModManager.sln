@@ -28,6 +28,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSLib", "External\lslib\LSL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSLibNative", "External\lslib\LSLibNative\LSLibNative.vcxproj", "{D8B26B12-E45C-47EA-88F7-56628EB2CCD1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUpdater.NET", "External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj", "{FB9E7E6B-B19F-4F37-A708-2996190CEF13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,16 @@ Global
 		{D8B26B12-E45C-47EA-88F7-56628EB2CCD1}.PublishTest|Any CPU.Build.0 = Debug|x64
 		{D8B26B12-E45C-47EA-88F7-56628EB2CCD1}.Release|Any CPU.ActiveCfg = Release|x64
 		{D8B26B12-E45C-47EA-88F7-56628EB2CCD1}.Release|Any CPU.Build.0 = Release|x64
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Editor Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Editor Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.PublishTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.PublishTest|Any CPU.Build.0 = Debug|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +131,7 @@ Global
 		{F6423DF6-678E-45A4-AB8C-B60B9EFF1CD7} = {9EA7F551-AFBF-4BB0-A060-7204B4944537}
 		{D7667883-8325-40A3-83AA-6023C0168EF6} = {97DFC101-8AFC-4AED-ADDC-39E5FEC4D415}
 		{D8B26B12-E45C-47EA-88F7-56628EB2CCD1} = {97DFC101-8AFC-4AED-ADDC-39E5FEC4D415}
+		{FB9E7E6B-B19F-4F37-A708-2996190CEF13} = {97DFC101-8AFC-4AED-ADDC-39E5FEC4D415}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D06B5DA3-3018-43F3-B9F0-2D9D89DB489E}

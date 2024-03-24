@@ -4,3 +4,6 @@
 [submodule "lslib"]
 	path = External/lslib
 	url = https://github.com/LaughingLeader/lslib
+[submodule "AutoUpdater.NET"]
+	path = External/AutoUpdater.NET
+	url = https://github.com/LaughingLeader/AutoUpdater.NET
