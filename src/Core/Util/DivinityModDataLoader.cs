@@ -32,12 +32,6 @@ public static partial class DivinityModDataLoader
 
 	private static readonly string[] VersionAttributes = ["Version64", "Version"];
 
-	private static readonly string[] _IgnoredRecursiveFolders = [
-		"Baldur's Gate 3\\Data",
-		"Baldur's Gate 3\\bin",
-		"Localization"
-	];
-
 	public static readonly HashSet<string> IgnoreBuiltinPath = [];
 	private static readonly HashSet<string> _allPaksNames = [];
 
@@ -409,13 +403,14 @@ public static partial class DivinityModDataLoader
 				var f = pak.Files[i];
 				files.Add(f.Name);
 
-				var formattedPath = f.Name.Replace("/", @"\");
+				//var entryFile = f.Name.Replace(@"\", "/");
+				var entryFile = f.Name;
 
-				if (formattedPath.EndsWith(DivinityApp.EXTENDER_MOD_CONFIG, StringComparison.OrdinalIgnoreCase))
+				if (entryFile.EndsWith(DivinityApp.EXTENDER_MOD_CONFIG, StringComparison.OrdinalIgnoreCase))
 				{
 					extenderConfigPath = f;
 				}
-				else if (formattedPath.EndsWith(ModConfig.FileName, StringComparison.OrdinalIgnoreCase) && Path.GetDirectoryName(formattedPath) == "Mods")
+				else if (entryFile.EndsWith(ModConfig.FileName, StringComparison.OrdinalIgnoreCase) && Path.GetDirectoryName(entryFile) == "Mods")
 				{
 					modManagerConfigPath = f;
 				}
@@ -425,21 +420,21 @@ public static partial class DivinityModDataLoader
 				}
 				else
 				{
-					var modFolderMatch = _ModFolderPattern.Match(formattedPath);
+					var modFolderMatch = _ModFolderPattern.Match(entryFile);
 					if (modFolderMatch.Success)
 					{
 						var modFolder = Path.GetFileName(modFolderMatch.Groups[2].Value.TrimEnd(Path.DirectorySeparatorChar));
-						if (formattedPath.EndsWith($"Mods\\{modFolder}\\{ModConfig.FileName}", StringComparison.OrdinalIgnoreCase))
+						if (entryFile.EndsWith($"Mods/{modFolder}/{ModConfig.FileName}", StringComparison.OrdinalIgnoreCase))
 						{
 							modManagerConfigPath = f;
 						}
-						else if (formattedPath.Contains($"Mods\\{modFolder}\\Story\\RawFiles\\Goals", StringComparison.OrdinalIgnoreCase))
+						else if (entryFile.Contains($"Mods/{modFolder}/Story/RawFiles/Goals", StringComparison.OrdinalIgnoreCase))
 						{
 							if (hasOsirisScripts == DivinityOsirisModStatus.NONE)
 							{
 								hasOsirisScripts = DivinityOsirisModStatus.SCRIPTS;
 							}
-							if (formattedPath.EndsWith("ForceRecompile.txt", StringComparison.OrdinalIgnoreCase))
+							if (entryFile.EndsWith("ForceRecompile.txt", StringComparison.OrdinalIgnoreCase))
 							{
 								hasOsirisScripts = DivinityOsirisModStatus.MODFIXER;
 							}
@@ -674,8 +669,7 @@ public static partial class DivinityModDataLoader
 		var modPaks = new List<string>();
 		try
 		{
-			//RecursionFilter = (f) => !_IgnoredRecursiveFolders.Any(x => f.FullPath.Contains(x))
-			var allPaks = FileUtils.EnumerateFiles(modsFolderPath, FileUtils.FlatSearchOptions, f => f.EndsWith(".pak", SCOMP) && !_IgnoredRecursiveFolders.Any(x => f.Contains(x)));
+			var allPaks = FileUtils.EnumerateFiles(modsFolderPath, FileUtils.FlatSearchOptions, f => f.EndsWith(".pak", SCOMP));
 			_allPaksNames.UnionWith(allPaks.Select(p => Path.GetFileNameWithoutExtension(p)));
 			modPaks.AddRange(allPaks.Where(PakIsNotPartial));
 		}
