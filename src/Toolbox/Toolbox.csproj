@@ -1,24 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<LangVersion>latest</LangVersion>
 		<OutputType>Exe</OutputType>
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\Tools\</OutputPath>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<SupportedCultures>en-US</SupportedCultures>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<PlatformTarget>x64</PlatformTarget>
-		<Platforms>AnyCPU</Platforms>
-		<Configurations>Debug;Release;Publish;PublishTest</Configurations>
-		<DebugType>none</DebugType>
-		<Optimize>True</Optimize>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<DebugType>full</DebugType>
-		<Optimize>False</Optimize>
-	</PropertyGroup>
+	
 	<ItemGroup>
 	  <PackageReference Include="PowerArgs" Version="4.0.3" />
 	</ItemGroup>
