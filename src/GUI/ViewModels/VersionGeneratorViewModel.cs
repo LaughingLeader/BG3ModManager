@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Controls;
-using DivinityModManager.Models;
+﻿using ModManager.Controls;
+using ModManager.Models;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class VersionGeneratorViewModel : ReactiveObject
 {

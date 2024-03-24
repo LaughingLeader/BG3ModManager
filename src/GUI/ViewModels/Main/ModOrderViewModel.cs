@@ -1,10 +1,9 @@
-﻿using DivinityModManager.AppServices;
-using DivinityModManager.Extensions;
-using DivinityModManager.Models;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.Settings;
-using DivinityModManager.Util;
-using DivinityModManager.Views.Main;
+﻿using ModManager.Extensions;
+using ModManager.Models;
+using ModManager.Models.Mod;
+using ModManager.Models.Settings;
+using ModManager.Util;
+using ModManager.Views.Main;
 
 using DynamicData;
 using DynamicData.Aggregation;
@@ -30,7 +29,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels.Main;
+namespace ModManager.ViewModels.Main;
 public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModOrderViewModel
 {
 	public string UrlPathSegment => "modorder";
@@ -290,7 +289,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private void SetupKeys(AppKeys keys, MainWindowViewModel main, IObservable<bool> canExecuteCommands)
 	{
-		var modImporter = Services.Get<ModImportService>();
+		var modImporter = AppServices.Get<ModImportService>();
 
 		var canExecuteSaveCommand = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.CanSaveOrder));
 		keys.Save.AddAction(() => SaveLoadOrder(), canExecuteSaveCommand);
@@ -321,7 +320,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			IEnumerable<DivinityModData> targetList = null;
 			if (DivinityApp.IsKeyboardNavigating)
 			{
-				var modLayout = Services.Get<ModOrderView>()?.ModLayout;
+				var modLayout = AppServices.Get<ModOrderView>()?.ModLayout;
 				if (modLayout != null)
 				{
 					if (modLayout.ActiveModsListView.IsKeyboardFocusWithin)
@@ -599,7 +598,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		});
 		#endregion
 
-		var fwService = Services.Get<IFileWatcherService>();
+		var fwService = AppServices.Get<IFileWatcherService>();
 		_modSettingsWatcher = fwService.WatchDirectory("", "*modsettings.lsx");
 		//modSettingsWatcher.PauseWatcher(true);
 		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().Select(x => x.FilePath).Subscribe(path =>
@@ -810,7 +809,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			DivinityApp.Log($"Finalizing refresh operation.");
 
-			Services.Get<ModOrderView>()?.ModLayout?.RestoreLayout();
+			AppServices.Get<ModOrderView>()?.ModLayout?.RestoreLayout();
 
 			IsLoadingOrder = false;
 

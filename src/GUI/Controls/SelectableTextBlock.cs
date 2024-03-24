@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Controls.Util;
+﻿using ModManager.Controls.Util;
 
 using System.Windows;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Source: https://stackoverflow.com/a/45627524

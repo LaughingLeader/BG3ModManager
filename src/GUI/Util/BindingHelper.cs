@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class BindingHelper
 {

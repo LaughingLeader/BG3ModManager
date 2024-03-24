@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class FocusHelper
 {

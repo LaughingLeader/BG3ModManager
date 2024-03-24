@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Extensions;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Util.ScreenReader;
+﻿using ModManager.Extensions;
+using ModManager.Models.Mod;
+using ModManager.Util.ScreenReader;
 
 using DynamicData.Binding;
 
@@ -12,7 +12,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DivinityModManager.Controls.Views;
+namespace ModManager.Controls.Views;
 
 public class ModListView : ListView
 {

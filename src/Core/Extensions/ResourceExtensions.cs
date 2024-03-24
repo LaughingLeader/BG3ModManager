@@ -1,6 +1,6 @@
 ﻿using LSLib.LS;
 
-namespace DivinityModManager.Extensions;
+namespace ModManager.Extensions;
 
 static public class ResourceExtensions
 {

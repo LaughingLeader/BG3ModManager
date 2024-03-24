@@ -29,7 +29,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// A TextBlock that highlights text, adapted from:

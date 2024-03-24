@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.NexusMods;
+﻿using ModManager.Models.NexusMods;
 
-namespace DivinityModManager.Models.Cache;
+namespace ModManager.Models.Cache;
 
 public class NexusModsCachedData : BaseModCacheData<NexusModsModData>
 {

@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
-namespace DivinityModManager.Models.App;
+namespace ModManager.Models.App;
 
 public struct ImportOperationError
 {

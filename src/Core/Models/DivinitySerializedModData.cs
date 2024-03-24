@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 [DataContract]
 public class DivinitySerializedModData : IDivinityModData

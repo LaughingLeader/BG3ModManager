@@ -2,7 +2,7 @@
 
 using System.Reactive.Disposables;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class BaseViewModel : ReactiveObject, IDisposable
 {

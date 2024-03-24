@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models.Steam;
+﻿using ModManager.Models.Steam;
 
 using Newtonsoft.Json;
 
@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace DivinityModManager.Models.Cache;
+namespace ModManager.Models.Cache;
 
 [DataContract]
 public class SteamWorkshopCachedData : BaseModCacheData<DivinityModWorkshopCachedData>

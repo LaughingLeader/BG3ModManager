@@ -1,12 +1,12 @@
-﻿using DivinityModManager.Models.Cache;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.Steam;
+﻿using ModManager.Models.Cache;
+using ModManager.Models.Mod;
+using ModManager.Models.Steam;
 
 using Newtonsoft.Json;
 
 using System.Net.Http;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class WorkshopDataLoader
 {

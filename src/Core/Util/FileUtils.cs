@@ -8,7 +8,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class FileUtils
 {

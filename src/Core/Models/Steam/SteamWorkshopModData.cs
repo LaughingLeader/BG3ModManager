@@ -3,7 +3,7 @@ using ReactiveUI.Fody.Helpers;
 
 using System.Reactive.Linq;
 
-namespace DivinityModManager.Models.Steam;
+namespace ModManager.Models.Steam;
 
 public class SteamWorkshopModData : ReactiveObject
 {

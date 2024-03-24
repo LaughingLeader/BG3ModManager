@@ -1,7 +1,7 @@
-﻿using DivinityModManager.AppServices;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.Updates;
-using DivinityModManager.Util;
+﻿using ModManager.Services;
+using ModManager.Models.Mod;
+using ModManager.Models.Updates;
+using ModManager.Util;
 
 using Newtonsoft.Json;
 
@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace DivinityModManager.Tests
+namespace ModManager.Tests
 {
 	public class NexusModsTests : BaseTest
 	{

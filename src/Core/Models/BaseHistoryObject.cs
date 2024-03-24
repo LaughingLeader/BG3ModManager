@@ -5,7 +5,7 @@ using ReactiveUI;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public class BaseHistoryObject : ReactiveObject
 {

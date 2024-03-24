@@ -5,7 +5,7 @@ using Microsoft.Win32;
 
 using System.IO;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class DivinityRegistryHelper
 {

@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public static class ReactiveExtensions
 {

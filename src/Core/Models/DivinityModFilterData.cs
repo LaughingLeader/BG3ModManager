@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using System.Globalization;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public struct DivinityModFilterData
 {

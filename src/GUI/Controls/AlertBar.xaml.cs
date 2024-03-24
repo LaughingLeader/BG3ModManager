@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Util.ScreenReader;
+﻿using ModManager.Util.ScreenReader;
 
 using System.Windows;
 using System.Windows.Automation;
@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Source: https://github.com/chadkuehn/AlertBarWpf

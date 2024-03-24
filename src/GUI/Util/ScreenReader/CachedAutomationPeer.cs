@@ -2,7 +2,7 @@
 using System.Windows.Automation.Peers;
 using System.Windows.Media;
 
-namespace DivinityModManager.Util.ScreenReader;
+namespace ModManager.Util.ScreenReader;
 
 public class CachedAutomationPeer : FrameworkElementAutomationPeer
 {

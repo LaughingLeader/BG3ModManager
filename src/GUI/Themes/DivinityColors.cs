@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DivinityModManager.Themes;
+namespace ModManager.Themes;
 
 public static class DivinityColors
 {

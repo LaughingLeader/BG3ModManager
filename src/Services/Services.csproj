@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<AssemblyName>ModManager.Services</AssemblyName>
+		<RootNamespace>ModManager</RootNamespace>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -12,5 +14,12 @@
 		<PackageReference Include="Splat" Version="14.8.12" />
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" Version="1.2.3" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
 		<PackageReference Include="System.IO.Abstractions" Version="21.0.2" />
+		<PackageReference Include="HanumanInstitute.Validators" Version="1.2.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
+		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 </Project>

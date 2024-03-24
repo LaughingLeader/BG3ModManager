@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager.Util;
+﻿namespace ModManager.Util;
 
 public class OrderNameChangedArgs : EventArgs
 {

@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models.Mod;
-using DivinityModManager.Util;
+﻿using ModManager.Models.Mod;
+using ModManager.Util;
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public static class DivinityApp
 {
@@ -30,6 +30,8 @@ public static class DivinityApp
 
 #if !DOS2
 	public const string PIPE_ID = "bg3mm.server";
+
+	public static readonly HashSet<string> GameExes = ["bg3", "bg3_dx11"];
 
 	public const string HTTP_USER = "BG3ModManagerUser";
 
@@ -71,14 +73,16 @@ public static class DivinityApp
 #else
 	public const string PIPE_ID = "divinitymm.server";
 
-	public const string HTTP_USER = "DivinityModManagerUser";
+	public static readonly HashSet<string> GameExes = ["EoCApp"];
 
-	public const string URL_REPO = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager";
-	public const string URL_CHANGELOG = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager/wiki/Changelog";
-	public const string URL_CHANGELOG_RAW = @"https://raw.githubusercontent.com/wiki/LaughingLeader-DOS2-Mods/DivinityModManager/Changelog.md";
-	public const string URL_UPDATE = @"https://raw.githubusercontent.com/LaughingLeader-DOS2-Mods/DivinityModManager/master/Update.xml";
-	public const string URL_ISSUES = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager/issues";
-	public const string URL_LICENSE = @"https://github.com/LaughingLeader-DOS2-Mods/DivinityModManager/blob/master/LICENSE";
+	public const string HTTP_USER = "ModManagerUser";
+
+	public const string URL_REPO = @"https://github.com/LaughingLeader-DOS2-Mods/ModManager";
+	public const string URL_CHANGELOG = @"https://github.com/LaughingLeader-DOS2-Mods/ModManager/wiki/Changelog";
+	public const string URL_CHANGELOG_RAW = @"https://raw.githubusercontent.com/wiki/LaughingLeader-DOS2-Mods/ModManager/Changelog.md";
+	public const string URL_UPDATE = @"https://raw.githubusercontent.com/LaughingLeader-DOS2-Mods/ModManager/master/Update.xml";
+	public const string URL_ISSUES = @"https://github.com/LaughingLeader-DOS2-Mods/ModManager/issues";
+	public const string URL_LICENSE = @"https://github.com/LaughingLeader-DOS2-Mods/ModManager/blob/master/LICENSE";
 
 	public const string XML_MOD_ORDER_MODULE = @"<node id=""Module""><attribute id=""UUID"" value=""{0}"" type=""22""/></node>";
 	public const string XML_MODULE_SHORT_DESC = @"<node id=""ModuleShortDesc""><attribute id=""Folder"" value=""{0}"" type=""30""/><attribute id=""MD5"" value=""{1}"" type=""23""/><attribute id=""Name"" value=""{2}"" type=""22""/><attribute id=""UUID"" value=""{3}"" type=""22"" /><attribute id=""Version"" value=""{4}"" type=""4""/></node>";

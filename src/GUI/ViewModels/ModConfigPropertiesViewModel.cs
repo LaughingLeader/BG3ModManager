@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models.Mod;
-using DivinityModManager.Util;
+﻿using ModManager.Models.Mod;
+using ModManager.Util;
 
 using DynamicData;
 
@@ -12,7 +12,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class ModConfigPropertiesViewModel : ReactiveObject
 {
@@ -70,7 +70,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 	public void Apply()
 	{
 		if (Mod.ModManagerConfig == null) throw new NullReferenceException($"ModManagerConfig is null for mod ({Mod})");
-		var modConfigService = Services.Get<ISettingsService>().ModConfig;
+		var modConfigService = AppServices.Get<ISettingsService>().ModConfig;
 
 		if (String.IsNullOrEmpty(Mod.ModManagerConfig.Id)) Mod.ModManagerConfig.Id = Mod.UUID;
 
@@ -83,7 +83,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 		Mod.ApplyModConfig(Mod.ModManagerConfig);
 
 		//Should be called automatically when the mod config is updated
-		//Services.Get<ISettingsService>().ModConfig.TrySave();
+		//AppServices.Get<ISettingsService>().ModConfig.TrySave();
 	}
 
 	public void OnClose()

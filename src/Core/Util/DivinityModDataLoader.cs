@@ -1,7 +1,7 @@
-﻿using DivinityModManager.Extensions;
-using DivinityModManager.Models;
-using DivinityModManager.Models.App;
-using DivinityModManager.Models.Mod;
+﻿using ModManager.Extensions;
+using ModManager.Models;
+using ModManager.Models.App;
+using ModManager.Models.Mod;
 
 using DynamicData;
 
@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static partial class DivinityModDataLoader
 {

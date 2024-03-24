@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public enum ExportOrderFileType
 {

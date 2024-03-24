@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using Newtonsoft.Json;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 [JsonObject(MemberSerialization.OptIn)]
 public struct DivinityModDependencyData : IDivinityModData

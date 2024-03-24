@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Extensions;
+﻿using ModManager.Extensions;
 
 using LSLib.LS;
 
 using System.Reflection;
 
-namespace DivinityModManager.Models.Mod;
+namespace ModManager.Models.Mod;
 
 public class ModuleInfo
 {

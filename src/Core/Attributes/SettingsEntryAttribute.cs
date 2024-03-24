@@ -4,7 +4,7 @@ using ReactiveUI;
 
 using System.Reflection;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public class SettingsEntryAttribute : Attribute
 {

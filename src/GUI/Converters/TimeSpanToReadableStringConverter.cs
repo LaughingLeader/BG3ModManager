@@ -2,7 +2,7 @@
 
 using System.Windows.Data;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 public class TimeSpanToReadableStringConverter : IValueConverter
 {

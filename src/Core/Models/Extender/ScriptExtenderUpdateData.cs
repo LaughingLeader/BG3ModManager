@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models.Extender;
+namespace ModManager.Models.Extender;
 
 [DataContract]
 public class ScriptExtenderUpdateData

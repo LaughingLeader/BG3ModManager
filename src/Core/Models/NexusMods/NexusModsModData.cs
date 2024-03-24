@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reflection;
 
-namespace DivinityModManager.Models.NexusMods;
+namespace ModManager.Models.NexusMods;
 
 public class NexusModsModData : INotifyPropertyChanged
 {

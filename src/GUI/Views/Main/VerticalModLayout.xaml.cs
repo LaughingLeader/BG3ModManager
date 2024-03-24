@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace DivinityModManager.Views.Main;
+namespace ModManager.Views.Main;
 
 /// <summary>
 /// Interaction logic for VerticalModLayout.xaml

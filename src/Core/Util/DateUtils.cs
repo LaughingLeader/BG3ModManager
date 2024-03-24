@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager.Util;
+﻿namespace ModManager.Util;
 
 public static class DateUtils
 {

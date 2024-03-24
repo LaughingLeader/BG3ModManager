@@ -3,7 +3,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace DivinityModManager.Extensions;
+namespace ModManager.Extensions;
 
 public static class ModelExtensions
 {

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class NativeLibraryHelper
 {

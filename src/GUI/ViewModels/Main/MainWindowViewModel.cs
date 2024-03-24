@@ -1,18 +1,17 @@
 ﻿using AutoUpdaterDotNET;
 
-using DivinityModManager.AppServices;
-using DivinityModManager.Extensions;
-using DivinityModManager.Models;
-using DivinityModManager.Models.App;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.NexusMods;
-using DivinityModManager.Models.Settings;
-using DivinityModManager.Models.Updates;
-using DivinityModManager.ModUpdater.Cache;
-using DivinityModManager.Util;
-using DivinityModManager.ViewModels.Main;
-using DivinityModManager.Views.Main;
-using DivinityModManager.Windows;
+using ModManager.Extensions;
+using ModManager.Models;
+using ModManager.Models.App;
+using ModManager.Models.Mod;
+using ModManager.Models.NexusMods;
+using ModManager.Models.Settings;
+using ModManager.Models.Updates;
+using ModManager.ModUpdater.Cache;
+using ModManager.Util;
+using ModManager.ViewModels.Main;
+using ModManager.Views.Main;
+using ModManager.Windows;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -38,7 +37,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 {
@@ -181,7 +180,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IScreen
 		Services.Mods.Refresh();
 		Views.ModUpdates.Clear();
 		Views.ModOrder.Clear();
-		Services.Get<ModOrderView>()?.ModLayout.SaveLayout();
+		AppServices.Get<ModOrderView>()?.ModLayout.SaveLayout();
 		ModUpdatesAvailable = false;
 		Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
 		Window.TaskbarItemInfo.ProgressValue = 0;
@@ -640,7 +639,7 @@ Directory the zip will be extracted to:
 			//Update whether the game is running or not
 			RxApp.TaskpoolScheduler.Schedule(TimeSpan.FromSeconds(5), () =>
 			{
-				Services.Get<IGameUtilitiesService>().CheckForGameProcess();
+				AppServices.Get<IGameUtilitiesService>().CheckForGameProcess();
 			});
 		}
 		catch (Exception ex)
@@ -759,7 +758,7 @@ Directory the zip will be extracted to:
 		var canOpenWorkshopFolder = this.WhenAnyValue(x => x.SteamWorkshopSupportEnabled, x => x.Settings.WorkshopPath,
 			(b, p) => (b && !String.IsNullOrEmpty(p) && Directory.Exists(p))).StartWith(false);
 
-		var gameUtils = Services.Get<IGameUtilitiesService>();
+		var gameUtils = AppServices.Get<IGameUtilitiesService>();
 		gameUtils.WhenAnyValue(x => x.GameIsRunning).BindTo(this, x => x.GameIsRunning);
 
 		Settings.WhenAnyValue(x => x.GameExecutablePath).Subscribe(path =>
@@ -1133,7 +1132,7 @@ Directory the zip will be extracted to:
 
 	private IList<DivinityModData> GetUpdateableMods()
 	{
-		var settingsService = Services.Get<ISettingsService>();
+		var settingsService = AppServices.Get<ISettingsService>();
 		var minUpdateTime = Settings.UpdateSettings.MinimumUpdateTimePeriod;
 		if (minUpdateTime > TimeSpan.Zero)
 		{
@@ -1192,7 +1191,7 @@ Directory the zip will be extracted to:
 		await sch.Yield(token);
 		if (!token.IsCancellationRequested && updates.Count > 0)
 		{
-			var isPremium = Services.Get<INexusModsService>().IsPremium;
+			var isPremium = AppServices.Get<INexusModsService>().IsPremium;
 			//$"https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id={DownloadPath}6&nmm=1&game_id={DivinityApp.NEXUSMODS_GAME_ID}";
 			await Observable.Start(() =>
 			{
@@ -2002,8 +2001,8 @@ Directory the zip will be extracted to:
 
 		DownloadBar = new DownloadActivityBarViewModel();
 
-		_updater = Services.Get<IModUpdaterService>();
-		_settings = Services.Get<ISettingsService>();
+		_updater = AppServices.Get<IModUpdaterService>();
+		_settings = AppServices.Get<ISettingsService>();
 
 		_settings.WhenAnyValue(x => x.AppSettings).BindTo(this, x => x.AppSettings);
 		_settings.WhenAnyValue(x => x.ManagerSettings).BindTo(this, x => x.Settings);
@@ -2018,7 +2017,7 @@ Directory the zip will be extracted to:
 		DivinityApp.Log($"{Title} initializing...");
 		AutoUpdater.AppTitle = productName;
 
-		var nexusModsService = Services.Get<INexusModsService>();
+		var nexusModsService = AppServices.Get<INexusModsService>();
 		nexusModsService.WhenLimitsChange.Throttle(TimeSpan.FromMilliseconds(50)).Select(NexusModsLimitToText).ToUIProperty(this, x => x.NexusModsLimitsText);
 		var whenNexusModsAvatar = nexusModsService.WhenAnyValue(x => x.ProfileAvatarUrl);
 		whenNexusModsAvatar.Select(x => x != null ? Visibility.Visible : Visibility.Collapsed).ToUIProperty(this, x => x.NexusModsProfileAvatarVisibility);

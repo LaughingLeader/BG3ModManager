@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 class RxExceptionHandler : IObserver<Exception>
 {

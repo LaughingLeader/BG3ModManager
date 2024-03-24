@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Extensions;
+﻿using ModManager.Extensions;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -11,7 +11,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 [DataContract]
 public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializableSettings

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 public class CardView : ViewBase
 {

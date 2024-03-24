@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using LSLib.LS;
 using LSLib.LS.Stats;
@@ -6,7 +6,7 @@ using LSLib.LS.Stats;
 using System.IO;
 using System.Xml;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class ModUtils
 {

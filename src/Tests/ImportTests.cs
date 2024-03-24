@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models.Mod;
-using DivinityModManager.Util;
+﻿using ModManager.Models.Mod;
+using ModManager.Util;
 
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace DivinityModManager.Tests
+namespace ModManager.Tests
 {
 	public class ImportTests : BaseTest
 	{

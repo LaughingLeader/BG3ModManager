@@ -1,7 +1,7 @@
-﻿using DivinityModManager.Util;
-using DivinityModManager.Util.ScreenReader;
+﻿using ModManager.Util;
+using ModManager.Util.ScreenReader;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 
 

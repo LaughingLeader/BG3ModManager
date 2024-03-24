@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models.Mod;
-using DivinityModManager.ViewModels;
+﻿using ModManager.Models.Mod;
+using ModManager.ViewModels;
 
 using ReactiveUI;
 
@@ -10,7 +10,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public class DivinityGlobalCommands : ReactiveObject
 {

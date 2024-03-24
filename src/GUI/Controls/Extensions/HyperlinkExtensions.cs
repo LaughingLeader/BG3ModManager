@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Documents;
 
-namespace DivinityModManager.Controls.Extensions;
+namespace ModManager.Controls.Extensions;
 
 /// <summary>
 /// Source: https://stackoverflow.com/a/11433814

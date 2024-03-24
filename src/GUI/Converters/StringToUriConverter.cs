@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 public class StringToUriConverter : IValueConverter
 {

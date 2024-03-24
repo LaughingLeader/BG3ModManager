@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class DivinityModSorter
 {

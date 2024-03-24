@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Image that switches to monochrome when disabled.

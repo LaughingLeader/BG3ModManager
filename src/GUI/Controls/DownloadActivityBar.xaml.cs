@@ -1,12 +1,12 @@
 ﻿using AdonisUI.Extensions;
 
-using DivinityModManager.ViewModels;
+using ModManager.ViewModels;
 
 using ReactiveUI;
 
 using System.Windows.Data;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 public class DownloadActivityBarBase : ReactiveUserControl<DownloadActivityBarViewModel> { }
 

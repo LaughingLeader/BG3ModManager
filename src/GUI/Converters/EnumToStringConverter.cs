@@ -1,6 +1,6 @@
 ﻿using System.Windows.Data;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 class DivinityGameLaunchWindowActionToStringConverter : IValueConverter
 {

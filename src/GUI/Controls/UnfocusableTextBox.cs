@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 public class UnfocusableTextBox : TextBox
 {

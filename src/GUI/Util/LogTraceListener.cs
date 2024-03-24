@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public class LogTraceListener : TextWriterTraceListener
 {

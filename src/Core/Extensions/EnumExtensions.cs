@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public static class EnumExtensions
 {

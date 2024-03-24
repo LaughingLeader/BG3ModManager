@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public class CustomPropertyResolver : ICreatesObservableForProperty
 {

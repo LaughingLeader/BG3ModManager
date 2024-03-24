@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models.NexusMods;
-using DivinityModManager.Util;
+﻿using ModManager.Models.NexusMods;
+using ModManager.Util;
 
 using DynamicData.Binding;
 
@@ -14,7 +14,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class CollectionDownloadWindowViewModel : ReactiveObject
 {

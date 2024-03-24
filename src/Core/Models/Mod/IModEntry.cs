@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DivinityModManager.Models.Mod;
+namespace ModManager.Models.Mod;
 
 public interface IModEntry
 {

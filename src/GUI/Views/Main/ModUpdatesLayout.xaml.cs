@@ -1,7 +1,7 @@
 ﻿using AdonisUI;
 
-using DivinityModManager.Models.Updates;
-using DivinityModManager.ViewModels.Main;
+using ModManager.Models.Updates;
+using ModManager.ViewModels.Main;
 
 using Microsoft.Windows.Themes;
 
@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace DivinityModManager.Views.Main;
+namespace ModManager.Views.Main;
 
 public class ModUpdatesLayoutBase : ReactiveUserControl<ModUpdatesViewModel> { }
 

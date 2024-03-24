@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class BaseProgressViewModel : ReactiveObject
 {

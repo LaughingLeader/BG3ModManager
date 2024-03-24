@@ -26,7 +26,7 @@ Source: https://github.com/carbonrobot/wpf-autogrid
 
 using System.Windows;
 
-namespace DivinityModManager.Controls.Extensions;
+namespace ModManager.Controls.Extensions;
 
 public static class DependencyExtensions
 {

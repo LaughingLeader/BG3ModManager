@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager.Models.Steam;
+﻿namespace ModManager.Models.Steam;
 
 public interface IWorkshopPublishFileDetails
 {

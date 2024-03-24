@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace DivinityModManager.Util.ScreenReader;
+namespace ModManager.Util.ScreenReader;
 
 public sealed class Tolk
 {

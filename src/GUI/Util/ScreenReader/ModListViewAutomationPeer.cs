@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Controls.Views;
+﻿using ModManager.Controls.Views;
 
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 
-namespace DivinityModManager.Util.ScreenReader;
+namespace ModManager.Util.ScreenReader;
 
 public class ModListViewAutomationPeer : CachedAutomationPeer
 {

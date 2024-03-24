@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Controls;
-using DivinityModManager.Models.Settings;
-using DivinityModManager.Models.View;
-using DivinityModManager.Util;
-using DivinityModManager.ViewModels;
+﻿using ModManager.Controls;
+using ModManager.Models.Settings;
+using ModManager.Models.View;
+using ModManager.Util;
+using ModManager.ViewModels;
 
 using DynamicData;
 
@@ -21,7 +21,7 @@ using System.Windows.Navigation;
 
 using Xceed.Wpf.Toolkit;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class SettingsWindowBase : HideWindowBase<SettingsWindowViewModel> { }
 
@@ -201,7 +201,7 @@ public partial class SettingsWindow : SettingsWindowBase
 		ViewModel = new SettingsWindowViewModel(this, main);
 		//main.WhenAnyValue(x => x.Settings).BindTo(ViewModel, vm => vm.Settings);
 
-		var settingsService = Services.Get<ISettingsService>();
+		var settingsService = AppServices.Get<ISettingsService>();
 
 		var settingsFilePath = DivinityApp.GetAppDirectory("Data", settingsService.ManagerSettings.FileName);
 		var keybindingsFilePath = AppKeys.SettingsFilePath();

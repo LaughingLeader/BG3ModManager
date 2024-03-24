@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.Models.Updates;
+namespace ModManager.Models.Updates;
 
 public class DivinityModUpdateData : ReactiveObject, ISelectable
 {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace DivinityModManager.Extensions;
+namespace ModManager.Extensions;
 
 public static class StringExtensions
 {

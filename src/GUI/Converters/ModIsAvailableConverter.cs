@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Models.Mod;
-using DivinityModManager.Windows;
+﻿using ModManager.Models.Mod;
+using ModManager.Windows;
 
 using System.Globalization;
 using System.Windows.Data;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 public class ModIsAvailableConverter : IValueConverter
 {

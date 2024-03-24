@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
 
-namespace DivinityModManager.Models.App;
+namespace ModManager.Models.App;
 
 public class MultiReactiveCommandHotkey : ReactiveObject, IHotkey
 {

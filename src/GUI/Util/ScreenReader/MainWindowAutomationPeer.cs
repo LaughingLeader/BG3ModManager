@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Windows;
+﻿using ModManager.Windows;
 
 using System.Windows.Automation.Peers;
 
-namespace DivinityModManager.Util.ScreenReader;
+namespace ModManager.Util.ScreenReader;
 
 public class MainWindowAutomationPeer : CachedAutomationPeer
 {

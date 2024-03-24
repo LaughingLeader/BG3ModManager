@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>ModManager.Tests</RootNamespace>
+		<AssemblyName>BG3ModManager.Tests</AssemblyName>
+		<PlatformTarget>x64</PlatformTarget>
+		<Platforms>AnyCPU</Platforms>
+		<Configurations>Debug</Configurations>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<SupportedCultures>en-US</SupportedCultures>
+		<Optimize>False</Optimize>
+		<DebugType>full</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(SolutionDir)External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
+		<ProjectReference Include="$(SolutionDir)src\Core\Core.csproj" />
+		<!--<ProjectReference Include="$(SolutionDir)\src\GUI\GUI.csproj" />-->
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="LSLib">
+			<HintPath>$(SolutionDir)External\lslib\LSLib.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+		<PackageReference Include="xunit" Version="2.6.6" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+</Project>

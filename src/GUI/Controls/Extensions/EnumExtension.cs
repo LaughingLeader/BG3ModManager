@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Markup;
 
-namespace DivinityModManager.Controls.Extensions;
+namespace ModManager.Controls.Extensions;
 
 public class EnumExtension : MarkupExtension
 {

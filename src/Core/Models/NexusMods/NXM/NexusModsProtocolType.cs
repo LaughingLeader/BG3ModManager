@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager.Models.NexusMods.NXM;
+﻿namespace ModManager.Models.NexusMods.NXM;
 
 public enum NexusModsProtocolType
 {

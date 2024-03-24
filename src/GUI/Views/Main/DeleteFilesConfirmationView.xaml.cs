@@ -1,13 +1,13 @@
-﻿using DivinityModManager.Converters;
-using DivinityModManager.Util;
-using DivinityModManager.ViewModels.Main;
+﻿using ModManager.Converters;
+using ModManager.Util;
+using ModManager.ViewModels.Main;
 
 using ReactiveUI;
 
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.Views.Main;
+namespace ModManager.Views.Main;
 
 public class DeleteFilesConfirmationViewBase : ReactiveUserControl<DeleteFilesViewModel> { }
 

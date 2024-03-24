@@ -6,7 +6,7 @@ using ReactiveUI.Fody.Helpers;
 using System.IO;
 using System.Windows.Input;
 
-namespace DivinityModManager.Models.View;
+namespace ModManager.Models.View;
 public class StatsValidatorErrorEntry : TreeViewEntry
 {
 	public override object ViewModel => this;

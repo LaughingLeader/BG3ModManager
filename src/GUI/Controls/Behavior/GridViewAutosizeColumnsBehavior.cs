@@ -1,11 +1,11 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace DivinityModManager.Controls.Behavior;
+namespace ModManager.Controls.Behavior;
 
 public class GridViewAutoSizeColumnsBehavior
 {

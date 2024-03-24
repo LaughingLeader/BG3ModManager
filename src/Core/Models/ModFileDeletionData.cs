@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public class ModFileDeletionData : ReactiveObject
 {

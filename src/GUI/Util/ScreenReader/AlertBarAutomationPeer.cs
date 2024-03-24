@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Controls;
+﻿using ModManager.Controls;
 
 using System.Windows.Automation.Peers;
 
-namespace DivinityModManager.Util.ScreenReader;
+namespace ModManager.Util.ScreenReader;
 
 public class AlertBarAutomationPeer : FrameworkElementAutomationPeer
 {

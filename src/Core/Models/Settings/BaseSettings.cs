@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Util;
+﻿using ModManager.Util;
 
 using Newtonsoft.Json;
 
@@ -7,7 +7,7 @@ using ReactiveUI;
 using System.ComponentModel;
 using System.IO;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 public interface ISerializableSettings
 {

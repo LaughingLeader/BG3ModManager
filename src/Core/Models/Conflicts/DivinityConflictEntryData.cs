@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using ReactiveUI;
 
-namespace DivinityModManager.Models.Conflicts;
+namespace ModManager.Models.Conflicts;
 
 public class DivinityConflictEntryData : ReactiveObject
 {

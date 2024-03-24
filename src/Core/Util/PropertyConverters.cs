@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Documents;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class PropertyConverters
 {

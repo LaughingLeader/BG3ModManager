@@ -5,7 +5,7 @@ using ReactiveUI.Fody.Helpers;
 
 using System.Windows.Input;
 
-namespace DivinityModManager.Models.View;
+namespace ModManager.Models.View;
 public abstract class TreeViewEntry : ReactiveObject
 {
 	[Reactive] public bool IsExpanded { get; set; }

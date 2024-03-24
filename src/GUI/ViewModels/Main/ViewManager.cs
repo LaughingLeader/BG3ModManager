@@ -1,12 +1,12 @@
-﻿using DivinityModManager.Views;
-using DivinityModManager.Views.Main;
+﻿using ModManager.Views;
+using ModManager.Views.Main;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using Splat;
 
-namespace DivinityModManager.ViewModels.Main
+namespace ModManager.ViewModels.Main
 {
 	public class ViewManager : ReactiveObject
 	{

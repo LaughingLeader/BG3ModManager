@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Util;
+﻿using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -6,7 +6,7 @@ using ReactiveUI.Fody.Helpers;
 using System.IO;
 using System.IO.Compression;
 
-namespace DivinityModManager.Models.Updates;
+namespace ModManager.Models.Updates;
 
 public enum ModDownloadPathType
 {

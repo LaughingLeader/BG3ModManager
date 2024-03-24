@@ -1,11 +1,11 @@
-﻿using DivinityModManager.Extensions;
-using DivinityModManager.Models.Mod;
+﻿using ModManager.Extensions;
+using ModManager.Models.Mod;
 
 using LSLib.LS;
 
 using System.IO;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
 public class DivinityGameMasterCampaign : DivinityModData

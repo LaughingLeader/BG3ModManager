@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager.Enums.Steam;
+﻿namespace ModManager.Enums.Steam;
 
 public enum EPublishedFileQueryType
 {

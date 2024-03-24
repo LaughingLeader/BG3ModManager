@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public static class KeyExtensions
 {

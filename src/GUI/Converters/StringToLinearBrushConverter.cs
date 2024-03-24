@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 public class StringToLinearBrushConverter : IValueConverter
 {

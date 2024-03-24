@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace DivinityModManager.Extensions;
+namespace ModManager.Extensions;
 
 public static class DictionaryExtensions
 {

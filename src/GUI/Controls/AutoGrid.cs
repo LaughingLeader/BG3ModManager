@@ -28,9 +28,9 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-using DivinityModManager.Controls.Extensions;
+using ModManager.Controls.Extensions;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Defines a flexible grid area that consists of columns and rows.

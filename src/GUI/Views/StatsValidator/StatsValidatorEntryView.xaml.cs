@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Models.View;
+﻿using ModManager.Models.View;
 
 using ReactiveUI;
 
 using System.Windows.Media;
 
-namespace DivinityModManager.Views.StatsValidator;
+namespace ModManager.Views.StatsValidator;
 
 public class StatsValidatorEntryViewBase : ReactiveUserControl<StatsValidatorErrorEntry> { }
 

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Controls.TemplateSelectors;
+namespace ModManager.Controls.TemplateSelectors;
 
 public class TagTemplateSelector : DataTemplateSelector
 {

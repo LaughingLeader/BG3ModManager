@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class GitHubHelper
 {

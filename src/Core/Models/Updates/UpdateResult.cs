@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
-namespace DivinityModManager.Models.Updates;
+namespace ModManager.Models.Updates;
 
 public class UpdateResult
 {

@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Util;
+﻿using ModManager.Util;
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
@@ -8,7 +8,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.Models.NexusMods;
+namespace ModManager.Models.NexusMods;
 
 public class NexusModsCollectionModData : ReactiveObject
 {

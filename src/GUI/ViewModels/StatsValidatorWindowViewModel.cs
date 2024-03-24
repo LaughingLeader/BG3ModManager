@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.View;
-using DivinityModManager.Util;
+﻿using ModManager.Models.Mod;
+using ModManager.Models.View;
+using ModManager.Util;
 
 using DynamicData.Binding;
 
@@ -17,7 +17,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 public class StatsValidatorWindowViewModel : ReactiveObject
 {
 	[Reactive] public DivinityModData Mod { get; set; }

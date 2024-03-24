@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager;
+﻿namespace ModManager;
 
 /// <summary>
 /// Source: https://briancaos.wordpress.com/2022/02/24/c-datetime-to-unix-timestamps/

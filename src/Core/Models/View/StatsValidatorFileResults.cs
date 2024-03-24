@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive.Linq;
 
-namespace DivinityModManager.Models.View;
+namespace ModManager.Models.View;
 public class StatsValidatorFileResults : TreeViewEntry
 {
 	public override object ViewModel => this;

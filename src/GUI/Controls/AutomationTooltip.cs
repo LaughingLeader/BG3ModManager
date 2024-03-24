@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Util;
+﻿using ModManager.Util;
 
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 public class AutomationTooltip : ToolTip
 {

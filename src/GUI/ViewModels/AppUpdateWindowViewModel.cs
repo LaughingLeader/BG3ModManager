@@ -1,7 +1,7 @@
 ﻿using AutoUpdaterDotNET;
 
-using DivinityModManager.Util;
-using DivinityModManager.Windows;
+using ModManager.Util;
+using ModManager.Windows;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -10,7 +10,7 @@ using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public partial class AppUpdateWindowViewModel : ReactiveObject
 {

@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Extensions;
+﻿using ModManager.Extensions;
 
 using Newtonsoft.Json;
 
@@ -8,7 +8,7 @@ using ReactiveUI.Fody.Helpers;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 [DataContract]
 public class ScriptExtenderSettings : ReactiveObject

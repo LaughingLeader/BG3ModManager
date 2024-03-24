@@ -1,11 +1,11 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System.Reactive.Linq;
 
-namespace DivinityModManager.Models.GitHub;
+namespace ModManager.Models.GitHub;
 
 public class GitHubModData : ReactiveObject
 {

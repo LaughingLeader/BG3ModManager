@@ -1,7 +1,7 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.App;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.NexusMods;
+﻿using ModManager.Models;
+using ModManager.Models.App;
+using ModManager.Models.Mod;
+using ModManager.Models.NexusMods;
 
 using SharpCompress.Archives;
 using SharpCompress.Common;
@@ -16,7 +16,7 @@ using System.Text;
 
 using ZstdSharp;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public struct ImportedJsonFile
 {

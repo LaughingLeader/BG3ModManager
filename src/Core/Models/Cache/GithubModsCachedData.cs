@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.GitHub;
+﻿using ModManager.Models.GitHub;
 
-namespace DivinityModManager.Models.Cache;
+namespace ModManager.Models.Cache;
 
 public class GitHubModsCachedData : BaseModCacheData<GitHubModData>
 {

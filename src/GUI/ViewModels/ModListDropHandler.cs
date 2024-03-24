@@ -1,5 +1,4 @@
-﻿using DivinityModManager.AppServices;
-using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using GongSolutions.Wpf.DragDrop;
 using GongSolutions.Wpf.DragDrop.Utilities;
@@ -14,7 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class ManualDropInfo : IDropInfo
 {
@@ -107,7 +106,7 @@ public class ModListDropHandler : DefaultDropHandler
 			return;
 		}
 
-		var modImporter = Services.Get<ModImportService>();
+		var modImporter = AppServices.Get<ModImportService>();
 		var modOrderVM = _viewModel.Views.ModOrder;
 
 		bool isActive = dropInfo.TargetCollection == modOrderVM.ActiveMods;

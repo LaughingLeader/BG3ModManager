@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace DivinityModManager.Models.NexusMods.NXM;
+namespace ModManager.Models.NexusMods.NXM;
 
 public class NexusDownloadCollectionProtocolData : INexusModsProtocol
 {

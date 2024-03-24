@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Models.App;
+﻿using ModManager.Models.App;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 public class AppSettings : ReactiveObject
 {

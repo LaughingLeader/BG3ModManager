@@ -3,7 +3,7 @@ using ReactiveUI.Fody.Helpers;
 
 using System.Reflection;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 public class AppFeatures : ReactiveObject
 {

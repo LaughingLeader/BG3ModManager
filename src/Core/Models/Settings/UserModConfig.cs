@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Json;
-using DivinityModManager.Models.Mod;
+﻿using ModManager.Json;
+using ModManager.Models.Mod;
 
 using DynamicData;
 
@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 [DataContract]
 public class UserModConfig : BaseSettings<UserModConfig>, ISerializableSettings

@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Json;
+﻿using ModManager.Json;
 
 using DynamicData;
 
@@ -10,7 +10,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 [DataContract]
 public class DivinityModScriptExtenderConfig : ReactiveObject

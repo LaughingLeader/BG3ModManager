@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Json;
-using DivinityModManager.Models.GitHub.Json;
-using DivinityModManager.Util;
+﻿using ModManager.Json;
+using ModManager.Models.GitHub.Json;
+using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
-namespace DivinityModManager.Models.Mod;
+namespace ModManager.Models.Mod;
 
 [DataContract]
 public partial class ModConfig : ReactiveObject, IObjectWithId

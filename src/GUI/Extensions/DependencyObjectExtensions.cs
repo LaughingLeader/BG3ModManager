@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public static class DependencyObjectExtensions
 {

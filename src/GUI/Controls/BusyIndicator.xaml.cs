@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Interaction logic for BusyIndicator.xaml

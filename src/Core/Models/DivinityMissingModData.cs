@@ -1,6 +1,6 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public class DivinityMissingModData
 {

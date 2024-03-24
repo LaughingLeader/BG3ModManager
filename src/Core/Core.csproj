@@ -4,9 +4,8 @@
 		<LangVersion>latest</LangVersion>
 		<UseWPF>true</UseWPF>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<RootNamespace>DivinityModManager</RootNamespace>
-		<AssemblyName>DivinityModManagerCore</AssemblyName>
-		<AssemblyTitle>BG3MM Core</AssemblyTitle>
+		<RootNamespace>ModManager</RootNamespace>
+		<AssemblyName>ModManager.Core</AssemblyName>
 		<Platforms>AnyCPU</Platforms>
 		<PlatformTarget>x64</PlatformTarget>
 		<Configurations>Debug;Release;Publish;PublishTest</Configurations>

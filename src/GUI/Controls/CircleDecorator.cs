@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 public class CircleDecorator : Border
 {

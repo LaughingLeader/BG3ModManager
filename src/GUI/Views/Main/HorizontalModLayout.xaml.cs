@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Controls.Views;
-using DivinityModManager.Converters;
-using DivinityModManager.Models;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Util;
-using DivinityModManager.ViewModels;
-using DivinityModManager.ViewModels.Main;
+﻿using ModManager.Controls.Views;
+using ModManager.Converters;
+using ModManager.Models;
+using ModManager.Models.Mod;
+using ModManager.Util;
+using ModManager.ViewModels;
+using ModManager.ViewModels.Main;
 
 using DynamicData.Binding;
 
@@ -24,7 +24,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace DivinityModManager.Views.Main;
+namespace ModManager.Views.Main;
 
 public interface IModViewLayout
 {

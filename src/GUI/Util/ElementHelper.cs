@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class ElementHelper
 {

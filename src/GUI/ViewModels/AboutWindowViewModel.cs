@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class AboutWindowViewModel : ReactiveObject
 {

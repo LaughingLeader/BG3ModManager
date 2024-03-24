@@ -1,7 +1,7 @@
 ﻿using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 /// <summary>
 /// This simply disables the automation stuff for the tooltip, to prevent the ElementNotAvailableException from happening.

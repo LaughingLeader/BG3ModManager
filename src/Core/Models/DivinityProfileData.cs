@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using System.IO;
 using System.Reactive.Linq;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public class DivinityProfileData : ReactiveObject
 {

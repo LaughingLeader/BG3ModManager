@@ -1,7 +1,7 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.Updates;
-using DivinityModManager.Windows;
+﻿using ModManager.Models;
+using ModManager.Models.Mod;
+using ModManager.Models.Updates;
+using ModManager.Windows;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -21,7 +21,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels.Main;
+namespace ModManager.ViewModels.Main;
 
 public class CopyModUpdatesTask
 {
@@ -148,7 +148,7 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 
 	private void UpdateLastUpdated(UpdateTaskResult[] results)
 	{
-		var settings = Services.Get<ISettingsService>();
+		var settings = AppServices.Get<ISettingsService>();
 		settings.UpdateLastUpdated(results.Where(x => x.Success == true).Select(x => x.ModId).ToList());
 	}
 

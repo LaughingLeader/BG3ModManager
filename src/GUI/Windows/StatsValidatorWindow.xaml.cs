@@ -1,7 +1,7 @@
-﻿using DivinityModManager.Models.View;
-using DivinityModManager.Util;
-using DivinityModManager.ViewModels;
-using DivinityModManager.Views.StatsValidator;
+﻿using ModManager.Models.View;
+using ModManager.Util;
+using ModManager.ViewModels;
+using ModManager.Views.StatsValidator;
 
 using ReactiveUI;
 
@@ -10,7 +10,7 @@ using Splat;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class StatsValidatorWindowBase : HideWindowBase<StatsValidatorWindowViewModel> { }
 
@@ -34,10 +34,6 @@ public partial class StatsValidatorWindow : StatsValidatorWindowBase
 		ViewModel = new StatsValidatorWindowViewModel();
 
 		DivinityInteractions.OpenValidateStatsResults.RegisterHandler(input => Observable.Start(() => OpenWindow(input), RxApp.MainThreadScheduler));
-
-		Locator.CurrentMutable.Register(() => new StatsValidatorFileEntryView(), typeof(IViewFor<StatsValidatorFileResults>));
-		Locator.CurrentMutable.Register(() => new StatsValidatorEntryView(), typeof(IViewFor<StatsValidatorErrorEntry>));
-		Locator.CurrentMutable.Register(() => new StatsValidatorLineView(), typeof(IViewFor<StatsValidatorLineText>));
 
 		this.OneWayBind(ViewModel, vm => vm.ModName, view => view.TitleTextBlock.Text, name => $"{name} Results");
 		this.OneWayBind(ViewModel, vm => vm.OutputText, view => view.ResultsTextBlock.Text);

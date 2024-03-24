@@ -1,5 +1,4 @@
-﻿using DivinityModManager.AppServices;
-using DivinityModManager.Windows;
+﻿using ModManager.Windows;
 
 using System.Globalization;
 using System.Net.Cache;
@@ -14,7 +13,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Source: https://github.com/theunrepentantgeek/Markdown.XAML
@@ -208,7 +207,7 @@ public class Markdown : DependencyObject
 			document.PagePadding = new Thickness(0);
 		}
 
-		var darkMode = Services.Get<ISettingsService>().ManagerSettings.DarkThemeEnabled;
+		var darkMode = AppServices.Get<ISettingsService>().ManagerSettings.DarkThemeEnabled;
 
 		AdonisUI.ResourceLocator.SetColorScheme(document.Resources, !darkMode ? App.LightTheme : App.DarkTheme);
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Controls.Util;
+namespace ModManager.Controls.Util;
 
 /// <summary>
 /// Source: https://stackoverflow.com/a/45627524

@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-namespace DivinityModManager.Json;
+namespace ModManager.Json;
 
 public interface IObjectWithId
 {

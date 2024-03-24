@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public enum DivinityGameLaunchWindowAction
 {

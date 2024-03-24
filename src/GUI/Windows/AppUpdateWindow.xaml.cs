@@ -1,11 +1,11 @@
-﻿using DivinityModManager.Controls;
-using DivinityModManager.ViewModels;
+﻿using ModManager.Controls;
+using ModManager.ViewModels;
 
 using ReactiveUI;
 
 using System.Windows.Documents;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class AppUpdateWindowBase : HideWindowBase<AppUpdateWindowViewModel> { }
 

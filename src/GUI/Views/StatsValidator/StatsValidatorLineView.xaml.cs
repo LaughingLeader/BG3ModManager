@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Models.View;
-using DivinityModManager.Util;
+﻿using ModManager.Models.View;
+using ModManager.Util;
 
 using ReactiveUI;
 
-namespace DivinityModManager.Views.StatsValidator;
+namespace ModManager.Views.StatsValidator;
 
 public class StatsValidatorLineViewBase : ReactiveUserControl<StatsValidatorLineText> { }
 

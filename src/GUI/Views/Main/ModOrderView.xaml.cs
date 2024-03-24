@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Util;
-using DivinityModManager.ViewModels.Main;
+﻿using ModManager.Util;
+using ModManager.ViewModels.Main;
 
 using ReactiveUI;
 
@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DivinityModManager.Views.Main;
+namespace ModManager.Views.Main;
 
 public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 {

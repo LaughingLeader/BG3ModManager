@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 internal class UriToBitmapImageConverter : IValueConverter
 {

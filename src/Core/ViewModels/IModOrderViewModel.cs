@@ -1,11 +1,11 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.Mod;
+﻿using ModManager.Models;
+using ModManager.Models.Mod;
 
 using DynamicData.Binding;
 
 using System.Collections.ObjectModel;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public interface IModOrderViewModel
 {

@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Controls;
+﻿using ModManager.Controls;
 
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Util.ScreenReader;
+namespace ModManager.Util.ScreenReader;
 
 public class ModEntryGridAutomationPeer : CachedAutomationPeer
 {

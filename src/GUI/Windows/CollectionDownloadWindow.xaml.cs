@@ -1,4 +1,4 @@
-﻿using DivinityModManager.ViewModels;
+﻿using ModManager.ViewModels;
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class CollectionDownloadWindowBase : HideWindowBase<CollectionDownloadWindowViewModel> { }
 

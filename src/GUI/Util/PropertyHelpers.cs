@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class PropertyHelpers
 {

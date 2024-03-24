@@ -1,4 +1,4 @@
-﻿namespace DivinityModManager.Models.App;
+﻿namespace ModManager.Models.App;
 
 public class AppPathwayData
 {

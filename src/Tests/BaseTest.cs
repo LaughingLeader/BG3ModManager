@@ -2,7 +2,7 @@
 
 using Xunit.Abstractions;
 
-namespace DivinityModManager.Tests
+namespace ModManager.Tests
 {
 	public abstract class BaseTest : IDisposable
 	{

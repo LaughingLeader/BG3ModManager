@@ -3,7 +3,7 @@
 using System.Diagnostics;
 using System.Reactive.Concurrency;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class MainWindowExceptionHandler : IObserver<Exception>
 {

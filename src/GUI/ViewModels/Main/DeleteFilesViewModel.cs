@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Util;
+﻿using ModManager.Models;
+using ModManager.Util;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -15,7 +15,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace DivinityModManager.ViewModels.Main;
+namespace ModManager.ViewModels.Main;
 
 public class FileDeletionCompleteEventArgs : EventArgs
 {

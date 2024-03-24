@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DivinityModManager.Controls.Behavior;
+namespace ModManager.Controls.Behavior;
 
 public class ToolTipHelperBehavior
 {

@@ -1,11 +1,11 @@
-﻿using DivinityModManager.Util;
+﻿using ModManager.Util;
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace DivinityModManager.Models.NexusMods;
+namespace ModManager.Models.NexusMods;
 
 public class NexusModsBaseCollectionData : ReactiveObject
 {

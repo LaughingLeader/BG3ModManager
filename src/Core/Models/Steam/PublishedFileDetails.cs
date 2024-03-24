@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DivinityModManager.Models.Steam;
+namespace ModManager.Models.Steam;
 
 public enum EPublishedFileVisibility
 {

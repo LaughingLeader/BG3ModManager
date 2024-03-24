@@ -3,7 +3,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DivinityModManager.Json;
+namespace ModManager.Json;
 
 public class JsonArrayToSourceListConverter<T> : JsonConverter
 {

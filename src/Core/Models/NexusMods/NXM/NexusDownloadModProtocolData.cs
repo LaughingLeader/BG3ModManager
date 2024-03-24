@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
 
-namespace DivinityModManager.Models.NexusMods.NXM;
+namespace ModManager.Models.NexusMods.NXM;
 
 public class NexusDownloadModProtocolData : INexusModsProtocol
 {

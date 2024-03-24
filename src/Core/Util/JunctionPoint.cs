@@ -11,7 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 /// <summary>
 ///     Provides access to NTFS junction points in .Net.

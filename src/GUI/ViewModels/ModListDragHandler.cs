@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models;
-using DivinityModManager.Models.Mod;
+﻿using ModManager.Models;
+using ModManager.Models.Mod;
 
 using GongSolutions.Wpf.DragDrop;
 
@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class ManualDragInfo : IDragInfo
 {

@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace DivinityModManager.Models.GitHub;
+namespace ModManager.Models.GitHub;
 
 public class GitHubLatestReleaseData : ReactiveObject
 {

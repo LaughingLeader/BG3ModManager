@@ -6,7 +6,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 static class VersionHelpers
 {

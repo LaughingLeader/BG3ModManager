@@ -1,8 +1,8 @@
-﻿using DivinityModManager.ViewModels;
+﻿using ModManager.ViewModels;
 
 using ReactiveUI;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class AboutWindowBase : HideWindowBase<AboutWindowViewModel> { }
 

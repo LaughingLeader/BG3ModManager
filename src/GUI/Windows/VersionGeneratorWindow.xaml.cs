@@ -1,4 +1,4 @@
-﻿using DivinityModManager.ViewModels;
+﻿using ModManager.ViewModels;
 
 using ReactiveUI;
 
@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class VersionGeneratorWindowBase : HideWindowBase<VersionGeneratorViewModel> { }
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DivinityModManager.Enums.Extender;
+namespace ModManager.Enums.Extender;
 
 public enum ExtenderUpdateChannel
 {

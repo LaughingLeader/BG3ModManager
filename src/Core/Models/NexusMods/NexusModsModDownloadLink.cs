@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using NexusModsNET.DataModels;
 
-namespace DivinityModManager.Models.NexusMods;
+namespace ModManager.Models.NexusMods;
 
 public struct NexusModsModDownloadLink
 {

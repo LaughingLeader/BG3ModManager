@@ -3,7 +3,7 @@ using ReactiveUI.Fody.Helpers;
 
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models.GitHub.Json;
+namespace ModManager.Models.GitHub.Json;
 
 [DataContract]
 public class GitHubReleaseJsonEntry : ReactiveObject

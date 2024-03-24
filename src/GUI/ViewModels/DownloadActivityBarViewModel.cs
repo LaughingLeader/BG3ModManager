@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Util;
+﻿using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class DownloadActivityBarViewModel : ReactiveObject
 {

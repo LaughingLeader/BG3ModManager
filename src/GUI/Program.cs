@@ -4,7 +4,7 @@ using System.IO.Pipes;
 using System.Text;
 using System.Windows;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 internal class Program
 {

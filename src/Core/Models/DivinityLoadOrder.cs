@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -6,7 +6,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 [DataContract]
 public class DivinityLoadOrderEntry

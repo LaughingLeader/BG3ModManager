@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Models.App;
-using DivinityModManager.Util;
+﻿using ModManager.Models.App;
+using ModManager.Util;
 
 using DynamicData;
 
@@ -12,7 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public class AppKeys : ReactiveObject
 {

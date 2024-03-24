@@ -3,7 +3,7 @@ using System.Text;
 
 using Xunit.Abstractions;
 
-namespace DivinityModManager.Tests
+namespace ModManager.Tests
 {
 	internal class ConsoleTextRedirecter : System.IO.TextWriter
 	{

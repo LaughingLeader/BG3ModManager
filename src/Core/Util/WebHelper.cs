@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class WebHelper
 {

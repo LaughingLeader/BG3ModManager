@@ -1,8 +1,8 @@
-﻿using DivinityModManager.Extensions;
-using DivinityModManager.Models.GitHub;
-using DivinityModManager.Models.NexusMods;
-using DivinityModManager.Models.Steam;
-using DivinityModManager.Util;
+﻿using ModManager.Extensions;
+using ModManager.Models.GitHub;
+using ModManager.Models.NexusMods;
+using ModManager.Models.Steam;
+using ModManager.Util;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -20,7 +20,7 @@ using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 
-namespace DivinityModManager.Models.Mod;
+namespace ModManager.Models.Mod;
 
 [DataContract]
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]

@@ -2,12 +2,11 @@
 
 using AutoUpdaterDotNET;
 
-using DivinityModManager.AppServices;
-using DivinityModManager.Controls;
-using DivinityModManager.Util;
-using DivinityModManager.Util.ScreenReader;
-using DivinityModManager.ViewModels;
-using DivinityModManager.Views;
+using ModManager.Controls;
+using ModManager.Util;
+using ModManager.Util.ScreenReader;
+using ModManager.ViewModels;
+using ModManager.Views;
 
 using DynamicData;
 
@@ -24,7 +23,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace DivinityModManager.Windows;
+namespace ModManager.Windows;
 
 public class MainWindowBase : HideWindowBase<MainWindowViewModel>
 {

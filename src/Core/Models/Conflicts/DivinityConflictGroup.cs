@@ -2,7 +2,7 @@
 
 using System.Reactive.Disposables;
 
-namespace DivinityModManager.Models.Conflicts;
+namespace ModManager.Models.Conflicts;
 
 public class DivinityConflictGroup : ReactiveObject
 {

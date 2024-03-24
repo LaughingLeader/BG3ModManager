@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Converters;
-using DivinityModManager.ViewModels;
+﻿using ModManager.Converters;
+using ModManager.ViewModels;
 
 using ReactiveUI;
 
-namespace DivinityModManager.Views;
+namespace ModManager.Views;
 
 public class ExportOrderToArchiveViewViewBase : ReactiveUserControl<ExportOrderToArchiveViewModel> { }
 

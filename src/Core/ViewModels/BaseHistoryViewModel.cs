@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models;
+﻿using ModManager.Models;
 
 using Reactive.Bindings.Extensions;
 
@@ -9,7 +9,7 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public interface IHistoryViewModel
 {

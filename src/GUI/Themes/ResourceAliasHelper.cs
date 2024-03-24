@@ -2,7 +2,7 @@
 using System.Windows.Markup;
 using System.Xaml;
 
-namespace DivinityModManager.Themes;
+namespace ModManager.Themes;
 
 internal class ResourceAliasHelper : MarkupExtension
 {

@@ -1,9 +1,9 @@
-﻿using DivinityModManager.Controls;
+﻿using ModManager.Controls;
 
 using System.Globalization;
 using System.Windows.Data;
 
-namespace DivinityModManager.Converters;
+namespace ModManager.Converters;
 
 public class StringToMarkdownConverter : IValueConverter
 {

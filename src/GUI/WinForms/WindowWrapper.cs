@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Interop;
 
-namespace DivinityModManager.WinForms;
+namespace ModManager.WinForms;
 
 public class WindowWrapper : System.Windows.Forms.IWin32Window
 {

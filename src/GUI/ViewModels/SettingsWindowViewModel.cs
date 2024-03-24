@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Enums.Extender;
-using DivinityModManager.Extensions;
-using DivinityModManager.Models.App;
-using DivinityModManager.Models.Extender;
-using DivinityModManager.Models.Settings;
-using DivinityModManager.Util;
-using DivinityModManager.Windows;
+﻿using ModManager.Enums.Extender;
+using ModManager.Extensions;
+using ModManager.Models.App;
+using ModManager.Models.Extender;
+using ModManager.Models.Settings;
+using ModManager.Util;
+using ModManager.Windows;
 
 using DynamicData.Binding;
 
@@ -21,7 +21,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DivinityModManager.ViewModels;
+namespace ModManager.ViewModels;
 
 public enum SettingsWindowTab
 {
@@ -486,7 +486,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 			{
 				try
 				{
-					if (Services.Get<IModUpdaterService>().DeleteCache())
+					if (AppServices.Get<IModUpdaterService>().DeleteCache())
 					{
 						ShowAlert($"Deleted local cache in {DivinityApp.GetAppDirectory("Data")}", AlertType.Success, 20);
 					}

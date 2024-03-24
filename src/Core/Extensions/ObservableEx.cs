@@ -2,7 +2,7 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
-namespace DivinityModManager;
+namespace ModManager;
 public static class ObservableEx
 {
 	//public static IObservable<Unit> StartAsync(Func<CancellationToken, Task> actionAsync, IScheduler scheduler)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DivinityModManager.Models.View;
+namespace ModManager.Models.View;
 
 public delegate Task IncreaseProgressAmount(double amount, string message = "");
 

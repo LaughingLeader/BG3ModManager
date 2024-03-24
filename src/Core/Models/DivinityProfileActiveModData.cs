@@ -1,6 +1,6 @@
 ﻿using LSLib.LS;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public class DivinityProfileActiveModData
 {

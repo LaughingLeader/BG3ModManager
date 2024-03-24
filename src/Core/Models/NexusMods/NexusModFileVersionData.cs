@@ -2,7 +2,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace DivinityModManager.Models.NexusMods;
+namespace ModManager.Models.NexusMods;
 
 public struct NexusModFileVersionData
 {

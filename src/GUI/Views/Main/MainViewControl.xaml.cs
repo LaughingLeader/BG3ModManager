@@ -1,12 +1,12 @@
 ﻿using AdonisUI;
 
-using DivinityModManager.Converters;
-using DivinityModManager.Models.App;
-using DivinityModManager.Util;
-using DivinityModManager.Util.ScreenReader;
-using DivinityModManager.ViewModels;
-using DivinityModManager.Views.Main;
-using DivinityModManager.Windows;
+using ModManager.Converters;
+using ModManager.Models.App;
+using ModManager.Util;
+using ModManager.Util.ScreenReader;
+using ModManager.ViewModels;
+using ModManager.Views.Main;
+using ModManager.Windows;
 
 using ReactiveUI;
 
@@ -20,7 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace DivinityModManager.Views.Main;
+namespace ModManager.Views.Main;
 
 public class MainViewControlViewBase : ReactiveUserControl<MainWindowViewModel> { }
 
@@ -46,7 +46,7 @@ public partial class MainViewControl : MainViewControlViewBase
 			var modManager = Services.Mods;
 			if (!DivinityApp.IsKeyboardNavigating && modManager.ActiveSelected == 0 && modManager.InactiveSelected == 0)
 			{
-				Services.Get<ModOrderView>()?.ModLayout?.FocusInitialActiveSelected();
+				AppServices.Get<ModOrderView>()?.ModLayout?.FocusInitialActiveSelected();
 			}
 		});
 		main.InputBindings.Add(new KeyBinding(setInitialFocusCommand, Key.Up, ModifierKeys.None));

@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace DivinityModManager.Controls.Behavior;
+namespace ModManager.Controls.Behavior;
 
 public class TextBlockSettingsEntryAttributeBehavior
 {

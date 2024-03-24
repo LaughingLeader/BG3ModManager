@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DivinityModManager.Models;
+namespace ModManager.Models;
 
 public interface ISelectable
 {

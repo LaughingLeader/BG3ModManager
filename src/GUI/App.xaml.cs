@@ -1,8 +1,10 @@
-﻿using DivinityModManager.AppServices;
-using DivinityModManager.Util;
-using DivinityModManager.Windows;
+﻿using ModManager.Services;
+using ModManager.Util;
+using ModManager.Windows;
 
 using ReactiveUI;
+
+using Splat;
 
 using System.Globalization;
 using System.IO;
@@ -12,7 +14,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -21,7 +23,7 @@ public partial class App : Application
 {
 	public SplashScreen Splash { get; set; }
 
-	public static WindowManagerService WM => Services.Get<WindowManagerService>();
+	public static WindowManagerService WM => AppServices.Get<WindowManagerService>();
 
 	private static string _appDir;
 
@@ -41,18 +43,14 @@ public partial class App : Application
 		var version = assembly.GetName().Version.ToString();
 		var productName = Regex.Replace(appName.Trim(), @"\s+", String.Empty);
 
-		Services.RegisterSingleton<ISettingsService>(new SettingsService());
-		Services.RegisterSingleton<IFileWatcherService>(new FileWatcherService());
-		Services.RegisterSingleton<IGitHubService>(new GitHubService(productName, version));
-		Services.RegisterSingleton<INexusModsService>(new NexusModsService(productName, version));
-		Services.RegisterSingleton<IModUpdaterService>(new ModUpdaterService(version));
-		Services.RegisterSingleton<IGameUtilitiesService>(new GameUtilitiesService());
-		Services.RegisterSingleton(new BackgroundCommandService());
-		Services.RegisterSingleton(new ModManagerService());
-		Services.RegisterSingleton(new PathwaysService());
+		
+
+		
+
+		AppServices.Get<IGameUtilitiesService>().AddGameProcessName(DivinityApp.GameExes);
 
 		// POCO type warning suppression
-		Services.Register<ICreatesObservableForProperty>(() => new DivinityModManager.Util.CustomPropertyResolver());
+		AppServices.Register<ICreatesObservableForProperty>(() => new CustomPropertyResolver());
 
 		WebHelper.SetupClient();
 #if DEBUG

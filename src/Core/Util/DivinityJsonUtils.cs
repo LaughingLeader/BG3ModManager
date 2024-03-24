@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Text;
 
-namespace DivinityModManager.Util;
+namespace ModManager.Util;
 
 public static class DivinityJsonUtils
 {

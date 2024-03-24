@@ -1,5 +1,5 @@
-﻿using DivinityModManager.Extensions;
-using DivinityModManager.Util;
+﻿using ModManager.Extensions;
+using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -7,7 +7,7 @@ using ReactiveUI.Fody.Helpers;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace DivinityModManager.Models.Settings;
+namespace ModManager.Models.Settings;
 
 [DataContract]
 public class ModManagerUpdateSettings : ReactiveObject

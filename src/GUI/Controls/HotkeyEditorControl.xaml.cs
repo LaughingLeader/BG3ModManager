@@ -1,10 +1,10 @@
-﻿using DivinityModManager.Models.App;
+﻿using ModManager.Models.App;
 
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DivinityModManager.Controls;
+namespace ModManager.Controls;
 
 /// <summary>
 /// Interaction logic for HotkeyEditorControl.xaml

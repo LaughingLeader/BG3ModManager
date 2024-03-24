@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace DivinityModManager.Models.View;
+namespace ModManager.Models.View;
 
 public class EnumEntry : ReactiveObject
 {

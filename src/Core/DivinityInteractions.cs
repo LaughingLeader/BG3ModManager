@@ -1,4 +1,4 @@
-﻿using DivinityModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 
 using LSLib.LS.Stats;
 
@@ -8,7 +8,7 @@ using ReactiveUI;
 
 using System.Windows;
 
-namespace DivinityModManager;
+namespace ModManager;
 
 public record struct DeleteFilesViewConfirmationData(int Total, bool PermanentlyDelete, CancellationToken Token);
 public record struct ValidateModStatsResults(List<DivinityModData> Mods, List<StatLoadingError> Errors, Dictionary<string, string[]> FileText);

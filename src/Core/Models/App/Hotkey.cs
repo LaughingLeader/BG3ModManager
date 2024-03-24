@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Input;
 
-namespace DivinityModManager.Models.App;
+namespace ModManager.Models.App;
 
 public interface IHotkey
 {
