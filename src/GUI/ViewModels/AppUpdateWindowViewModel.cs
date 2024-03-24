@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace DivinityModManager.ViewModels;
 
-public class AppUpdateWindowViewModel : ReactiveObject
+public partial class AppUpdateWindowViewModel : ReactiveObject
 {
 	private readonly AppUpdateWindow _view;
 
@@ -26,6 +26,12 @@ public class AppUpdateWindowViewModel : ReactiveObject
 
 	public ICommand ConfirmCommand { get; private set; }
 	public ICommand SkipCommand { get; private set; }
+
+
+	[GeneratedRegex(@"^\s+$[\r\n]*", RegexOptions.Multiline)]
+	private static partial Regex RemoveEmptyLinesRe();
+
+	private static readonly Regex RemoveEmptyLinesPattern = RemoveEmptyLinesRe();
 
 	private async Task CheckArgsAsync(IScheduler scheduler, CancellationToken token)
 	{
@@ -44,7 +50,7 @@ public class AppUpdateWindowViewModel : ReactiveObject
 		{
 			if (!String.IsNullOrEmpty(markdownText))
 			{
-				markdownText = Regex.Replace(markdownText, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
+				markdownText = RemoveEmptyLinesPattern.Replace(markdownText, string.Empty);
 				UpdateChangelogView = markdownText;
 			}
 
