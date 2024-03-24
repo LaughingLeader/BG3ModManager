@@ -40,7 +40,7 @@ public partial class CollectionDownloadWindow : CollectionDownloadWindowBase
 
 		_taskResult = new();
 
-		ViewModel = new CollectionDownloadWindowViewModel();
+		ViewModel = ViewModelLocator.CollectionDownload;
 
 		DivinityInteractions.OpenDownloadCollectionView.RegisterHandler(OpenWindow);
 
@@ -91,8 +91,8 @@ public partial class CollectionDownloadWindow : CollectionDownloadWindowBase
 		{
 			try
 			{
-				ListView lv = sender as ListView;
-				ICollectionView dataView =
+				var lv = sender as ListView;
+				var dataView =
 					CollectionViewSource.GetDefaultView(lv.ItemsSource);
 
 				dataView.SortDescriptions.Clear();

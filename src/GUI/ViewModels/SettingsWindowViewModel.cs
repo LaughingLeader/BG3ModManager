@@ -1,12 +1,11 @@
-﻿using ModManager.Enums.Extender;
+﻿using DynamicData.Binding;
+
+using ModManager.Enums.Extender;
 using ModManager.Extensions;
 using ModManager.Models.App;
 using ModManager.Models.Extender;
 using ModManager.Models.Settings;
 using ModManager.Util;
-using ModManager.Windows;
-
-using DynamicData.Binding;
 
 using Newtonsoft.Json;
 
@@ -57,12 +56,9 @@ public class GameLaunchParamEntry : ReactiveObject
 	}
 }
 
-public class SettingsWindowViewModel : ReactiveObject
+public class SettingsWindowViewModel : BaseWindowViewModel
 {
 	private readonly MainWindowViewModel _main;
-	public MainWindowViewModel Main => _main;
-
-	public SettingsWindow View { get; private set; }
 
 	public ObservableCollectionExtended<ScriptExtenderUpdateVersion> ScriptExtenderUpdates { get; private set; }
 	[Reactive] public ScriptExtenderUpdateVersion TargetVersion { get; set; }
@@ -102,31 +98,6 @@ public class SettingsWindowViewModel : ReactiveObject
 		NullValueHandling = NullValueHandling.Ignore,
 		Formatting = Formatting.Indented
 	};
-
-	public void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 30)
-	{
-		DivinityApp.Log(message);
-		RxApp.MainThreadScheduler.Schedule(() =>
-		{
-			if (timeout < 0) timeout = 0;
-			switch (alertType)
-			{
-				case AlertType.Danger:
-					View.AlertBar.SetDangerAlert(message, timeout);
-					break;
-				case AlertType.Warning:
-					View.AlertBar.SetWarningAlert(message, timeout);
-					break;
-				case AlertType.Success:
-					View.AlertBar.SetSuccessAlert(message, timeout);
-					break;
-				case AlertType.Info:
-				default:
-					View.AlertBar.SetInformationAlert(message, timeout);
-					break;
-			}
-		});
-	}
 
 	private string SelectedTabToResetTooltip(SettingsWindowTab tab)
 	{
@@ -237,39 +208,39 @@ public class SettingsWindowViewModel : ReactiveObject
 
 	public bool ExportExtenderSettings()
 	{
-		string outputFile = Path.Join(Path.GetDirectoryName(Settings.GameExecutablePath), "ScriptExtenderSettings.json");
+		var outputFile = Path.Join(Path.GetDirectoryName(Settings.GameExecutablePath), "ScriptExtenderSettings.json");
 		try
 		{
 			_jsonConfigExportSettings.DefaultValueHandling = ExtenderSettings.ExportDefaultExtenderSettings ? DefaultValueHandling.Include : DefaultValueHandling.Ignore;
-			string contents = JsonConvert.SerializeObject(Settings.ExtenderSettings, _jsonConfigExportSettings);
+			var contents = JsonConvert.SerializeObject(Settings.ExtenderSettings, _jsonConfigExportSettings);
 			File.WriteAllText(outputFile, contents);
-			ShowAlert($"Saved Script Extender settings to '{outputFile}'", AlertType.Success, 20);
+			DivinityApp.ShowAlert($"Saved Script Extender settings to '{outputFile}'", AlertType.Success, 20);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			ShowAlert($"Error saving Script Extender settings to '{outputFile}':\n{ex}", AlertType.Danger);
+			DivinityApp.ShowAlert($"Error saving Script Extender settings to '{outputFile}':\n{ex}", AlertType.Danger);
 		}
 		return false;
 	}
 
 	public bool ExportExtenderUpdaterSettings()
 	{
-		string outputFile = Path.Join(Path.GetDirectoryName(Settings.GameExecutablePath), "ScriptExtenderUpdaterConfig.json");
+		var outputFile = Path.Join(Path.GetDirectoryName(Settings.GameExecutablePath), "ScriptExtenderUpdaterConfig.json");
 		try
 		{
 			_jsonConfigExportSettings.DefaultValueHandling = ExtenderSettings.ExportDefaultExtenderSettings ? DefaultValueHandling.Include : DefaultValueHandling.Ignore;
-			string contents = JsonConvert.SerializeObject(Settings.ExtenderUpdaterSettings, _jsonConfigExportSettings);
+			var contents = JsonConvert.SerializeObject(Settings.ExtenderUpdaterSettings, _jsonConfigExportSettings);
 			File.WriteAllText(outputFile, contents);
-			ShowAlert($"Saved Script Extender Updater settings to '{outputFile}'", AlertType.Success, 20);
+			DivinityApp.ShowAlert($"Saved Script Extender Updater settings to '{outputFile}'", AlertType.Success, 20);
 
-			Main.UpdateExtender(true);
+			_main.UpdateExtender(true);
 
 			return true;
 		}
 		catch (Exception ex)
 		{
-			ShowAlert($"Error saving Script Extender Updater settings to '{outputFile}':\n{ex}", AlertType.Danger);
+			DivinityApp.ShowAlert($"Error saving Script Extender Updater settings to '{outputFile}':\n{ex}", AlertType.Danger);
 		}
 		return false;
 	}
@@ -281,14 +252,14 @@ public class SettingsWindowViewModel : ReactiveObject
 			var attr = File.GetAttributes(Settings.GameExecutablePath);
 			if (attr.HasFlag(System.IO.FileAttributes.Directory))
 			{
-				string exeName = "";
+				var exeName = "";
 				if (!DivinityRegistryHelper.IsGOG)
 				{
-					exeName = Path.GetFileName(Main.AppSettings.DefaultPathways.Steam.ExePath);
+					exeName = Path.GetFileName(_main.AppSettings.DefaultPathways.Steam.ExePath);
 				}
 				else
 				{
-					exeName = Path.GetFileName(Main.AppSettings.DefaultPathways.GOG.ExePath);
+					exeName = Path.GetFileName(_main.AppSettings.DefaultPathways.GOG.ExePath);
 				}
 
 				var exe = Path.Join(Settings.GameExecutablePath, exeName);
@@ -300,17 +271,17 @@ public class SettingsWindowViewModel : ReactiveObject
 		}
 		catch (Exception) { }
 
-		Main.SaveSettings();
+		_main.SaveSettings();
 
-		if (View.IsVisible)
+		if (IsVisible)
 		{
 			switch (SelectedTabIndex)
 			{
 				case SettingsWindowTab.Default:
 				case SettingsWindowTab.Update:
 				case SettingsWindowTab.Advanced:
-					//Handled in Main.SaveSettings
-					ShowAlert("Saved settings.", AlertType.Success, 10);
+					//Handled in _main.SaveSettings
+					DivinityApp.ShowAlert("Saved settings.", AlertType.Success, 10);
 					break;
 				case SettingsWindowTab.Extender:
 					ExportExtenderSettings();
@@ -319,21 +290,21 @@ public class SettingsWindowViewModel : ReactiveObject
 					ExportExtenderUpdaterSettings();
 					break;
 				case SettingsWindowTab.Keybindings:
-					var success = Main.Keys.SaveKeybindings(out var msg);
+					var success = _main.Keys.SaveKeybindings(out var msg);
 					if (!success)
 					{
-						ShowAlert(msg, AlertType.Danger);
+						DivinityApp.ShowAlert(msg, AlertType.Danger);
 					}
 					else if (!String.IsNullOrEmpty(msg))
 					{
-						ShowAlert(msg, AlertType.Success, 10);
+						DivinityApp.ShowAlert(msg, AlertType.Success, 10);
 					}
 					break;
 			}
 		}
 		else
 		{
-			Main.SaveSettings();
+			_main.SaveSettings();
 		}
 	}
 
@@ -344,41 +315,37 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 
 	private void AssociateWithNXM()
 	{
-		var result = Xceed.Wpf.Toolkit.MessageBox.Show(View,
-		_associateNXMMessage,
-		"Associate BG3MM with nxm:// links?",
-		MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, App.WM.Main.Window.MainWindowMessageBox.Style);
-		if (result == MessageBoxResult.Yes)
+		DivinityInteractions.ShowMessageBox.Handle(new ShowMessageBoxData(_associateNXMMessage, "Associate BG3MM with nxm:// links?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No)).Subscribe(result =>
 		{
-			if (DivinityRegistryHelper.AssociateWithNXMProtocol(DivinityApp.GetExePath()))
+			if (result == MessageBoxResult.Yes)
 			{
-				UpdateSettings.IsAssociatedWithNXM = true;
-				ShowAlert("nxm:// protocol assocation successfully set");
+				if (DivinityRegistryHelper.AssociateWithNXMProtocol(DivinityApp.GetExePath()))
+				{
+					UpdateSettings.IsAssociatedWithNXM = true;
+					DivinityApp.ShowAlert("nxm:// protocol assocation successfully set");
+				}
+				else
+				{
+					UpdateSettings.IsAssociatedWithNXM = false;
+					DivinityApp.ShowAlert("Failed to set nxm protocol in the registry. Check the log", AlertType.Danger);
+				}
 			}
-			else
-			{
-				UpdateSettings.IsAssociatedWithNXM = false;
-				ShowAlert("Failed to set nxm protocol in the registry. Check the log", AlertType.Danger);
-			}
-		}
+		});
 	}
 
-	public SettingsWindowViewModel(SettingsWindow view, MainWindowViewModel main)
+	public SettingsWindowViewModel(MainWindowViewModel main)
 	{
 		_main = main;
-		View = view;
 		TargetVersion = _emptyVersion;
 
-		this.WhenAnyValue(x => x.View.IsVisible).ToUIProperty(this, x => x.IsVisible);
+		_main.WhenAnyValue(x => x.Settings).BindTo(this, x => x.Settings);
+		_main.WhenAnyValue(x => x.Settings.UpdateSettings).BindTo(this, x => x.UpdateSettings);
+		_main.WhenAnyValue(x => x.Settings.ExtenderSettings).BindTo(this, x => x.ExtenderSettings);
+		_main.WhenAnyValue(x => x.Settings.ExtenderUpdaterSettings).BindTo(this, x => x.ExtenderUpdaterSettings);
 
-		Main.WhenAnyValue(x => x.Settings).BindTo(this, x => x.Settings);
-		Main.WhenAnyValue(x => x.Settings.UpdateSettings).BindTo(this, x => x.UpdateSettings);
-		Main.WhenAnyValue(x => x.Settings.ExtenderSettings).BindTo(this, x => x.ExtenderSettings);
-		Main.WhenAnyValue(x => x.Settings.ExtenderUpdaterSettings).BindTo(this, x => x.ExtenderUpdaterSettings);
-
-		ScriptExtenderUpdates = new ObservableCollectionExtended<ScriptExtenderUpdateVersion>() { _emptyVersion };
-		LaunchParams = new ObservableCollectionExtended<GameLaunchParamEntry>()
-		{
+		ScriptExtenderUpdates = [_emptyVersion];
+		LaunchParams =
+		[
 			new("-continueGame", "Automatically load the last save when loading into the main menu"),
 			new("-storylog 1", "Enables the story log"),
 			new(@"--logPath """, "A directory to write story logs to"),
@@ -392,7 +359,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 			new(@"+connect_lobby """, "", true),
 			new("-locaupdater 1", "", true),
 			new(@"-mediaPath """, "", true),
-		};
+		];
 
 		var whenTab = this.WhenAnyValue(x => x.SelectedTabIndex);
 		whenTab.Select(x => x == SettingsWindowTab.Extender).ToUIProperty(this, x => x.ExtenderTabIsVisible);
@@ -451,55 +418,65 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		ResetSettingsCommand = ReactiveCommand.Create(() =>
 		{
 			var tabName = TabToName(SelectedTabIndex);
-			MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(View, $"Reset {tabName} to Default?\nCurrent settings will be lost.", $"Confirm {tabName} Reset",
-				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, App.WM.Main.Window.MessageBoxStyle);
-			if (result == MessageBoxResult.Yes)
+			DivinityInteractions.ShowMessageBox.Handle(new ShowMessageBoxData(
+				$"Reset {tabName} to Default?\nCurrent settings will be lost.",
+				$"Confirm {tabName} Reset",
+				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No))
+			.Subscribe(result =>
 			{
-				switch (SelectedTabIndex)
+				if (result == MessageBoxResult.Yes)
 				{
-					case SettingsWindowTab.Default:
-						Settings.SetToDefault();
-						break;
-					case SettingsWindowTab.Extender:
-						Settings.ExtenderSettings.SetToDefault();
-						break;
-					case SettingsWindowTab.ExtenderUpdater:
-						Settings.ExtenderUpdaterSettings.SetToDefault();
-						break;
-					case SettingsWindowTab.Keybindings:
-						Main.Keys.SetToDefault();
-						break;
-					case SettingsWindowTab.Advanced:
-						Settings.DebugModeEnabled = false;
-						Settings.LogEnabled = false;
-						Settings.GameLaunchParams = "";
-						break;
+					switch (SelectedTabIndex)
+					{
+						case SettingsWindowTab.Default:
+							Settings.SetToDefault();
+							break;
+						case SettingsWindowTab.Extender:
+							Settings.ExtenderSettings.SetToDefault();
+							break;
+						case SettingsWindowTab.ExtenderUpdater:
+							Settings.ExtenderUpdaterSettings.SetToDefault();
+							break;
+						case SettingsWindowTab.Keybindings:
+							_main.Keys.SetToDefault();
+							break;
+						case SettingsWindowTab.Advanced:
+							Settings.DebugModeEnabled = false;
+							Settings.LogEnabled = false;
+							Settings.GameLaunchParams = "";
+							break;
+					}
 				}
-			}
+			});
 		});
 
 		ClearCacheCommand = ReactiveCommand.Create(() =>
 		{
-			MessageBoxResult result = Xceed.Wpf.Toolkit.MessageBox.Show(View, $"Delete local mod cache?\nThis cannot be undone.", "Confirm Delete Cache",
-				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, App.WM.Main.Window.MessageBoxStyle);
-			if (result == MessageBoxResult.Yes)
+			DivinityInteractions.ShowMessageBox.Handle(new ShowMessageBoxData(
+				$"Delete local mod cache?\nThis cannot be undone.",
+				"Confirm Delete Cache",
+				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No))
+			.Subscribe(result =>
 			{
-				try
+				if (result == MessageBoxResult.Yes)
 				{
-					if (AppServices.Get<IModUpdaterService>().DeleteCache())
+					try
 					{
-						ShowAlert($"Deleted local cache in {DivinityApp.GetAppDirectory("Data")}", AlertType.Success, 20);
+						if (AppServices.Get<IModUpdaterService>().DeleteCache())
+						{
+							DivinityApp.ShowAlert($"Deleted local cache in {DivinityApp.GetAppDirectory("Data")}", AlertType.Success, 20);
+						}
+						else
+						{
+							DivinityApp.ShowAlert($"No cache to delete.", AlertType.Warning, 20);
+						}
 					}
-					else
+					catch (Exception ex)
 					{
-						ShowAlert($"No cache to delete.", AlertType.Warning, 20);
+						DivinityApp.ShowAlert($"Error deleting workshop cache:\n{ex}", AlertType.Danger);
 					}
 				}
-				catch (Exception ex)
-				{
-					ShowAlert($"Error deleting workshop cache:\n{ex}", AlertType.Danger);
-				}
-			}
+			});
 		});
 
 		AddLaunchParamCommand = ReactiveCommand.Create((string param) =>

@@ -5,6 +5,7 @@ using ModManager.Models.Mod;
 using ModManager.Models.NexusMods;
 using ModManager.Models.NexusMods.NXM;
 using ModManager.Models.Updates;
+using ModManager.Services.Data;
 
 using Newtonsoft.Json;
 
@@ -19,6 +20,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 
@@ -281,7 +283,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 
 					case NexusModsProtocolType.Collection:
 						var collectionProtocol = (NexusDownloadCollectionProtocolData)data;
-						var allowAdultContent = AppServices.Settings.ManagerSettings.UpdateSettings.AllowAdultContent;
+						var allowAdultContent = Locator.Current.GetService<ISettingsService>()?.ManagerSettings.UpdateSettings.AllowAdultContent == true;
 
 						var queryData = new NexusGraphQueryCollectionRevisionRequestData(collectionProtocol.GameDomain, collectionProtocol.Slug,
 							collectionProtocol.Revision, allowAdultContent, NexusModsQuery.CollectionRevision);
@@ -343,8 +345,10 @@ public class NexusModsService : ReactiveObject, INexusModsService
 		ClearTasks();
 	}
 
-	public NexusModsService(string appName, string appVersion)
+	public NexusModsService(IEnvironmentService environmentService)
 	{
+		var appName = environmentService.AppFriendlyName;
+		var appVersion = environmentService.AppVersion.ToString();
 		_apiLimits = new NexusModsObservableApiLimits();
 		_whenLimitsChange = _apiLimits.WhenAnyPropertyChanged();
 		this.WhenAnyValue(x => x.ApiKey).Subscribe(key =>

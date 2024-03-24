@@ -1,8 +1,8 @@
-﻿using ModManager.Extensions;
+﻿using DynamicData.Binding;
+
+using ModManager.Extensions;
 using ModManager.Models.Mod;
 using ModManager.Util.ScreenReader;
-
-using DynamicData.Binding;
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -84,7 +84,7 @@ public class ModListView : ListView
 				var view = this.View as GridView;
 				var indexOrder = colList.Select(x => GetColumnActualIndex(x)).ToList();
 				var len = view.Columns.Count;
-				for (int i = 0; i < len; i++)
+				for (var i = 0; i < len; i++)
 				{
 					var col = view.Columns[i];
 					var nextIndex = indexOrder.IndexOf(GetColumnActualIndex(col));
@@ -152,7 +152,7 @@ public class ModListView : ListView
 			base.OnKeyDown(e);
 			return;
 		}
-		bool handled = false;
+		var handled = false;
 
 		//DivinityApp.Log($"IsKeyboardFocused({IsKeyboardFocused}) IsKeyboardFocusWithin({IsKeyboardFocusWithin}) IsFocused({IsFocused})");
 
@@ -167,15 +167,15 @@ public class ModListView : ListView
 				case Key.Left:
 					var selectedItems = list.Where(x => x.IsSelected).ToList();
 					var lastIndexes = selectedItems.SafeToDictionary(m => m.UUID, m => list.IndexOf(m));
-					int nextIndex = -1;
-					int targetScrollIndex = -1;
+					var nextIndex = -1;
+					var targetScrollIndex = -1;
 
 					if (key == Key.Up)
 					{
-						for (int i = 0; i < selectedItems.Count; i++)
+						for (var i = 0; i < selectedItems.Count; i++)
 						{
 							var m = selectedItems[i];
-							int modIndex = list.IndexOf(m);
+							var modIndex = list.IndexOf(m);
 							nextIndex = Math.Max(0, modIndex - 1);
 							var existingMod = list.ElementAtOrDefault(nextIndex);
 							if (existingMod != null && existingMod.IsSelected)
@@ -194,10 +194,10 @@ public class ModListView : ListView
 					}
 					else if (key == Key.Down)
 					{
-						for (int i = selectedItems.Count - 1; i >= 0; i--)
+						for (var i = selectedItems.Count - 1; i >= 0; i--)
 						{
 							var m = selectedItems[i];
-							int modIndex = list.IndexOf(m);
+							var modIndex = list.IndexOf(m);
 							nextIndex = Math.Min(list.Count - 1, modIndex + 1);
 							var existingMod = list.ElementAtOrDefault(nextIndex);
 							if (existingMod != null && existingMod.IsSelected)

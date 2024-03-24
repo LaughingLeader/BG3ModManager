@@ -19,15 +19,13 @@ public class WindowWrapper<T> where T : Window
 	private readonly Subject<bool> _onToggle = new();
 	public IObservable<bool> OnToggle => _onToggle;
 
-	public void Toggle(bool forceOpen = false)
+	public void Toggle(bool setVisible)
 	{
-		var b = !Window.IsVisible || forceOpen;
-
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
-			_onToggle.OnNext(b);
+			_onToggle.OnNext(setVisible);
 
-			if (b)
+			if (setVisible)
 			{
 				Window.Show();
 				if (Window != _owner) Window.Owner = _owner;
@@ -39,10 +37,12 @@ public class WindowWrapper<T> where T : Window
 		});
 	}
 
-	public WindowWrapper(T window, Window ownerWindow = null)
+	public void Toggle() => Toggle(!Window.IsVisible);
+
+	public WindowWrapper(Window ownerWindow = null)
 	{
-		Window = window;
-		_owner = ownerWindow ?? window;
+		Window = AppServices.Get<T>()!;
+		_owner = ownerWindow ?? Window;
 	}
 }
 
@@ -59,6 +59,8 @@ public class WindowManagerService
 	public WindowWrapper<VersionGeneratorWindow> VersionGenerator { get; }
 	public WindowWrapper<StatsValidatorWindow> StatsValidator { get; }
 
+	public MainWindow MainWindow { get; }
+
 	private readonly List<Window> _windows = [];
 
 	public void UpdateColorScheme(Uri theme)
@@ -71,16 +73,18 @@ public class WindowManagerService
 
 	public WindowManagerService(MainWindow main)
 	{
+		MainWindow = main;
+
 		Main = new(main);
-		About = new(new AboutWindow(), main);
-		AppUpdate = new(new AppUpdateWindow(), main);
-		CollectionDownload = new(new CollectionDownloadWindow(), main);
-		Help = new(new HelpWindow(), main);
-		ModProperties = new(new ModPropertiesWindow(), main);
-		NxmDownload = new(new NxmDownloadWindow(), main);
-		Settings = new(new SettingsWindow(), main);
-		VersionGenerator = new(new VersionGeneratorWindow(), main);
-		StatsValidator = new(new StatsValidatorWindow(), main);
+		About = new(main);
+		AppUpdate = new(main);
+		CollectionDownload = new(main);
+		Help = new(main);
+		ModProperties = new(main);
+		NxmDownload = new(main);
+		Settings = new(main);
+		VersionGenerator = new(main);
+		StatsValidator = new(main);
 
 		_windows.Add(Main.Window);
 		_windows.Add(About.Window);
@@ -105,7 +109,7 @@ public class WindowManagerService
 			Main.Window.ViewModel.Settings.SettingsWindowIsOpen = b;
 		});
 
-		Services.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
+		AppServices.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
 		{
 			var theme = !darkMode ? App.LightTheme : App.DarkTheme;
 			UpdateColorScheme(theme);

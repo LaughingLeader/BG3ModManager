@@ -8,12 +8,12 @@ public class CircleDecorator : Border
 {
 	protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
 	{
-		Double width = this.ActualWidth;
-		Double height = this.ActualHeight;
-		Double a = width / 2;
-		Double b = height / 2;
+		var width = this.ActualWidth;
+		var height = this.ActualHeight;
+		var a = width / 2;
+		var b = height / 2;
 		Point centerPoint = new(a, b);
-		Double thickness = this.BorderThickness.Left;
+		var thickness = this.BorderThickness.Left;
 		EllipseGeometry ellipse = new(centerPoint, a, b);
 		drawingContext.PushClip(ellipse);
 		drawingContext.DrawGeometry(
@@ -29,11 +29,11 @@ public class CircleDecorator : Border
 
 	protected override Size ArrangeOverride(Size finalSize)
 	{
-		Double a = finalSize.Width / 2;
-		Double b = finalSize.Height / 2;
-		Double PI = 3.1415926;
-		Double x = a * Math.Cos(45 * PI / 180);
-		Double y = b * Math.Sin(45 * PI / 180);
+		var a = finalSize.Width / 2;
+		var b = finalSize.Height / 2;
+		var PI = 3.1415926;
+		var x = a * Math.Cos(45 * PI / 180);
+		var y = b * Math.Sin(45 * PI / 180);
 		Rect rect = new(new Point(a - x, b - y), new Point(a + x, b + y));
 		if (base.Child != null)
 		{

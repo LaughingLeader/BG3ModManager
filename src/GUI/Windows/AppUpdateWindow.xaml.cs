@@ -25,7 +25,7 @@ public partial class AppUpdateWindow : AppUpdateWindowBase
 	{
 		InitializeComponent();
 
-		ViewModel = new AppUpdateWindowViewModel(this);
+		ViewModel = ViewModelLocator.AppUpdate;
 
 		var obj = TryFindResource("DefaultMarkdown");
 		if (obj != null && obj is Markdown markdown)

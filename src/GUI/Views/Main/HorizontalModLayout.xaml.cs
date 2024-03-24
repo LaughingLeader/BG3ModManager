@@ -1,15 +1,12 @@
-﻿using ModManager.Controls.Views;
+﻿using GongSolutions.Wpf.DragDrop.Utilities;
+
+using ModManager.Controls.Views;
 using ModManager.Converters;
 using ModManager.Models;
 using ModManager.Models.Mod;
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
-
-using DynamicData.Binding;
-
-using GongSolutions.Wpf.DragDrop;
-using GongSolutions.Wpf.DragDrop.Utilities;
 
 using ReactiveUI;
 
@@ -151,7 +148,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 				{
 					listView = InactiveModsListView;
 				}
-				else if (dataList == Services.Mods.ForceLoadedMods)
+				else if (dataList == AppServices.Mods.ForceLoadedMods)
 				{
 					listView = ForceLoadedModsListView;
 				}
@@ -159,7 +156,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 
 			if (listView != null && dataList.Count() > 0)
 			{
-				IInputElement focusedItem = FocusManager.GetFocusedElement(listView);
+				var focusedItem = FocusManager.GetFocusedElement(listView);
 				foreach (var mod in dataList)
 				{
 					var listItem = (ListViewItem)listView.ItemContainerGenerator.ContainerFromItem(mod);
@@ -262,7 +259,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 			updatingForcedViewSelection?.Dispose();
 			updatingForcedViewSelection = RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(25), () =>
 			{
-				UpdateViewSelection(Services.Mods.ForceLoadedMods, ForceLoadedModsListView);
+				UpdateViewSelection(AppServices.Mods.ForceLoadedMods, ForceLoadedModsListView);
 			});
 		}
 	}
@@ -284,13 +281,13 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 			var dropInfo = new ManualDropInfo(selectedMods, InactiveModsListView.SelectedIndex, InactiveModsListView, ViewModel.InactiveMods, ViewModel.ActiveMods);
 			InactiveModsListView.UnselectAll();
 			ViewModel.DropHandler.Drop(dropInfo);
-			string countSuffix = selectedMods.Count > 1 ? "mods" : "mod";
-			string text = $"Moved {selectedMods.Count} {countSuffix} to the inactive mods list.";
+			var countSuffix = selectedMods.Count > 1 ? "mods" : "mod";
+			var text = $"Moved {selectedMods.Count} {countSuffix} to the inactive mods list.";
 			ScreenReaderHelper.Speak(text);
 			DivinityApp.ShowAlert(text, AlertType.Info, 10);
 			ViewModel.CanMoveSelectedMods = false;
 
-			if (Services.Settings.ManagerSettings.ShiftListFocusOnSwap)
+			if (AppServices.Settings.ManagerSettings.ShiftListFocusOnSwap)
 			{
 				InactiveModsListView.Focus();
 			}
@@ -337,13 +334,13 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 			ActiveModsListView.UnselectAll();
 			ViewModel.DropHandler.Drop(dropInfo);
 
-			string countSuffix = selectedMods.Count > 1 ? "mods" : "mod";
-			string text = $"Moved {selectedMods.Count} {countSuffix} to the active mods list.";
+			var countSuffix = selectedMods.Count > 1 ? "mods" : "mod";
+			var text = $"Moved {selectedMods.Count} {countSuffix} to the active mods list.";
 			ScreenReaderHelper.Speak(text);
 			DivinityApp.ShowAlert(text, AlertType.Info, 10);
 			ViewModel.CanMoveSelectedMods = false;
 
-			if (Services.Settings.ManagerSettings.ShiftListFocusOnSwap)
+			if (AppServices.Settings.ManagerSettings.ShiftListFocusOnSwap)
 			{
 				ActiveModsListView.Focus();
 			}
@@ -380,13 +377,13 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 
 	public void FocusInitialActiveSelected()
 	{
-		if (Services.Mods.ActiveSelected <= 0)
+		if (AppServices.Mods.ActiveSelected <= 0)
 		{
 			ActiveModsListView.SelectedIndex = 0;
 		}
 		try
 		{
-			ListViewItem item = (ListViewItem)ActiveModsListView.ItemContainerGenerator.ContainerFromItem(ActiveModsListView.SelectedItem);
+			var item = (ListViewItem)ActiveModsListView.ItemContainerGenerator.ContainerFromItem(ActiveModsListView.SelectedItem);
 			if (item != null)
 			{
 				Keyboard.Focus(item);
@@ -463,7 +460,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 		SetupListView(ActiveModsListView);
 		SetupListView(InactiveModsListView);
 
-		bool setInitialFocus = true;
+		var setInitialFocus = true;
 
 		this.WhenActivated(d =>
 		{
@@ -529,7 +526,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 				.ObserveOn(RxApp.MainThreadScheduler)
 				.Subscribe((e) =>
 				{
-					UpdateIsSelected(e.EventArgs, Services.Mods.ForceLoadedMods);
+					UpdateIsSelected(e.EventArgs, AppServices.Mods.ForceLoadedMods);
 				}));
 
 				d(ViewModel.OrderJustLoadedCommand.ObserveOn(RxApp.MainThreadScheduler).Subscribe((b) =>
@@ -540,7 +537,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 
 				ViewModel.Layout = this;
 
-				var modsService = Services.Mods;
+				var modsService = AppServices.Mods;
 
 				d(this.OneWayBind(ViewModel, vm => vm.ActiveMods, v => v.ActiveModsListView.ItemsSource));
 				d(this.OneWayBind(ViewModel, vm => vm.InactiveMods, v => v.InactiveModsListView.ItemsSource));
@@ -711,7 +708,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 		if (ViewModel.CanMoveSelectedMods && keyIsDown)
 		{
 			DivinityApp.IsKeyboardNavigating = true;
-			var modsService = Services.Mods;
+			var modsService = AppServices.Mods;
 			if (modsService.ActiveSelected > 0 || modsService.InactiveSelected > 0)
 			{
 				MoveSelectedMods();
@@ -746,7 +743,7 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 					}
 				}
 
-				string header = "";
+				var header = "";
 
 				if (headerClicked.Column.Header is TextBlock textBlock)
 				{
@@ -775,8 +772,8 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 
 		try
 		{
-			ListView lv = sender as ListView;
-			ICollectionView dataView =
+			var lv = sender as ListView;
+			var dataView =
 			  CollectionViewSource.GetDefaultView(lv.ItemsSource);
 
 			dataView.SortDescriptions.Clear();
@@ -796,16 +793,16 @@ public partial class HorizontalModLayout : HorizontalModLayoutBase, IModViewLayo
 	public void AutoSizeNameColumn_ActiveMods()
 	{
 		if (ViewModel == null || ActiveModsListView.UserResizedColumns) return;
-		var count = Math.Max(ViewModel.ActiveMods.Count, Services.Mods.ForceLoadedMods.Count);
+		var count = Math.Max(ViewModel.ActiveMods.Count, AppServices.Mods.ForceLoadedMods.Count);
 		if (count > 0 && ActiveModsListView.View is GridView gridView && gridView.Columns.Count >= 2)
 		{
 			RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(250), () =>
 			{
-				count = Math.Max(ViewModel.ActiveMods.Count, Services.Mods.ForceLoadedMods.Count);
+				count = Math.Max(ViewModel.ActiveMods.Count, AppServices.Mods.ForceLoadedMods.Count);
 				if (count > 0)
 				{
 					var longestName = ViewModel.ActiveMods.OrderByDescending(m => m.Name.Length).FirstOrDefault()?.Name ?? "";
-					var longestOverrideName = Services.Mods.ForceLoadedMods.OrderByDescending(m => m.Name.Length).FirstOrDefault()?.Name ?? "";
+					var longestOverrideName = AppServices.Mods.ForceLoadedMods.OrderByDescending(m => m.Name.Length).FirstOrDefault()?.Name ?? "";
 
 					var sortName = longestName;
 					if (!String.IsNullOrEmpty(longestOverrideName) && longestOverrideName.Length > longestName.Length)

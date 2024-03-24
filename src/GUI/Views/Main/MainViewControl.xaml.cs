@@ -1,18 +1,12 @@
-﻿using AdonisUI;
-
-using ModManager.Converters;
-using ModManager.Models.App;
+﻿using ModManager.Models.App;
 using ModManager.Util;
 using ModManager.Util.ScreenReader;
 using ModManager.ViewModels;
-using ModManager.Views.Main;
 using ModManager.Windows;
 
 using ReactiveUI;
 
 using System.Data;
-using System.IO;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
@@ -43,7 +37,7 @@ public partial class MainViewControl : MainViewControlViewBase
 		//Initial keyboard focus by hitting up or down
 		var setInitialFocusCommand = ReactiveCommand.Create(() =>
 		{
-			var modManager = Services.Mods;
+			var modManager = AppServices.Get<IModManagerService>();
 			if (!DivinityApp.IsKeyboardNavigating && modManager.ActiveSelected == 0 && modManager.InactiveSelected == 0)
 			{
 				AppServices.Get<ModOrderView>()?.ModLayout?.FocusInitialActiveSelected();
@@ -74,12 +68,12 @@ public partial class MainViewControl : MainViewControlViewBase
 		.Select(prop => typeof(AppKeys).GetProperty(prop.Name));
 		foreach (var prop in menuKeyProperties)
 		{
-			Hotkey key = (Hotkey)prop.GetValue(ViewModel.Keys);
-			MenuSettingsAttribute menuSettings = prop.GetCustomAttribute<MenuSettingsAttribute>();
+			var key = (Hotkey)prop.GetValue(ViewModel.Keys);
+			var menuSettings = prop.GetCustomAttribute<MenuSettingsAttribute>();
 			if (String.IsNullOrEmpty(key.DisplayName))
 				key.DisplayName = menuSettings.DisplayName;
 
-			if (!menuItems.TryGetValue(menuSettings.Parent, out MenuItem parentMenuItem))
+			if (!menuItems.TryGetValue(menuSettings.Parent, out var parentMenuItem))
 			{
 				parentMenuItem = new MenuItem
 				{
@@ -103,7 +97,7 @@ public partial class MainViewControl : MainViewControlViewBase
 			}
 			if (!String.IsNullOrWhiteSpace(menuSettings.Style))
 			{
-				Style style = (Style)TryFindResource(menuSettings.Style);
+				var style = (Style)TryFindResource(menuSettings.Style);
 				if (style != null)
 				{
 					newEntry.Style = style;
@@ -145,7 +139,7 @@ public partial class MainViewControl : MainViewControlViewBase
 			this.OneWayBind(ViewModel, vm => vm.UpdatesViewIsVisible, view => view.UpdatesToggleButtonExpandImage.Visibility, PropertyConverters.BoolToVisibility);
 			this.OneWayBind(ViewModel, vm => vm.UpdateCountVisibility, view => view.UpdateCountTextBlock.Visibility);
 
-			ViewModel.WhenAnyValue(x => x.Views.ModUpdates.TotalUpdates).BindTo(this, view => view.UpdateCountTextBlock.Text);
+			ViewModelLocator.ModUpdates.WhenAnyValue(x => x.TotalUpdates).BindTo(this, view => view.UpdateCountTextBlock.Text);
 
 			this.BindCommand(ViewModel, vm => vm.ToggleUpdatesViewCommand, view => view.UpdateViewToggleButton);
 

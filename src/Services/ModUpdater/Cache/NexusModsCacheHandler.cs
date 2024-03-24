@@ -47,7 +47,7 @@ public class NexusModsCacheHandler : ReactiveObject, IExternalModCacheHandler<Ne
 
 	public async Task<bool> Update(IEnumerable<DivinityModData> mods, CancellationToken token)
 	{
-		var nexusModsService = AppServices.Get<INexusModsService>();
+		var nexusModsService = Locator.Current.GetService<INexusModsService>();
 		if (nexusModsService.CanFetchData)
 		{
 			DivinityApp.Log("Checking for Nexus Mods updates.");

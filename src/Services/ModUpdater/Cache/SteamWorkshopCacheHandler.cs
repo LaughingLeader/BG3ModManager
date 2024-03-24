@@ -34,7 +34,7 @@ public class SteamWorkshopCacheHandler : ReactiveObject, IExternalModCacheHandle
 	public async Task<bool> Update(IEnumerable<DivinityModData> mods, CancellationToken token)
 	{
 		DivinityApp.Log("Checking for Steam Workshop updates.");
-		var apiKey = AppServices.Settings.ManagerSettings.UpdateSettings.SteamWebAPIKey;
+		var apiKey = Locator.Current.GetService<ISettingsService>()?.ManagerSettings.UpdateSettings.SteamWebAPIKey;
 		var success = await WorkshopDataLoader.GetAllWorkshopDataAsync(CacheData, SteamAppID, apiKey, token);
 		if (success)
 		{

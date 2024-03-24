@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public class NxmDownloadWindowViewModel : ReactiveObject
+public class NxmDownloadWindowViewModel : BaseWindowViewModel
 {
 	[Reactive] public string Url { get; set; }
 
@@ -17,7 +17,7 @@ public class NxmDownloadWindowViewModel : ReactiveObject
 		var canConfirm = this.WhenAnyValue(x => x.Url).Select(x => !String.IsNullOrEmpty(x) && x.StartsWith("nxm://"));
 		DownloadCommand = ReactiveCommand.Create(() =>
 		{
-			Services.NexusMods.ProcessNXMLinkBackground(Url);
+			AppServices.NexusMods.ProcessNXMLinkBackground(Url);
 		}, canConfirm);
 	}
 }

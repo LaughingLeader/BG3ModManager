@@ -1,12 +1,12 @@
-﻿using ModManager.ViewModels;
+﻿using DynamicData;
 
-using DynamicData;
+using ModManager.ViewModels;
 
 using ReactiveUI;
 
 namespace ModManager.Windows;
 
-public class ModPropertiesWindowBase : HideWindowBase<ModConfigPropertiesViewModel> { }
+public class ModPropertiesWindowBase : HideWindowBase<ModPropertiesWindowViewModel> { }
 
 
 /// <summary>
@@ -35,11 +35,10 @@ public partial class ModPropertiesWindow : ModPropertiesWindowBase
 	{
 		InitializeComponent();
 
-		ViewModel = new ModConfigPropertiesViewModel()
-		{
-			OKCommand = ReactiveCommand.Create(ConfirmAndClose),
-			CancelCommand = ReactiveCommand.Create(CancelAndClose)
-		};
+		ViewModel = ViewModelLocator.ModProperties;
+
+		ViewModel.OKCommand = ReactiveCommand.Create(ConfirmAndClose);
+		ViewModel.CancelCommand = ReactiveCommand.Create(CancelAndClose);
 
 		LargeFileIcon = FindResource("LargeFileIcon");
 		LargeFolderIcon = FindResource("LargeFolderIcon");

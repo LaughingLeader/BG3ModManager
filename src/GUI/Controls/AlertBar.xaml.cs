@@ -46,7 +46,7 @@ public partial class AlertBar : UserControl
 		RaiseEvent(newEventArgs);
 	}
 
-	private static readonly Dictionary<string, SolidColorBrush> _colors = new();
+	private static readonly Dictionary<string, SolidColorBrush> _colors = [];
 
 	private static SolidColorBrush GetBrushFromColor(string color)
 	{
@@ -85,10 +85,10 @@ public partial class AlertBar : UserControl
 				break;
 		}
 
-		TextBlock lblMessage = FindVisualChildren<TextBlock>(grdParent).FirstOrDefault();
-		List<Image> imgs = FindVisualChildren<Image>(grdParent).ToList();
-		Image imgStatusIcon = imgs[0];
-		Image imgCloseIcon = imgs[1];
+		var lblMessage = FindVisualChildren<TextBlock>(grdParent).FirstOrDefault();
+		var imgs = FindVisualChildren<Image>(grdParent).ToList();
+		var imgStatusIcon = imgs[0];
+		var imgCloseIcon = imgs[1];
 
 		if (_IconVisibility == false)
 		{
@@ -127,15 +127,15 @@ public partial class AlertBar : UserControl
 	{
 		if (depObj != null)
 		{
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+			for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
 			{
-				DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+				var child = VisualTreeHelper.GetChild(depObj, i);
 				if (child is T t)
 				{
 					yield return t;
 				}
 
-				foreach (T childOfChild in FindVisualChildren<T>(child))
+				foreach (var childOfChild in FindVisualChildren<T>(child))
 				{
 					yield return childOfChild;
 				}
@@ -171,7 +171,7 @@ public partial class AlertBar : UserControl
 	{
 		_syncContext.Post(o =>
 		{
-			string color = "#D9534F";
+			var color = "#D9534F";
 			TransformStage(message, timeoutInSeconds, color, (BitmapImage)this.Resources["AlertBar_Danger"]);
 		}, null);
 	}
@@ -185,7 +185,7 @@ public partial class AlertBar : UserControl
 	{
 		_syncContext.Post(o =>
 		{
-			string color = "#F0AD4E";
+			var color = "#F0AD4E";
 			TransformStage(message, timeoutInSeconds, color, (BitmapImage)this.Resources["AlertBar_Warning"]);
 		}, null);
 	}
@@ -199,7 +199,7 @@ public partial class AlertBar : UserControl
 	{
 		_syncContext.Post(o =>
 		{
-			string color = "#5CB85C";
+			var color = "#5CB85C";
 			TransformStage(message, timeoutInSeconds, color, (BitmapImage)this.Resources["AlertBar_Success"]);
 		}, null);
 	}
@@ -214,7 +214,7 @@ public partial class AlertBar : UserControl
 	{
 		_syncContext.Post(o =>
 		{
-			string color = "#5BC0DE";
+			var color = "#5BC0DE";
 			TransformStage(message, timeoutInSeconds, color, (BitmapImage)this.Resources["AlertBar_Information"]);
 		}, null);
 	}

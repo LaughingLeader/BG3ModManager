@@ -93,14 +93,14 @@ public class ScreenReaderHelperBehavior
 		{
 			return;
 		}
-		DependencyObject depObj = sender as DependencyObject;
+		var depObj = sender as DependencyObject;
 		var t = e.NewValue.GetType();
 		var attributes = t.GetCustomAttributes(typeof(ScreenReaderHelperAttribute), true);
 		if (attributes.Length > 0)
 		{
 			foreach (var attr in attributes)
 			{
-				ScreenReaderHelperAttribute sr = (ScreenReaderHelperAttribute)attr;
+				var sr = (ScreenReaderHelperAttribute)attr;
 				if (!String.IsNullOrEmpty(sr.Name))
 				{
 					var prop = t.GetProperty(sr.Name);

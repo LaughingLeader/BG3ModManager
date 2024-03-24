@@ -1,8 +1,8 @@
-﻿using ModManager.Models;
-using ModManager.Util;
-
-using DynamicData;
+﻿using DynamicData;
 using DynamicData.Binding;
+
+using ModManager.Models;
+using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -40,7 +40,7 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 	[Reactive] public bool IsDeletingDuplicates { get; set; }
 	[Reactive] public double DuplicateColumnWidth { get; set; }
 
-	public ObservableCollectionExtended<ModFileDeletionData> Files { get; set; } = new ObservableCollectionExtended<ModFileDeletionData>();
+	public ObservableCollectionExtended<ModFileDeletionData> Files { get; set; } = [];
 
 	[ObservableAsProperty] public bool AnySelected { get; }
 	[ObservableAsProperty] public bool AllSelected { get; }
@@ -69,7 +69,7 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 
 			await Observable.Start(() => IsProgressActive = true, RxApp.MainThreadScheduler);
 			await UpdateProgress($"Deleting {targetFiles.Count} mod file(s)...", "", 0d);
-			double progressInc = 1d / targetFiles.Count;
+			var progressInc = 1d / targetFiles.Count;
 			foreach (var f in targetFiles)
 			{
 				try

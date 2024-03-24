@@ -184,13 +184,9 @@ public class DivinityGlobalCommands : ReactiveObject
 		DivinityInteractions.OpenModProperties.Handle(mod).Subscribe();
 	}
 
-	private static CancellationTokenSource _statValidatorTokenSource;
-
 	public static async Task ValidateModStats(DivinityModData mod, CancellationToken token)
 	{
-		_statValidatorTokenSource ??= new();
-		var results = await ModUtils.ValidateStatsAsync([mod], Services.Settings.ManagerSettings.GameDataPath, _statValidatorTokenSource.Token);
-		await DivinityInteractions.OpenValidateStatsResults.Handle(results);
+		await DivinityInteractions.RequestValidateModStats.Handle(new([mod], token));
 	}
 
 	private static void StartValidateModStats(DivinityModData mod)
@@ -212,15 +208,8 @@ public class DivinityGlobalCommands : ReactiveObject
 
 		ToggleNameDisplayCommand = ReactiveCommand.Create<DivinityModData>((mod) =>
 		{
-			mod.DisplayFileForName = !mod.DisplayFileForName;
-			var b = mod.DisplayFileForName;
-			foreach (var m in Services.Mods.AllMods)
-			{
-				if (m.IsSelected)
-				{
-					m.DisplayFileForName = b;
-				}
-			}
+			var b = !mod.DisplayFileForName;
+			DivinityInteractions.ToggleModFileNameDisplay.Handle(b).Subscribe();
 		}, canExecuteViewModelCommands);
 
 		CopyToClipboardCommand = ReactiveCommand.Create<string>(CopyToClipboard, canExecuteViewModelCommands);

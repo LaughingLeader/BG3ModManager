@@ -23,12 +23,12 @@ public static class ElementHelper
 
 		T foundChild = null;
 
-		int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-		for (int i = 0; i < childrenCount; i++)
+		var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+		for (var i = 0; i < childrenCount; i++)
 		{
 			var child = VisualTreeHelper.GetChild(parent, i);
 			// If the child is not of the request child type child
-			T childType = child as T;
+			var childType = child as T;
 			if (childType == null)
 			{
 				// recursively drill down the tree
@@ -63,15 +63,15 @@ public static class ElementHelper
 	{
 		if (depObj != null)
 		{
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+			for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
 			{
-				DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+				var child = VisualTreeHelper.GetChild(depObj, i);
 				if (child != null && child is T)
 				{
 					yield return (T)child;
 				}
 
-				foreach (T childOfChild in FindVisualChildren<T>(child))
+				foreach (var childOfChild in FindVisualChildren<T>(child))
 				{
 					yield return childOfChild;
 				}
@@ -105,15 +105,15 @@ public static class ElementHelper
 		double totalWidth = 0;
 		double height = 0;
 
-		for (int n = 0; n < text.Length; n++)
+		for (var n = 0; n < text.Length; n++)
 		{
 			try
 			{
-				ushort glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
+				var glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
 
-				double width = glyphTypeface.AdvanceWidths[glyphIndex] * fontSize;
+				var width = glyphTypeface.AdvanceWidths[glyphIndex] * fontSize;
 
-				double glyphHeight = glyphTypeface.AdvanceHeights[glyphIndex] * fontSize;
+				var glyphHeight = glyphTypeface.AdvanceHeights[glyphIndex] * fontSize;
 
 				if (glyphHeight > height)
 				{

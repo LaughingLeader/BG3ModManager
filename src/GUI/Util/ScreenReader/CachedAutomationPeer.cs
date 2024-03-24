@@ -24,20 +24,20 @@ public class CachedAutomationPeer : FrameworkElementAutomationPeer
 
 	internal static List<AutomationPeer> GetChildrenRecursively(UIElement uiElement)
 	{
-		List<AutomationPeer> children = new();
-		int childrenCount = VisualTreeHelper.GetChildrenCount(uiElement);
+		List<AutomationPeer> children = [];
+		var childrenCount = VisualTreeHelper.GetChildrenCount(uiElement);
 
-		for (int child = 0; child < childrenCount; child++)
+		for (var child = 0; child < childrenCount; child++)
 		{
 			if (!(VisualTreeHelper.GetChild(uiElement, child) is UIElement element))
 				continue;
 
-			AutomationPeer peer = CreatePeerForElementSafe(element);
+			var peer = CreatePeerForElementSafe(element);
 			if (peer != null)
 				children.Add(peer);
 			else
 			{
-				List<AutomationPeer> returnedChildren = GetChildrenRecursively(element);
+				var returnedChildren = GetChildrenRecursively(element);
 				if (returnedChildren != null)
 					children.AddRange(returnedChildren);
 			}

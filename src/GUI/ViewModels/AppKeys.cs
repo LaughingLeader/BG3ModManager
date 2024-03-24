@@ -1,7 +1,7 @@
-﻿using ModManager.Models.App;
-using ModManager.Util;
+﻿using DynamicData;
 
-using DynamicData;
+using ModManager.Models.App;
+using ModManager.Util;
 
 using Newtonsoft.Json;
 
@@ -161,7 +161,7 @@ public class AppKeys : ReactiveObject
 
 	public void SaveDefaultKeybindings()
 	{
-		string filePath = DefaultSettingsFilePath();
+		var filePath = DefaultSettingsFilePath();
 		try
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(filePath));
@@ -170,7 +170,7 @@ public class AppKeys : ReactiveObject
 			{
 				keyMapDict.Add(key.ID, key);
 			}
-			string contents = JsonConvert.SerializeObject(keyMapDict, Newtonsoft.Json.Formatting.Indented);
+			var contents = JsonConvert.SerializeObject(keyMapDict, Newtonsoft.Json.Formatting.Indented);
 			File.WriteAllText(filePath, contents);
 		}
 		catch (Exception ex)
@@ -196,7 +196,7 @@ public class AppKeys : ReactiveObject
 			}
 			if (keyMapDict.Count > 0)
 			{
-				string contents = JsonConvert.SerializeObject(keyMapDict, Newtonsoft.Json.Formatting.Indented);
+				var contents = JsonConvert.SerializeObject(keyMapDict, Newtonsoft.Json.Formatting.Indented);
 				File.WriteAllText(filePath, contents);
 			}
 			else
@@ -252,7 +252,7 @@ public class AppKeys : ReactiveObject
 	{
 		keyMap.Connect().Bind(out allKeys).Subscribe();
 		var baseCanExecute = vm.WhenAnyValue(x => x.IsLocked, b => !b);
-		Type t = typeof(AppKeys);
+		var t = typeof(AppKeys);
 		// Building a list of keys / key names from properties, because lazy
 		var keyProps = t.GetRuntimeProperties().Where(prop => Attribute.IsDefined(prop, typeof(MenuSettingsAttribute)) && prop.GetGetMethod() != null).ToList();
 		foreach (var prop in keyProps)

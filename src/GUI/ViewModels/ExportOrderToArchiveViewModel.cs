@@ -1,7 +1,7 @@
-﻿using ModManager.Models.Mod;
-
-using DynamicData;
+﻿using DynamicData;
 using DynamicData.Binding;
+
+using ModManager.Models.Mod;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -86,7 +86,7 @@ public class ExportOrderToArchiveViewModel : BaseProgressViewModel
 
 		_orderTypes = new ObservableCollectionExtended<ExportOrderFileType>(Enum.GetValues(typeof(ExportOrderFileType)).Cast<ExportOrderFileType>());
 
-		_entries = new ObservableCollectionExtended<ExportOrderFileEntry>();
+		_entries = [];
 
 		var changeSet = _entries.ToObservableChangeSet();
 		changeSet.Filter(x => x.IsVisible).ObserveOn(RxApp.MainThreadScheduler).Bind(out _visibleEntries).Subscribe();

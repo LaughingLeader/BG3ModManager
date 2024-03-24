@@ -21,13 +21,17 @@ public class VersionGeneratorWindowBase : HideWindowBase<VersionGeneratorViewMod
 /// </summary>
 public partial class VersionGeneratorWindow : VersionGeneratorWindowBase
 {
-	private static readonly Regex _numberOnlyRegex = new("[^0-9]+");
+
+	[GeneratedRegex("[^0-9]+")]
+	private static partial Regex NumbersOnlyRe();
+
+	private static readonly Regex _numberOnlyRegex = NumbersOnlyRe();
 
 	public VersionGeneratorWindow()
 	{
 		InitializeComponent();
 
-		ViewModel = new VersionGeneratorViewModel(AlertBar);
+		ViewModel = ViewModelLocator.VersionGenerator;
 
 		this.WhenActivated(d =>
 		{

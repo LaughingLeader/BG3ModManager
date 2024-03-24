@@ -1,10 +1,10 @@
-﻿using ModManager.Controls;
+﻿using DynamicData;
+
+using ModManager.Controls;
 using ModManager.Models.Settings;
 using ModManager.Models.View;
 using ModManager.Util;
 using ModManager.ViewModels;
-
-using DynamicData;
 
 using ReactiveUI;
 
@@ -41,8 +41,8 @@ public partial class SettingsWindow : SettingsWindowBase
 			.Select(x => SettingsAttributeProperty.FromProperty(x))
 			.Where(x => x.Attribute != null && !x.Attribute.HideFromUI).ToList();
 
-		int count = props.Count + targetGrid.Children.Count + 1;
-		int row = targetGrid.Children.Count;
+		var count = props.Count + targetGrid.Children.Count + 1;
+		var row = targetGrid.Children.Count;
 
 		targetGrid.RowCount = count;
 		targetGrid.Rows = String.Join(",", Enumerable.Repeat("auto", count));
@@ -198,7 +198,7 @@ public partial class SettingsWindow : SettingsWindowBase
 
 	public void Init(MainWindowViewModel main)
 	{
-		ViewModel = new SettingsWindowViewModel(this, main);
+		ViewModel = ViewModelLocator.Settings;
 		//main.WhenAnyValue(x => x.Settings).BindTo(ViewModel, vm => vm.Settings);
 
 		var settingsService = AppServices.Get<ISettingsService>();
@@ -220,7 +220,7 @@ public partial class SettingsWindow : SettingsWindowBase
 			{
 				KeybindingsListView.SelectedIndex = 0;
 			}
-			ListViewItem row = (ListViewItem)KeybindingsListView.ItemContainerGenerator.ContainerFromIndex(KeybindingsListView.SelectedIndex);
+			var row = (ListViewItem)KeybindingsListView.ItemContainerGenerator.ContainerFromIndex(KeybindingsListView.SelectedIndex);
 			if (row != null && !FocusHelper.HasKeyboardFocus(row))
 			{
 				Keyboard.Focus(row);
@@ -233,7 +233,7 @@ public partial class SettingsWindow : SettingsWindowBase
 		CreateSettingsElements(ViewModel.ExtenderSettings, typeof(ScriptExtenderSettings), ExtenderSettingsAutoGrid);
 		CreateSettingsElements(ViewModel.ExtenderUpdaterSettings, typeof(ScriptExtenderUpdateConfig), ExtenderUpdaterSettingsAutoGrid);
 
-		this.OneWayBind(ViewModel, vm => vm.Main.Keys.All, view => view.KeybindingsListView.ItemsSource);
+		ViewModelLocator.Main.WhenAnyValue(x => x.Keys.All).BindTo(this, x => x.KeybindingsListView.ItemsSource);
 		this.Bind(ViewModel, vm => vm.SelectedHotkey, view => view.KeybindingsListView.SelectedItem);
 
 		this.Bind(ViewModel, vm => vm.Settings.DebugModeEnabled, view => view.DebugModeCheckBox.IsChecked);
@@ -290,7 +290,7 @@ public partial class SettingsWindow : SettingsWindowBase
 
 	private void FocusSelectedHotkey()
 	{
-		ListViewItem row = (ListViewItem)KeybindingsListView.ItemContainerGenerator.ContainerFromIndex(KeybindingsListView.SelectedIndex);
+		var row = (ListViewItem)KeybindingsListView.ItemContainerGenerator.ContainerFromIndex(KeybindingsListView.SelectedIndex);
 		var hotkeyControls = row.FindVisualChildren<HotkeyEditorControl>();
 		foreach (var c in hotkeyControls)
 		{
@@ -320,8 +320,8 @@ public partial class SettingsWindow : SettingsWindowBase
 		}
 		else if (e.Key == Key.Left && (Keyboard.Modifiers & ModifierKeys.Control) != 0)
 		{
-			int current = PreferencesTabControl.SelectedIndex;
-			int nextIndex = current - 1;
+			var current = PreferencesTabControl.SelectedIndex;
+			var nextIndex = current - 1;
 			if (nextIndex < 0)
 			{
 				nextIndex = PreferencesTabControl.Items.Count - 1;
@@ -332,8 +332,8 @@ public partial class SettingsWindow : SettingsWindowBase
 		}
 		else if (e.Key == Key.Right && (Keyboard.Modifiers & ModifierKeys.Control) != 0)
 		{
-			int current = PreferencesTabControl.SelectedIndex;
-			int nextIndex = current + 1;
+			var current = PreferencesTabControl.SelectedIndex;
+			var nextIndex = current + 1;
 			if (nextIndex >= PreferencesTabControl.Items.Count)
 			{
 				nextIndex = 0;

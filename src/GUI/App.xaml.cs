@@ -1,5 +1,10 @@
-﻿using ModManager.Services;
+﻿using HanumanInstitute.MvvmDialogs;
+using HanumanInstitute.MvvmDialogs.Wpf;
+
+using ModManager.Services;
 using ModManager.Util;
+using ModManager.ViewModels;
+using ModManager.ViewModels.Main;
 using ModManager.Windows;
 
 using ReactiveUI;
@@ -37,22 +42,8 @@ public partial class App : Application
 		// Fix for loading C++ dlls from _Lib
 		AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-
-		var assembly = Assembly.GetExecutingAssembly();
-		var appName = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute), false))?.Product;
-		var version = assembly.GetName().Version.ToString();
-		var productName = Regex.Replace(appName.Trim(), @"\s+", String.Empty);
-
-		
-
-		
-
-		AppServices.Get<IGameUtilitiesService>().AddGameProcessName(DivinityApp.GameExes);
-
-		// POCO type warning suppression
-		AppServices.Register<ICreatesObservableForProperty>(() => new CustomPropertyResolver());
-
 		WebHelper.SetupClient();
+
 #if DEBUG
 		RxApp.SuppressViewCommandBindingMessage = false;
 #else
@@ -77,7 +68,16 @@ public partial class App : Application
 			Splash.Close(TimeSpan.FromSeconds(1));
 		});
 
-		var mainWindow = new MainWindow();
+		var mainWindowVM = new MainWindowViewModel(AppServices.Pathways, AppServices.Settings, AppServices.ModImporter, AppServices.Mods, AppServices.Updater, AppServices.NexusMods);
+
+		Locator.CurrentMutable.RegisterConstant(mainWindowVM);
+		Locator.CurrentMutable.RegisterConstant<IScreen>(mainWindowVM);
+
+		var mainWindow = new MainWindow() { ViewModel = mainWindowVM };
+		Locator.CurrentMutable.RegisterConstant(mainWindow);
+
+		AppServices.Get<IGameUtilitiesService>()?.AddGameProcessName(DivinityApp.GameExes);
+
 		splashFade.Start();
 		mainWindow.Show();
 	}

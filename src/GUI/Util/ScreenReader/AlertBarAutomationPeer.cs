@@ -24,7 +24,7 @@ public class AlertBarAutomationPeer : FrameworkElementAutomationPeer
 
 	protected override List<AutomationPeer> GetChildrenCore()
 	{
-		List<AutomationPeer> peers = new();
+		List<AutomationPeer> peers = [];
 		var textElements = alertBar.GetTextElements();
 		if (textElements.Count > 0)
 		{

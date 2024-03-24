@@ -119,13 +119,13 @@ public class GridViewAutoSizeColumnsBehavior
 		double totalWidth = 0;
 		double height = 0;
 
-		for (int n = 0; n < text.Length; n++)
+		for (var n = 0; n < text.Length; n++)
 		{
-			ushort glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
+			var glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
 
-			double width = glyphTypeface.AdvanceWidths[glyphIndex] * fontSize;
+			var width = glyphTypeface.AdvanceWidths[glyphIndex] * fontSize;
 
-			double glyphHeight = glyphTypeface.AdvanceHeights[glyphIndex] * fontSize;
+			var glyphHeight = glyphTypeface.AdvanceHeights[glyphIndex] * fontSize;
 
 			if (glyphHeight > height)
 			{

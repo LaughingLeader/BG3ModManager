@@ -1,11 +1,11 @@
-﻿using ModManager.Models.Mod;
-using ModManager.Models.View;
-using ModManager.Util;
-
-using DynamicData.Binding;
+﻿using DynamicData.Binding;
 
 using LSLib.LS.Stats;
 using LSLib.LS.Story.GoalParser;
+
+using ModManager.Models.Mod;
+using ModManager.Models.View;
+using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -15,10 +15,9 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Input;
 
 namespace ModManager.ViewModels;
-public class StatsValidatorWindowViewModel : ReactiveObject
+public class StatsValidatorWindowViewModel : BaseWindowViewModel
 {
 	[Reactive] public DivinityModData Mod { get; set; }
 	[Reactive] public string OutputText { get; private set; }
@@ -33,7 +32,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 
 	private static string FormatMessage(StatLoadingError message)
 	{
-		string result = "";
+		var result = "";
 		if (message.Code == DiagnosticCode.StatSyntaxError)
 		{
 			result += "[ERR] ";
@@ -52,28 +51,28 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 		result += $"[{message.Code}] {message.Message}";
 		return result;
 	}
-	
+
 	private static string GetLineText(string filePath, StatLoadingError error, Dictionary<string, string[]> fileText)
 	{
-		if(fileText.TryGetValue(filePath, out var lines))
+		if (fileText.TryGetValue(filePath, out var lines))
 		{
 			var uniqueContexts = new List<CodeLocation>
 			{
 				error.Location
 			};
-			if(error.Contexts != null)
+			if (error.Contexts != null)
 			{
-                uniqueContexts.AddRange(error.Contexts.Where(x => x.Location != null).Select(x => x.Location));
-            }
+				uniqueContexts.AddRange(error.Contexts.Where(x => x.Location != null).Select(x => x.Location));
+			}
 
-            var location = uniqueContexts.DistinctBy(x => x.StartLine).FirstOrDefault();
+			var location = uniqueContexts.DistinctBy(x => x.StartLine).FirstOrDefault();
 
-            var startLine = location.StartLine - 1;
+			var startLine = location.StartLine - 1;
 			var endLine = location.EndLine - 1;
-			if(startLine != endLine)
+			if (startLine != endLine)
 			{
 				var lineText = new List<string>();
-				for(var i = startLine; i < endLine; i++)
+				for (var i = startLine; i < endLine; i++)
 				{
 					lineText.Add(lines[i]);
 				}
@@ -104,7 +103,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 			}
 
 			var entries = result.Errors.GroupBy(x => x.Location?.FileName);
-			foreach(var fileGroup in entries)
+			foreach (var fileGroup in entries)
 			{
 				var name = fileGroup.Key;
 				if (String.IsNullOrEmpty(name)) name = "Unknown";
@@ -136,5 +135,12 @@ public class StatsValidatorWindowViewModel : ReactiveObject
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
 		ValidateCommand.IsExecuting.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.LockScreenVisibility, Visibility.Collapsed);
+
+		DivinityInteractions.RequestValidateModStats.RegisterHandler(async interaction =>
+		{
+			var results = await ModUtils.ValidateStatsAsync(interaction.Input.Mods, AppServices.Settings.ManagerSettings.GameDataPath, interaction.Input.Token);
+			await DivinityInteractions.OpenValidateStatsResults.Handle(results);
+			interaction.SetOutput(true);
+		});
 	}
 }

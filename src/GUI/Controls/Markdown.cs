@@ -1,6 +1,4 @@
-﻿using ModManager.Windows;
-
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net.Cache;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -293,7 +291,7 @@ public class Markdown : DependencyObject
 		}
 
 		// split on two or more newlines
-		string[] grafs = _newlinesMultiple.Split(_newlinesLeadingTrailing.Replace(text, ""));
+		var grafs = _newlinesMultiple.Split(_newlinesLeadingTrailing.Replace(text, ""));
 
 		foreach (var g in grafs)
 		{
@@ -437,8 +435,8 @@ public class Markdown : DependencyObject
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string linkText = match.Groups[2].Value;
-		string url = match.Groups[3].Value;
+		var linkText = match.Groups[2].Value;
+		var url = match.Groups[3].Value;
 		BitmapImage imgSource = null;
 		try
 		{
@@ -474,11 +472,13 @@ public class Markdown : DependencyObject
 		// Bind size so document is updated when image is downloaded
 		if (imgSource.IsDownloading)
 		{
-			Binding binding = new(nameof(BitmapImage.Width));
-			binding.Source = imgSource;
-			binding.Mode = BindingMode.OneWay;
+			Binding binding = new(nameof(BitmapImage.Width))
+			{
+				Source = imgSource,
+				Mode = BindingMode.OneWay
+			};
 
-			BindingExpressionBase bindingExpression = BindingOperations.SetBinding(image, Image.WidthProperty, binding);
+			var bindingExpression = BindingOperations.SetBinding(image, Image.WidthProperty, binding);
 
 			void downloadCompletedHandler(object sender, EventArgs e)
 			{
@@ -520,9 +520,9 @@ public class Markdown : DependencyObject
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string linkText = match.Groups[2].Value;
-		string url = match.Groups[3].Value;
-		string title = match.Groups[6].Value;
+		var linkText = match.Groups[2].Value;
+		var url = match.Groups[3].Value;
+		var title = match.Groups[6].Value;
 
 		var result = Create<Hyperlink, Inline>(RunSpanGamut(linkText));
 		result.Command = HyperlinkCommand;
@@ -591,8 +591,8 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string header = match.Groups[1].Value;
-		int level = match.Groups[2].Value.StartsWith("=", StringComparison.Ordinal) ? 1 : 2;
+		var header = match.Groups[1].Value;
+		var level = match.Groups[2].Value.StartsWith("=", StringComparison.Ordinal) ? 1 : 2;
 
 		//TODO: Style the paragraph based on the header level
 		return CreateHeader(level, RunSpanGamut(header.Trim()));
@@ -605,8 +605,8 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string header = match.Groups[2].Value;
-		int level = match.Groups[1].Value.Length;
+		var header = match.Groups[2].Value;
+		var level = match.Groups[1].Value.Length;
 		return CreateHeader(level, RunSpanGamut(header));
 	}
 
@@ -752,8 +752,8 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string list = match.Groups[1].Value;
-		string listType = Regex.IsMatch(match.Groups[3].Value, _markerUL) ? "ul" : "ol";
+		var list = match.Groups[1].Value;
+		var listType = Regex.IsMatch(match.Groups[3].Value, _markerUL) ? "ul" : "ol";
 
 		// Turn double returns into triple returns, so that we can make a
 		// paragraph for the last item in a list, if necessary:
@@ -799,7 +799,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			// Trim trailing blank lines:
 			list = Regex.Replace(list, @"\n{2,}\z", "\n");
 
-			string pattern = string.Format(CultureInfo.InvariantCulture,
+			var pattern = string.Format(CultureInfo.InvariantCulture,
 			  @"(\n)?                      # leading line = $1
                 (^[ ]*)                    # leading whitespace = $2
                 ({0}) [ ]+                 # list marker = $3
@@ -827,8 +827,8 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string item = match.Groups[4].Value;
-		string leadingLine = match.Groups[1].Value;
+		var item = match.Groups[4].Value;
+		var leadingLine = match.Groups[1].Value;
 
 		if (!String.IsNullOrEmpty(leadingLine) || Regex.IsMatch(item, @"\n{2,}"))
 			// we could correct any bad indentation here..
@@ -889,7 +889,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			return trimRitm.Substring(1, trimRitm.Length - 2).Split('|');
 		}).ToList();
 
-		int maxColCount =
+		var maxColCount =
 			Math.Max(
 				Math.Max(styles.Length, headers.Length),
 				rowList.Select(ritm => ritm.Length).Max()
@@ -958,7 +958,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 		{
 			tableBodyRG.Style = TableBodyStyle;
 		}
-		foreach (string[] rowAry in rowList)
+		foreach (var rowAry in rowList)
 		{
 			var tableBody = CreateTableRow(rowAry, aligns);
 			tableBodyRG.Rows.Add(tableBody);
@@ -1046,7 +1046,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 			throw new ArgumentNullException(nameof(match));
 		}
 
-		string span = match.Groups[2].Value;
+		var span = match.Groups[2].Value;
 		span = Regex.Replace(span, @"^[ ]*", ""); // leading whitespace
 		span = Regex.Replace(span, @"[ ]*$", ""); // trailing whitespace
 
@@ -1141,9 +1141,9 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 
 		var output = new StringBuilder(text.Length);
 		var line = new StringBuilder();
-		bool valid = false;
+		var valid = false;
 
-		for (int i = 0; i < text.Length; i++)
+		for (var i = 0; i < text.Length; i++)
 		{
 			switch (text[i])
 			{
@@ -1165,8 +1165,8 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 					}
 					break;
 				case '\t':
-					int width = (_tabWidth - line.Length % _tabWidth);
-					for (int k = 0; k < width; k++)
+					var width = (_tabWidth - line.Length % _tabWidth);
+					for (var k = 0; k < width; k++)
 						line.Append(' ');
 					break;
 				case '\x1A':
@@ -1198,7 +1198,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 		}
 
 		var sb = new StringBuilder(value.Length * count);
-		for (int i = 0; i < count; i++)
+		for (var i = 0; i < count; i++)
 			sb.Append(value);
 		return sb.ToString();
 	}
@@ -1261,7 +1261,7 @@ RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Com
 		}
 
 		var lines = _lbrk.Split(text);
-		bool first = true;
+		var first = true;
 		foreach (var line in lines)
 		{
 			if (first)

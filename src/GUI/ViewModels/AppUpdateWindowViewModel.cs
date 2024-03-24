@@ -1,7 +1,6 @@
 ﻿using AutoUpdaterDotNET;
 
 using ModManager.Util;
-using ModManager.Windows;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -12,10 +11,8 @@ using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public partial class AppUpdateWindowViewModel : ReactiveObject
+public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 {
-	private readonly AppUpdateWindow _view;
-
 	public UpdateInfoEventArgs UpdateArgs { get; set; }
 
 	[Reactive] public bool CanConfirm { get; set; }
@@ -81,10 +78,8 @@ public partial class AppUpdateWindowViewModel : ReactiveObject
 		RxApp.TaskpoolScheduler.ScheduleAsync(CheckArgsAsync);
 	}
 
-	public AppUpdateWindowViewModel(AppUpdateWindow view)
+	public AppUpdateWindowViewModel()
 	{
-		_view = view;
-
 		CanSkip = true;
 		SkipButtonText = "Close";
 
@@ -101,11 +96,11 @@ public partial class AppUpdateWindowViewModel : ReactiveObject
 			catch (Exception ex)
 			{
 				App.WM.Main.Window.DisplayError($"Error occurred while updating:\n{ex}");
-				_view.Hide();
+				App.WM.AppUpdate.Toggle(false);
 			}
 		}, canConfirm, RxApp.MainThreadScheduler);
 
 		var canSkip = this.WhenAnyValue(x => x.CanSkip);
-		SkipCommand = ReactiveCommand.Create(() => _view.Hide(), canSkip);
+		SkipCommand = ReactiveCommand.Create(() => App.WM.AppUpdate.Toggle(false), canSkip);
 	}
 }

@@ -1,9 +1,8 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI.Fody.Helpers;
 
 namespace ModManager.ViewModels;
 
-public class AboutWindowViewModel : ReactiveObject
+public class AboutWindowViewModel : BaseWindowViewModel
 {
 	[Reactive] public string Title { get; set; }
 

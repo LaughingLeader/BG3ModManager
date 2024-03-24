@@ -1,15 +1,18 @@
 ﻿using AdonisUI.Controls;
 
+using ModManager.ViewModels;
+
 using ReactiveUI;
 
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ModManager.Windows;
 
-public class HideWindowBase<TViewModel> : AdonisWindow, IViewFor<TViewModel> where TViewModel : class
+public class HideWindowBase<TViewModel> : AdonisWindow, IViewFor<TViewModel> where TViewModel : BaseWindowViewModel
 {
 	/// <summary>
 	/// The view model dependency property.
@@ -55,12 +58,12 @@ public class HideWindowBase<TViewModel> : AdonisWindow, IViewFor<TViewModel> whe
 			}
 		};
 
-		Hide();
-	}
+		this.WhenActivated(d =>
+		{
+			this.Events().IsVisibleChanged.Select(x => (bool)x.NewValue).BindTo(this, x => x.ViewModel.IsVisible);
+		});
 
-	protected override void OnSourceInitialized(EventArgs e)
-	{
-		base.OnSourceInitialized(e);
+		Hide();
 	}
 
 	public virtual void OnClosing(object sender, CancelEventArgs e)

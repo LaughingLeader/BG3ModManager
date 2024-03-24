@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public class VersionGeneratorViewModel : ReactiveObject
+public class VersionGeneratorViewModel : BaseWindowViewModel
 {
 	[Reactive] public LarianVersion Version { get; set; }
 	[Reactive] public string Text { get; set; }

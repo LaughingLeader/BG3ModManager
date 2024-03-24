@@ -29,8 +29,6 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 
 	[Reactive] public bool IsRefreshing { get; set; }
 
-	private readonly string _appVersion;
-
 	private static readonly JsonSerializerSettings DefaultSerializerSettings = new()
 	{
 		NullValueHandling = NullValueHandling.Ignore,
@@ -118,11 +116,13 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 
 	public async Task<ModUpdaterResults> FetchUpdatesAsync(ModManagerSettings settings, IEnumerable<DivinityModData> mods, CancellationToken token)
 	{
+		var appVersion = Locator.Current.GetService<IEnvironmentService>()?.AppVersion.ToString() ?? "Debug";
+
 		//TODO
 		IsRefreshing = true;
-		var githubResults = await GetGitHubUpdatesAsync(mods, _appVersion, token);
-		var nexusResults = await GetNexusModsUpdatesAsync(mods, _appVersion, token);
-		var workshopResults = await GetSteamWorkshopUpdatesAsync(settings, mods, _appVersion, token);
+		var githubResults = await GetGitHubUpdatesAsync(mods, appVersion, token);
+		var nexusResults = await GetNexusModsUpdatesAsync(mods, appVersion, token);
+		var workshopResults = await GetSteamWorkshopUpdatesAsync(settings, mods, appVersion, token);
 		IsRefreshing = false;
 		return new ModUpdaterResults(githubResults, nexusResults, workshopResults);
 	}
@@ -155,7 +155,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 				}, RxApp.MainThreadScheduler);
 			}
 			if (!GitHub.IsEnabled) return results;
-			return await AppServices.Get<IGitHubService>().GetLatestDownloadsForModsAsync(mods, token);
+			return await Locator.Current.GetService<IGitHubService>().GetLatestDownloadsForModsAsync(mods, token);
 		}
 		catch (Exception ex)
 		{
@@ -190,7 +190,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 				}, RxApp.MainThreadScheduler);
 			}
 			if (!NexusMods.IsEnabled) return results;
-			return await AppServices.Get<INexusModsService>().GetLatestDownloadsForModsAsync(mods, token);
+			return await Locator.Current.GetService<INexusModsService>().GetLatestDownloadsForModsAsync(mods, token);
 		}
 		catch (Exception ex)
 		{
@@ -254,10 +254,8 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		return results;
 	}
 
-	public ModUpdaterService(string appVersion)
+	public ModUpdaterService()
 	{
-		_appVersion = appVersion;
-
 		_nexus = new NexusModsCacheHandler(DefaultSerializerSettings);
 		_workshop = new SteamWorkshopCacheHandler(DefaultSerializerSettings);
 		_github = new GitHubModsCacheHandler();

@@ -32,8 +32,7 @@ public class BackgroundCommandService : IBackgroundCommandService
 					{
 						if (message.IndexOf("nxm://") > -1)
 						{
-							var nexusMods = AppServices.Get<INexusModsService>();
-							nexusMods.ProcessNXMLinkBackground(message);
+							Locator.Current.GetService<INexusModsService>()?.ProcessNXMLinkBackground(message);
 						}
 					}
 				}

@@ -1,14 +1,13 @@
 ﻿using AdonisUI;
 
+using Microsoft.Windows.Themes;
+
 using ModManager.Models.Updates;
 using ModManager.ViewModels.Main;
-
-using Microsoft.Windows.Themes;
 
 using ReactiveUI;
 
 using System.ComponentModel;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,7 +22,7 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 	{
 		InitializeComponent();
 
-		Loaded += (o,e) =>
+		Loaded += (o, e) =>
 		{
 			UpdateBackgroundColors();
 		};
@@ -58,10 +57,10 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 
 	public static string GetSortProperty(string sortBy) => sortBy switch
 	{
-		"Current"		=> nameof(DivinityModUpdateData.CurrentVersion),
-		"Name"			=> nameof(DivinityModUpdateData.UpdateVersion),
-		"Update Date"	=> nameof(DivinityModUpdateData.UpdateDateText),
-		"Source"		=> nameof(DivinityModUpdateData.SourceText),
+		"Current" => nameof(DivinityModUpdateData.CurrentVersion),
+		"Name" => nameof(DivinityModUpdateData.UpdateVersion),
+		"Update Date" => nameof(DivinityModUpdateData.UpdateDateText),
+		"Source" => nameof(DivinityModUpdateData.SourceText),
 		_ => sortBy
 	};
 
@@ -73,8 +72,8 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 		{
 			try
 			{
-				ListView lv = sender as ListView;
-				ICollectionView dataView =
+				var lv = sender as ListView;
+				var dataView =
 					CollectionViewSource.GetDefaultView(lv.ItemsSource);
 
 				dataView.SortDescriptions.Clear();
@@ -113,7 +112,7 @@ public partial class ModUpdatesLayout : ModUpdatesLayoutBase
 					}
 				}
 
-				string header = "";
+				var header = "";
 
 				if (headerClicked.Column.Header is TextBlock textBlock)
 				{

@@ -1,7 +1,8 @@
-﻿using ModManager.Models.Mod;
-
-using GongSolutions.Wpf.DragDrop;
+﻿using GongSolutions.Wpf.DragDrop;
 using GongSolutions.Wpf.DragDrop.Utilities;
+
+using ModManager.Models.Mod;
+using ModManager.Services;
 
 using ReactiveUI;
 
@@ -71,11 +72,11 @@ public class ManualDropInfo : IDropInfo
 }
 
 
-public class ModListDropHandler : DefaultDropHandler
+public class ModListDropHandler() : DefaultDropHandler()
 {
 	public override void DragOver(IDropInfo dropInfo)
 	{
-		if (!_viewModel.AllowDrop)
+		if (!ViewModelLocator.Main.AllowDrop)
 		{
 			dropInfo.Effects = DragDropEffects.None;
 			return;
@@ -101,15 +102,14 @@ public class ModListDropHandler : DefaultDropHandler
 	{
 		if (dropInfo == null) return;
 
-		if (!_viewModel.AllowDrop)
+		if (!ViewModelLocator.Main.AllowDrop)
 		{
 			return;
 		}
 
-		var modImporter = AppServices.Get<ModImportService>();
-		var modOrderVM = _viewModel.Views.ModOrder;
+		var modOrderVM = ViewModelLocator.ModOrder;
 
-		bool isActive = dropInfo.TargetCollection == modOrderVM.ActiveMods;
+		var isActive = dropInfo.TargetCollection == modOrderVM.ActiveMods;
 
 		if (dropInfo.Data is DataObject dropFileData)
 		{
@@ -118,7 +118,7 @@ public class ModListDropHandler : DefaultDropHandler
 				var files = dropFileData.GetFileDropList()?.Cast<string>().ToList();
 				if (files != null)
 				{
-					modImporter.ImportMods(files, isActive);
+					AppServices.ModImporter.ImportMods(files, isActive);
 				}
 			}
 			return;
@@ -208,7 +208,7 @@ public class ModListDropHandler : DefaultDropHandler
 			mod.Index = modOrderVM.ActiveMods.IndexOf(mod);
 		}
 
-		foreach (var mod in Services.Mods.AllMods)
+		foreach (var mod in AppServices.Mods.AllMods)
 		{
 			if (selectedUUIDs.Contains(mod.UUID))
 			{
@@ -244,12 +244,5 @@ public class ModListDropHandler : DefaultDropHandler
 				modOrderVM.SelectedModOrder.Add(x);
 			}
 		}
-	}
-
-	private readonly MainWindowViewModel _viewModel;
-
-	public ModListDropHandler(MainWindowViewModel vm) : base()
-	{
-		_viewModel = vm;
 	}
 }

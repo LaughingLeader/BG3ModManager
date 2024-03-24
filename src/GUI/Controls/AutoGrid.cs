@@ -24,11 +24,11 @@ SOFTWARE.
 Source: https://github.com/carbonrobot/wpf-autogrid
 */
 
+using ModManager.Controls.Extensions;
+
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-
-using ModManager.Controls.Extensions;
 
 namespace ModManager.Controls;
 
@@ -177,7 +177,7 @@ public class AutoGrid : Grid
 
 		// clear and rebuild
 		grid.ColumnDefinitions.Clear();
-		for (int i = 0; i < (int)e.NewValue; i++)
+		for (var i = 0; i < (int)e.NewValue; i++)
 			grid.ColumnDefinitions.Add(
 				new ColumnDefinition() { Width = width });
 	}
@@ -210,7 +210,7 @@ public class AutoGrid : Grid
 			grid.ColumnDefinitions.Add(new ColumnDefinition());
 
 		// set all existing columns to this width
-		for (int i = 0; i < grid.ColumnDefinitions.Count; i++)
+		for (var i = 0; i < grid.ColumnDefinitions.Count; i++)
 			grid.ColumnDefinitions[i].Width = (GridLength)e.NewValue;
 	}
 
@@ -226,7 +226,7 @@ public class AutoGrid : Grid
 			grid.RowDefinitions.Add(new RowDefinition());
 
 		// set all existing rows to this height
-		for (int i = 0; i < grid.RowDefinitions.Count; i++)
+		for (var i = 0; i < grid.RowDefinitions.Count; i++)
 			grid.RowDefinitions[i].Height = (GridLength)e.NewValue;
 	}
 
@@ -282,7 +282,7 @@ public class AutoGrid : Grid
 
 		// clear and rebuild
 		grid.RowDefinitions.Clear();
-		for (int i = 0; i < (int)e.NewValue; i++)
+		for (var i = 0; i < (int)e.NewValue; i++)
 			grid.RowDefinitions.Add(
 				new RowDefinition() { Height = height });
 	}

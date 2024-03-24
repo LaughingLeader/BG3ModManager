@@ -1,4 +1,7 @@
-﻿using AutoUpdaterDotNET;
+﻿using DynamicData;
+using DynamicData.Aggregation;
+
+using Microsoft.Win32;
 
 using ModManager.Extensions;
 using ModManager.Models;
@@ -6,26 +9,13 @@ using ModManager.Models.App;
 using ModManager.Models.Mod;
 using ModManager.Models.NexusMods;
 using ModManager.Models.Settings;
-using ModManager.Models.Updates;
 using ModManager.ModUpdater.Cache;
 using ModManager.Util;
-using ModManager.Views.Main;
-using ModManager.Windows;
-using ModManager.ViewModels.Main;
-
-using DynamicData;
-using DynamicData.Aggregation;
-using DynamicData.Binding;
-
-using Microsoft.Win32;
+using ModManager.ViewModels;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using Reactive.Bindings.Extensions;
 
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 using SharpCompress.Archives;
 using SharpCompress.Common;
@@ -34,39 +24,24 @@ using SharpCompress.Compressors.Xz;
 using SharpCompress.Readers;
 using SharpCompress.Writers;
 
-using Splat;
-
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 using ZstdSharp;
-using System.Collections.Immutable;
-using ModManager.ViewModels;
 
 namespace ModManager.Services;
 
-public class ModImportService(MainWindowViewModel mainVM)
+public class ModImportService()
 {
-	public MainWindowViewModel ViewModel => mainVM;
-	public Window Window => mainVM.Window;
-
-	private static ModManagerSettings Settings => Services.Settings.ManagerSettings;
-	private static DivinityPathwayData Pathways => Services.Pathways.Data;
+	private static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
+	private static DivinityPathwayData Pathways => AppServices.Pathways.Data;
+	private static MainWindowViewModel ViewModel => AppServices.Get<MainWindowViewModel>()!;
 
 	private static readonly List<string> _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
 	private static readonly List<string> _compressedFormats = [".bz2", ".xz", ".zst"];
@@ -148,7 +123,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 		}
 		else
 		{
-			var importOptions = new ImportParameters(filePath, Services.Pathways.Data.AppDataModsPath, token, taskResult)
+			var importOptions = new ImportParameters(filePath, Pathways.AppDataModsPath, token, taskResult)
 			{
 				BuiltinMods = builtinMods,
 				OnlyMods = true,
@@ -196,14 +171,14 @@ public class ModImportService(MainWindowViewModel mainVM)
 			InitialDirectory = GetInitialStartingDirectory(Settings.LastImportDirectoryPath)
 		};
 
-		if (dialog.ShowDialog(Window) == true)
+		if (dialog.ShowDialog(App.WM.MainWindow) == true)
 		{
 			var savedDirectory = Path.GetDirectoryName(dialog.FileName);
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
 				Pathways.LastSaveFilePath = savedDirectory;
-				Services.Settings.TrySaveAll(out _);
+				Settings.Save(out _);
 			}
 			//if(!Path.GetExtension(dialog.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
 			//{
@@ -246,7 +221,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 
 				if (result.Mods.Count > 0 && result.Mods.Any(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
 				{
-					await Services.Get<IModUpdaterService>().NexusMods.Update(result.Mods, ViewModel.MainProgressToken.Token);
+					await AppServices.Updater.NexusMods.Update(result.Mods, ViewModel.MainProgressToken.Token);
 				}
 				await ctrl.Yield();
 				RxApp.MainThreadScheduler.Schedule(_ =>
@@ -278,23 +253,23 @@ public class ModImportService(MainWindowViewModel mainVM)
 							{
 								if (order.Name == "Current")
 								{
-									if (ViewModel.Views.ModOrder.SelectedModOrder?.IsModSettings == true)
+									if (ViewModelLocator.ModOrder.SelectedModOrder?.IsModSettings == true)
 									{
-										ViewModel.Views.ModOrder.SelectedModOrder.SetFrom(order);
-										ViewModel.Views.ModOrder.LoadModOrder();
+										ViewModelLocator.ModOrder.SelectedModOrder.SetFrom(order);
+										ViewModelLocator.ModOrder.LoadModOrder();
 									}
 									else
 									{
-										var currentOrder = ViewModel.Views.ModOrder.ModOrderList.FirstOrDefault(x => x.IsModSettings);
+										var currentOrder = ViewModelLocator.ModOrder.ModOrderList.FirstOrDefault(x => x.IsModSettings);
 										if (currentOrder != null)
 										{
-											ViewModel.Views.ModOrder.SelectedModOrder.SetFrom(currentOrder);
+											ViewModelLocator.ModOrder.SelectedModOrder.SetFrom(currentOrder);
 										}
 									}
 								}
 								else
 								{
-									ViewModel.Views.ModOrder.AddNewModOrder(order);
+									ViewModelLocator.ModOrder.AddNewModOrder(order);
 								}
 							}
 						}
@@ -324,7 +299,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 			await fileStream.ReadAsync(new byte[fileStream.Length], 0, (int)fileStream.Length);
 			fileStream.Position = 0;
 
-			var modManager = Services.Mods;
+			var modManager = AppServices.Mods;
 
 			using var archive = ArchiveFactory.Open(fileStream, _importReaderOptions);
 			foreach (var file in archive.Entries)
@@ -401,7 +376,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 					if (result == null)
 					{
 						var pakName = Path.GetFileNameWithoutExtension(filePath);
-						if (Services.Mods.ModExists(pakName))
+						if (AppServices.Mods.ModExists(pakName))
 						{
 							result = new ModuleInfo
 							{
@@ -448,7 +423,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 							meta = await TryGetMetaFromCompressedFileAsync(filePath, ext, token);
 						}
 
-						if (meta != null && Services.Mods.TryGetMod(meta.UUID, out var mod))
+						if (meta != null && AppServices.Mods.TryGetMod(meta.UUID, out var mod))
 						{
 							mod.NexusModsData.SetModVersion(info);
 							results.Mods.Add(mod);
@@ -466,8 +441,8 @@ public class ModImportService(MainWindowViewModel mainVM)
 		if (results.Success)
 		{
 			DivinityApp.Log($"Updated NexusMods mod ids for ({results.Mods.Count}) mod(s).");
-			await Services.Updater.NexusMods.Update(results.Mods, token);
-			await Services.Updater.NexusMods.SaveCacheAsync(false, ViewModel.Version, token);
+			await AppServices.Updater.NexusMods.Update(results.Mods, token);
+			await AppServices.Updater.NexusMods.SaveCacheAsync(false, ViewModel.Version, token);
 		}
 		return results.Success;
 	}
@@ -495,10 +470,10 @@ public class ModImportService(MainWindowViewModel mainVM)
 					await ImportModFromFile(builtinMods, result, f, ViewModel.MainProgressToken.Token, toActiveList);
 				}
 
-				if (Services.Updater.NexusMods.IsEnabled && result.Mods.Count > 0 && result.Mods.Any(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
+				if (AppServices.Updater.NexusMods.IsEnabled && result.Mods.Count > 0 && result.Mods.Any(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
 				{
-					await Services.Updater.NexusMods.Update(result.Mods, ViewModel.MainProgressToken.Token);
-					await Services.Updater.NexusMods.SaveCacheAsync(false, ViewModel.Version, ViewModel.MainProgressToken.Token);
+					await AppServices.Updater.NexusMods.Update(result.Mods, ViewModel.MainProgressToken.Token);
+					await AppServices.Updater.NexusMods.SaveCacheAsync(false, ViewModel.Version, ViewModel.MainProgressToken.Token);
 				}
 
 				await ctrl.Yield();
@@ -568,14 +543,14 @@ public class ModImportService(MainWindowViewModel mainVM)
 			InitialDirectory = GetInitialStartingDirectory(Settings.LastImportDirectoryPath)
 		};
 
-		if (dialog.ShowDialog(Window) == true)
+		if (dialog.ShowDialog(App.WM.MainWindow) == true)
 		{
 			var savedDirectory = Path.GetDirectoryName(dialog.FileName);
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
-				Services.Pathways.Data.LastSaveFilePath = savedDirectory;
-				Services.Settings.TrySaveAll(out _);
+				Pathways.LastSaveFilePath = savedDirectory;
+				Settings.Save(out _);
 			}
 
 			ImportMods(dialog.FileNames);
@@ -598,14 +573,14 @@ public class ModImportService(MainWindowViewModel mainVM)
 			InitialDirectory = GetInitialStartingDirectory(Settings.LastImportDirectoryPath)
 		};
 
-		if (dialog.ShowDialog(Window) == true)
+		if (dialog.ShowDialog(App.WM.MainWindow) == true)
 		{
 			var savedDirectory = Path.GetDirectoryName(dialog.FileName);
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
-				Services.Pathways.Data.LastSaveFilePath = savedDirectory;
-				Services.Settings.TrySaveAll(out _);
+				Pathways.LastSaveFilePath = savedDirectory;
+				Settings.Save(out _);
 			}
 
 			var files = dialog.FileNames.ToList();
@@ -734,7 +709,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 				outputPath = Path.Join(outputDir, $"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.zip");
 			}
 
-			var modManager = Services.Mods;
+			var modManager = AppServices.Mods;
 
 			var modPaks = new List<DivinityModData>(modManager.AllMods.Where(x => selectedModOrder.Order.Any(o => o.UUID == x.UUID)));
 			modPaks.AddRange(modManager.ForceLoadedMods.Where(x => !x.IsForceLoadedMergedMod));
@@ -811,7 +786,7 @@ public class ModImportService(MainWindowViewModel mainVM)
 			{
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					string msg = $"Error writing load order archive '{outputPath}': {ex}";
+					var msg = $"Error writing load order archive '{outputPath}': {ex}";
 					DivinityApp.Log(msg);
 					DivinityApp.ShowAlert(msg, AlertType.Danger);
 				});

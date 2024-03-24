@@ -26,8 +26,8 @@ public partial class DownloadActivityBar : DownloadActivityBarBase
 				this.OneWayBind(ViewModel, vm => vm.IsVisible, view => view.Visibility);
 				this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CancelButton);
 
-				SetBinding(ProgressBarExtension.IsProgressAnimationEnabledProperty, 
-					new Binding(nameof(DownloadActivityBarViewModel.IsAnimating)){ Source = ViewModel });
+				SetBinding(ProgressBarExtension.IsProgressAnimationEnabledProperty,
+					new Binding(nameof(DownloadActivityBarViewModel.IsAnimating)) { Source = ViewModel });
 			}
 		});
 	}

@@ -1,10 +1,7 @@
-﻿using ModManager.Models;
+﻿using DynamicData;
+
 using ModManager.Models.Mod;
 using ModManager.Models.Updates;
-using ModManager.Windows;
-
-using DynamicData;
-using DynamicData.Binding;
 
 using Ookii.Dialogs.Wpf;
 
@@ -18,7 +15,6 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ModManager.ViewModels.Main;
@@ -59,8 +55,6 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 
 	public Action<bool> CloseView { get; set; }
 
-	private readonly MainWindowViewModel _mainWindowViewModel;
-
 	public void Add(DivinityModUpdateData mod) => Mods.Add(mod);
 
 	public void Add(IEnumerable<DivinityModUpdateData> mods) => Mods.AddRange(mods);
@@ -81,8 +75,8 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 
 	public void UpdateSelectedMods()
 	{
-		var documentsFolder = _mainWindowViewModel.PathwayData.AppDataGameFolder;
-		var modPakFolder = _mainWindowViewModel.PathwayData.AppDataModsPath;
+		var documentsFolder = AppServices.Pathways.Data.AppDataGameFolder;
+		var modPakFolder = AppServices.Pathways.Data.AppDataModsPath;
 
 		using var dialog = new TaskDialog()
 		{
@@ -123,7 +117,7 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 				await Task.Yield(); // prevents a sync/hot thread hangup
 				var downloadResult = await partition.Current.DownloadData.DownloadAsync(partition.Current.LocalFilePath, outputFolder, token);
 				result.Success = downloadResult.Success;
-				await _mainWindowViewModel.IncreaseMainProgressValueAsync(progressIncrement);
+				await ViewModelLocator.Main.IncreaseMainProgressValueAsync(progressIncrement);
 			}
 		}
 		return result;
@@ -131,7 +125,7 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 
 	private async Task<Unit> ProcessUpdatesAsync(CopyModUpdatesTask taskData, IScheduler sch, CancellationToken token)
 	{
-		await _mainWindowViewModel.StartMainProgressAsync("Processing updates...");
+		await ViewModelLocator.Main.StartMainProgressAsync("Processing updates...");
 		var currentTime = DateTime.Now;
 		var partitionAmount = Environment.ProcessorCount;
 		var progressIncrement = (int)Math.Ceiling(100d / taskData.Updates.Count);
@@ -187,11 +181,6 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 				x.IsSelected = b;
 			}
 		});
-	}
-
-	public ModUpdatesViewModel(MainWindowViewModel mainWindowViewModel) : this((IScreen)mainWindowViewModel)
-	{
-		_mainWindowViewModel = mainWindowViewModel;
 	}
 }
 

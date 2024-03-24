@@ -30,31 +30,4 @@ public static class SplatContainerExtensions
 
 		return services;
 	}
-
-	/// <summary>
-	/// Registers Mod Manager-related service classes into the IoC container.
-	/// </summary>
-	/// <param name="services">The IoC services container.</param>
-	public static IMutableDependencyResolver AddModManagerServices(this IMutableDependencyResolver services, string appPipeId)
-	{
-		services.CheckNotNull(nameof(services));
-
-		SplatRegistrations.RegisterLazySingleton<ISettingsService, SettingsService>();
-		SplatRegistrations.RegisterLazySingleton<IPathwaysService, PathwaysService>();
-
-		SplatRegistrations.RegisterLazySingleton<INexusModsService, NexusModsService>();
-		SplatRegistrations.RegisterLazySingleton<IGitHubService, GitHubService>();
-		//SplatRegistrations.RegisterLazySingleton<ISteamWorkshopService, SteamWorkshopService>();
-
-		SplatRegistrations.RegisterLazySingleton<IModManagerService, ModManagerService>();
-		SplatRegistrations.RegisterLazySingleton<IModUpdaterService, ModUpdaterService>();
-
-		SplatRegistrations.RegisterLazySingleton<IGameUtilitiesService, GameUtilitiesService>();
-
-		SplatRegistrations.RegisterConstant<IBackgroundCommandService>(new BackgroundCommandService(appPipeId));
-
-		SplatRegistrations.SetupIOC();
-
-		return services;
-	}
 }

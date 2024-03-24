@@ -22,6 +22,6 @@ public class AutomationTooltipPeer : ToolTipAutomationPeer
 
 	protected override List<AutomationPeer> GetChildrenCore()
 	{
-		return new List<AutomationPeer>();
+		return [];
 	}
 }

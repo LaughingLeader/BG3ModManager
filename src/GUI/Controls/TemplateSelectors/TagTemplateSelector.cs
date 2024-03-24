@@ -10,7 +10,7 @@ public class TagTemplateSelector : DataTemplateSelector
 
 	public override DataTemplate SelectTemplate(object item, DependencyObject container)
 	{
-		FrameworkElement element = container as FrameworkElement;
+		var element = container as FrameworkElement;
 
 		if (element != null && item != null && item is string tag)
 		{

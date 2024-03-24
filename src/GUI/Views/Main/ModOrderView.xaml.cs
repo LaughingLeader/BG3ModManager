@@ -1,4 +1,5 @@
-﻿using ModManager.Util;
+﻿using ModManager.Services;
+using ModManager.Util;
 using ModManager.ViewModels.Main;
 
 using ReactiveUI;
@@ -18,8 +19,8 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 	private static bool PathExists(string path) => !String.IsNullOrEmpty(path) && (File.Exists(path) || Directory.Exists(path));
 
 	public ModOrderView()
-    {
-        InitializeComponent();
+	{
+		InitializeComponent();
 
 		this.WhenAnyValue(x => x.ViewModel).BindTo(this, x => x.ModLayout.ViewModel);
 
@@ -33,7 +34,7 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 			this.OneWayBind(ViewModel, vm => vm.Profiles, view => view.ProfilesComboBox.ItemsSource);
 			this.Bind(ViewModel, vm => vm.SelectedProfileIndex, view => view.ProfilesComboBox.SelectedIndex);
 
-			Services.Mods.WhenAnyValue(x => x.AdventureMods).BindTo(this, x => x.AdventureModComboBox.ItemsSource);
+			AppServices.Get<IModManagerService>().WhenAnyValue(x => x.AdventureMods).BindTo(this, x => x.AdventureModComboBox.ItemsSource);
 			this.Bind(ViewModel, vm => vm.SelectedAdventureModIndex, view => view.AdventureModComboBox.SelectedIndex);
 			this.OneWayBind(ViewModel, vm => vm.AdventureModBoxVisibility, view => view.AdventureModComboBox.Visibility);
 			this.OneWayBind(ViewModel, vm => vm.SelectedAdventureMod, view => view.AdventureModComboBox.Tag);
@@ -91,26 +92,26 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 			canOpenProfilePath.BindTo(this, x => x.ProfilesContextMenuOpenMenuItem.IsEnabled);
 			canOpenProfilePath.BindTo(this, x => x.ProfilesContextMenuCopyMenuItem.IsEnabled);
 
-			var settings = Services.Settings.ManagerSettings;
+			var settings = ViewModel.Settings;
 
 			settings.WhenAnyValue(x => x.ExtenderLogDirectory).BindTo(this, x => x.OpenExtenderLogsFolderButtonExplorerMenuItem.CommandParameter);
 			settings.WhenAnyValue(x => x.GameExecutablePath).BindTo(this, x => x.OpenGameButtonExplorerMenuItem.CommandParameter);
 			settings.WhenAnyValue(x => x.GameExecutablePath).BindTo(this, x => x.OpenGameButtonCopyMenuItem.CommandParameter);
 			settings.WhenAnyValue(x => x.WorkshopPath).BindTo(this, x => x.OpenWorkshopFolderButtonCopyMenuItem.CommandParameter);
-			Services.Pathways.Data.WhenAnyValue(x => x.AppDataModsPath).BindTo(this, x => x.OpenModsFolderButtonCopyMenuItem.CommandParameter);
+			AppServices.Pathways.Data.WhenAnyValue(x => x.AppDataModsPath).BindTo(this, x => x.OpenModsFolderButtonCopyMenuItem.CommandParameter);
 
 			settings.WhenAnyValue(x => x.ActionOnGameLaunch).BindTo(this, x => x.GameLaunchActionComboBox.SelectedValue);
 
 			FocusManager.SetFocusedElement(this, ModOrderPanel);
 		});
-    }
+	}
 
 	private void ComboBox_KeyDown_LoseFocus(object sender, KeyEventArgs e)
 	{
-		bool loseFocus = false;
+		var loseFocus = false;
 		if ((e.Key == Key.Enter || e.Key == Key.Return))
 		{
-			UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+			var elementWithFocus = Keyboard.FocusedElement as UIElement;
 			elementWithFocus.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 			ViewModel.StopRenaming(false);
 			loseFocus = true;
@@ -145,7 +146,7 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 						ViewModel.SelectedModOrder.Name = tb.Text;
 						var directory = Path.GetDirectoryName(ViewModel.SelectedModOrder.FilePath);
 						var ext = Path.GetExtension(ViewModel.SelectedModOrder.FilePath);
-						string outputName = DivinityModDataLoader.MakeSafeFilename(Path.Join(ViewModel.SelectedModOrder.Name + ext), '_');
+						var outputName = DivinityModDataLoader.MakeSafeFilename(Path.Join(ViewModel.SelectedModOrder.Name + ext), '_');
 						ViewModel.SelectedModOrder.FilePath = Path.Join(directory, outputName);
 						DivinityApp.ShowAlert($"Renamed load order name/path to '{ViewModel.SelectedModOrder.FilePath}'", AlertType.Success, 20);
 					}
@@ -158,7 +159,7 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 	{
 		RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(200), () =>
 		{
-			var settings = Services.Settings.ManagerSettings;
+			var settings = AppServices.Settings.ManagerSettings;
 			if (settings.LastOrder != ViewModel.SelectedModOrder.Name)
 			{
 				settings.LastOrder = ViewModel.SelectedModOrder.Name;
@@ -196,7 +197,7 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 			var buttons = orderPanel.FindVisualChildren<Button>();
 			foreach (var button in buttons)
 			{
-				if (_shortcutButtonBindings.TryGetValue(button.Name, out string path))
+				if (_shortcutButtonBindings.TryGetValue(button.Name, out var path))
 				{
 					if (button.Command == null)
 					{

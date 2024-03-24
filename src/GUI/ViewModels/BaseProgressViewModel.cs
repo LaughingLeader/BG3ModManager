@@ -6,11 +6,10 @@ using System.Reactive.Linq;
 
 namespace ModManager.ViewModels;
 
-public class BaseProgressViewModel : ReactiveObject
+public class BaseProgressViewModel : BaseWindowViewModel
 {
 	[Reactive] public bool CanRun { get; set; }
 	[Reactive] public bool CanClose { get; set; }
-	[Reactive] public bool IsVisible { get; set; }
 	[Reactive] public bool IsProgressActive { get; set; }
 	[Reactive] public string ProgressTitle { get; set; }
 	[Reactive] public string ProgressWorkText { get; set; }

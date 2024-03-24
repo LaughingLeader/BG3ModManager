@@ -1,16 +1,13 @@
-﻿using ModManager.Util;
-
-using ReactiveUI;
+﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public class DownloadActivityBarViewModel : ReactiveObject
+public class DownloadActivityBarViewModel : BaseWindowViewModel
 {
 	[Reactive] private double ProgressValue { get; set; }
 	[Reactive] private string ProgressText { get; set; }
@@ -19,7 +16,6 @@ public class DownloadActivityBarViewModel : ReactiveObject
 
 	[ObservableAsProperty] public double CurrentValue { get; }
 	[ObservableAsProperty] public string CurrentText { get; }
-	[ObservableAsProperty] public Visibility IsVisible { get; }
 	[ObservableAsProperty] public bool IsAnimating { get; }
 
 	public ICommand CancelCommand { get; private set; }
@@ -66,7 +62,7 @@ public class DownloadActivityBarViewModel : ReactiveObject
 
 		this.WhenAnyValue(x => x.CurrentText, x => x.CurrentValue).Select(x => !String.IsNullOrEmpty(x.Item1) || x.Item2 > 0).BindTo(this, x => x.IsActive);
 
-		this.WhenAnyValue(x => x.IsActive).Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.IsVisible, Visibility.Collapsed);
+		//this.WhenAnyValue(x => x.IsActive).Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.IsVisible, Visibility.Collapsed);
 
 		CancelCommand = ReactiveCommand.Create(Cancel);
 	}

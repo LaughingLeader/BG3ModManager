@@ -68,14 +68,16 @@ public class AutoGrayableImage : Image
 		_sourceGray = _sourceColor = Source;
 
 		// Create Opacity Mask for grayscale image as FormatConvertedBitmap does not keep transparency info
-		_opacityMaskGray = new ImageBrush(_sourceColor);
-		_opacityMaskGray.Opacity = 0.6;
+		_opacityMaskGray = new ImageBrush(_sourceColor)
+		{
+			Opacity = 0.6
+		};
 		Uri uri = null;
 
 		try
 		{
 			// Get the string Uri for the original image source first
-			string stringUri = TypeDescriptor.GetConverter(Source).ConvertTo(Source, typeof(string)) as string;
+			var stringUri = TypeDescriptor.GetConverter(Source).ConvertTo(Source, typeof(string)) as string;
 
 			// Try to resolve it as an absolute Uri 
 			if (!Uri.TryCreate(stringUri, UriKind.Absolute, out uri))

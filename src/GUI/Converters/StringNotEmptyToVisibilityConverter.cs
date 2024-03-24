@@ -8,7 +8,7 @@ public class StringNotEmptyToVisibilityConverter : IValueConverter
 {
 	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		bool reverse = false;
+		var reverse = false;
 		if (parameter != null)
 		{
 			if (parameter is int reverseInt)

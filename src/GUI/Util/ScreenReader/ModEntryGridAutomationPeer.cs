@@ -43,6 +43,6 @@ public class ModEntryGridAutomationPeer : CachedAutomationPeer
 
 	override public List<AutomationPeer> GetPeersFromElements()
 	{
-		return new List<AutomationPeer>(1) { _textPeer };
+		return [_textPeer];
 	}
 }

@@ -88,10 +88,11 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	public void ApplyUserModConfig()
 	{
-		var settings = AppServices.Settings;
+		var settings = Locator.Current.GetService<ISettingsService>().ModConfig;
+
 		foreach (var mod in AddonMods)
 		{
-			var config = settings.ModConfig.Mods.Lookup(mod.UUID);
+			var config = settings.Mods.Lookup(mod.UUID);
 			if (config.HasValue)
 			{
 				mod.ApplyModConfig(config.Value);
@@ -191,7 +192,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	public static async Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
 	{
-		var settings = AppServices.Settings.ManagerSettings;
+		var settings = Locator.Current.GetService<ISettingsService>().ManagerSettings;
 
 		List<DivinityModData> finalMods = [];
 		ModLoadingResults modLoadingResults = null;
@@ -322,5 +323,14 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		forceLoadedObs.AutoRefresh(x => x.IsSelected).Filter(x => x.IsSelected).Count().ToUIProperty(this, x => x.OverrideModsSelected);
 
 		_modsConnection.Connect();
+
+		DivinityInteractions.ToggleModFileNameDisplay.RegisterHandler(interaction =>
+		{
+			foreach(var mod in mods.Items)
+			{
+				mod.DisplayFileForName = interaction.Input;
+			}
+			interaction.SetOutput(true);
+		});
 	}
 }

@@ -1,11 +1,6 @@
-﻿using ModManager.Models.View;
-using ModManager.Util;
-using ModManager.ViewModels;
-using ModManager.Views.StatsValidator;
+﻿using ModManager.ViewModels;
 
 using ReactiveUI;
-
-using Splat;
 
 using System.Reactive;
 using System.Reactive.Linq;
@@ -31,7 +26,7 @@ public partial class StatsValidatorWindow : StatsValidatorWindowBase
 	{
 		InitializeComponent();
 
-		ViewModel = new StatsValidatorWindowViewModel();
+		ViewModel = ViewModelLocator.StatsValidator;
 
 		DivinityInteractions.OpenValidateStatsResults.RegisterHandler(input => Observable.Start(() => OpenWindow(input), RxApp.MainThreadScheduler));
 

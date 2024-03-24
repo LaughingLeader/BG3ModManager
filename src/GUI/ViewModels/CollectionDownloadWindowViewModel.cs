@@ -1,7 +1,7 @@
-﻿using ModManager.Models.NexusMods;
-using ModManager.Util;
+﻿using DynamicData.Binding;
 
-using DynamicData.Binding;
+using ModManager.Models.NexusMods;
+using ModManager.Util;
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 
 namespace ModManager.ViewModels;
 
-public class CollectionDownloadWindowViewModel : ReactiveObject
+public class CollectionDownloadWindowViewModel : BaseWindowViewModel
 {
 	[Reactive] public NexusModsCollectionData Data { get; private set; }
 	[Reactive] public bool IsCardView { get; set; }
@@ -72,7 +72,7 @@ public class CollectionDownloadWindowViewModel : ReactiveObject
 
 	public CollectionDownloadWindowViewModel()
 	{
-		Mods = new ObservableCollectionExtended<NexusModsCollectionModData>();
+		Mods = [];
 
 		this.WhenAnyValue(x => x.Data.Name, x => x.Data.Author).Select(ToTitleText).ToUIProperty(this, x => x.Title);
 

@@ -1,5 +1,4 @@
 ﻿using ModManager.Models.Mod;
-using ModManager.Windows;
 
 using System.Globalization;
 using System.Windows.Data;
@@ -12,7 +11,7 @@ public class ModIsAvailableConverter : IValueConverter
 	{
 		if (value is IDivinityModData data)
 		{
-			return Services.Mods.ModIsAvailable(data);
+			return AppServices.Mods.ModIsAvailable(data);
 		}
 
 		return false;

@@ -15,7 +15,7 @@ public partial class AboutWindow : AboutWindowBase
 	{
 		InitializeComponent();
 
-		ViewModel = new AboutWindowViewModel();
+		ViewModel = ViewModelLocator.About;
 
 		this.WhenActivated(d =>
 		{

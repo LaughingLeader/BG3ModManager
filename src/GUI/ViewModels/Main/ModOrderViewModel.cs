@@ -1,15 +1,16 @@
-﻿using ModManager.Extensions;
-using ModManager.Models;
-using ModManager.Models.Mod;
-using ModManager.Models.Settings;
-using ModManager.Util;
-using ModManager.Views.Main;
-
-using DynamicData;
+﻿using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 
 using Microsoft.Win32;
+
+using ModManager.Extensions;
+using ModManager.Models;
+using ModManager.Models.Mod;
+using ModManager.Models.Settings;
+using ModManager.Services;
+using ModManager.Util;
+using ModManager.Views.Main;
 
 using Newtonsoft.Json;
 
@@ -30,10 +31,17 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ModManager.ViewModels.Main;
-public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModOrderViewModel
+public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderViewModel
 {
 	public string UrlPathSegment => "modorder";
 	public IScreen HostScreen { get; }
+
+	private readonly ModImportService ModImporter;
+	private readonly IModManagerService ModManager;
+
+	public DivinityPathwayData PathwayData => AppServices.Pathways.Data;
+	public ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
+	public AppSettings AppSettings => AppServices.Settings.AppSettings;
 
 	public AppKeys Keys { get; }
 
@@ -116,11 +124,11 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 	public ICommand OpenGameMasterCampaignInFileExplorerCommand { get; private set; }
 	public ICommand CopyGameMasterCampaignPathToClipboardCommand { get; private set; }
 
-	private readonly AppServices.IFileWatcherWrapper _modSettingsWatcher;
+	private readonly IFileWatcherWrapper _modSettingsWatcher;
 
 	private void SetLoadedGMCampaigns(IEnumerable<DivinityGameMasterCampaign> data)
 	{
-		string lastSelectedCampaignUUID = "";
+		var lastSelectedCampaignUUID = "";
 		if (UserChangedSelectedGMCampaign && SelectedGameMasterCampaign != null)
 		{
 			lastSelectedCampaignUUID = SelectedGameMasterCampaign.UUID;
@@ -160,15 +168,13 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		var currentOrder = ModOrderList.First();
 		currentOrder.Order.Clear();
 
-		var modManager = Services.Mods;
-
-		List<DivinityMissingModData> missingMods = new();
+		List<DivinityMissingModData> missingMods = [];
 		if (campaign.Dependencies.Count > 0)
 		{
-			int index = 0;
+			var index = 0;
 			foreach (var entry in campaign.Dependencies.Items)
 			{
-				if (modManager.TryGetMod(entry.UUID, out var mod))
+				if (ModManager.TryGetMod(entry.UUID, out var mod))
 				{
 					mod.IsActive = true;
 					currentOrder.Add(mod);
@@ -177,7 +183,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 					{
 						foreach (var dependency in mod.Dependencies.Items)
 						{
-							if (!DivinityModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID) &&
+							if (!DivinityModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID) &&
 								!missingMods.Any(x => x.UUID == dependency.UUID))
 							{
 								missingMods.Add(new DivinityMissingModData
@@ -260,10 +266,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 	public ICommand ExportOrderAsListCommand { get; }
 	public ReactiveCommand<DivinityLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
 
-	private DivinityPathwayData PathwayData => Services.Pathways.Data;
-	private ModManagerSettings Settings => Services.Settings.ManagerSettings;
-	private AppSettings AppSettings => Services.Settings.AppSettings;
-
 	private static IObservable<bool> AllTrue(IObservable<bool> first, IObservable<bool> second) => first.CombineLatest(second).Select(x => x.First && x.Second);
 
 	private static string GetLaunchGameTooltip(ValueTuple<string, bool, bool, bool> x)
@@ -335,7 +337,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			}
 			else
 			{
-				targetList = Services.Mods.AllMods;
+				targetList = ModManager.AllMods;
 			}
 
 			if (targetList != null)
@@ -345,7 +347,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 				if (selectedEligableMods.Count > 0)
 				{
-					DivinityInteractions.DeleteMods.Handle(new DeleteModsRequestData(selectedEligableMods, false, Services.Mods.AllMods)).Subscribe();
+					DivinityInteractions.DeleteMods.Handle(new DeleteModsRequestData(selectedEligableMods, false, ModManager.AllMods)).Subscribe();
 				}
 
 				if (selectedMods.Any(x => x.IsEditorMod))
@@ -359,7 +361,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		{
 			if (ActiveMods.Count > 0)
 			{
-				string text = String.Join(", ", ActiveMods.Select(x => x.DisplayName));
+				var text = String.Join(", ", ActiveMods.Select(x => x.DisplayName));
 				ScreenReaderHelper.Speak($"{ActiveMods.Count} mods in the active order, including:", true);
 				ScreenReaderHelper.Speak(text, false);
 				//ShowAlert($"Active mods: {text}", AlertType.Info, 10);
@@ -374,9 +376,15 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
 
-	public ModOrderViewModel(MainWindowViewModel host)
+	public ModOrderViewModel(MainWindowViewModel host,
+		ModListDropHandler dropHandler,
+		ModListDragHandler dragHandler,
+		IModManagerService modManagerService,
+		IFileWatcherService fileWatcherService)
 	{
 		DivinityApp.Commands.SetViewModel(this);
+
+		ModManager = modManagerService;
 
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;
@@ -386,14 +394,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		ModOrderList = [];
 		ExternalModOrders = [];
 
-		DropHandler = new(host);
-		DragHandler = new(host);
+		DropHandler = dropHandler;
+		DragHandler = dragHandler;
 
 		CanSaveOrder = true;
 
 		Keys = host.Keys;
-
-		var modManager = Services.Mods;
 
 		var isRefreshing = host.WhenAnyValue(x => x.IsRefreshing);
 
@@ -405,13 +411,13 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		profiles.Connect().Sort(_profileSort).Bind(out _uiprofiles).DisposeMany().Subscribe();
 
-		modManager.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
-		modManager.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
-		modManager.WhenAnyValue(x => x.OverrideModsSelected).CombineLatest(this.WhenAnyValue(x => x.TotalOverrideModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.OverrideModsSelectedText);
+		modManagerService.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
+		modManagerService.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
+		modManagerService.WhenAnyValue(x => x.OverrideModsSelected).CombineLatest(this.WhenAnyValue(x => x.TotalOverrideModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.OverrideModsSelectedText);
 		//TODO Change .Count to CollectionChanged?
 		this.WhenAnyValue(x => x.TotalActiveModsHidden).Select(x => HiddenToLabel(x, ActiveMods.Count)).ToUIProperty(this, x => x.ActiveModsFilterResultText);
 		this.WhenAnyValue(x => x.TotalInactiveModsHidden).Select(x => HiddenToLabel(x, InactiveMods.Count)).ToUIProperty(this, x => x.InactiveModsFilterResultText);
-		this.WhenAnyValue(x => x.TotalOverrideModsHidden).Select(x => HiddenToLabel(x, modManager.ForceLoadedMods.Count)).ToUIProperty(this, x => x.OverrideModsFilterResultText);
+		this.WhenAnyValue(x => x.TotalOverrideModsHidden).Select(x => HiddenToLabel(x, modManagerService.ForceLoadedMods.Count)).ToUIProperty(this, x => x.OverrideModsFilterResultText);
 
 		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
 		var hasNonNullProfile = whenProfile.Select(x => x != null);
@@ -419,7 +425,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
 		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);
-		modManager.ForceLoadedMods.ToObservableChangeSet().Bind(out _forceLoadedMods).Subscribe();
+		modManagerService.ForceLoadedMods.ToObservableChangeSet().Bind(out _forceLoadedMods).Subscribe();
 		ForceLoadedMods.ToObservableChangeSet().CountChanged().Select(_ => PropertyConverters.IntToVisibility(ForceLoadedMods.Count)).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility, Visibility.Collapsed);
 
 		host.Settings.WhenAnyValue(
@@ -445,8 +451,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			{
 				if (ActiveMods.Count > 0)
 				{
-					string text = "";
-					for (int i = 0; i < ActiveMods.Count; i++)
+					var text = "";
+					for (var i = 0; i < ActiveMods.Count; i++)
 					{
 						var mod = ActiveMods[i];
 						text += $"{mod.Index}. {mod.DisplayName}";
@@ -472,18 +478,18 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		{
 			if (profile != null && profile.ActiveMods != null && profile.ActiveMods.Count > 0)
 			{
-				var adventureModData = modManager.AdventureMods.FirstOrDefault(x => profile.ActiveMods.Any(y => y.UUID == x.UUID));
+				var adventureModData = modManagerService.AdventureMods.FirstOrDefault(x => profile.ActiveMods.Any(y => y.UUID == x.UUID));
 				//Migrate old profiles from Gustav to GustavDev
 				if (adventureModData != null && adventureModData.UUID == "991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1")
 				{
-					if (modManager.TryGetMod(DivinityApp.MAIN_CAMPAIGN_UUID, out var main))
+					if (modManagerService.TryGetMod(DivinityApp.MAIN_CAMPAIGN_UUID, out var main))
 					{
 						adventureModData = main;
 					}
 				}
 				if (adventureModData != null)
 				{
-					var nextAdventure = modManager.AdventureMods.IndexOf(adventureModData);
+					var nextAdventure = modManagerService.AdventureMods.IndexOf(adventureModData);
 					DivinityApp.Log($"Found adventure mod in profile: {adventureModData.Name} | {nextAdventure}");
 					if (nextAdventure > -1)
 					{
@@ -519,7 +525,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		this.WhenAnyValue(x => x.SelectedModOrder).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(order =>
 		{
-			if(!order.IsLoaded)
+			if (!order.IsLoaded)
 			{
 				if (LoadModOrder(order))
 				{
@@ -541,24 +547,24 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			Subscribe((s) => { OnFilterTextChanged(s, InactiveMods); });
 
 		this.WhenAnyValue(x => x.OverrideModsFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
-			Subscribe((s) => { OnFilterTextChanged(s, modManager.ForceLoadedMods); });
+			Subscribe((s) => { OnFilterTextChanged(s, modManagerService.ForceLoadedMods); });
 
 		ActiveMods.WhenAnyPropertyChanged(nameof(DivinityModData.Index)).Throttle(TimeSpan.FromMilliseconds(25)).Subscribe(_ =>
 		{
 			SelectedModOrder?.Sort(SortModOrder);
 		});
 
-		modManager.AdventureMods.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
+		modManagerService.AdventureMods.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
 			.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex)).Select(x => x.Second)
-			.Select(x => modManager.AdventureMods.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
+			.Select(x => modManagerService.AdventureMods.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
 
 		this.WhenAnyValue(x => x.SelectedAdventureModIndex).Throttle(TimeSpan.FromMilliseconds(50)).Subscribe((i) =>
 		{
-			if (modManager.AdventureMods != null && SelectedAdventureMod != null && SelectedProfile != null && SelectedProfile.ActiveMods != null)
+			if (modManagerService.AdventureMods != null && SelectedAdventureMod != null && SelectedProfile != null && SelectedProfile.ActiveMods != null)
 			{
 				if (!SelectedProfile.ActiveMods.Any(m => m.UUID == SelectedAdventureMod.UUID))
 				{
-					SelectedProfile.ActiveMods.RemoveAll(r => modManager.AdventureMods.Any(y => y.UUID == r.UUID));
+					SelectedProfile.ActiveMods.RemoveAll(r => modManagerService.AdventureMods.Any(y => y.UUID == r.UUID));
 					SelectedProfile.ActiveMods.Insert(0, SelectedAdventureMod.ToProfileModData());
 				}
 			}
@@ -598,8 +604,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		});
 		#endregion
 
-		var fwService = AppServices.Get<IFileWatcherService>();
-		_modSettingsWatcher = fwService.WatchDirectory("", "*modsettings.lsx");
+		_modSettingsWatcher = fileWatcherService.WatchDirectory("", "*modsettings.lsx");
 		//modSettingsWatcher.PauseWatcher(true);
 		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().Select(x => x.FilePath).Subscribe(path =>
 		{
@@ -670,12 +675,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		IsRefreshing = true;
 		DivinityApp.Log($"Refreshing data asynchronously...");
 
-		double taskStepAmount = 1.0 / 9;
+		var taskStepAmount = 1.0 / 9;
 
-		var modManager = Services.Mods;
+		var modManager = ModManager;
 
 		List<DivinityLoadOrderEntry> lastActiveOrder = null;
-		string lastOrderName = "";
+		var lastOrderName = "";
 		if (SelectedModOrder != null)
 		{
 			lastActiveOrder = [.. SelectedModOrder.Order];
@@ -685,7 +690,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		string lastAdventureMod = null;
 		if (SelectedAdventureMod != null) lastAdventureMod = SelectedAdventureMod.UUID;
 
-		string selectedProfileUUID = "";
+		var selectedProfileUUID = "";
 		if (SelectedProfile != null)
 		{
 			selectedProfileUUID = SelectedProfile.UUID;
@@ -742,7 +747,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			await Observable.Start(() =>
 			{
-				if(loadedMods.Count > 0) Services.Mods.SetLoadedMods(loadedMods, main.NexusModsSupportEnabled);
+				if (loadedMods.Count > 0) ModManager.SetLoadedMods(loadedMods, main.NexusModsSupportEnabled);
 				//SetLoadedGMCampaigns(loadedGMCampaigns);
 
 				profiles.AddOrUpdate(loadedProfiles);
@@ -783,7 +788,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 							SelectedAdventureModIndex = modManager.AdventureMods.IndexOf(nextAdventureMod);
 							if (nextAdventureMod.UUID == DivinityApp.GAMEMASTER_UUID)
 							{
-								Services.Settings.ManagerSettings.GameMasterModeEnabled = true;
+								Settings.GameMasterModeEnabled = true;
 							}
 						}
 						else
@@ -813,7 +818,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			IsLoadingOrder = false;
 
-			Services.Mods.ApplyUserModConfig();
+			ModManager.ApplyUserModConfig();
 			IsRefreshing = false;
 
 			if (profiles.Count > 0)
@@ -850,9 +855,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		}, RxApp.MainThreadScheduler);
 	}
 
-	private static DivinityProfileActiveModData ProfileActiveModDataFromUUID(string uuid)
+	private DivinityProfileActiveModData ProfileActiveModDataFromUUID(string uuid)
 	{
-		if (Services.Mods.TryGetMod(uuid, out var mod))
+		if (ModManager.TryGetMod(uuid, out var mod))
 		{
 			return mod.ToProfileModData();
 		}
@@ -864,26 +869,23 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private void DisplayMissingMods(DivinityLoadOrder order = null)
 	{
-		var appSettings = Services.Settings.AppSettings;
-		var settings = Services.Settings.ManagerSettings;
-		var modManager = Services.Mods;
-		bool displayExtenderModWarning = false;
+		var displayExtenderModWarning = false;
 
 		order ??= SelectedModOrder;
-		if (order != null && settings.DisableMissingModWarnings != true)
+		if (order != null && Settings.DisableMissingModWarnings != true)
 		{
 			List<DivinityMissingModData> missingMods = [];
 
-			for (int i = 0; i < order.Order.Count; i++)
+			for (var i = 0; i < order.Order.Count; i++)
 			{
 				var entry = order.Order[i];
-				if (modManager.TryGetMod(entry.UUID, out var mod))
+				if (ModManager.TryGetMod(entry.UUID, out var mod))
 				{
 					if (mod.Dependencies.Count > 0)
 					{
 						foreach (var dependency in mod.Dependencies.Items)
 						{
-							if (!DivinityModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID) &&
+							if (!DivinityModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID) &&
 								!missingMods.Any(x => x.UUID == dependency.UUID))
 							{
 								var x = new DivinityMissingModData
@@ -927,12 +929,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			displayExtenderModWarning = true;
 		}
 
-		if (settings.DisableMissingModWarnings != true && displayExtenderModWarning && appSettings.Features.ScriptExtender)
+		if (Settings.DisableMissingModWarnings != true && displayExtenderModWarning && AppSettings.Features.ScriptExtender)
 		{
 			//DivinityApp.LogMessage($"Mod Order: {String.Join("\n", order.Order.Select(x => x.Name))}");
 			DivinityApp.Log("Checking mods for extender requirements.");
-			List<DivinityMissingModData> extenderRequiredMods = new();
-			for (int i = 0; i < order.Order.Count; i++)
+			List<DivinityMissingModData> extenderRequiredMods = [];
+			for (var i = 0; i < order.Order.Count; i++)
 			{
 				var entry = order.Order[i];
 				var mod = ActiveMods.FirstOrDefault(m => m.UUID == entry.UUID);
@@ -952,7 +954,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 						{
 							foreach (var dependency in mod.Dependencies.Items)
 							{
-								if (modManager.TryGetMod(dependency.UUID, out var dependencyMod))
+								if (ModManager.TryGetMod(dependency.UUID, out var dependencyMod))
 								{
 									// Dependencies not in the order that require the extender
 									if (dependencyMod.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING)
@@ -988,7 +990,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 	{
 		try
 		{
-			string loadOrderDirectory = Settings.LoadOrderPath;
+			var loadOrderDirectory = Settings.LoadOrderPath;
 			if (String.IsNullOrWhiteSpace(loadOrderDirectory))
 			{
 				loadOrderDirectory = DivinityApp.GetAppDirectory("Orders");
@@ -1004,7 +1006,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		catch (Exception ex)
 		{
 			DivinityApp.Log($"Error loading external load orders: {ex}.");
-			return new List<DivinityLoadOrder>();
+			return [];
 		}
 	}
 
@@ -1015,10 +1017,10 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private async Task<bool> SaveLoadOrderAsync(bool skipSaveConfirmation = false)
 	{
-		bool result = false;
+		var result = false;
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
-			string outputDirectory = Settings.LoadOrderPath;
+			var outputDirectory = Settings.LoadOrderPath;
 
 			if (String.IsNullOrWhiteSpace(outputDirectory))
 			{
@@ -1030,8 +1032,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				Directory.CreateDirectory(outputDirectory);
 			}
 
-			string outputPath = SelectedModOrder.FilePath;
-			string outputName = DivinityModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
+			var outputPath = SelectedModOrder.FilePath;
+			var outputName = DivinityModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
 
 			if (String.IsNullOrWhiteSpace(SelectedModOrder.FilePath))
 			{
@@ -1094,7 +1096,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			InitialDirectory = startDirectory
 		};
 
-		string outputPath = Path.Join(SelectedModOrder.Name + ".json");
+		var outputPath = Path.Join(SelectedModOrder.Name + ".json");
 		if (SelectedModOrder.IsModSettings)
 		{
 			var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-") + "_HH-mm-ss";
@@ -1113,7 +1115,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		if (dialog.ShowDialog(App.Current.MainWindow) == true)
 		{
-			var modManager = Services.Mods;
+			var modManager = ModManager;
 			outputPath = dialog.FileName;
 			modOrderName = Path.GetFileNameWithoutExtension(outputPath);
 			// Save mods that aren't missing
@@ -1123,7 +1125,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			{
 				DivinityApp.ShowAlert($"Saved mod load order to '{outputPath}'", AlertType.Success, 10);
 				var updatedOrder = false;
-				int updatedOrderIndex = -1;
+				var updatedOrderIndex = -1;
 				for (var i = 0; i < ModOrderList.Count; i++)
 				{
 					var order = ModOrderList[i];
@@ -1163,16 +1165,16 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private async Task<bool> ExportLoadOrderAsync()
 	{
-		var settings = Services.Settings.ManagerSettings;
+		var settings = Settings;
 		if (!settings.GameMasterModeEnabled)
 		{
 			if (SelectedProfile != null && SelectedModOrder != null)
 			{
-				string outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
-				var finalOrder = DivinityModDataLoader.BuildOutputList(SelectedModOrder.Order, Services.Mods.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
+				var outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
+				var finalOrder = DivinityModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
 				var result = await DivinityModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder);
 
-				var dir = Services.Pathways.GetLarianStudiosAppDataFolder();
+				var dir = AppServices.Pathways.GetLarianStudiosAppDataFolder();
 				if (SelectedModOrder.Order.Count > 0)
 				{
 					await DivinityModDataLoader.UpdateLauncherPreferencesAsync(dir, false, false, true);
@@ -1206,7 +1208,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 							this.ModOrderList.First(x => x.IsModSettings)?.SetOrder(SelectedModOrder.Order);
 						}
 
-						List<string> orderList = new();
+						List<string> orderList = [];
 						if (SelectedAdventureMod != null) orderList.Add(SelectedAdventureMod.UUID);
 						orderList.AddRange(SelectedModOrder.Order.Select(x => x.UUID));
 
@@ -1220,7 +1222,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				}
 				else
 				{
-					string message = $"Problem exporting load order to '{outputPath}'. Is the file locked?";
+					var message = $"Problem exporting load order to '{outputPath}'. Is the file locked?";
 					var title = "Mod Order Export Failed";
 					DivinityApp.ShowAlert(message, AlertType.Danger);
 					await DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK));
@@ -1238,9 +1240,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		{
 			if (SelectedGameMasterCampaign != null)
 			{
-				if (Services.Mods.TryGetMod(DivinityApp.GAMEMASTER_UUID, out var gmAdventureMod))
+				if (ModManager.TryGetMod(DivinityApp.GAMEMASTER_UUID, out var gmAdventureMod))
 				{
-					var finalOrder = DivinityModDataLoader.BuildOutputList(SelectedModOrder.Order, Services.Mods.AllMods, Settings.AutoAddDependenciesWhenExporting);
+					var finalOrder = DivinityModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting);
 					if (SelectedGameMasterCampaign.Export(finalOrder))
 					{
 						// Need to still write to modsettings.lsx
@@ -1264,7 +1266,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 							SelectedGameMasterCampaign.Dependencies.Clear();
 							SelectedGameMasterCampaign.Dependencies.AddRange(finalOrder.Select(x => DivinityModDependencyData.FromModData(x)));
 
-							List<string> orderList = new();
+							List<string> orderList = [];
 							if (SelectedAdventureMod != null) orderList.Add(SelectedAdventureMod.UUID);
 							orderList.AddRange(SelectedModOrder.Order.Select(x => x.UUID));
 
@@ -1279,7 +1281,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 					}
 					else
 					{
-						string message = $"Problem exporting load order to '{SelectedGameMasterCampaign.FilePath}'";
+						var message = $"Problem exporting load order to '{SelectedGameMasterCampaign.FilePath}'";
 						DivinityApp.ShowAlert(message, AlertType.Danger);
 						DivinityInteractions.ShowMessageBox.Handle(new(message, "Mod Order Export Failed", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
 					}
@@ -1306,7 +1308,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			DivinityLoadOrder currentOrder = new() { Name = "Current", FilePath = Path.Join(profile.FilePath, "modsettings.lsx"), IsModSettings = true };
 
-			var modManager = Services.Mods;
+			var modManager = ModManager;
 
 			foreach (var uuid in profile.ModOrder)
 			{
@@ -1351,7 +1353,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			if (!String.IsNullOrEmpty(lastOrderName))
 			{
-				int lastOrderIndex = ModOrderList.IndexOf(ModOrderList.FirstOrDefault(x => x.Name == lastOrderName));
+				var lastOrderIndex = ModOrderList.IndexOf(ModOrderList.FirstOrDefault(x => x.Name == lastOrderName));
 				if (lastOrderIndex != -1) selectIndex = lastOrderIndex;
 			}
 
@@ -1374,7 +1376,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 						}
 						*/
 
-						//Services.Settings.ManagerSettings.LastOrder = nextOrder?.Name ?? "";
+						//Settings.LastOrder = nextOrder?.Name ?? "";
 					}
 					catch (Exception ex)
 					{
@@ -1457,7 +1459,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	public void ClearMissingMods()
 	{
-		var modManager = Services.Mods;
+		var modManager = ModManager;
 		var totalRemoved = SelectedModOrder != null ? SelectedModOrder.Order.RemoveAll(x => !modManager.ModExists(x.UUID)) : 0;
 
 		if (totalRemoved > 0)
@@ -1468,7 +1470,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	public void RemoveDeletedMods(HashSet<string> deletedMods, bool removeFromLoadOrder = true)
 	{
-		Services.Mods.RemoveByUUID(deletedMods);
+		ModManager.RemoveByUUID(deletedMods);
 
 		if (removeFromLoadOrder)
 		{
@@ -1574,7 +1576,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private int SortModOrder(DivinityLoadOrderEntry a, DivinityLoadOrderEntry b)
 	{
-		var modManager = Services.Mods;
+		var modManager = ModManager;
 
 		if (a != null && b != null)
 		{
@@ -1606,41 +1608,17 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	public void AddNewModOrder(DivinityLoadOrder newOrder = null)
 	{
-		var lastIndex = SelectedModOrderIndex;
-		var lastOrders = ModOrderList.ToList();
-		var lastProfile = SelectedProfile;
-
-		var nextOrders = new List<DivinityLoadOrder>
+		if (newOrder == null)
 		{
-			SelectedProfile.SavedLoadOrder
-		};
-		nextOrders.AddRange(ExternalModOrders);
-
-		void undo()
-		{
-			ExternalModOrders.Clear();
-			ExternalModOrders.AddRange(lastOrders);
-			BuildModOrderList(lastProfile, lastIndex);
-		};
-
-		void redo()
-		{
-			if (newOrder == null)
+			newOrder = new DivinityLoadOrder()
 			{
-				newOrder = new DivinityLoadOrder()
-				{
-					Name = $"New{nextOrders.Count}",
-					Order = ActiveMods.Select(m => m.ToOrderEntry()).ToList()
-				};
-				newOrder.FilePath = Path.Join(Settings.LoadOrderPath, DivinityModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
-			}
-			ExternalModOrders.Add(newOrder);
-			BuildModOrderList(lastProfile, ExternalModOrders.Count); // +1 due to Current being index 0
-		};
-
-		this.CreateSnapshot(undo, redo);
-
-		redo();
+				Name = $"New{ExternalModOrders.Count + 1}",
+				Order = ActiveMods.Select(m => m.ToOrderEntry()).ToList()
+			};
+			newOrder.FilePath = Path.Join(Settings.LoadOrderPath, DivinityModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
+		}
+		ExternalModOrders.Add(newOrder);
+		BuildModOrderList(SelectedProfile, ExternalModOrders.Count); // +1 due to Current being index 0
 	}
 
 	public bool LoadModOrder() => LoadModOrder(SelectedModOrder);
@@ -1659,12 +1637,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			mod.Index = -1;
 		}
 
-		var modManager = Services.Mods;
+		var modManager = ModManager;
 
 		modManager.DeselectAllMods();
 
 		DivinityApp.Log($"Loading mod order '{order.Name}'.");
-		Dictionary<string, DivinityMissingModData> missingMods = new();
+		Dictionary<string, DivinityMissingModData> missingMods = [];
 		if (missingModsFromProfileOrder != null && missingModsFromProfileOrder.Count > 0)
 		{
 			missingModsFromProfileOrder.ForEach(x => missingMods[x.UUID] = x);
@@ -1673,7 +1651,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		var loadOrderIndex = 0;
 
-		for (int i = 0; i < loadFrom.Count; i++)
+		for (var i = 0; i < loadFrom.Count; i++)
 		{
 			var entry = loadFrom[i];
 			if (!DivinityModDataLoader.IgnoreMod(entry.UUID))
@@ -1740,7 +1718,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			var orderedMissingMods = missingMods.Values.OrderBy(x => x.Index).ToList();
 
 			DivinityApp.Log($"Missing mods: {String.Join(";", orderedMissingMods)}");
-			if (Services.Settings.ManagerSettings.DisableMissingModWarnings == true)
+			if (Settings.DisableMissingModWarnings == true)
 			{
 				DivinityApp.Log("Skipping missing mod display.");
 			}
@@ -1755,14 +1733,14 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		order.IsLoaded = true;
 
-		Services.Settings.ManagerSettings.LastOrder = order.Name;
+		Settings.LastOrder = order.Name;
 
 		return true;
 	}
 
 	public void OnFilterTextChanged(string searchText, IEnumerable<DivinityModData> modDataList)
 	{
-		int totalHidden = 0;
+		var totalHidden = 0;
 		//DivinityApp.LogMessage("Filtering mod list with search term " + searchText);
 		if (String.IsNullOrWhiteSpace(searchText))
 		{
@@ -1775,8 +1753,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		{
 			if (searchText.IndexOf("@") > -1)
 			{
-				string remainingSearch = searchText;
-				List<DivinityModFilterData> searchProps = new();
+				var remainingSearch = searchText;
+				List<DivinityModFilterData> searchProps = [];
 
 				MatchCollection matches;
 
@@ -1828,7 +1806,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				foreach (var mod in modDataList)
 				{
 					//@Mode GM @Author Leader
-					int totalMatches = 0;
+					var totalMatches = 0;
 					foreach (var f in searchProps)
 					{
 						if (f.Match(mod))
@@ -1870,7 +1848,7 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		{
 			TotalActiveModsHidden = totalHidden;
 		}
-		else if (modDataList == Services.Mods.ForceLoadedMods)
+		else if (modDataList == ModManager.ForceLoadedMods)
 		{
 			TotalOverrideModsHidden = totalHidden;
 		}
@@ -1892,13 +1870,13 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 				InitialDirectory = ModImportService.GetInitialStartingDirectory()
 			};
 
-			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
-			string baseOrderName = SelectedModOrder.Name;
+			var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+			var baseOrderName = SelectedModOrder.Name;
 			if (SelectedModOrder.IsModSettings)
 			{
 				baseOrderName = $"{SelectedProfile.Name}_{SelectedModOrder.Name}";
 			}
-			string outputName = $"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.tsv";
+			var outputName = $"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.tsv";
 
 			//dialog.RestoreDirectory = true;
 			dialog.FileName = DivinityModDataLoader.MakeSafeFilename(outputName, '_');
@@ -1910,10 +1888,10 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			if (dialog.ShowDialog(App.Current.MainWindow) == true)
 			{
 				var exportMods = new List<IModEntry>(ActiveMods);
-				exportMods.AddRange(Services.Mods.ForceLoadedMods.ToList().OrderBy(x => x.Name));
+				exportMods.AddRange(ModManager.ForceLoadedMods.ToList().OrderBy(x => x.Name));
 
 				var fileType = Path.GetExtension(dialog.FileName);
-				string outputText = "";
+				var outputText = "";
 				if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 				{
 					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => DivinitySerializedModData.FromMod((DivinityModData)x)).ToList();
@@ -1964,8 +1942,8 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		var startPath = "";
 		if (SelectedProfile != null)
 		{
-			string profilePath = Path.GetFullPath(Path.Join(SelectedProfile.FilePath, "Savegames"));
-			string storyPath = Path.Join(profilePath, "Story");
+			var profilePath = Path.GetFullPath(Path.Join(SelectedProfile.FilePath, "Savegames"));
+			var storyPath = Path.Join(profilePath, "Story");
 			if (Directory.Exists(storyPath))
 			{
 				startPath = storyPath;
@@ -2046,9 +2024,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 		if (dialog.ShowDialog(App.Current.MainWindow) == true)
 		{
 			Settings.LastLoadedOrderFilePath = Path.GetDirectoryName(dialog.FileName);
-			Services.Settings.TrySaveAll(out _);
+			Settings.Save(out _);
 			DivinityApp.Log($"Loading order from '{dialog.FileName}'.");
-			var newOrder = DivinityModDataLoader.LoadOrderFromFile(dialog.FileName, Services.Mods.AllMods);
+			var newOrder = DivinityModDataLoader.LoadOrderFromFile(dialog.FileName, ModManager.AllMods);
 			if (newOrder != null)
 			{
 				DivinityApp.Log($"Imported mod order:\n{String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");

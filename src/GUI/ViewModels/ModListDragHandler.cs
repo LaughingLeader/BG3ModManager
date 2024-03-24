@@ -1,7 +1,8 @@
-﻿using ModManager.Models;
-using ModManager.Models.Mod;
+﻿using GongSolutions.Wpf.DragDrop;
 
-using GongSolutions.Wpf.DragDrop;
+using ModManager.Models;
+using ModManager.Models.Mod;
+using ModManager.Services;
 
 using System.Reactive;
 using System.Reactive.Linq;
@@ -33,22 +34,15 @@ public class ManualDragInfo : IDragInfo
 	public DragDropKeyStates DragDropCopyKeyState { get; set; }
 }
 
-public class ModListDragHandler : DefaultDragHandler
+public class ModListDragHandler() : DefaultDragHandler
 {
-	private readonly MainWindowViewModel _viewModel;
-
-	public ModListDragHandler(MainWindowViewModel vm) : base()
-	{
-		_viewModel = vm;
-	}
-
 	private IDragInfo _lastDragInfo;
 
 	public override void StartDrag(IDragInfo dragInfo)
 	{
 		if (dragInfo != null)
 		{
-			var modOrderVM = _viewModel.Views.ModOrder;
+			var modOrderVM = ViewModelLocator.ModOrder;
 
 			_lastDragInfo = dragInfo;
 			dragInfo.Data = null;
@@ -64,7 +58,7 @@ public class ModListDragHandler : DefaultDragHandler
 			}
 			if (dragInfo.Data != null)
 			{
-				_viewModel.IsDragging = true;
+				ViewModelLocator.Main.IsDragging = true;
 			}
 			dragInfo.Effects = dragInfo.Data != null ? DragDropEffects.Copy | DragDropEffects.Move : DragDropEffects.None;
 		}
@@ -72,12 +66,12 @@ public class ModListDragHandler : DefaultDragHandler
 
 	public override void DragDropOperationFinished(DragDropEffects operationResult, IDragInfo dragInfo)
 	{
-		_viewModel.IsDragging = false;
+		ViewModelLocator.Main.IsDragging = false;
 	}
 
 	public override bool CanStartDrag(IDragInfo dragInfo)
 	{
-		if (!_viewModel.AllowDrop)
+		if (!ViewModelLocator.Main.AllowDrop)
 		{
 			return false;
 		}
@@ -97,7 +91,7 @@ public class ModListDragHandler : DefaultDragHandler
 
 	public override void DragCancelled()
 	{
-		_viewModel.IsDragging = false;
+		ViewModelLocator.Main.IsDragging = false;
 		if (_lastDragInfo != null)
 		{
 			_lastDragInfo.Effects = DragDropEffects.None;

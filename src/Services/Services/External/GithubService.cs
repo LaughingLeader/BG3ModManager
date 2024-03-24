@@ -95,8 +95,10 @@ public class GitHubService : IGitHubService
 		return results;
 	}
 
-	public GitHubService(string appName, string appVersion)
+	public GitHubService(IEnvironmentService environmentService)
 	{
+		var appName = environmentService.AppFriendlyName;
+		var appVersion = environmentService.AppVersion.ToString();
 		_client = new GitHubClient(new ProductHeaderValue(appName, appVersion));
 	}
 }

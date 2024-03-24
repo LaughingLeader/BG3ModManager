@@ -46,8 +46,8 @@ public class TextBlockSettingsEntryAttributeBehavior
 		if (String.IsNullOrEmpty(propName)) propName = GetProperty(element);
 		if (targetType != null && !String.IsNullOrEmpty(propName))
 		{
-			PropertyInfo prop = targetType.GetProperty(propName);
-			SettingsEntryAttribute settingsEntry = prop.GetCustomAttribute<SettingsEntryAttribute>();
+			var prop = targetType.GetProperty(propName);
+			var settingsEntry = prop.GetCustomAttribute<SettingsEntryAttribute>();
 			if (settingsEntry != null)
 			{
 				element.Text = settingsEntry.DisplayName;

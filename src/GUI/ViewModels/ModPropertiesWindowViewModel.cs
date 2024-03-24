@@ -1,7 +1,7 @@
-﻿using ModManager.Models.Mod;
-using ModManager.Util;
+﻿using DynamicData;
 
-using DynamicData;
+using ModManager.Models.Mod;
+using ModManager.Util;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public class ModConfigPropertiesViewModel : ReactiveObject
+public class ModPropertiesWindowViewModel : BaseWindowViewModel
 {
 	[Reactive] public string Title { get; set; }
 	[Reactive] public bool IsActive { get; set; }
@@ -123,7 +123,7 @@ public class ModConfigPropertiesViewModel : ReactiveObject
 		return "0 bytes";
 	}
 
-	public ModConfigPropertiesViewModel()
+	public ModPropertiesWindowViewModel()
 	{
 		Title = "Mod Properties";
 

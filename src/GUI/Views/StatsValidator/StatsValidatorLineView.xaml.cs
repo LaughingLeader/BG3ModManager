@@ -1,5 +1,4 @@
 ﻿using ModManager.Models.View;
-using ModManager.Util;
 
 using ReactiveUI;
 

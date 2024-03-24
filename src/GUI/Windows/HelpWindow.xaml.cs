@@ -25,7 +25,7 @@ public partial class HelpWindow : HelpWindowBase
 	{
 		InitializeComponent();
 
-		ViewModel = new HelpWindowViewModel();
+		ViewModel = ViewModelLocator.Help;
 
 		this.WhenActivated(d =>
 		{

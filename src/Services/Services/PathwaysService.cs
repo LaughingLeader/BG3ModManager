@@ -4,8 +4,10 @@ using ModManager.Util;
 using System.IO;
 
 namespace ModManager.Services;
-public class PathwaysService
+public class PathwaysService : IPathwaysService
 {
+	private readonly ISettingsService _settingsService;
+
 	public DivinityPathwayData Data { get; }
 
 	public string GetLarianStudiosAppDataFolder()
@@ -19,9 +21,9 @@ public class PathwaysService
 			}
 		}
 		string appDataFolder;
-		if (!String.IsNullOrEmpty(AppServices.Settings.ManagerSettings.DocumentsFolderPathOverride))
+		if (!String.IsNullOrEmpty(_settingsService.ManagerSettings.DocumentsFolderPathOverride))
 		{
-			appDataFolder = AppServices.Settings.ManagerSettings.DocumentsFolderPathOverride;
+			appDataFolder = _settingsService.ManagerSettings.DocumentsFolderPathOverride;
 		}
 		else
 		{
@@ -45,17 +47,16 @@ public class PathwaysService
 	//TODO Make this work for both DOS2 and BG3
 	public bool SetGamePathways(string currentGameDataPath, string gameDataFolderOverride = "")
 	{
-		var settings = AppServices.Settings;
 		try
 		{
 			var localAppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify);
 
-			if (String.IsNullOrWhiteSpace(settings.AppSettings.DefaultPathways.DocumentsGameFolder))
+			if (String.IsNullOrWhiteSpace(_settingsService.AppSettings.DefaultPathways.DocumentsGameFolder))
 			{
-				settings.AppSettings.DefaultPathways.DocumentsGameFolder = "Larian Studios\\Baldur's Gate 3";
+				_settingsService.AppSettings.DefaultPathways.DocumentsGameFolder = "Larian Studios\\Baldur's Gate 3";
 			}
 
-			var gameDataFolder = Path.Join(localAppDataFolder, settings.AppSettings.DefaultPathways.DocumentsGameFolder);
+			var gameDataFolder = Path.Join(localAppDataFolder, _settingsService.AppSettings.DefaultPathways.DocumentsGameFolder);
 
 			if (!String.IsNullOrEmpty(gameDataFolderOverride) && Directory.Exists(gameDataFolderOverride))
 			{
@@ -72,7 +73,7 @@ public class PathwaysService
 				if (Directory.Exists(userFolder))
 				{
 					localAppDataFolder = Path.Join(userFolder, "AppData", "Local");
-					gameDataFolder = Path.Join(localAppDataFolder, settings.AppSettings.DefaultPathways.DocumentsGameFolder);
+					gameDataFolder = Path.Join(localAppDataFolder, _settingsService.AppSettings.DefaultPathways.DocumentsGameFolder);
 				}
 			}
 
@@ -118,36 +119,36 @@ public class PathwaysService
 
 			if (String.IsNullOrWhiteSpace(currentGameDataPath) || !Directory.Exists(currentGameDataPath))
 			{
-				var defaultPathways = settings.AppSettings.DefaultPathways;
+				var defaultPathways = _settingsService.AppSettings.DefaultPathways;
 				var installPath = DivinityRegistryHelper.GetGameInstallPath(defaultPathways.Steam.RootFolderName,
 					defaultPathways.GOG.Registry_32, defaultPathways.GOG.Registry_64, defaultPathways.Steam.AppID);
 
 				if (!String.IsNullOrEmpty(installPath) && Directory.Exists(installPath))
 				{
 					Data.InstallPath = installPath;
-					if (!File.Exists(settings.ManagerSettings.GameExecutablePath))
+					if (!File.Exists(_settingsService.ManagerSettings.GameExecutablePath))
 					{
 						var exePath = "";
 						if (!DivinityRegistryHelper.IsGOG)
 						{
-							exePath = Path.Join(installPath, settings.AppSettings.DefaultPathways.Steam.ExePath);
+							exePath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.Steam.ExePath);
 						}
 						else
 						{
-							exePath = Path.Join(installPath, settings.AppSettings.DefaultPathways.GOG.ExePath);
+							exePath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.GOG.ExePath);
 						}
 						if (File.Exists(exePath))
 						{
-							settings.ManagerSettings.GameExecutablePath = exePath.Replace("\\", "/");
+							_settingsService.ManagerSettings.GameExecutablePath = exePath.Replace("\\", "/");
 							DivinityApp.Log($"Exe path set to '{exePath}'.");
 						}
 					}
 
-					var gameDataPath = Path.Join(installPath, settings.AppSettings.DefaultPathways.GameDataFolder).Replace("\\", "/");
+					var gameDataPath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.GameDataFolder).Replace("\\", "/");
 					if (Directory.Exists(gameDataPath))
 					{
 						DivinityApp.Log($"Set game data path to '{gameDataPath}'.");
-						settings.ManagerSettings.GameDataPath = gameDataPath;
+						_settingsService.ManagerSettings.GameDataPath = gameDataPath;
 					}
 					else
 					{
@@ -157,29 +158,29 @@ public class PathwaysService
 			}
 			else
 			{
-				var installPath = Path.GetFullPath(Path.Join(settings.ManagerSettings.GameDataPath, @"..\..\"));
+				var installPath = Path.GetFullPath(Path.Join(_settingsService.ManagerSettings.GameDataPath, @"..\..\"));
 				Data.InstallPath = installPath;
-				if (!File.Exists(settings.ManagerSettings.GameExecutablePath))
+				if (!File.Exists(_settingsService.ManagerSettings.GameExecutablePath))
 				{
 					var exePath = "";
 					if (!DivinityRegistryHelper.IsGOG)
 					{
-						exePath = Path.Join(installPath, settings.AppSettings.DefaultPathways.Steam.ExePath);
+						exePath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.Steam.ExePath);
 					}
 					else
 					{
-						exePath = Path.Join(installPath, settings.AppSettings.DefaultPathways.GOG.ExePath);
+						exePath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.GOG.ExePath);
 					}
 					if (File.Exists(exePath))
 					{
-						settings.ManagerSettings.GameExecutablePath = exePath.Replace("\\", "/");
+						_settingsService.ManagerSettings.GameExecutablePath = exePath.Replace("\\", "/");
 						DivinityApp.Log($"Exe path set to '{exePath}'.");
 					}
 				}
 			}
 
 
-			if (!Directory.Exists(settings.ManagerSettings.GameDataPath) || !File.Exists(settings.ManagerSettings.GameExecutablePath))
+			if (!Directory.Exists(_settingsService.ManagerSettings.GameDataPath) || !File.Exists(_settingsService.ManagerSettings.GameExecutablePath))
 			{
 				DivinityApp.Log("Failed to find game data path.");
 				return false;
@@ -195,8 +196,9 @@ public class PathwaysService
 		return false;
 	}
 
-	public PathwaysService()
+	public PathwaysService(ISettingsService settingsService)
 	{
+		_settingsService = settingsService;
 		Data = new();
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using ModManager.Models.View;
+
 using ReactiveUI;
 
 using System.Windows;
@@ -12,7 +13,7 @@ public partial class StatsValidatorFileEntryView : StatsValidatorFileEntryViewBa
 {
 	public static Brush ErrorToForeground(bool isError)
 	{
-		if(!isError)
+		if (!isError)
 		{
 			return Application.Current.TryFindResource(AdonisUI.Brushes.ForegroundBrush) as Brush;
 		}
