@@ -1,0 +1,20 @@
+<Project>
+    <PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<RootNamespace>DivinityModManager</RootNamespace>
+		<Configurations>Debug;Release;Publish;PublishTest</Configurations>
+		<Platforms>AnyCPU</Platforms>
+		<PlatformTarget>x64</PlatformTarget>
+		<NeutralLanguage>en</NeutralLanguage>
+		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+		<SupportedCultures>en-US</SupportedCultures>
+		<DebugType>none</DebugType>
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DebugType>full</DebugType>
+		<Optimize>False</Optimize>
+	</PropertyGroup>
+</Project>
