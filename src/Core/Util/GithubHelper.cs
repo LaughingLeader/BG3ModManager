@@ -11,13 +11,13 @@ public static class GitHubHelper
 
 	public static async Task<string> GetLatestReleaseJsonStringAsync(string repo, CancellationToken token)
 	{
-		var response = await WebHelper.Client.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
+		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
 		return await response.Content.ReadAsStringAsync();
 	}
 
 	public static async Task<string> GetAllReleaseJsonStringAsync(string repo, CancellationToken token)
 	{
-		var response = await WebHelper.Client.GetAsync(String.Format(GIT_URL_REPO_RELEASES, repo), _completionOption, token);
+		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_RELEASES, repo), _completionOption, token);
 		return await response.Content.ReadAsStringAsync();
 	}
 
@@ -47,7 +47,7 @@ public static class GitHubHelper
 
 	public static async Task<string> GetLatestReleaseLinkAsync(string repo, CancellationToken token)
 	{
-		var response = await WebHelper.Client.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
+		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
 		return GetBrowserDownloadUrl(await response.Content.ReadAsStringAsync());
 	}
 }

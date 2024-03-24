@@ -29,7 +29,7 @@ public static class WorkshopDataLoader
 		return [];
 	}
 
-	public static async Task<int> LoadAllWorkshopDataAsync(List<DivinityModData> workshopMods, SteamWorkshopCachedData cachedData)
+	public static async Task<int> LoadAllWorkshopDataAsync(List<DivinityModData> workshopMods, SteamWorkshopCachedData cachedData, CancellationToken token)
 	{
 		if (workshopMods == null || workshopMods.Count == 0)
 		{
@@ -53,7 +53,7 @@ public static class WorkshopDataLoader
 		try
 		{
 			var content = new FormUrlEncodedContent(values);
-			var response = await WebHelper.Client.PostAsync(STEAM_API_GET_WORKSHOP_DATA_URL, content);
+			var response = await WebHelper.PostAsync(STEAM_API_GET_WORKSHOP_DATA_URL, content, token);
 			responseData = await response.Content.ReadAsStringAsync();
 		}
 		catch (Exception ex)
@@ -130,7 +130,7 @@ public static class WorkshopDataLoader
 			string responseData = "";
 			try
 			{
-				var response = await WebHelper.Client.GetAsync(url, token);
+				var response = await WebHelper.GetAsync(url, token);
 				responseData = await response.Content.ReadAsStringAsync();
 			}
 			catch (Exception ex)
@@ -200,7 +200,7 @@ public static class WorkshopDataLoader
 		}
 	}
 
-	public static async Task<int> FindWorkshopDataAsync(List<DivinityModData> mods, SteamWorkshopCachedData cachedData, string appid, string apiKey)
+	public static async Task<int> FindWorkshopDataAsync(List<DivinityModData> mods, SteamWorkshopCachedData cachedData, string appid, string apiKey, CancellationToken token)
 	{
 		if (mods == null || mods.Count == 0)
 		{
@@ -216,7 +216,7 @@ public static class WorkshopDataLoader
 			string responseData = "";
 			try
 			{
-				var response = await WebHelper.Client.GetAsync(url);
+				var response = await WebHelper.GetAsync(url, token);
 				responseData = await response.Content.ReadAsStringAsync();
 			}
 			catch (Exception ex)

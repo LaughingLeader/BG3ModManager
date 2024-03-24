@@ -1,18 +1,24 @@
-﻿using System.IO;
+﻿using Splat;
+
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 
 namespace ModManager.Util;
 
+#nullable enable
+
 public static class WebHelper
 {
-	public static readonly HttpClient Client = new();
+	private static HttpClient Client => Locator.Current.GetService<HttpClient>()!;
 
-	public static void SetupClient()
-	{
-		// Required for GitHub permissions
-		Client.DefaultRequestHeaders.Add("User-Agent", "BG3ModManager");
-	}
+	public static Task<HttpResponseMessage> GetAsync([StringSyntax("Uri")] string? requestUri) => Client.GetAsync(requestUri);
+	public static Task<HttpResponseMessage> GetAsync([StringSyntax("Uri")] string? requestUri, CancellationToken cancellationToken) => Client.GetAsync(requestUri, cancellationToken);
+	public static Task<HttpResponseMessage> GetAsync([StringSyntax("Uri")] string? requestUri, HttpCompletionOption completionOption, CancellationToken cancellationToken) => Client.GetAsync(requestUri, completionOption, cancellationToken);
+
+	public static Task<HttpResponseMessage> PostAsync([StringSyntax("Uri")] string? requestUri, HttpContent? content) => Client.PostAsync(requestUri, content);
+	public static Task<HttpResponseMessage> PostAsync([StringSyntax("Uri")] string? requestUri, HttpContent? content, CancellationToken token) => Client.PostAsync(requestUri, content, token);
 
 	public static async Task<Stream> DownloadFileAsStreamAsync(string downloadUrl, CancellationToken token)
 	{

@@ -25,6 +25,7 @@ public static class SplatContainerExtensions
 		SplatRegistrations.RegisterLazySingleton<IFileSystemService, FileSystemService>();
 		SplatRegistrations.RegisterLazySingleton<IFileWatcherService, FileWatcherService>();
 
+		SplatRegistrations.RegisterLazySingleton<HttpClient, AppHttpClient>();
 
 		SplatRegistrations.SetupIOC();
 
