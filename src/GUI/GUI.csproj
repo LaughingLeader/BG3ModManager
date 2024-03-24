@@ -1,40 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-		<LangVersion>latest</LangVersion>
+		<OutputType>WinExe</OutputType>
 		<UseWPF>true</UseWPF>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<StartupObject>ModManager.Program</StartupObject>
 		<ApplicationIcon>BG3ModManager.ico</ApplicationIcon>
-		<RootNamespace>ModManager</RootNamespace>
+
 		<AssemblyName>BG3ModManager</AssemblyName>
 		<AssemblyTitle>BG3ModManager</AssemblyTitle>
+
 		<AssemblyVersion>1.1.0.0</AssemblyVersion>
 		<FileVersion>1.1.0.0</FileVersion>
+
 		<Product>Baldur's Gate 3 Mod Manager</Product>
 		<Company>LaughingLeader</Company>
 		<Copyright>Copyright © 2020</Copyright>
 		<Description>A mod manager for Baldur's Gate 3.</Description>
-		<Configurations>Debug;Release;Publish;PublishTest</Configurations>
+
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>$(SolutionDir)\bin\$(Configuration)\</OutputPath>
-		<OutputType>WinExe</OutputType>
-		<Platforms>AnyCPU</Platforms>
-		<PlatformTarget>x64</PlatformTarget>
-		<NeutralLanguage>en</NeutralLanguage>
-		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
-		<SupportedCultures>en-US</SupportedCultures>
+
 		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DebugType>none</DebugType>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<DebugType>full</DebugType>
-		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">

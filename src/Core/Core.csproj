@@ -1,23 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<LangVersion>latest</LangVersion>
 		<UseWPF>true</UseWPF>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>ModManager</RootNamespace>
 		<AssemblyName>ModManager.Core</AssemblyName>
-		<Platforms>AnyCPU</Platforms>
-		<PlatformTarget>x64</PlatformTarget>
-		<Configurations>Debug;Release;Publish;PublishTest</Configurations>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<SupportedCultures>en-US</SupportedCultures>
-		<DebugType>none</DebugType>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<DebugType>full</DebugType>
-		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>

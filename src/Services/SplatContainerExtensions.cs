@@ -12,7 +12,7 @@ namespace ModManager;
 public static class SplatContainerExtensions
 {
 	/// <summary>
-	/// Registers Services classes into the IoC container.
+	/// Registers standard Services classes with a DepedencyResolver.
 	/// </summary>
 	/// <param name="services">The IoC services container.</param>
 	public static IMutableDependencyResolver AddCommonServices(this IMutableDependencyResolver services)

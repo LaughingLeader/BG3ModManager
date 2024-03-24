@@ -12,5 +12,3 @@ global using System.Reactive;
 global using System.Reactive.Concurrency;
 global using System.Reactive.Disposables;
 global using System.Reactive.Linq;
-
-global using RxCommandUnit = ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>;
