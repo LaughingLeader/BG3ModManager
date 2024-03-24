@@ -257,9 +257,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 	[Reactive] public int SelectedModOrderIndex { get; set; }
 	[Reactive] public int SelectedAdventureModIndex { get; set; }
 
-	[Reactive] public DivinityProfileData SelectedProfile { get; set; }
-	[Reactive] public DivinityLoadOrder SelectedModOrder { get; set; }
-	[Reactive] public DivinityModData SelectedAdventureMod { get; set; }
+	[ObservableAsProperty] public DivinityProfileData SelectedProfile { get; }
+	[ObservableAsProperty] public DivinityLoadOrder SelectedModOrder { get; }
+	[ObservableAsProperty] public DivinityModData SelectedAdventureMod { get; }
 
 	[ObservableAsProperty] public string SelectedModOrderName { get; }
 
@@ -403,29 +403,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
 
-	private IDisposable _profileChangesDisp;
-
-	private void ListenForProfileChanges(bool enabled)
-	{
-		_profileChangesDisp?.Dispose();
-		if(enabled)
-		{
-			var profileChanged = Profiles.ToObservableChangeSet().CountChanged().Throttle(TimeSpan.FromMilliseconds(50)).CombineLatest(this.WhenAnyValue(x => x.SelectedProfileIndex)).Select(x => x.Second);
-
-			_profileChangesDisp = profileChanged.Subscribe(index =>
-			{
-				if (index < Profiles.Count)
-				{
-					var nextProfile = Profiles.ElementAtOrDefault(index);
-					if (nextProfile != null)
-					{
-						SelectedProfile = nextProfile;
-					}
-				}
-			});
-		}
-	}
-
 	public ModOrderViewModel(MainWindowViewModel host)
 	{
 		DivinityApp.Commands.SetViewModel(this);
@@ -547,7 +524,12 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 		OrderJustLoadedCommand = ReactiveCommand.Create<DivinityLoadOrder>(order => { });
 
-		this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => ModOrderList.ElementAtOrDefault(x)).BindTo(this, x => x.SelectedModOrder);
+		var profileChanged = Profiles.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
+			.CombineLatest(this.WhenAnyValue(x => x.SelectedProfileIndex)).Select(x => x.Second);
+		profileChanged.Select(x => Profiles.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedProfile);
+
+		this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => ModOrderList.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedModOrder);
+
 		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
 		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
 
@@ -595,10 +577,9 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 			SelectedModOrder?.Sort(SortModOrder);
 		});
 
-		modManager.AdventureMods.ToObservableChangeSet().CountChanged().CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex))
-			.Select(x => x.Second >= 0 && modManager.AdventureMods.Count > 0 && x.Second < modManager.AdventureMods.Count)
-			.Where(b => b == true)
-			.Select(x => modManager.AdventureMods[SelectedAdventureModIndex]).BindTo(this, x => x.SelectedAdventureMod);
+		modManager.AdventureMods.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
+			.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex)).Select(x => x.Second)
+			.Select(x => modManager.AdventureMods.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
 
 		this.WhenAnyValue(x => x.SelectedAdventureModIndex).Throttle(TimeSpan.FromMilliseconds(50)).Subscribe((i) =>
 		{
@@ -716,7 +697,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 	public async Task RefreshAsync(MainWindowViewModel main, CancellationToken token)
 	{
 		IsRefreshing = true;
-		ListenForProfileChanges(false);
 		DivinityApp.Log($"Refreshing data asynchronously...");
 
 		double taskStepAmount = 1.0 / 9;
@@ -864,7 +844,6 @@ public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModO
 
 			Services.Mods.ApplyUserModConfig();
 			IsRefreshing = false;
-			ListenForProfileChanges(true);
 
 			if (profiles.Count > 0)
 			{
