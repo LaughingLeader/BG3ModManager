@@ -38,7 +38,7 @@ public class GameUtilitiesService : ReactiveObject, IGameUtilitiesService
 	public void RemoveGameProcessName(string name) => _processNames.Remove(name);
 	public void RemoveGameProcessName(IEnumerable<string> names)
 	{
-		foreach(var x in names)
+		foreach (var x in names)
 		{
 			_processNames.Remove(x);
 		}

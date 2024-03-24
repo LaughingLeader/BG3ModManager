@@ -1,12 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Input;
@@ -63,8 +57,8 @@ public class Hotkey : ReactiveObject, IHotkey
 
 	[Reactive] public bool CanExecuteCommand { get; private set; }
 
-	private readonly List<IObservable<bool>> _canExecuteConditions = new();
-	private CompositeDisposable _disposables = new();
+	private readonly List<IObservable<bool>> _canExecuteConditions = [];
+	private CompositeDisposable _disposables = [];
 	private IObservable<bool> _canExecute;
 
 	private readonly List<Action> _actions;
@@ -74,10 +68,10 @@ public class Hotkey : ReactiveObject, IHotkey
 	private void SetupSubscription()
 	{
 		_disposables?.Dispose();
-		_disposables = new CompositeDisposable
-		{
+		_disposables =
+		[
 			_canExecute.Subscribe(b => CanExecuteCommand = b)
-		};
+		];
 	}
 
 	public void AddCanExecuteCondition(IObservable<bool> canExecute)
@@ -132,7 +126,7 @@ public class Hotkey : ReactiveObject, IHotkey
 		Enabled = true;
 		CanEdit = true;
 
-		_actions = new List<Action>();
+		_actions = [];
 
 		DisplayBindingText = ToString();
 

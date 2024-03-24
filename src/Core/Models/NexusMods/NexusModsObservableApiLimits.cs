@@ -1,8 +1,5 @@
 ﻿using NexusModsNET;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.Models.NexusMods;
 
 public class NexusModsObservableApiLimits : ReactiveObject, INexusApiLimits

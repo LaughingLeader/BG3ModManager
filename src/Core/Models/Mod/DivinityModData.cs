@@ -1,22 +1,16 @@
-﻿using ModManager.Extensions;
+﻿using DynamicData;
+using DynamicData.Binding;
+
+using ModManager.Extensions;
 using ModManager.Models.GitHub;
 using ModManager.Models.NexusMods;
 using ModManager.Models.Steam;
 using ModManager.Util;
 
-using DynamicData;
-using DynamicData.Binding;
-
 using Newtonsoft.Json;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 
@@ -41,9 +35,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 	[Reactive, DataMember] public LarianVersion Version { get; set; }
 	[Reactive] public LarianVersion HeaderVersion { get; set; }
 	[Reactive] public LarianVersion PublishVersion { get; set; }
-	public List<string> Tags { get; set; } = new List<string>();
+	public List<string> Tags { get; set; } = [];
 
-	public ObservableCollectionExtended<string> Modes { get; private set; } = new ObservableCollectionExtended<string>();
+	public ObservableCollectionExtended<string> Modes { get; private set; } = [];
 
 	public string Targets { get; set; }
 	public SourceList<DivinityModDependencyData> Dependencies { get; set; } = new SourceList<DivinityModDependencyData>();
@@ -494,7 +488,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 			{
 				if (_modConfigDisposables == null)
 				{
-					_modConfigDisposables = new CompositeDisposable();
+					_modConfigDisposables = [];
 
 					this.WhenAnyValue(x => x.ModManagerConfig.Notes).ToUIProperty(this, x => x.Notes, "").DisposeWith(_modConfigDisposables);
 
@@ -593,7 +587,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 
 	public string Export(ModExportType exportType)
 	{
-		string result = exportType switch
+		var result = exportType switch
 		{
 			ModExportType.XML => String.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt),
 			ModExportType.JSON => JsonConvert.SerializeObject(this, _serializerSettings),

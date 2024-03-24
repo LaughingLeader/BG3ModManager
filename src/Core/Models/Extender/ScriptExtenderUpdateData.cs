@@ -1,8 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Globalization;
-using System.Reactive.Linq;
+﻿using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace ModManager.Models.Extender;

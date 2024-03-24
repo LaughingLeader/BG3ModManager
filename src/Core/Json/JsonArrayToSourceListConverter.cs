@@ -19,7 +19,7 @@ public class JsonArrayToSourceListConverter<T> : JsonConverter
 		{
 			if (reader.TokenType == JsonToken.StartArray)
 			{
-				JToken token = JToken.Load(reader);
+				var token = JToken.Load(reader);
 				arr = token.ToObject<T[]>();
 			}
 		}

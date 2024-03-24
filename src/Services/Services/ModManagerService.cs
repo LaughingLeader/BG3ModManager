@@ -326,7 +326,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 		DivinityInteractions.ToggleModFileNameDisplay.RegisterHandler(interaction =>
 		{
-			foreach(var mod in mods.Items)
+			foreach (var mod in mods.Items)
 			{
 				mod.DisplayFileForName = interaction.Input;
 			}

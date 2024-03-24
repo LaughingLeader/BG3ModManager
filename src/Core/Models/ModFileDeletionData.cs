@@ -1,8 +1,5 @@
 ﻿using ModManager.Models.Mod;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.Models;
 
 public class ModFileDeletionData : ReactiveObject

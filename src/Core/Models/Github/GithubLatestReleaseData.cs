@@ -1,7 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-namespace ModManager.Models.GitHub;
+﻿namespace ModManager.Models.GitHub;
 
 public class GitHubLatestReleaseData : ReactiveObject
 {

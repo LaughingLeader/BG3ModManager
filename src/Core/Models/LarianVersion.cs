@@ -1,10 +1,4 @@
-﻿using Newtonsoft.Json;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace ModManager.Models;
 
@@ -30,10 +24,10 @@ static class VersionHelpers
 
 	public static ValueTuple<int, int, int, int> FromStringToInt(string value)
 	{
-		int major = 0;
-		int minor = 0;
-		int revision = 0;
-		int build = 0;
+		var major = 0;
+		var minor = 0;
+		var revision = 0;
+		var build = 0;
 
 		var values = value.Split('.');
 		if (values.Length > 0)

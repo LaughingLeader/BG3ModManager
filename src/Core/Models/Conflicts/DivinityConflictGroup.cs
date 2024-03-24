@@ -1,8 +1,4 @@
-﻿using ReactiveUI;
-
-using System.Reactive.Disposables;
-
-namespace ModManager.Models.Conflicts;
+﻿namespace ModManager.Models.Conflicts;
 
 public class DivinityConflictGroup : ReactiveObject
 {
@@ -22,7 +18,7 @@ public class DivinityConflictGroup : ReactiveObject
 		set { this.RaiseAndSetIfChanged(ref totalConflicts, value); }
 	}
 
-	public List<DivinityConflictEntryData> Conflicts { get; set; } = new List<DivinityConflictEntryData>();
+	public List<DivinityConflictEntryData> Conflicts { get; set; } = [];
 
 	private int selectedConflictIndex = 0;
 

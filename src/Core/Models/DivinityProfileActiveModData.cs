@@ -29,7 +29,7 @@ public class DivinityProfileActiveModData
 		{
 			if (attribute.Value is string att)
 			{
-				if (UInt64.TryParse(att, out ulong val))
+				if (UInt64.TryParse(att, out var val))
 				{
 					return val;
 				}

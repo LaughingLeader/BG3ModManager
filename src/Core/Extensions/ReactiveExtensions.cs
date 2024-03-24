@@ -1,8 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Linq.Expressions;
-using System.Reactive.Concurrency;
+﻿using System.Linq.Expressions;
 
 namespace ModManager;
 

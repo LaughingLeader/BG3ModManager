@@ -4,8 +4,6 @@ using ModManager.Models.Steam;
 
 using Newtonsoft.Json;
 
-using System.Net.Http;
-
 namespace ModManager.Util;
 
 public static class WorkshopDataLoader
@@ -40,7 +38,7 @@ public static class WorkshopDataLoader
 		{
 		{ "itemcount", workshopMods.Count.ToString()}
 		};
-		int i = 0;
+		var i = 0;
 		foreach (var mod in workshopMods)
 		{
 			values.Add($"publishedfileids[{i}]", mod.WorkshopData.ModId.ToString());
@@ -49,7 +47,7 @@ public static class WorkshopDataLoader
 
 		DivinityApp.Log($"Updating workshop data for mods.");
 
-		string responseData = "";
+		var responseData = "";
 		try
 		{
 			var content = new FormUrlEncodedContent(values);
@@ -61,11 +59,11 @@ public static class WorkshopDataLoader
 			DivinityApp.Log($"Error requesting Steam API to get workshop mod data:\n{ex}");
 		}
 
-		int totalLoaded = 0;
+		var totalLoaded = 0;
 
 		if (!String.IsNullOrEmpty(responseData))
 		{
-			PublishedFileDetailsResponse pResponse = DivinityJsonUtils.SafeDeserialize<PublishedFileDetailsResponse>(responseData);
+			var pResponse = DivinityJsonUtils.SafeDeserialize<PublishedFileDetailsResponse>(responseData);
 			if (pResponse != null && pResponse.Response != null && pResponse.Response.PublishedFileDetails != null && pResponse.Response.PublishedFileDetails.Count > 0)
 			{
 				var details = pResponse.Response.PublishedFileDetails;
@@ -117,17 +115,17 @@ public static class WorkshopDataLoader
 			return false;
 		}
 		DivinityApp.Log($"Attempting to get workshop data for mods missing workshop folders.");
-		int totalFound = 0;
+		var totalFound = 0;
 
-		int total = 1482;
-		int page = 0;
-		int maxPage = (total / 99) + 1;
+		var total = 1482;
+		var page = 0;
+		var maxPage = (total / 99) + 1;
 
 		while (page < maxPage)
 		{
 			if (token.IsCancellationRequested) break;
-			string url = $"https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/?key={apiKey}&appid={appid}&return_short_description=true&numperpage=99&return_tags=true&return_metadata=true&excludedtags[0]=GM+Campaign&page={page}";
-			string responseData = "";
+			var url = $"https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/?key={apiKey}&appid={appid}&return_short_description=true&numperpage=99&return_tags=true&return_metadata=true&excludedtags[0]=GM+Campaign&page={page}";
+			var responseData = "";
 			try
 			{
 				var response = await WebHelper.GetAsync(url, token);
@@ -163,7 +161,7 @@ public static class WorkshopDataLoader
 					{
 						try
 						{
-							string uuid = d.GetGuid();
+							var uuid = d.GetGuid();
 							if (!String.IsNullOrEmpty(uuid))
 							{
 								cachedData.AddOrUpdate(uuid, d, GetWorkshopTags(d));
@@ -208,12 +206,12 @@ public static class WorkshopDataLoader
 			return 0;
 		}
 		DivinityApp.Log($"Attempting to get workshop data for {mods.Count} mods.");
-		int totalFound = 0;
+		var totalFound = 0;
 		foreach (var mod in mods)
 		{
-			string name = Uri.EscapeDataString(mod.DisplayName);
-			string url = $"https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/?key={apiKey}&appid={appid}&search_text={name}&return_short_description=true&return_tags=true&numperpage=99&return_metadata=true&requiredtags[0]=Definitive+Edition";
-			string responseData = "";
+			var name = Uri.EscapeDataString(mod.DisplayName);
+			var url = $"https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/?key={apiKey}&appid={appid}&search_text={name}&return_short_description=true&return_tags=true&numperpage=99&return_metadata=true&requiredtags[0]=Definitive+Edition";
+			var responseData = "";
 			try
 			{
 				var response = await WebHelper.GetAsync(url, token);
@@ -246,7 +244,7 @@ public static class WorkshopDataLoader
 					{
 						try
 						{
-							string dUUID = d.GetGuid();
+							var dUUID = d.GetGuid();
 							if (!String.IsNullOrEmpty(dUUID))
 							{
 								var modTags = GetWorkshopTags(d);

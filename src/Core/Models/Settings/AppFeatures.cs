@@ -1,7 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace ModManager.Models.Settings;
 

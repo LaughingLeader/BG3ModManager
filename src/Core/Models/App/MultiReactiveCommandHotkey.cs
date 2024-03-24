@@ -1,12 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
 
@@ -25,7 +20,7 @@ public class MultiReactiveCommandHotkey : ReactiveObject, IHotkey
 
 	[Reactive] public IObservable<bool> CanExecute { get; private set; }
 
-	private readonly ObservableCollection<ReactiveCommand<Unit, Unit>> commands = new();
+	private readonly ObservableCollection<ReactiveCommand<Unit, Unit>> commands = [];
 
 	public ObservableCollection<ReactiveCommand<Unit, Unit>> Commands
 	{

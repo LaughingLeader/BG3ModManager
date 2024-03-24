@@ -1,12 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Reactive.Linq;
 
 namespace ModManager.Models.View;
 public class StatsValidatorFileResults : TreeViewEntry

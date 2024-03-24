@@ -1,10 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.IO;
-using System.Reactive.Linq;
-
-namespace ModManager.Models;
+﻿namespace ModManager.Models;
 
 public class DivinityProfileData : ReactiveObject
 {
@@ -22,12 +16,12 @@ public class DivinityProfileData : ReactiveObject
 	/// <summary>
 	/// The saved load order from modsettings.lsx
 	/// </summary>
-	public List<string> ModOrder { get; set; } = new List<string>();
+	public List<string> ModOrder { get; set; } = [];
 
 	/// <summary>
 	/// The mod data under the Mods node, from modsettings.lsx.
 	/// </summary>
-	public List<DivinityProfileActiveModData> ActiveMods { get; set; } = new List<DivinityProfileActiveModData>();
+	public List<DivinityProfileActiveModData> ActiveMods { get; set; } = [];
 
 	/// <summary>
 	/// The ModOrder transformed into a DivinityLoadOrder. This is the "Current" order.

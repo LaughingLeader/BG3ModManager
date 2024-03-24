@@ -3,11 +3,7 @@ using Newtonsoft.Json.Serialization;
 
 using NexusModsNET.DataModels;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.ComponentModel;
-using System.Reactive.Linq;
 using System.Reflection;
 
 namespace ModManager.Models.NexusMods;

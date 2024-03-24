@@ -6,7 +6,7 @@ public static class DateUtils
 	{
 		// Unix timestamp is seconds past epoch
 		System.DateTime dtDateTime = new(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-		long unixTimeStampInTicks = (long)(unixTimeStamp * TimeSpan.TicksPerSecond);
+		var unixTimeStampInTicks = (long)(unixTimeStamp * TimeSpan.TicksPerSecond);
 		return new DateTime(dtDateTime.Ticks + unixTimeStampInTicks, DateTimeKind.Utc);
 	}
 }

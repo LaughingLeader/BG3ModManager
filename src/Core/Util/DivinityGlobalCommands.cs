@@ -1,13 +1,7 @@
 ﻿using ModManager.Models.Mod;
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
 using System.Diagnostics;
-using System.IO;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Windows;
 
 namespace ModManager.Util;

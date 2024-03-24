@@ -1,9 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
-
-namespace ModManager.Models.View;
+﻿namespace ModManager.Models.View;
 public class StatsValidatorLineText : TreeViewEntry
 {
 	public override object ViewModel => this;

@@ -35,17 +35,19 @@ public static class RecycleBinHelper
 	// http://www.pinvoke.net/default.aspx/shell32/SHQueryRecycleBin.html
 	public static int NumberOfFilesInRecycleBin()
 	{
-		SHQUERYRBINFO sqrbi = new();
-		sqrbi.cbSize = Marshal.SizeOf(typeof(SHQUERYRBINFO));
-		int hresult = SHQueryRecycleBin(string.Empty, ref sqrbi);
+		SHQUERYRBINFO sqrbi = new()
+		{
+			cbSize = Marshal.SizeOf(typeof(SHQUERYRBINFO))
+		};
+		var hresult = SHQueryRecycleBin(string.Empty, ref sqrbi);
 		return (int)sqrbi.i64NumItems;
 	}
 
 	// Delete a file or move it to the recycle bin.
 	public static bool DeleteFile(string filename, bool confirm, bool deletePermanently = false)
 	{
-		UIOption uiDisplayOptions = confirm ? UIOption.AllDialogs : UIOption.OnlyErrorDialogs;
-		RecycleOption reyclingOptions = deletePermanently ? RecycleOption.DeletePermanently : RecycleOption.SendToRecycleBin;
+		var uiDisplayOptions = confirm ? UIOption.AllDialogs : UIOption.OnlyErrorDialogs;
+		var reyclingOptions = deletePermanently ? RecycleOption.DeletePermanently : RecycleOption.SendToRecycleBin;
 
 		try
 		{

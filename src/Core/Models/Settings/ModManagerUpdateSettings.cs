@@ -1,9 +1,6 @@
 ﻿using ModManager.Extensions;
 using ModManager.Util;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.ComponentModel;
 using System.Runtime.Serialization;
 

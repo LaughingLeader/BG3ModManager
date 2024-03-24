@@ -10,8 +10,6 @@ using SharpCompress.Compressors.Xz;
 using SharpCompress.Readers;
 using SharpCompress.Writers;
 
-using System.IO;
-using System.Reactive.Linq;
 using System.Text;
 
 using ZstdSharp;
@@ -50,7 +48,7 @@ public class ImportParameters
 	public ImportParameters(string filePath, string outputDirectory, CancellationToken token, ImportOperationResults result = null)
 	{
 		Result = result ?? new ImportOperationResults();
-		ImportedJsonFiles = new List<ImportedJsonFile>();
+		ImportedJsonFiles = [];
 
 		FilePath = filePath;
 		OutputDirectory = outputDirectory;
@@ -66,14 +64,14 @@ public static class ImportUtils
 	private static readonly ReaderOptions _importReaderOptions = new() { ArchiveEncoding = _archiveEncoding };
 	private static readonly WriterOptions _exportWriterOptions = new(CompressionType.Deflate) { ArchiveEncoding = _archiveEncoding };
 
-	private static readonly List<string> _archiveFormats = new() { ".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip" };
-	private static readonly List<string> _compressedFormats = new() { ".bz2", ".xz", ".zst" };
+	private static readonly List<string> _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
+	private static readonly List<string> _compressedFormats = [".bz2", ".xz", ".zst"];
 	private static readonly string _archiveFormatsStr = String.Join(";", _archiveFormats.Select(x => "*" + x));
 	private static readonly string _compressedFormatsStr = String.Join(";", _compressedFormats.Select(x => "*" + x));
 
 	public static async Task<bool> ImportArchiveAsync(ImportParameters options)
 	{
-		double taskStepAmount = 1.0 / 4;
+		var taskStepAmount = 1.0 / 4;
 		var success = false;
 		try
 		{
@@ -126,10 +124,10 @@ public static class ImportUtils
 							using var entryStream = file.OpenEntryStream();
 							try
 							{
-								int length = (int)file.Size;
+								var length = (int)file.Size;
 								var result = new byte[length];
 								await entryStream.ReadAsync(result, 0, length);
-								string text = Encoding.UTF8.GetString(result);
+								var text = Encoding.UTF8.GetString(result);
 								if (!String.IsNullOrWhiteSpace(text))
 								{
 									options.ImportedJsonFiles.Add(new ImportedJsonFile { FileName = Path.GetFileNameWithoutExtension(file.Key), Text = text });
@@ -159,7 +157,7 @@ public static class ImportUtils
 		{
 			foreach (var entry in options.ImportedJsonFiles)
 			{
-				DivinityLoadOrder order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(entry.Text);
+				var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(entry.Text);
 				if (order != null)
 				{
 					options.Result.Orders.Add(order);
@@ -176,7 +174,7 @@ public static class ImportUtils
 	public static async Task<bool> ImportCompressedFileAsync(ImportParameters options)
 	{
 		FileStream fileStream = null;
-		double taskStepAmount = 1.0 / 4;
+		var taskStepAmount = 1.0 / 4;
 		var success = false;
 		try
 		{
@@ -291,7 +289,7 @@ public static class ImportUtils
 			{
 				foreach (var entry in options.ImportedJsonFiles)
 				{
-					DivinityLoadOrder order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(entry.Text);
+					var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(entry.Text);
 					if (order != null)
 					{
 						options.Result.Orders.Add(order);

@@ -14,7 +14,7 @@ public class BaseModCacheData<T> : IModCacheData
 {
 	[DataMember] public long LastUpdated { get; set; }
 	[DataMember] public string LastVersion { get; set; }
-	[DataMember] public Dictionary<string, T> Mods { get; set; } = new Dictionary<string, T>();
+	[DataMember] public Dictionary<string, T> Mods { get; set; } = [];
 
 	public bool CacheUpdated { get; set; }
 
@@ -23,6 +23,6 @@ public class BaseModCacheData<T> : IModCacheData
 		LastUpdated = -1;
 		LastVersion = "";
 
-		Mods = new Dictionary<string, T>();
+		Mods = [];
 	}
 }

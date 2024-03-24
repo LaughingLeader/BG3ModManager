@@ -3,8 +3,6 @@ using ModManager.Util;
 
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -115,8 +113,8 @@ public static class DivinityApp
 
 	static DivinityApp()
 	{
-		IgnoredMods = new HashSet<DivinityModData>();
-		IgnoredDependencyMods = new HashSet<DivinityModData>();
+		IgnoredMods = [];
+		IgnoredDependencyMods = [];
 		Commands = new DivinityGlobalCommands();
 		Events = new DivinityGlobalEvents();
 	}
@@ -173,10 +171,10 @@ public static class DivinityApp
 
 	public static bool IsScreenReaderActive()
 	{
-		int iAction = 70; // SPI_GETSCREENREADER constant;
-		int iParam = 0;
-		int iUpdate = 0;
-		bool bReturn = SystemParametersInfo(iAction, iParam, out bool bActive, iUpdate);
+		var iAction = 70; // SPI_GETSCREENREADER constant;
+		var iParam = 0;
+		var iUpdate = 0;
+		var bReturn = SystemParametersInfo(iAction, iParam, out var bActive, iUpdate);
 		return bReturn && bActive;
 		//if (AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged) || AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
 		//{

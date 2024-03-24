@@ -1,6 +1,6 @@
-﻿using ModManager.Extensions;
+﻿using LSLib.LS;
 
-using LSLib.LS;
+using ModManager.Extensions;
 
 using System.Reflection;
 

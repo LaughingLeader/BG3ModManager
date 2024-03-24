@@ -1,8 +1,5 @@
 ﻿using DynamicData.Binding;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Runtime.Serialization;
 
 namespace ModManager.Models.GitHub.Json;
@@ -20,7 +17,7 @@ public class GitHubRepositoryJsonData : ReactiveObject
 
 	public GitHubReleaseJsonEntry GetLatest(string uuid = "")
 	{
-		if(!String.IsNullOrEmpty(uuid))
+		if (!String.IsNullOrEmpty(uuid))
 		{
 			return Releases.Where(x => x.UUID == uuid).OrderBy(x => x.Version).FirstOrDefault();
 		}

@@ -1,10 +1,5 @@
 ﻿using ModManager.Models.Mod;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
-
 namespace ModManager.Models.GitHub;
 
 public class GitHubModData : ReactiveObject

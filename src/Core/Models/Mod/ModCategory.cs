@@ -1,12 +1,4 @@
-﻿using ReactiveUI.Fody.Helpers;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModManager.Models.Mod;
+﻿namespace ModManager.Models.Mod;
 public class ModCategory : IModEntry
 {
 	public ModEntryType EntryType => ModEntryType.Category;

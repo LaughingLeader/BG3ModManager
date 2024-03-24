@@ -37,7 +37,7 @@ public static class KeyExtensions
 
 	public static string GetKeyName(this Key key)
 	{
-		if (KeyToName.TryGetValue(key, out string name))
+		if (KeyToName.TryGetValue(key, out var name))
 		{
 			return name;
 		}

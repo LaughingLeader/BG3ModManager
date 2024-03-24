@@ -1,11 +1,6 @@
 ﻿using ModManager.Extensions;
 using ModManager.Models.Settings;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.IO;
-
 namespace ModManager.Models;
 
 public class DivinityPathwayData : ReactiveObject

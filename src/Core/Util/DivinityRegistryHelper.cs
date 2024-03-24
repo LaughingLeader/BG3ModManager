@@ -3,8 +3,6 @@ using Gameloop.Vdf.Linq;
 
 using Microsoft.Win32;
 
-using System.IO;
-
 namespace ModManager.Util;
 
 public static class DivinityRegistryHelper
@@ -40,7 +38,7 @@ public static class DivinityRegistryHelper
 	{
 		try
 		{
-			RegistryKey key = reg.OpenSubKey(subKey);
+			var key = reg.OpenSubKey(subKey);
 			if (key != null)
 			{
 				return key.GetValue(keyValue);
@@ -62,7 +60,7 @@ public static class DivinityRegistryHelper
 			{
 				if (JunctionPoint.Exists(path))
 				{
-					string realPath = JunctionPoint.GetTarget(path);
+					var realPath = JunctionPoint.GetTarget(path);
 					if (!String.IsNullOrEmpty(realPath))
 					{
 						return realPath;
@@ -83,8 +81,8 @@ public static class DivinityRegistryHelper
 
 	public static string GetSteamInstallPath()
 	{
-		RegistryKey reg = Registry.LocalMachine;
-		object installPath = GetKey(reg, REG_Steam_64, "InstallPath");
+		var reg = Registry.LocalMachine;
+		var installPath = GetKey(reg, REG_Steam_64, "InstallPath");
 		if (installPath == null)
 		{
 			installPath = GetKey(reg, REG_Steam_32, "InstallPath");
@@ -100,7 +98,7 @@ public static class DivinityRegistryHelper
 	{
 		if (LastSteamInstallPath != "")
 		{
-			string workshopFolder = Path.Join(LastSteamInstallPath, PATH_Steam_WorkshopFolder);
+			var workshopFolder = Path.Join(LastSteamInstallPath, PATH_Steam_WorkshopFolder);
 			DivinityApp.Log($"Looking for workshop folder at '{workshopFolder}'.");
 			if (Directory.Exists(workshopFolder))
 			{
@@ -114,10 +112,10 @@ public static class DivinityRegistryHelper
 	{
 		if (LastSteamInstallPath != "")
 		{
-			string steamWorkshopPath = GetSteamWorkshopPath();
+			var steamWorkshopPath = GetSteamWorkshopPath();
 			if (!String.IsNullOrEmpty(steamWorkshopPath))
 			{
-				string workshopFolder = Path.Join(steamWorkshopPath, "content", appid);
+				var workshopFolder = Path.Join(steamWorkshopPath, "content", appid);
 				DivinityApp.Log($"Looking for game workshop folder at '{workshopFolder}'.");
 				if (Directory.Exists(workshopFolder))
 				{
@@ -130,8 +128,8 @@ public static class DivinityRegistryHelper
 
 	public static string GetGOGInstallPath(string gogRegKey32, string gogRegKey64)
 	{
-		RegistryKey reg = Registry.LocalMachine;
-		object installPath = GetKey(reg, gogRegKey32, "path");
+		var reg = Registry.LocalMachine;
+		var installPath = GetKey(reg, gogRegKey32, "path");
 		if (installPath == null)
 		{
 			installPath = GetKey(reg, gogRegKey64, "path");
@@ -176,7 +174,7 @@ public static class DivinityRegistryHelper
 					}
 				}
 
-				string folder = Path.Join(LastSteamInstallPath, "steamapps", "common", steamGameInstallPath);
+				var folder = Path.Join(LastSteamInstallPath, "steamapps", "common", steamGameInstallPath);
 				DivinityApp.Log($"Looking for game at '{folder}'.");
 				if (Directory.Exists(folder))
 				{
@@ -187,11 +185,11 @@ public static class DivinityRegistryHelper
 				}
 				else
 				{
-					string libraryFile = Path.Join(LastSteamInstallPath, PATH_Steam_LibraryFile);
+					var libraryFile = Path.Join(LastSteamInstallPath, PATH_Steam_LibraryFile);
 					DivinityApp.Log($"Game not found. Looking for Steam libraries in file '{libraryFile}'.");
 					if (File.Exists(libraryFile))
 					{
-						List<string> libraryFolders = new();
+						List<string> libraryFolders = [];
 						try
 						{
 							var libraryData = VdfConvert.Deserialize(File.ReadAllText(libraryFile));
@@ -219,7 +217,7 @@ public static class DivinityRegistryHelper
 
 						foreach (var folderPath in libraryFolders)
 						{
-							string checkFolder = Path.Join(folderPath, "steamapps", "common", steamGameInstallPath);
+							var checkFolder = Path.Join(folderPath, "steamapps", "common", steamGameInstallPath);
 							if (!String.IsNullOrEmpty(checkFolder) && Directory.Exists(checkFolder))
 							{
 								DivinityApp.Log($"Found game at '{checkFolder}'.");
@@ -236,7 +234,7 @@ public static class DivinityRegistryHelper
 				}
 			}
 
-			string gogGamePath = GetGOGInstallPath(gogRegKey32, gogRegKey64);
+			var gogGamePath = GetGOGInstallPath(gogRegKey32, gogRegKey64);
 			if (!String.IsNullOrEmpty(gogGamePath) && Directory.Exists(gogGamePath))
 			{
 				isGOG = true;

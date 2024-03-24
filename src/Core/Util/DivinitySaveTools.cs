@@ -1,7 +1,5 @@
 ﻿using LSLib.LS;
 
-using System.IO;
-
 namespace ModManager.Util;
 
 public static class DivinitySaveTools
@@ -10,9 +8,9 @@ public static class DivinitySaveTools
 	{
 		try
 		{
-			string baseOldName = Path.GetFileNameWithoutExtension(pathToSave);
-			string baseNewName = Path.GetFileNameWithoutExtension(newName);
-			string output = Path.ChangeExtension(Path.Join(Path.GetDirectoryName(pathToSave), newName), ".lsv");
+			var baseOldName = Path.GetFileNameWithoutExtension(pathToSave);
+			var baseNewName = Path.GetFileNameWithoutExtension(newName);
+			var output = Path.ChangeExtension(Path.Join(Path.GetDirectoryName(pathToSave), newName), ".lsv");
 
 			var reader = new PackageReader();
 			using var package = reader.Read(pathToSave);

@@ -38,7 +38,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 	[Reactive] public string DownloadProgressText { get; private set; }
 	[Reactive] public bool CanCancel { get; private set; }
 
-	private readonly CompositeDisposable _downloadTasksCompositeDisposable = new();
+	private readonly CompositeDisposable _downloadTasksCompositeDisposable = [];
 
 	private readonly NexusModsObservableApiLimits _apiLimits;
 	public NexusModsObservableApiLimits ApiLimits => _apiLimits;

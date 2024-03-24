@@ -1,7 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace ModManager.Models.GitHub.Json;
 

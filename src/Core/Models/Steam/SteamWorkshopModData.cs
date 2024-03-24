@@ -1,9 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
-
-namespace ModManager.Models.Steam;
+﻿namespace ModManager.Models.Steam;
 
 public class SteamWorkshopModData : ReactiveObject
 {

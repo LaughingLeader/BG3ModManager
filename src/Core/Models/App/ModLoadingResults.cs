@@ -10,7 +10,7 @@ public class ModLoadingResults
 
 	public ModLoadingResults()
 	{
-		Mods = new List<DivinityModData>();
-		Duplicates = new List<DivinityModData>();
+		Mods = [];
+		Duplicates = [];
 	}
 }

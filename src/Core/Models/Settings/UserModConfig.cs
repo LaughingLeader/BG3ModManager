@@ -1,13 +1,8 @@
-﻿using ModManager.Json;
+﻿using DynamicData;
+
+using ModManager.Json;
 using ModManager.Models.Mod;
 
-using DynamicData;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows.Input;
@@ -32,7 +27,7 @@ public class UserModConfig : BaseSettings<UserModConfig>, ISerializableSettings
 	public UserModConfig() : base("usermodconfig.json")
 	{
 		Mods = new SourceCache<ModConfig, string>(x => x.Id);
-		LastUpdated = new Dictionary<string, long>();
+		LastUpdated = [];
 
 		var props = typeof(ModConfig)
 		.GetRuntimeProperties()

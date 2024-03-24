@@ -1,13 +1,9 @@
-﻿using ModManager.Extensions;
-
-using DynamicData;
+﻿using DynamicData;
 using DynamicData.Binding;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ModManager.Extensions;
 
 using System.ComponentModel;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 

@@ -1,9 +1,7 @@
-﻿using ModManager.Extensions;
+﻿using LSLib.LS;
+
+using ModManager.Extensions;
 using ModManager.Models.Mod;
-
-using LSLib.LS;
-
-using System.IO;
 
 namespace ModManager.Models;
 
@@ -43,7 +41,7 @@ public class DivinityGameMasterCampaign : DivinityModData
 							Name = "ModuleShortDesc",
 							Parent = dependenciesNode,
 							Attributes = attributes,
-							Children = new Dictionary<string, List<Node>>()
+							Children = []
 						};
 						dependenciesNode.AppendChild(modNode);
 						//nodeList.Add(modNode);

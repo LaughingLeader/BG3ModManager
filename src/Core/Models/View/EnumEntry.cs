@@ -1,7 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-namespace ModManager.Models.View;
+﻿namespace ModManager.Models.View;
 
 public class EnumEntry : ReactiveObject
 {

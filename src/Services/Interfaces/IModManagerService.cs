@@ -1,17 +1,9 @@
 ﻿using DynamicData;
 
-using ModManager.Models;
-using ModManager.Models.App;
 using ModManager.Models.Mod;
-using ModManager.Models.View;
-using ModManager.Util;
 
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-using System.IO;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace ModManager;

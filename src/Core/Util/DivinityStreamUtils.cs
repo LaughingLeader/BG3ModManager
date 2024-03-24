@@ -14,9 +14,9 @@ public static class DivinityStreamUtils
 
 		try
 		{
-			byte[] readBuffer = new byte[4096];
+			var readBuffer = new byte[4096];
 
-			int totalBytesRead = 0;
+			var totalBytesRead = 0;
 			int bytesRead;
 
 			while ((bytesRead = stream.Read(readBuffer, totalBytesRead, readBuffer.Length - totalBytesRead)) > 0)
@@ -25,10 +25,10 @@ public static class DivinityStreamUtils
 
 				if (totalBytesRead == readBuffer.Length)
 				{
-					int nextByte = stream.ReadByte();
+					var nextByte = stream.ReadByte();
 					if (nextByte != -1)
 					{
-						byte[] temp = new byte[readBuffer.Length * 2];
+						var temp = new byte[readBuffer.Length * 2];
 						Buffer.BlockCopy(readBuffer, 0, temp, 0, readBuffer.Length);
 						Buffer.SetByte(temp, totalBytesRead, (byte)nextByte);
 						readBuffer = temp;
@@ -37,7 +37,7 @@ public static class DivinityStreamUtils
 				}
 			}
 
-			byte[] buffer = readBuffer;
+			var buffer = readBuffer;
 			if (readBuffer.Length != totalBytesRead)
 			{
 				buffer = new byte[totalBytesRead];
@@ -58,10 +58,10 @@ public static class DivinityStreamUtils
 	{
 		if (patternToFind.Length > arrayToSearchThrough.Length)
 			return -1;
-		for (int i = 0; i < arrayToSearchThrough.Length - patternToFind.Length; i++)
+		for (var i = 0; i < arrayToSearchThrough.Length - patternToFind.Length; i++)
 		{
-			bool found = true;
-			for (int j = 0; j < patternToFind.Length; j++)
+			var found = true;
+			for (var j = 0; j < patternToFind.Length; j++)
 			{
 				if (arrayToSearchThrough[i + j] != patternToFind[j])
 				{

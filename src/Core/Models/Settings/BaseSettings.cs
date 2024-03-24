@@ -2,10 +2,7 @@
 
 using Newtonsoft.Json;
 
-using ReactiveUI;
-
 using System.ComponentModel;
-using System.IO;
 
 namespace ModManager.Models.Settings;
 

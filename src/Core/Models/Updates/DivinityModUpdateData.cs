@@ -1,10 +1,6 @@
 ﻿using ModManager.Models.Mod;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Globalization;
-using System.Reactive.Linq;
 using System.Windows;
 
 namespace ModManager.Models.Updates;

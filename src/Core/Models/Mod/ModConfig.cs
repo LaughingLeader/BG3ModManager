@@ -1,12 +1,5 @@
 ﻿using ModManager.Json;
-using ModManager.Models.GitHub.Json;
-using ModManager.Util;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
@@ -39,7 +32,7 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 
 	public static ValueTuple<string, string> GitHubUrlToParts(string url)
 	{
-		if(!String.IsNullOrEmpty(url) && !url.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
+		if (!String.IsNullOrEmpty(url) && !url.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
 		{
 			var match = _githubUrlPattern.Match(url);
 			if (match.Success)

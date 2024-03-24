@@ -1,9 +1,5 @@
 ﻿using ModManager.Util;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.IO;
 using System.IO.Compression;
 
 namespace ModManager.Models.Updates;

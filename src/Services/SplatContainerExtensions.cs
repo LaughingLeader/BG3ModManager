@@ -1,11 +1,9 @@
-﻿using System.IO.Abstractions;
-using System.Net.Http;
-
-using HanumanInstitute.Validators;
+﻿using HanumanInstitute.Validators;
 
 using ModManager.Services;
 
-using Splat;
+using System.IO.Abstractions;
+using System.Net.Http;
 
 namespace ModManager;
 

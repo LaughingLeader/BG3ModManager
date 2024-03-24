@@ -2,7 +2,6 @@
 
 using Newtonsoft.Json;
 
-using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -123,6 +122,6 @@ public class SteamWorkshopCachedData : BaseModCacheData<DivinityModWorkshopCache
 
 	public SteamWorkshopCachedData() : base()
 	{
-		NonWorkshopMods = new List<string>();
+		NonWorkshopMods = [];
 	}
 }

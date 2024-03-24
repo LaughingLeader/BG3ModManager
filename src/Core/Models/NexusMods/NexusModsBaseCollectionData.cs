@@ -2,9 +2,6 @@
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.Models.NexusMods;
 
 public class NexusModsBaseCollectionData : ReactiveObject

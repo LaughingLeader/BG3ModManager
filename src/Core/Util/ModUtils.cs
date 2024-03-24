@@ -1,9 +1,8 @@
-﻿using ModManager.Models.Mod;
-
-using LSLib.LS;
+﻿using LSLib.LS;
 using LSLib.LS.Stats;
 
-using System.IO;
+using ModManager.Models.Mod;
+
 using System.Xml;
 
 namespace ModManager.Util;
@@ -51,14 +50,15 @@ public static class ModUtils
 		}
 	}
 
-	private static readonly FileStreamOptions _defaultOpts = new () {
+	private static readonly FileStreamOptions _defaultOpts = new()
+	{
 		BufferSize = 128000,
 	};
 
 	private static async Task<FileText> GetFileTextAsync(VFS vfs, string path, CancellationToken token)
 	{
 		var file = vfs.FindVFSFile(path);
-		if(file != null)
+		if (file != null)
 		{
 			using var stream = file.CreateContentReader();
 			using var sr = new StreamReader(stream, System.Text.Encoding.UTF8, false, 128000);

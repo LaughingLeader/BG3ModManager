@@ -1,15 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>ModManager.Tests</RootNamespace>
-		<AssemblyName>BG3ModManager.Tests</AssemblyName>
-		<PlatformTarget>x64</PlatformTarget>
-		<Platforms>AnyCPU</Platforms>
+		<AssemblyName>ModManager.Tests</AssemblyName>
+
 		<Configurations>Debug</Configurations>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<SupportedCultures>en-US</SupportedCultures>
+
 		<Optimize>False</Optimize>
 		<DebugType>full</DebugType>
 	</PropertyGroup>

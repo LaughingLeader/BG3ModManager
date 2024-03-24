@@ -6,7 +6,7 @@ public static class DictionaryExtensions
 {
 	public static object FindKeyValue(this Dictionary<string, object> dict, string key, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
 	{
-		foreach (KeyValuePair<string, object> kvp in dict)
+		foreach (var kvp in dict)
 		{
 			if (kvp.Key.Equals(key, stringComparison))
 			{
@@ -51,7 +51,7 @@ public static class DictionaryExtensions
 
 	public static bool TryFindKeyValue(this Dictionary<string, object> dict, string key, out object valObj, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
 	{
-		foreach (KeyValuePair<string, object> kvp in dict)
+		foreach (var kvp in dict)
 		{
 			if (kvp.Key.Equals(key, stringComparison))
 			{
@@ -97,7 +97,7 @@ public static class DictionaryExtensions
 			return dictionary;
 		}
 
-		foreach (TSource element in source)
+		foreach (var element in source)
 		{
 			dictionary[keySelector(element)] = elementSelector(element);
 		}

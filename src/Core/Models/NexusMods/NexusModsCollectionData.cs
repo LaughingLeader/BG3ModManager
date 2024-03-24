@@ -1,11 +1,8 @@
-﻿using ModManager.Util;
+﻿using DynamicData;
 
-using DynamicData;
+using ModManager.Util;
 
 using NexusModsNET.DataModels.GraphQL.Types;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace ModManager.Models.NexusMods;
 

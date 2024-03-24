@@ -1,8 +1,5 @@
 ﻿using DynamicData.Binding;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Windows.Input;
 
 namespace ModManager.Models.View;

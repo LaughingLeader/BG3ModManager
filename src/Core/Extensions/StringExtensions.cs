@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ModManager.Extensions;
+﻿namespace ModManager.Extensions;
 
 public static class StringExtensions
 {

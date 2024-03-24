@@ -43,7 +43,7 @@ public static class StringUtils
 		return (readable / 1024).ToString("0.## ", CultureInfo.InvariantCulture) + suffix;
 	}
 
-	private static readonly Dictionary<string, string> replacePaths = new();
+	private static readonly Dictionary<string, string> replacePaths = [];
 
 	private static void MaybeAddReplacement(string key, string path)
 	{

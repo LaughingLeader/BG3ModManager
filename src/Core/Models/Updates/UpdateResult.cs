@@ -10,7 +10,7 @@ public class UpdateResult
 
 	public UpdateResult()
 	{
-		UpdatedMods = new List<DivinityModData>();
+		UpdatedMods = [];
 		Success = true;
 	}
 }

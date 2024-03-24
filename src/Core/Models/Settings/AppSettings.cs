@@ -1,8 +1,5 @@
 ﻿using ModManager.Models.App;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.Models.Settings;
 
 public class AppSettings : ReactiveObject

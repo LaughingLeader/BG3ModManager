@@ -3,7 +3,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using System.IO;
 using System.Text;
 
 namespace ModManager.Util;
@@ -43,7 +42,7 @@ public static class DivinityJsonUtils
 		{
 			if (File.Exists(path))
 			{
-				string contents = File.ReadAllText(path);
+				var contents = File.ReadAllText(path);
 				return SafeDeserialize<T>(contents);
 			}
 			else
@@ -68,7 +67,7 @@ public static class DivinityJsonUtils
 	{
 		if (File.Exists(path))
 		{
-			string contents = File.ReadAllText(path);
+			var contents = File.ReadAllText(path);
 			result = JsonConvert.DeserializeObject<T>(contents, _errorHandleSettings);
 			return result != null;
 		}
@@ -102,7 +101,7 @@ public static class DivinityJsonUtils
 		try
 		{
 			using var sr = new StreamReader(stream, Encoding.UTF8);
-			string text = await sr.ReadToEndAsync(token);
+			var text = await sr.ReadToEndAsync(token);
 			if (!String.IsNullOrWhiteSpace(text))
 			{
 				return JsonConvert.DeserializeObject<T>(text, _errorHandleSettings);

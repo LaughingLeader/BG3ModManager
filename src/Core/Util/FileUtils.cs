@@ -1,9 +1,6 @@
 ﻿using LSLib.LS;
 
 using System.Diagnostics;
-using System.IO;
-using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
@@ -66,11 +63,11 @@ public static class FileUtils
 			fullPath = Path.GetFullPath(fullPath);
 		if (File.Exists(fullPath))
 		{
-			String filename = Path.GetFileName(fullPath);
-			String path = fullPath.Substring(0, fullPath.Length - filename.Length);
-			String filenameWOExt = Path.GetFileNameWithoutExtension(fullPath);
-			String ext = Path.GetExtension(fullPath);
-			int n = 1;
+			var filename = Path.GetFileName(fullPath);
+			var path = fullPath.Substring(0, fullPath.Length - filename.Length);
+			var filenameWOExt = Path.GetFileNameWithoutExtension(fullPath);
+			var ext = Path.GetExtension(fullPath);
+			var n = 1;
 			do
 			{
 				fullPath = Path.Join(path, String.Format("{0} ({1}){2}", filenameWOExt, (n++), ext));
@@ -81,7 +78,7 @@ public static class FileUtils
 	}
 
 
-	public static List<string> IgnoredPackageFiles = new(){
+	public static List<string> IgnoredPackageFiles = [
 		"ReConHistory.txt",
 		"dialoglog.txt",
 		"errors.txt",
@@ -98,7 +95,7 @@ public static class FileUtils
 		".log",
 		".debugInfo",
 		".dmp",
-	};
+	];
 
 	private static bool IgnoreFile(string targetFilePath, string ignoredFileName)
 	{
@@ -231,14 +228,14 @@ public static class FileUtils
 
 	public static bool ExtractPackages(IEnumerable<string> pakPaths, string outputDirectory)
 	{
-		int success = 0;
-		int count = pakPaths.Count();
+		var success = 0;
+		var count = pakPaths.Count();
 		foreach (var path in pakPaths)
 		{
 			try
 			{
 				//Put each pak into its own folder
-				string destination = Path.Join(outputDirectory, Path.GetFileNameWithoutExtension(path));
+				var destination = Path.Join(outputDirectory, Path.GetFileNameWithoutExtension(path));
 
 				//Unless the foldername == the pak name and we're only extracting one pak
 				if (count == 1 && Path.GetDirectoryName(outputDirectory).Equals(Path.GetFileNameWithoutExtension(path)))
@@ -425,11 +422,11 @@ public static class FileUtils
 
 	public static bool HasFileReadPermission(params string[] paths)
 	{
-		foreach(var path in paths)
+		foreach (var path in paths)
 		{
 			try
 			{
-				if(!String.IsNullOrEmpty(path) && File.Exists(path))
+				if (!String.IsNullOrEmpty(path) && File.Exists(path))
 				{
 					var info = new FileInfo(path);
 					var security = info.GetAccessControl();

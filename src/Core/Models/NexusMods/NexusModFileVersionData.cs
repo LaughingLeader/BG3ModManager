@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ModManager.Models.NexusMods;
 

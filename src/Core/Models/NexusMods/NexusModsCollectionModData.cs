@@ -2,10 +2,6 @@
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
 using System.Windows;
 
 namespace ModManager.Models.NexusMods;

@@ -1,6 +1,4 @@
-﻿using ReactiveUI;
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 
 namespace ModManager.Extensions;

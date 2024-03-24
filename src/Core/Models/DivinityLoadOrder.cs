@@ -1,9 +1,5 @@
 ﻿using ModManager.Models.Mod;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
 using System.Runtime.Serialization;
 
 namespace ModManager.Models;
@@ -44,7 +40,7 @@ public class DivinityLoadOrder : ReactiveObject
 	[ObservableAsProperty] public string LastModified { get; }
 
 	[DataMember]
-	public List<DivinityLoadOrderEntry> Order { get; set; } = new List<DivinityLoadOrderEntry>();
+	public List<DivinityLoadOrderEntry> Order { get; set; } = [];
 
 	public void Add(DivinityModData mod, bool force = false)
 	{
@@ -60,7 +56,7 @@ public class DivinityLoadOrder : ReactiveObject
 				{
 					if (Order.Count > 0)
 					{
-						bool alreadyInOrder = false;
+						var alreadyInOrder = false;
 						foreach (var x in Order)
 						{
 							if (x != null && x.UUID == mod.UUID)
@@ -105,7 +101,7 @@ public class DivinityLoadOrder : ReactiveObject
 				{
 					if (Order.Count > 0)
 					{
-						bool alreadyInOrder = false;
+						var alreadyInOrder = false;
 						foreach (var x in Order)
 						{
 							if (x != null && x.UUID == mod.UUID)

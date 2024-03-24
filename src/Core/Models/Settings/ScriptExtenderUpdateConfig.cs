@@ -4,9 +4,6 @@ using ModManager.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.ComponentModel;
 using System.Runtime.Serialization;
 

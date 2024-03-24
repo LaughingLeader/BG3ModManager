@@ -1,7 +1,5 @@
 ﻿using DynamicData.Binding;
 
-using ReactiveUI;
-
 using System.Reflection;
 
 namespace ModManager;

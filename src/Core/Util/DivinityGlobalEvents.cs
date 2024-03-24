@@ -12,7 +12,7 @@ public class DivinityGlobalEvents
 
 	public void OnOrderNameChanged(string lastName, string newName)
 	{
-		EventHandler<OrderNameChangedArgs> handler = OrderNameChanged;
+		var handler = OrderNameChanged;
 		if (handler != null)
 		{
 			handler(this, new OrderNameChangedArgs { LastName = lastName, NewName = newName });

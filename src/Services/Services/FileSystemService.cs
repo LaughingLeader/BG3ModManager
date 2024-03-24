@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using HanumanInstitute.Validators;
+
 using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
-using HanumanInstitute.Validators;
 
 namespace ModManager.Services;
 

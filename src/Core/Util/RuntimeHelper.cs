@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ModManager.Util;
+﻿namespace ModManager.Util;
 
 public static class RuntimeHelper
 {

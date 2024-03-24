@@ -1,11 +1,5 @@
 ﻿using LSLib.LS.Stats;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.IO;
-using System.Windows.Input;
-
 namespace ModManager.Models.View;
 public class StatsValidatorErrorEntry : TreeViewEntry
 {

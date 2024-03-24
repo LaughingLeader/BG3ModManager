@@ -1,13 +1,9 @@
-﻿using ModManager.Json;
+﻿using DynamicData;
 
-using DynamicData;
+using ModManager.Json;
 
 using Newtonsoft.Json;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Linq;
 using System.Runtime.Serialization;
 
 namespace ModManager.Models;

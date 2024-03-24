@@ -136,7 +136,7 @@ static public class ResourceExtensions
 			foreach (var entry in node.Children)
 			{
 				DivinityApp.Log($"{indent}  Child List({entry.Key})");
-				int i = 0;
+				var i = 0;
 				foreach (var node2 in entry.Value)
 				{
 					PrintDebugNode(node2, indent + " ", i);

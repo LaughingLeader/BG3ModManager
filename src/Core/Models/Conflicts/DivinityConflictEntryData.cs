@@ -1,7 +1,5 @@
 ﻿using ModManager.Models.Mod;
 
-using ReactiveUI;
-
 namespace ModManager.Models.Conflicts;
 
 public class DivinityConflictEntryData : ReactiveObject
@@ -22,7 +20,7 @@ public class DivinityConflictEntryData : ReactiveObject
 		set { this.RaiseAndSetIfChanged(ref name, value); }
 	}
 
-	public List<DivinityConflictModData> ConflictModDataList { get; set; } = new List<DivinityConflictModData>();
+	public List<DivinityConflictModData> ConflictModDataList { get; set; } = [];
 }
 
 public class DivinityConflictModData : ReactiveObject

@@ -1,18 +1,17 @@
-﻿using ModManager.Extensions;
-using ModManager.Models;
-using ModManager.Models.App;
-using ModManager.Models.Mod;
-
-using DynamicData;
+﻿using DynamicData;
 
 using LSLib.LS;
 using LSLib.LS.Enums;
+
+using ModManager.Extensions;
+using ModManager.Models;
+using ModManager.Models.App;
+using ModManager.Models.Mod;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
-using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -24,7 +23,7 @@ public static partial class DivinityModDataLoader
 {
 	private static readonly StringComparison SCOMP = StringComparison.OrdinalIgnoreCase;
 	private static readonly string[] LarianFileTypes = [".lsb", ".lsf", ".lsx", ".lsj"];
-				  
+
 	public static readonly ulong HEADER_MAJOR = 4;
 	public static readonly ulong HEADER_MINOR = 6;
 	public static readonly ulong HEADER_REVISION = 0;
@@ -70,7 +69,7 @@ public static partial class DivinityModDataLoader
 
 	public static string MakeSafeFilename(string filename, char replaceChar)
 	{
-		foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+		foreach (var c in System.IO.Path.GetInvalidFileNameChars())
 		{
 			filename = filename.Replace(c, replaceChar);
 		}
@@ -121,7 +120,7 @@ public static partial class DivinityModDataLoader
 
 	private static ulong SafeConvertStringUnsigned(string str)
 	{
-		if (!String.IsNullOrWhiteSpace(str) && UInt64.TryParse(str, out ulong val))
+		if (!String.IsNullOrWhiteSpace(str) && UInt64.TryParse(str, out var val))
 		{
 			return val;
 		}
@@ -130,7 +129,7 @@ public static partial class DivinityModDataLoader
 
 	public static string EscapeXml(string s)
 	{
-		string toxml = s;
+		var toxml = s;
 		if (!String.IsNullOrEmpty(toxml))
 		{
 			// replace literal values with entities
@@ -173,7 +172,7 @@ public static partial class DivinityModDataLoader
 	{
 		try
 		{
-			XElement xDoc = XElement.Parse(EscapeXmlAttributes(metaContents));
+			var xDoc = XElement.Parse(EscapeXmlAttributes(metaContents));
 			var versionNode = xDoc.Descendants("version").FirstOrDefault();
 
 			var headerMajor = HEADER_MAJOR;
@@ -367,7 +366,7 @@ public static partial class DivinityModDataLoader
 		}
 		return true;
 	}
-	
+
 	private static bool IsModMetaFile(PackagedFileInfo f)
 	{
 		if (Path.GetFileName(f.Name).Equals("meta.lsx", SCOMP))
@@ -381,7 +380,7 @@ public static partial class DivinityModDataLoader
 	{
 		DivinityModData modData = null;
 
-		string pakName = Path.GetFileNameWithoutExtension(pakPath);
+		var pakName = Path.GetFileNameWithoutExtension(pakPath);
 
 		var metaFiles = new List<PackagedFileInfo>();
 		var hasBuiltinDirectory = false;
@@ -397,7 +396,7 @@ public static partial class DivinityModDataLoader
 
 		if (pak != null && pak.Files != null)
 		{
-			for (int i = 0; i < pak.Files.Count; i++)
+			for (var i = 0; i < pak.Files.Count; i++)
 			{
 				if (token.IsCancellationRequested) break;
 				var f = pak.Files[i];
@@ -442,7 +441,7 @@ public static partial class DivinityModDataLoader
 							{
 								using var stream = f.CreateContentReader();
 								using var sr = new StreamReader(stream);
-								string text = await sr.ReadToEndAsync();
+								var text = await sr.ReadToEndAsync();
 								if (text.Contains("NRD_KillStory") || text.Contains("NRD_BadCall"))
 								{
 									hasOsirisScripts = DivinityOsirisModStatus.MODFIXER;
@@ -495,7 +494,7 @@ public static partial class DivinityModDataLoader
 		}
 		else
 		{
-			for (int i = 0; i < metaCount; i++)
+			for (var i = 0; i < metaCount; i++)
 			{
 				var f = metaFiles[i];
 				if (metaFile == null)
@@ -734,7 +733,7 @@ public static partial class DivinityModDataLoader
 		{
 			if (att.Type == AttributeType.TranslatedString)
 			{
-				TranslatedString ts = (TranslatedString)att.Value;
+				var ts = (TranslatedString)att.Value;
 				return ts.Value;
 			}
 			return att.Value.ToString();
@@ -847,11 +846,11 @@ public static partial class DivinityModDataLoader
 
 	public static List<DivinityGameMasterCampaign> LoadGameMasterData(string folderPath, CancellationToken? token = null)
 	{
-		List<DivinityGameMasterCampaign> campaignEntries = new();
+		List<DivinityGameMasterCampaign> campaignEntries = [];
 
 		if (Directory.Exists(folderPath))
 		{
-			List<string> campaignMetaFiles = new();
+			List<string> campaignMetaFiles = [];
 			try
 			{
 				var files = FileUtils.EnumerateFiles(folderPath, FileUtils.RecursiveOptions, IsMetaFile);
@@ -1174,7 +1173,7 @@ public static partial class DivinityModDataLoader
 	public static async Task<string> GetSelectedProfileUUIDAsync(string profilePath)
 	{
 		var playerprofilesFile = GetPlayerProfilesFile(profilePath);
-		string activeProfileUUID = "";
+		var activeProfileUUID = "";
 		if (playerprofilesFile != null)
 		{
 			DivinityApp.Log($"Loading playerprofiles at '{playerprofilesFile}'");
@@ -1202,7 +1201,7 @@ public static partial class DivinityModDataLoader
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
-		string contents = JsonConvert.SerializeObject(order, Newtonsoft.Json.Formatting.Indented);
+		var contents = JsonConvert.SerializeObject(order, Newtonsoft.Json.Formatting.Indented);
 
 		FileUtils.WriteTextFile(outputFilePath, contents);
 
@@ -1216,7 +1215,7 @@ public static partial class DivinityModDataLoader
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
-		string contents = JsonConvert.SerializeObject(order, Newtonsoft.Json.Formatting.Indented);
+		var contents = JsonConvert.SerializeObject(order, Newtonsoft.Json.Formatting.Indented);
 
 		await FileUtils.WriteTextFileAsync(outputFilePath, contents);
 
@@ -1227,7 +1226,7 @@ public static partial class DivinityModDataLoader
 
 	public static List<DivinityLoadOrder> FindLoadOrderFilesInDirectory(string directory)
 	{
-		List<DivinityLoadOrder> loadOrders = new();
+		List<DivinityLoadOrder> loadOrders = [];
 
 		if (Directory.Exists(directory))
 		{
@@ -1238,7 +1237,7 @@ public static partial class DivinityModDataLoader
 				try
 				{
 					var fileText = File.ReadAllText(loadOrderFile);
-					DivinityLoadOrder order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
+					var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
 					if (order != null)
 					{
 						order.FilePath = loadOrderFile;
@@ -1258,7 +1257,7 @@ public static partial class DivinityModDataLoader
 
 	public static async Task<List<DivinityLoadOrder>> FindLoadOrderFilesInDirectoryAsync(string directory)
 	{
-		List<DivinityLoadOrder> loadOrders = new();
+		List<DivinityLoadOrder> loadOrders = [];
 
 		if (Directory.Exists(directory))
 		{
@@ -1276,7 +1275,7 @@ public static partial class DivinityModDataLoader
 					using var reader = File.OpenText(loadOrderFile);
 					var fileText = await reader.ReadToEndAsync();
 
-					DivinityLoadOrder order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
+					var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
 					order.Name = Path.GetFileNameWithoutExtension(loadOrderFile);
 					if (order != null)
 					{
@@ -1303,7 +1302,7 @@ public static partial class DivinityModDataLoader
 			{
 				using var reader = File.OpenText(loadOrderFile);
 				var fileText = await reader.ReadToEndAsync();
-				DivinityLoadOrder order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
+				var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
 				if (order != null)
 				{
 					order.FilePath = loadOrderFile;
@@ -1444,8 +1443,8 @@ public static partial class DivinityModDataLoader
 	{
 		if (Directory.Exists(folder))
 		{
-			string outputFilePath = Path.Join(folder, "modsettings.lsx");
-			string contents = GenerateModSettingsFile(order);
+			var outputFilePath = Path.Join(folder, "modsettings.lsx");
+			var contents = GenerateModSettingsFile(order);
 			try
 			{
 				//Lazy indentation!
@@ -1497,7 +1496,7 @@ public static partial class DivinityModDataLoader
 			settings["DisplayModsDetectedMsg"] = enableModWarnings;
 		}
 
-		string contents = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented);
+		var contents = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented);
 
 		await FileUtils.WriteTextFileAsync(settingsFilePath, contents);
 
@@ -1507,7 +1506,7 @@ public static partial class DivinityModDataLoader
 
 	public static List<DivinityModData> GetDependencyMods(DivinityModData mod, IEnumerable<DivinityModData> allMods, HashSet<string> addedMods, bool forExport = true)
 	{
-		List<DivinityModData> mods = new();
+		List<DivinityModData> mods = [];
 		var dependencies = mod.Dependencies.Items.Where(x => !IgnoreModDependency(x.UUID));
 		foreach (var d in dependencies)
 		{
@@ -1538,7 +1537,7 @@ public static partial class DivinityModDataLoader
 
 	public static List<DivinityModData> BuildOutputList(IEnumerable<DivinityLoadOrderEntry> order, IEnumerable<DivinityModData> allMods, bool addDependencies = true, DivinityModData selectedAdventure = null)
 	{
-		List<DivinityModData> orderList = new();
+		List<DivinityModData> orderList = [];
 		var addedMods = new HashSet<string>();
 
 		if (selectedAdventure != null)
@@ -1579,9 +1578,9 @@ public static partial class DivinityModDataLoader
 	public static string GenerateModSettingsFile(IEnumerable<IModEntry> orderList)
 	{
 		/* Active mods are contained within the "ModOrder" node.*/
-		string modulesText = "";
+		var modulesText = "";
 		/* The "Mods" node is used for the in-game menu it seems. The selected adventure mod is always at the top. */
-		string modShortDescText = "";
+		var modShortDescText = "";
 
 		foreach (var mod in orderList)
 		{
@@ -1589,7 +1588,7 @@ public static partial class DivinityModDataLoader
 			{
 				//Use Export to support lists with categories/things that don't need exporting
 				var modText = mod.Export(ModExportType.XML);
-				if(!String.IsNullOrEmpty(modText))
+				if (!String.IsNullOrEmpty(modText))
 				{
 					modulesText += String.Format(DivinityApp.XML_MOD_ORDER_MODULE, mod.UUID) + Environment.NewLine;
 					modShortDescText += modText + Environment.NewLine;
@@ -1677,7 +1676,7 @@ public static partial class DivinityModDataLoader
 		{
 			var reader = new PackageReader();
 			using var package = reader.Read(file);
-			PackagedFileInfo PackagedFileInfo = package.Files.FirstOrDefault(p => p.Name == "meta.lsf");
+			var PackagedFileInfo = package.Files.FirstOrDefault(p => p.Name == "meta.lsf");
 			if (PackagedFileInfo == null)
 			{
 				return null;
@@ -1685,7 +1684,7 @@ public static partial class DivinityModDataLoader
 
 			Resource resource = null;
 
-			System.IO.Stream rsrcStream = PackagedFileInfo.CreateContentReader();
+			var rsrcStream = PackagedFileInfo.CreateContentReader();
 			try
 			{
 				using var rsrcReader = new LSFReader(rsrcStream);
@@ -1706,7 +1705,7 @@ public static partial class DivinityModDataLoader
 					if (modList != null && modList.Count > 0)
 					{
 						var fileName = Path.GetFileNameWithoutExtension(file);
-						string orderName = fileName;
+						var orderName = fileName;
 						var re = new Regex(@".*PlayerProfiles\\(.*?)\\Savegames.*");
 						var match = re.Match(Path.GetFullPath(file));
 						if (match.Success)
@@ -1721,7 +1720,7 @@ public static partial class DivinityModDataLoader
 
 						foreach (var c in modList)
 						{
-							string name = "";
+							var name = "";
 							string uuid = null;
 							if (c.Attributes.TryGetValue("UUID", out var idAtt))
 							{
@@ -1768,7 +1767,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private readonly static List<string> _fallbackFeatureFlags = new();
+	private readonly static List<string> _fallbackFeatureFlags = [];
 
 	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(string configFile)
 	{
@@ -1811,7 +1810,7 @@ public static partial class DivinityModDataLoader
 		try
 		{
 			using var sr = new StreamReader(stream);
-			string text = await sr.ReadToEndAsync();
+			var text = await sr.ReadToEndAsync();
 			if (!String.IsNullOrWhiteSpace(text))
 			{
 				var config = DivinityJsonUtils.SafeDeserialize<DivinityModScriptExtenderConfig>(text);
@@ -1862,7 +1861,7 @@ public static partial class DivinityModDataLoader
 		{
 			using var sr = new System.IO.StreamReader(stream);
 			if (token.IsCancellationRequested) return null;
-			string text = await sr.ReadToEndAsync();
+			var text = await sr.ReadToEndAsync();
 			var modData = ParseMetaFile(text);
 			if (modData != null)
 			{
@@ -1961,7 +1960,7 @@ public static partial class DivinityModDataLoader
 					var modData = await LoadModFromModInfo(vfs, modInfo, token);
 					if (modData != null)
 					{
-						if(modInfo.PackagePath?.EndsWith(".pak") == true)
+						if (modInfo.PackagePath?.EndsWith(".pak") == true)
 						{
 
 						}
@@ -1986,7 +1985,7 @@ public static partial class DivinityModDataLoader
 		using var pak = pr.Read(filePath, stream);
 		if (pak != null && pak.Files != null)
 		{
-			for (int i = 0; i < pak.Files.Count; i++)
+			for (var i = 0; i < pak.Files.Count; i++)
 			{
 				if (token.IsCancellationRequested) return null;
 				var f = pak.Files[i];

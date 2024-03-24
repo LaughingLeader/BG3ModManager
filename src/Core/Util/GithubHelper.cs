@@ -28,7 +28,7 @@ public static class GitHubHelper
 		{
 			if (jsonData.TryGetValue("assets", out var assetsArray))
 			{
-				JArray assets = (JArray)assetsArray;
+				var assets = (JArray)assetsArray;
 				foreach (var obj in assets.Children<JObject>())
 				{
 					if (obj.TryGetValue("browser_download_url", StringComparison.OrdinalIgnoreCase, out var browserUrl))

@@ -1,7 +1,7 @@
-﻿using ModManager.Models;
-using ModManager.Models.Mod;
+﻿using DynamicData.Binding;
 
-using DynamicData.Binding;
+using ModManager.Models;
+using ModManager.Models.Mod;
 
 using System.Collections.ObjectModel;
 

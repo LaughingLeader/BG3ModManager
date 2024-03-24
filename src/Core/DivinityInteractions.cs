@@ -1,10 +1,8 @@
-﻿using ModManager.Models.Mod;
+﻿using LSLib.LS.Stats;
 
-using LSLib.LS.Stats;
+using ModManager.Models.Mod;
 
 using NexusModsNET.DataModels.GraphQL.Types;
-
-using ReactiveUI;
 
 using System.Windows;
 
