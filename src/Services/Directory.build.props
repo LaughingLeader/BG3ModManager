@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <BaseIntermediateOutputPath>$(SolutionDir)obj\GUI\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath>$(SolutionDir)obj\Services\</BaseIntermediateOutputPath>
     </PropertyGroup>
 	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 </Project>
