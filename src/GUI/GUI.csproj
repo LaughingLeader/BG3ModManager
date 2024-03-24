@@ -22,7 +22,7 @@
 		<Platforms>AnyCPU</Platforms>
 		<PlatformTarget>x64</PlatformTarget>
 		<NeutralLanguage>en</NeutralLanguage>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
 		<SupportedCultures>en-US</SupportedCultures>
 		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -110,4 +110,22 @@
 		<Resource Include="FodyWeavers.xml" />
 		<Resource Include="Resources\BG3MMSplashScreen.png" />
 	</ItemGroup>
+
+	<Target Name="AfterPackage" AfterTargets="CopyAllFilesToSingleFolderForPackage" />
+
+	<!-- Save me from the locale spam -->
+	
+	<ItemGroup>
+		<OutputExcludedCultures Include="cs;da;de;es;fa;fi;fr;it;ko;mk;nl;pl;pt;ru;sv;tr;zh-CN;zh-TW;pt-BR;th;zh;sk;lv;ja-JP;ar">
+			<InProject>false</InProject>
+		</OutputExcludedCultures>
+	</ItemGroup>
+
+	<Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
+		<RemoveDir Directories="@(OutputExcludedCultures->'$(OutputPath)%(Filename)')" />
+	</Target>
+
+	<Target Name="RemoveTranslationsAfterPackage" AfterTargets="AfterPackage">
+		<RemoveDir Directories="@(OutputExcludedCultures->'$(_PackageTempDir)\$(OutputPath)%(Filename)')" />
+	</Target>
 </Project>

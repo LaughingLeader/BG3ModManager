@@ -1574,16 +1574,16 @@ Directory the zip will be extracted to:
 			{
 				if (e.IsUpdateAvailable)
 				{
-					ShowAlert("Update found!", AlertType.Success, 30);
+					ShowAlert("Update found!", AlertType.Success, 10);
 				}
 				else
 				{
-					ShowAlert("Already up-to-date", AlertType.Info, 30);
+					ShowAlert("Already up-to-date", AlertType.Info, 10);
 				}
 			}
 			else
 			{
-				ShowAlert($"Error occurred when checking for updates: {e.Error.Message}", AlertType.Danger, 60);
+				ShowAlert($"Error occurred when checking for updates: {e.Error.Message}", AlertType.Danger, 30);
 			}
 		}
 
@@ -1591,8 +1591,7 @@ Directory the zip will be extracted to:
 		{
 			if (_userInvokedUpdate || e.IsUpdateAvailable)
 			{
-				App.WM.AppUpdate.Toggle();
-				App.WM.AppUpdate.Window.ViewModel.CheckArgs(e);
+				App.WM.AppUpdate.Window.ViewModel.CheckArgsAndOpen(e);
 			}
 		}
 		else

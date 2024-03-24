@@ -6,6 +6,7 @@ using DivinityModManager.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using System.Reactive.Concurrency;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
@@ -26,48 +27,60 @@ public class AppUpdateWindowViewModel : ReactiveObject
 	public ICommand ConfirmCommand { get; private set; }
 	public ICommand SkipCommand { get; private set; }
 
-	public void CheckArgs(UpdateInfoEventArgs args)
+	private async Task CheckArgsAsync(IScheduler scheduler, CancellationToken token)
+	{
+		string markdownText;
+
+		if (!UpdateArgs.ChangelogURL.EndsWith(".md"))
+		{
+			markdownText = await WebHelper.DownloadUrlAsStringAsync(DivinityApp.URL_CHANGELOG_RAW, CancellationToken.None);
+		}
+		else
+		{
+			markdownText = await WebHelper.DownloadUrlAsStringAsync(UpdateArgs.ChangelogURL, CancellationToken.None);
+		}
+
+		RxApp.MainThreadScheduler.Schedule(() =>
+		{
+			if (!String.IsNullOrEmpty(markdownText))
+			{
+				markdownText = Regex.Replace(markdownText, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
+				UpdateChangelogView = markdownText;
+			}
+
+			if (UpdateArgs.IsUpdateAvailable)
+			{
+				UpdateDescription = $"{AutoUpdater.AppTitle} {UpdateArgs.CurrentVersion} is now available.{Environment.NewLine}You have version {UpdateArgs.InstalledVersion} installed.";
+
+				CanConfirm = true;
+				SkipButtonText = "Skip";
+				CanSkip = UpdateArgs.Mandatory?.Value != true;
+			}
+			else
+			{
+				UpdateDescription = $"{AutoUpdater.AppTitle} is up-to-date.";
+				CanConfirm = false;
+				CanSkip = true;
+				SkipButtonText = "Close";
+			}
+
+			App.WM.AppUpdate.Toggle(true);
+		});
+	}
+
+	public void CheckArgsAndOpen(UpdateInfoEventArgs args)
 	{
 		if (args == null) return;
 		UpdateArgs = args;
-		//Title = $"{AutoUpdater.AppTitle} {args.CurrentVersion}";
-
-		string markdownText;
-
-		if (!args.ChangelogURL.EndsWith(".md"))
-		{
-			markdownText = WebHelper.DownloadUrlAsStringAsync(DivinityApp.URL_CHANGELOG_RAW, CancellationToken.None).Result;
-		}
-		else
-		{
-			markdownText = WebHelper.DownloadUrlAsStringAsync(args.ChangelogURL, CancellationToken.None).Result;
-		}
-		if (!String.IsNullOrEmpty(markdownText))
-		{
-			markdownText = Regex.Replace(markdownText, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
-			UpdateChangelogView = markdownText;
-		}
-
-		if (args.IsUpdateAvailable)
-		{
-			UpdateDescription = $"{AutoUpdater.AppTitle} {args.CurrentVersion} is now available.{Environment.NewLine}You have version {args.InstalledVersion} installed.";
-
-			CanConfirm = true;
-			SkipButtonText = "Skip";
-			CanSkip = args.Mandatory?.Value != true;
-		}
-		else
-		{
-			UpdateDescription = $"{AutoUpdater.AppTitle} is up-to-date.";
-			CanConfirm = false;
-			CanSkip = true;
-			SkipButtonText = "Close";
-		}
+		RxApp.TaskpoolScheduler.ScheduleAsync(CheckArgsAsync);
 	}
 
 	public AppUpdateWindowViewModel(AppUpdateWindow view)
 	{
 		_view = view;
+
+		CanSkip = true;
+		SkipButtonText = "Close";
 
 		var canConfirm = this.WhenAnyValue(x => x.CanConfirm);
 		ConfirmCommand = ReactiveCommand.Create(() =>
