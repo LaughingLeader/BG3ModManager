@@ -9,8 +9,8 @@
 		<RootNamespace>DivinityModManager</RootNamespace>
 		<AssemblyName>BG3ModManager</AssemblyName>
 		<AssemblyTitle>BG3ModManager</AssemblyTitle>
-		<AssemblyVersion>1.0.10.0</AssemblyVersion>
-		<FileVersion>1.0.10.0</FileVersion>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<FileVersion>1.1.0.0</FileVersion>
 		<Product>Baldur's Gate 3 Mod Manager</Product>
 		<Company>LaughingLeader</Company>
 		<Copyright>Copyright © 2020</Copyright>
