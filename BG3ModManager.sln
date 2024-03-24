@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{943120CC-2315-475E-9597-7136811228E6}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		src\Directory.build.props = src\Directory.build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbox", "src\Toolbox\Toolbox.csproj", "{2F2EF4FE-7254-425A-8DE9-47457CC057C6}"
@@ -33,6 +34,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AutoUpdater", "AutoUpdater", "{026905E5-BE54-44A7-AF8A-607EB63A607F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipExtractor", "External\AutoUpdater.NET\ZipExtractor\ZipExtractor.csproj", "{91DE558C-6DB8-429B-A069-C0491DCFF15B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "src\Services\Services.csproj", "{E48B34B8-B601-41D6-8915-AF985A10CC1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +135,16 @@ Global
 		{91DE558C-6DB8-429B-A069-C0491DCFF15B}.PublishTest|Any CPU.Build.0 = Debug|Any CPU
 		{91DE558C-6DB8-429B-A069-C0491DCFF15B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91DE558C-6DB8-429B-A069-C0491DCFF15B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Editor Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Editor Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.PublishTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.PublishTest|Any CPU.Build.0 = Debug|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +160,7 @@ Global
 		{FB9E7E6B-B19F-4F37-A708-2996190CEF13} = {026905E5-BE54-44A7-AF8A-607EB63A607F}
 		{026905E5-BE54-44A7-AF8A-607EB63A607F} = {97DFC101-8AFC-4AED-ADDC-39E5FEC4D415}
 		{91DE558C-6DB8-429B-A069-C0491DCFF15B} = {026905E5-BE54-44A7-AF8A-607EB63A607F}
+		{E48B34B8-B601-41D6-8915-AF985A10CC1C} = {84149593-A52D-4981-94AD-B3150F153735}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D06B5DA3-3018-43F3-B9F0-2D9D89DB489E}
