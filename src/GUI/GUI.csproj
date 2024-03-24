@@ -72,6 +72,7 @@
 	</Target>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
 		<ProjectReference Include="..\..\src\Core\Core.csproj" />
@@ -81,7 +82,6 @@
 	<ItemGroup>
 		<PackageReference Include="AdonisUI" Version="1.17.1" TreatAsUsed="true" />
 		<PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
-		<PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.0" />
 		<PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" />
 		<PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
