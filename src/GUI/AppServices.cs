@@ -59,7 +59,9 @@ public static class AppServices
 		SplatRegistrations.Register<ModListDropHandler>();
 		SplatRegistrations.Register<ModListDragHandler>();
 
-		//SplatRegistrations.RegisterLazySingleton<MainWindowViewModel>();
+		SplatRegistrations.RegisterLazySingleton<MainWindowViewModel>();
+
+		resolver.RegisterLazySingleton<IScreen>(() => ViewModelLocator.Main);
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();

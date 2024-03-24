@@ -42,8 +42,6 @@ public partial class App : Application
 		// Fix for loading C++ dlls from _Lib
 		AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-		WebHelper.SetupClient();
-
 #if DEBUG
 		RxApp.SuppressViewCommandBindingMessage = false;
 #else
@@ -68,12 +66,7 @@ public partial class App : Application
 			Splash.Close(TimeSpan.FromSeconds(1));
 		});
 
-		var mainWindowVM = new MainWindowViewModel(AppServices.Pathways, AppServices.Settings, AppServices.ModImporter, AppServices.Mods, AppServices.Updater, AppServices.NexusMods);
-
-		Locator.CurrentMutable.RegisterConstant(mainWindowVM);
-		Locator.CurrentMutable.RegisterConstant<IScreen>(mainWindowVM);
-
-		var mainWindow = new MainWindow() { ViewModel = mainWindowVM };
+		var mainWindow = new MainWindow() { ViewModel = ViewModelLocator.Main };
 		Locator.CurrentMutable.RegisterConstant(mainWindow);
 
 		AppServices.Get<IGameUtilitiesService>()?.AddGameProcessName(DivinityApp.GameExes);
