@@ -21,8 +21,6 @@ using Microsoft.Win32;
 
 using Newtonsoft.Json.Linq;
 
-using Reactive.Bindings.Extensions;
-
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -37,7 +35,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -2043,7 +2040,11 @@ Directory the zip will be extracted to:
 		this.WhenAnyValue(x => x.Settings.UpdateSettings.NexusModsAPIKey).BindTo(nexusModsService, x => x.ApiKey);
 
 		IDisposable importDownloadsTask = null;
-		nexusModsService.DownloadResults.ObserveAddChanged().Subscribe(f =>
+		nexusModsService.DownloadResults
+		.ToObservableChangeSet()
+		.CountChanged()
+		.ThrottleFirst(TimeSpan.FromMilliseconds(50))
+		.Subscribe(f =>
 		{
 			importDownloadsTask?.Dispose();
 			importDownloadsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromMilliseconds(250), async (sch, token) =>

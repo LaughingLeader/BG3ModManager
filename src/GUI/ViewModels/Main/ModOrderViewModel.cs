@@ -1,17 +1,10 @@
-﻿using AutoUpdaterDotNET;
-
+﻿using DivinityModManager.AppServices;
 using DivinityModManager.Extensions;
 using DivinityModManager.Models;
-using DivinityModManager.Models.App;
 using DivinityModManager.Models.Mod;
-using DivinityModManager.Models.NexusMods;
 using DivinityModManager.Models.Settings;
-using DivinityModManager.Models.Updates;
-using DivinityModManager.ModUpdater.Cache;
 using DivinityModManager.Util;
 using DivinityModManager.Views.Main;
-using DivinityModManager.Windows;
-using DivinityModManager.ViewModels.Main;
 
 using DynamicData;
 using DynamicData.Aggregation;
@@ -20,43 +13,22 @@ using DynamicData.Binding;
 using Microsoft.Win32;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using Reactive.Bindings.Extensions;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-using SharpCompress.Archives;
-using SharpCompress.Common;
-using SharpCompress.Compressors.BZip2;
-using SharpCompress.Compressors.Xz;
-using SharpCompress.Readers;
-using SharpCompress.Writers;
-
-using Splat;
-
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-using ZstdSharp;
-using System.Collections.Immutable;
-using DivinityModManager.AppServices;
 
 namespace DivinityModManager.ViewModels.Main;
 public class ModOrderViewModel : BaseHistoryViewModel, IRoutableViewModel, IModOrderViewModel
