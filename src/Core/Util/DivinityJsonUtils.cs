@@ -97,17 +97,30 @@ public static class DivinityJsonUtils
 		return default;
 	}
 
-	public static async Task<T> DeserializeFromAbstractAsync<T>(PackagedFileInfo file, CancellationToken token)
+	public static async Task<T> DeserializeFromAbstractAsync<T>(Stream stream, CancellationToken token)
 	{
 		try
 		{
-			using var stream = file.CreateContentReader();
 			using var sr = new StreamReader(stream, Encoding.UTF8);
 			string text = await sr.ReadToEndAsync(token);
 			if (!String.IsNullOrWhiteSpace(text))
 			{
 				return JsonConvert.DeserializeObject<T>(text, _errorHandleSettings);
 			}
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error deserializing Stream:\n{ex}");
+		}
+		return default;
+	}
+
+	public static async Task<T> DeserializeFromAbstractAsync<T>(PackagedFileInfo file, CancellationToken token)
+	{
+		try
+		{
+			using var stream = file.CreateContentReader();
+			return await DeserializeFromAbstractAsync<T>(stream, token);
 		}
 		catch (Exception ex)
 		{

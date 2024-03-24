@@ -318,148 +318,44 @@ public static partial class DivinityModDataLoader
 				FileOptions.Asynchronous);
 	}
 
-	private static async Task TryLoadConfigFiles(DivinityModData modData, string modsFolder, CancellationToken token)
-	{
-		var extenderConfigPath = Path.Join(modsFolder, DivinityApp.EXTENDER_MOD_CONFIG);
-		if (File.Exists(extenderConfigPath))
-		{
-			var extenderConfig = await LoadScriptExtenderConfigAsync(extenderConfigPath);
-			if (extenderConfig != null)
-			{
-				modData.ScriptExtenderData = extenderConfig;
-				if (modData.ScriptExtenderData.RequiredVersion > -1) modData.HasScriptExtenderSettings = true;
-			}
-			else
-			{
-				DivinityApp.Log($"Failed to parse {DivinityApp.EXTENDER_MOD_CONFIG} for '{modsFolder}'.");
-			}
-		}
-
-		var modManagerConfigPath = Path.Join(modsFolder, ModConfig.FileName);
-		if (File.Exists(modManagerConfigPath))
-		{
-			var modManagerConfig = await DivinityJsonUtils.DeserializeFromPathAsync<ModConfig>(extenderConfigPath, token);
-			if (modManagerConfig != null)
-			{
-				modData.ApplyModConfig(modManagerConfig);
-			}
-		}
-	}
-
 	private static async Task TryLoadConfigFiles(VFS vfs, DivinityModData modData, string modsFolder, CancellationToken token)
 	{
-		var extenderConfigPath = Path.Join(modsFolder, DivinityApp.EXTENDER_MOD_CONFIG);
-		if (vfs.FileExists(extenderConfigPath))
-		{
-			var extenderConfig = await LoadScriptExtenderConfigAsync(vfs.FindVFSFile(extenderConfigPath));
-			if (extenderConfig != null)
-			{
-				modData.ScriptExtenderData = extenderConfig;
-				if (modData.ScriptExtenderData.RequiredVersion > -1) modData.HasScriptExtenderSettings = true;
-			}
-			else
-			{
-				DivinityApp.Log($"Failed to parse {DivinityApp.EXTENDER_MOD_CONFIG} for '{modsFolder}'.");
-			}
-		}
-
-		var modManagerConfigPath = Path.Join(modsFolder, ModConfig.FileName);
-		if (vfs.FileExists(modManagerConfigPath))
-		{
-			var modManagerConfig = await DivinityJsonUtils.DeserializeFromAbstractAsync<ModConfig>(vfs.FindVFSFile(modManagerConfigPath), token);
-			if (modManagerConfig != null)
-			{
-				modData.ApplyModConfig(modManagerConfig);
-			}
-		}
-	}
-
-	[Obsolete("No longer necessary since LoadBuiltinModsAsync now finds loose mods")]
-	private static async Task<DivinityModData> LoadEditorProjectFolderAsync(string folder, CancellationToken token)
-	{
-		var metaFile = Path.Join(folder, "meta.lsx");
-		if (File.Exists(metaFile))
-		{
-			using var fileStream = GetAsyncStream(metaFile);
-			var result = new byte[fileStream.Length];
-			await fileStream.ReadAsync(result.AsMemory(0, (int)fileStream.Length), token);
-
-			string str = Encoding.UTF8.GetString(result, 0, result.Length);
-
-			if (!String.IsNullOrEmpty(str))
-			{
-				//XML parsing doesn't like the BOM for some reason
-				if (str.StartsWith(_byteOrderMarkUtf8, StringComparison.Ordinal))
-				{
-					str = str.Remove(0, _byteOrderMarkUtf8.Length);
-				}
-
-				DivinityModData modData = ParseMetaFile(str);
-				if (modData != null)
-				{
-					modData.IsEditorMod = true;
-					modData.IsUserMod = true;
-					modData.FilePath = folder;
-					try
-					{
-						modData.LastModified = File.GetLastWriteTime(metaFile);
-						modData.LastUpdated = modData.LastModified;
-					}
-					catch (PlatformNotSupportedException ex)
-					{
-						DivinityApp.Log($"Error getting last modified date for '{metaFile}': {ex}");
-					}
-
-					await TryLoadConfigFiles(modData, folder, token);
-
-					return modData;
-				}
-			}
-		}
-		return null;
-	}
-
-	[Obsolete("No longer necessary since LoadBuiltinModsAsync now finds loose mods")]
-	public static async Task<List<DivinityModData>> LoadEditorProjectsAsync(string modsFolderPath, CancellationToken token)
-	{
-		var projects = new ConcurrentBag<DivinityModData>();
+		Stream extenderConfigStream = null;
+		Stream modManagerConfigStream = null;
 
 		try
 		{
-			if (Directory.Exists(modsFolderPath))
+			var extenderConfigPath = Path.Join(modsFolder, DivinityApp.EXTENDER_MOD_CONFIG);
+			if (vfs.TryOpen(extenderConfigPath, out extenderConfigStream))
 			{
-				var projectDirectories = Directory.EnumerateDirectories(modsFolderPath);
-				var filteredFolders = projectDirectories.Where(f => !IgnoreModByFolder(f));
-				DivinityApp.Log($"Project Folders: {filteredFolders.Count()} / {projectDirectories.Count()}");
+				var extenderConfig = await LoadScriptExtenderConfigAsync(extenderConfigStream);
 
-				async Task AwaitPartition(IEnumerator<string> partition)
+				if (extenderConfig != null)
 				{
-					using (partition)
-					{
-						while (partition.MoveNext())
-						{
-							if (token.IsCancellationRequested) return;
-							await Task.Yield(); // prevents a sync/hot thread hangup
-							var modData = await LoadEditorProjectFolderAsync(partition.Current, token);
-							if (modData != null)
-							{
-								projects.Add(modData);
-							}
-						}
-					}
+					modData.ScriptExtenderData = extenderConfig;
+					if (modData.ScriptExtenderData.RequiredVersion > -1) modData.HasScriptExtenderSettings = true;
 				}
+				else
+				{
+					DivinityApp.Log($"Failed to parse {DivinityApp.EXTENDER_MOD_CONFIG} for '{modsFolder}'.");
+				}
+			}
 
-				var currentTime = DateTime.Now;
-				var partitionAmount = Environment.ProcessorCount;
-				await Task.WhenAll(Partitioner.Create(filteredFolders).GetPartitions(partitionAmount).AsParallel().Select(p => AwaitPartition(p)));
-				DivinityApp.Log($"Took {DateTime.Now - currentTime:s\\.ff} seconds(s) to load editor mods.");
+			var modManagerConfigPath = Path.Join(modsFolder, ModConfig.FileName);
+			if (vfs.TryOpen(modManagerConfigPath, out modManagerConfigStream))
+			{
+				var modManagerConfig = await DivinityJsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigStream, token);
+				if (modManagerConfig != null)
+				{
+					modData.ApplyModConfig(modManagerConfig);
+				}
 			}
 		}
-		catch (Exception ex)
+		finally
 		{
-			DivinityApp.Log($"Error loading mod projects: {ex}");
+			extenderConfigStream?.Dispose();
+			modManagerConfigStream?.Dispose();
 		}
-		return [.. projects];
 	}
 
 	private static bool PakIsNotPartial(string path)
@@ -513,11 +409,13 @@ public static partial class DivinityModDataLoader
 				var f = pak.Files[i];
 				files.Add(f.Name);
 
-				if (f.Name.Contains(DivinityApp.EXTENDER_MOD_CONFIG))
+				var formattedPath = f.Name.Replace("/", @"\");
+
+				if (formattedPath.EndsWith(DivinityApp.EXTENDER_MOD_CONFIG, StringComparison.OrdinalIgnoreCase))
 				{
 					extenderConfigPath = f;
 				}
-				else if (f.Name.Contains(ModConfig.FileName) && Path.GetDirectoryName(f.Name) == "Mods")
+				else if (formattedPath.EndsWith(ModConfig.FileName, StringComparison.OrdinalIgnoreCase) && Path.GetDirectoryName(formattedPath) == "Mods")
 				{
 					modManagerConfigPath = f;
 				}
@@ -527,28 +425,28 @@ public static partial class DivinityModDataLoader
 				}
 				else
 				{
-					var modFolderMatch = _ModFolderPattern.Match(f.Name);
+					var modFolderMatch = _ModFolderPattern.Match(formattedPath);
 					if (modFolderMatch.Success)
 					{
 						var modFolder = Path.GetFileName(modFolderMatch.Groups[2].Value.TrimEnd(Path.DirectorySeparatorChar));
-						if (f.Name.Contains($"Mods/{modFolder}/{ModConfig.FileName}"))
+						if (formattedPath.EndsWith($"Mods\\{modFolder}\\{ModConfig.FileName}", StringComparison.OrdinalIgnoreCase))
 						{
 							modManagerConfigPath = f;
 						}
-						else if (f.Name.Contains($"Mods/{modFolder}/Story/RawFiles/Goals"))
+						else if (formattedPath.Contains($"Mods\\{modFolder}\\Story\\RawFiles\\Goals", StringComparison.OrdinalIgnoreCase))
 						{
 							if (hasOsirisScripts == DivinityOsirisModStatus.NONE)
 							{
 								hasOsirisScripts = DivinityOsirisModStatus.SCRIPTS;
 							}
-							if (f.Name.Contains("ForceRecompile.txt"))
+							if (formattedPath.EndsWith("ForceRecompile.txt", StringComparison.OrdinalIgnoreCase))
 							{
 								hasOsirisScripts = DivinityOsirisModStatus.MODFIXER;
 							}
 							else
 							{
 								using var stream = f.CreateContentReader();
-								using var sr = new System.IO.StreamReader(stream);
+								using var sr = new StreamReader(stream);
 								string text = await sr.ReadToEndAsync();
 								if (text.Contains("NRD_KillStory") || text.Contains("NRD_BadCall"))
 								{
@@ -1914,12 +1812,11 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(PackagedFileInfo configFile)
+	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(Stream stream)
 	{
 		try
 		{
-			using var stream = configFile.CreateContentReader();
-			using var sr = new System.IO.StreamReader(stream);
+			using var sr = new StreamReader(stream);
 			string text = await sr.ReadToEndAsync();
 			if (!String.IsNullOrWhiteSpace(text))
 			{
@@ -1943,6 +1840,20 @@ public static partial class DivinityModDataLoader
 					}
 				}
 			}
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error reading 'ScriptExtenderConfig.json': {ex}");
+		}
+		return null;
+	}
+
+	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(PackagedFileInfo configFile)
+	{
+		try
+		{
+			using var stream = configFile.CreateContentReader();
+			return await LoadScriptExtenderConfigAsync(stream);
 		}
 		catch (Exception ex)
 		{
@@ -1979,11 +1890,6 @@ public static partial class DivinityModDataLoader
 					}
 				}
 
-				if (vfs.DirectoryExists(modInfo.ModsPath))
-				{
-					await TryLoadConfigFiles(modData, modInfo.ModsPath, token);
-				}
-
 				if (!String.IsNullOrEmpty(filePath))
 				{
 					modData.FilePath = filePath;
@@ -2017,6 +1923,11 @@ public static partial class DivinityModDataLoader
 				{
 					modData.IsUserMod = true;
 					DivinityApp.Log($"Added mod from data folder: Name({modData.Name}) UUID({modData.UUID}) Author({modData.Author}) Version({modData.Version.VersionInt})");
+				}
+
+				if (vfs.DirectoryExists(modInfo.ModsPath))
+				{
+					await TryLoadConfigFiles(vfs, modData, modInfo.ModsPath, token);
 				}
 
 				return modData;
