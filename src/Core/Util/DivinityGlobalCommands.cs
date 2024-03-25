@@ -178,17 +178,9 @@ public class DivinityGlobalCommands : ReactiveObject
 		DivinityInteractions.OpenModProperties.Handle(mod).Subscribe();
 	}
 
-	public static async Task ValidateModStats(DivinityModData mod, CancellationToken token)
-	{
-		await DivinityInteractions.RequestValidateModStats.Handle(new([mod], token));
-	}
-
 	private static void StartValidateModStats(DivinityModData mod)
 	{
-		RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
-		{
-			await ValidateModStats(mod, token);
-		});
+		DivinityInteractions.RequestValidateModStats.Handle(new([mod], CancellationToken.None)).Subscribe();
 	}
 
 	public DivinityGlobalCommands()

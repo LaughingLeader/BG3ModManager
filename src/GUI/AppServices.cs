@@ -39,7 +39,10 @@ public static class AppServices
 
 		SplatRegistrations.RegisterConstant<IModManagerService>(new ModManagerService());
 		SplatRegistrations.RegisterConstant<IModUpdaterService>(new ModUpdaterService());
+
 		SplatRegistrations.RegisterConstant<IGameUtilitiesService>(new GameUtilitiesService());
+
+		SplatRegistrations.RegisterLazySingleton<IStatsValidatorService, StatsValidatorService>();
 
 		SplatRegistrations.RegisterConstant<IBackgroundCommandService>(new BackgroundCommandService(DivinityApp.PIPE_ID));
 

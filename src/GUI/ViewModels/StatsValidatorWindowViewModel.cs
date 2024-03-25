@@ -1,5 +1,7 @@
 ﻿using DynamicData.Binding;
 
+using Humanizer;
+
 using LSLib.LS.Stats;
 using LSLib.LS.Story.GoalParser;
 
@@ -10,6 +12,7 @@ using ModManager.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using System.Globalization;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -21,11 +24,13 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 {
 	[Reactive] public DivinityModData Mod { get; set; }
 	[Reactive] public string OutputText { get; private set; }
+	[Reactive] public TimeSpan TimeTaken { get; private set; }
 
 	public ObservableCollectionExtended<StatsValidatorFileResults> Entries { get; }
 
 	[ObservableAsProperty] public string ModName { get; }
 	[ObservableAsProperty] public Visibility LockScreenVisibility { get; }
+	[ObservableAsProperty] public string TimeTakenText { get; }
 
 	public ReactiveCommand<DivinityModData, Unit> ValidateCommand { get; }
 	public RxCommandUnit CancelValidateCommand { get; }
@@ -74,13 +79,13 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 				var lineText = new List<string>();
 				for (var i = startLine; i < endLine; i++)
 				{
-					lineText.Add(lines[i]);
+					lineText.Add(lines[i].Trim());
 				}
 				return String.Join(Environment.NewLine, lineText);
 			}
-			else
+			else if(lines != null && startLine < lines.Length)
 			{
-				return lines[startLine];
+				return lines[startLine].Trim();
 			}
 		}
 		return String.Empty;
@@ -90,6 +95,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 	{
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
+			//TimeTaken = result.TimeTaken;
 			Mod = result.Mods.FirstOrDefault();
 			Entries.Clear();
 
@@ -117,9 +123,44 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		});
 	}
 
+	private async Task StartValidationAsyncImpl(ValidateModStatsRequest data)
+	{
+		var gameDataPath = AppServices.Settings.ManagerSettings.GameDataPath;
+		var validator = AppServices.Get<IStatsValidatorService>();
+
+		DateTimeOffset startTime = DateTimeOffset.Now;
+
+		if (validator.GameDataPath != gameDataPath)
+		{
+			await DivinityApp.ShowAlertAsync("Initializing base data...", AlertType.Info);
+			await Task.Run(() =>
+			{
+				validator.Initialize(gameDataPath);
+			}, data.Token);
+		}
+		else
+		{
+			await DivinityApp.ShowAlertAsync("Validating mod stats...", AlertType.Info, 200);
+		}
+
+		var results = await Observable.StartAsync(async () =>
+		{
+			return await validator.ValidateModsAsync(data.Mods, data.Token);
+			//eturn await ModUtils.ValidateStatsAsync(interaction.Input.Mods, AppServices.Settings.ManagerSettings.GameDataPath, interaction.Input.Token);
+		}, RxApp.TaskpoolScheduler);
+
+		await Observable.Start(() =>
+		{
+			TimeTaken = DateTimeOffset.Now - startTime;
+			DivinityApp.ShowAlert($"Validation complete for {string.Join(";", data.Mods.Select(x => x.DisplayName))}", AlertType.Success, 10);
+		}, RxApp.MainThreadScheduler);
+
+		await DivinityInteractions.OpenValidateStatsResults.Handle(results);
+	}
+
 	private IObservable<Unit> StartValidationAsync(DivinityModData mod)
 	{
-		return ObservableEx.CreateAndStartAsync(token => DivinityGlobalCommands.ValidateModStats(mod, token), RxApp.TaskpoolScheduler)
+		return ObservableEx.CreateAndStartAsync(token => StartValidationAsyncImpl(new([mod], token)), RxApp.TaskpoolScheduler)
 			.TakeUntil(CancelValidateCommand);
 	}
 
@@ -135,12 +176,14 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
 		ValidateCommand.IsExecuting.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.LockScreenVisibility, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.TimeTaken)
+			.Select(x => x.Humanize(1, CultureInfo.CurrentCulture, Humanizer.Localisation.TimeUnit.Hour).ApplyCase(LetterCasing.Title))
+			.ToUIProperty(this, x => x.TimeTakenText, "");
 
 		DivinityInteractions.RequestValidateModStats.RegisterHandler(async interaction =>
 		{
-			var results = await ModUtils.ValidateStatsAsync(interaction.Input.Mods, AppServices.Settings.ManagerSettings.GameDataPath, interaction.Input.Token);
-			await DivinityInteractions.OpenValidateStatsResults.Handle(results);
 			interaction.SetOutput(true);
+			await StartValidationAsyncImpl(interaction.Input);
 		});
 	}
 }

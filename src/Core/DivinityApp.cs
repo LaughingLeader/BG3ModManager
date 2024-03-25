@@ -202,4 +202,9 @@ public static class DivinityApp
 	{
 		DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout)).Subscribe();
 	}
+
+	public static async Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0)
+	{
+		await DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout));
+	}
 }

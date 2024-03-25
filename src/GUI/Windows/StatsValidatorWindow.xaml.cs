@@ -11,30 +11,30 @@ public class StatsValidatorWindowBase : HideWindowBase<StatsValidatorWindowViewM
 
 public partial class StatsValidatorWindow : StatsValidatorWindowBase
 {
-	private async Task<Unit> OpenWindow(IInteractionContext<ValidateModStatsResults, bool> context)
-	{
-		await Observable.Start(() =>
-		{
-			ViewModel.Load(context.Input);
-			App.WM.StatsValidator.Toggle(true);
-		}, RxApp.MainThreadScheduler);
-		context.SetOutput(true);
-		return Unit.Default;
-	}
-
 	public StatsValidatorWindow()
 	{
 		InitializeComponent();
 
 		ViewModel = ViewModelLocator.StatsValidator;
 
-		DivinityInteractions.OpenValidateStatsResults.RegisterHandler(input => Observable.Start(() => OpenWindow(input), RxApp.MainThreadScheduler));
+		DivinityInteractions.OpenValidateStatsResults.RegisterHandler(context =>
+		{
+			context.SetOutput(true);
+
+			RxApp.MainThreadScheduler.Schedule(() =>
+			{
+				ViewModel.Load(context.Input);
+				App.WM.StatsValidator.Toggle(true);
+			});
+		});
 
 		this.OneWayBind(ViewModel, vm => vm.ModName, view => view.TitleTextBlock.Text, name => $"{name} Results");
-		this.OneWayBind(ViewModel, vm => vm.OutputText, view => view.ResultsTextBlock.Text);
 		this.OneWayBind(ViewModel, vm => vm.Entries, view => view.EntriesTreeView.ItemsSource);
 
 		this.OneWayBind(ViewModel, vm => vm.LockScreenVisibility, view => view.LockScreen.Visibility);
+
+		this.OneWayBind(ViewModel, vm => vm.OutputText, view => view.ResultsTextBlock.Text);
+		this.OneWayBind(ViewModel, vm => vm.TimeTakenText, view => view.TimeTakenTextControl.Text);
 
 		this.BindCommand(ViewModel, vm => vm.ValidateCommand, view => view.ValidateButton, vm => vm.Mod);
 		this.BindCommand(ViewModel, vm => vm.CancelValidateCommand, view => view.CancelButton);

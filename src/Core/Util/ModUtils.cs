@@ -73,6 +73,8 @@ public static class ModUtils
 		var context = new StatLoadingContext();
 		var loader = new StatLoader(context);
 
+		var time = DateTimeOffset.Now;
+
 		var vfs = new VFS();
 		vfs.AttachGameDirectory(gameDataPath, true);
 		foreach (var mod in mods)
@@ -156,6 +158,6 @@ public static class ModUtils
 		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(vfs, x, token)).ToArray());
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 
-		return new ValidateModStatsResults(new List<DivinityModData>(mods), context.Errors, fileDict);
+		return new ValidateModStatsResults(new List<DivinityModData>(mods), context.Errors, fileDict, DateTimeOffset.Now - time);
 	}
 }

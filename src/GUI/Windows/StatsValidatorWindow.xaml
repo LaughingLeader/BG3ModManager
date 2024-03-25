@@ -63,12 +63,25 @@
 					Rows="auto,auto,*">
 
 					<Border HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static adonisUI:Brushes.Layer3BackgroundBrush}}">
-						<TextBlock
-							x:Name="TitleTextBlock"
-							FontSize="24"
-							Text="Results"
-							TextAlignment="Center"
-							TextWrapping="Wrap" />
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+								x:Name="TitleTextBlock"
+								FontSize="24"
+								Text="Results"
+								TextAlignment="Center"
+								TextWrapping="Wrap" />
+							<TextBlock
+								FontSize="12"
+								TextAlignment="Center"
+								TextWrapping="Wrap">
+								<Run Text="Time Taken:" />
+								<Run
+									x:Name="TimeTakenTextControl"
+									Foreground="Orange"
+									Text="00:02:32" />
+							</TextBlock>
+						</StackPanel>
+
 					</Border>
 
 					<TextBlock
