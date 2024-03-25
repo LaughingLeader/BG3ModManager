@@ -296,11 +296,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var canExecuteSaveCommand = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.CanSaveOrder));
 		keys.Save.AddAction(() => SaveLoadOrder(), canExecuteSaveCommand);
 
-		canExecuteSaveCommand.Subscribe(b =>
-		{
-			DivinityApp.Log($"canExecuteSaveCommand: {b}");
-		});
-
 		keys.SaveAs.AddAction(SaveLoadOrderAs, canExecuteSaveCommand);
 		keys.ImportMod.AddAction(modImporter.OpenModImportDialog, canExecuteCommands);
 		keys.ImportNexusModsIds.AddAction(modImporter.OpenModIdsImportDialog, canExecuteCommands);
