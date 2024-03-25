@@ -43,7 +43,10 @@ public class AppKeys : ReactiveObject
 	[MenuSettings("File", "Import Order & Mods from Archive...", true)]
 	public Hotkey ImportOrderFromZipFile { get; } = new Hotkey(Key.None);
 
+	//TODO GM/DM mode isn't a thing in BG3
+#if DOS2
 	[MenuSettings("File", "Load Order From Selected GM Campaign", true)]
+#endif
 	public Hotkey ImportOrderFromSelectedGMCampaign { get; } = new Hotkey(Key.None);
 
 	[MenuSettings("File", "Export Order to Game")]
