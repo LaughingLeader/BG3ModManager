@@ -5,6 +5,7 @@ using ModManager.Services;
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.Views.Main;
 using ModManager.Windows;
 
 using ReactiveUI;
@@ -90,6 +91,10 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<SettingsWindow>();
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindow>();
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
+
+		SplatRegistrations.RegisterLazySingleton<DeleteFilesConfirmationView>();
+		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
+		SplatRegistrations.RegisterLazySingleton<ModUpdatesLayout>();
 
 		//SplatRegistrations.RegisterLazySingleton<MainWindow>();
 

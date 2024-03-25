@@ -1,4 +1,5 @@
-﻿using HanumanInstitute.MvvmDialogs.Wpf;
+﻿using HanumanInstitute.MvvmDialogs;
+using HanumanInstitute.MvvmDialogs.Wpf;
 
 using ModManager.Controls;
 using ModManager.Models.View;
@@ -11,27 +12,35 @@ using ModManager.Windows;
 
 using ReactiveUI;
 
+using System.Windows.Controls;
+
 namespace ModManager;
 
 public class ViewLocator : StrongViewLocator, ReactiveUI.IViewLocator
 {
+	private void RegisterConstant<TViewModel, TView>() where TViewModel : ReactiveObject where TView : Control, new()
+	{
+		Register<TViewModel>(new ViewDefinition(typeof(TView), () => AppServices.Get<TView>()));
+	}
+
 	public ViewLocator()
 	{
-		Register<MainWindowViewModel, MainWindow>();
-		Register<AboutWindowViewModel, AboutWindow>();
-		Register<CollectionDownloadWindowViewModel, CollectionDownloadWindow>();
-		Register<AppUpdateWindowViewModel, AppUpdateWindow>();
-		Register<DownloadActivityBarViewModel, DownloadActivityBar>();
-		Register<ExportOrderToArchiveViewModel, ExportOrderToArchiveView>();
-		Register<HelpWindowViewModel, HelpWindow>();
-		Register<ModPropertiesWindowViewModel, ModPropertiesWindow>();
-		Register<NxmDownloadWindowViewModel, NxmDownloadWindow>();
-		Register<SettingsWindowViewModel, SettingsWindow>();
-		Register<VersionGeneratorViewModel, VersionGeneratorWindow>();
-		Register<DeleteFilesViewModel, DeleteFilesConfirmationView>();
-		Register<ModOrderViewModel, ModOrderView>();
-		Register<ModUpdatesViewModel, ModUpdatesLayout>();
+		//RegisterConstant<MainWindowViewModel, MainWindow>();
+		//RegisterConstant<AboutWindowViewModel, AboutWindow>();
+		//RegisterConstant<CollectionDownloadWindowViewModel, CollectionDownloadWindow>();
+		//RegisterConstant<AppUpdateWindowViewModel, AppUpdateWindow>();
+		//RegisterConstant<ExportOrderToArchiveViewModel, ExportOrderToArchiveView>();
+		//RegisterConstant<HelpWindowViewModel, HelpWindow>();
+		//RegisterConstant<ModPropertiesWindowViewModel, ModPropertiesWindow>();
+		//RegisterConstant<NxmDownloadWindowViewModel, NxmDownloadWindow>();
+		//RegisterConstant<SettingsWindowViewModel, SettingsWindow>();
+		//RegisterConstant<VersionGeneratorViewModel, VersionGeneratorWindow>();
 
+		RegisterConstant<DeleteFilesViewModel, DeleteFilesConfirmationView>();
+		RegisterConstant<ModOrderViewModel, ModOrderView>();
+		RegisterConstant<ModUpdatesViewModel, ModUpdatesLayout>();
+
+		Register<DownloadActivityBarViewModel, DownloadActivityBar>();
 		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>();
 		Register<StatsValidatorErrorEntry, StatsValidatorEntryView>();
 		Register<StatsValidatorLineText, StatsValidatorLineView>();
