@@ -30,7 +30,7 @@
 			x:Key="ToolbarButton"
 			BasedOn="{StaticResource {x:Static adonisUI:Styles.ToolbarButton}}"
 			TargetType="Button">
-			<Setter Property="Padding" Value="4,0" />
+			<Setter Property="Padding" Value="4" />
 		</Style>
 	</Window.Resources>
 	<Grid>
@@ -39,18 +39,23 @@
 				<RowDefinition Height="auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
+			<!--<Menu>
+				<MenuItem
+					x:Name="ValidateButton"
+					Header="Re-Validate"
+					Icon="{StaticResource QuickRefreshIcon}" />
+			</Menu>-->
 			<ToolBarTray>
-				<ToolBar Band="1" BandIndex="1">
-					<Button x:Name="ValidateButton" Style="{StaticResource ToolbarButton}">
-						<StackPanel Orientation="Horizontal">
-							<ContentControl
-								Width="8"
-								Height="8"
-								Margin="0,0,8,0"
-								Content="{StaticResource QuickRefreshIcon}" />
-							<TextBlock Text="Re-Validate" />
-						</StackPanel>
-					</Button>
+				<ToolBar
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Center"
+					Band="1"
+					BandIndex="1">
+					<Button
+						x:Name="ValidateButton"
+						Content="{StaticResource QuickRefreshIcon}"
+						Style="{StaticResource ToolbarButton}"
+						ToolTip="Validate Again" />
 				</ToolBar>
 			</ToolBarTray>
 			<Border
@@ -71,14 +76,15 @@
 								TextAlignment="Center"
 								TextWrapping="Wrap" />
 							<TextBlock
+								x:Name="TimeTakenTextControl"
 								FontSize="12"
 								TextAlignment="Center"
 								TextWrapping="Wrap">
 								<Run Text="Time Taken:" />
 								<Run
-									x:Name="TimeTakenTextControl"
+									x:Name="TimeTakenValueControl"
 									Foreground="Orange"
-									Text="00:02:32" />
+									Text="10 Seconds" />
 							</TextBlock>
 						</StackPanel>
 

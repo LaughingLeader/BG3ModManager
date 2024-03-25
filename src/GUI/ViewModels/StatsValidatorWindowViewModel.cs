@@ -1,6 +1,7 @@
 ﻿using DynamicData.Binding;
 
 using Humanizer;
+using Humanizer.Localisation;
 
 using LSLib.LS.Stats;
 using LSLib.LS.Story.GoalParser;
@@ -29,8 +30,9 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 	public ObservableCollectionExtended<StatsValidatorFileResults> Entries { get; }
 
 	[ObservableAsProperty] public string ModName { get; }
-	[ObservableAsProperty] public Visibility LockScreenVisibility { get; }
 	[ObservableAsProperty] public string TimeTakenText { get; }
+	[ObservableAsProperty] public Visibility HasTimeTakenText { get; }
+	[ObservableAsProperty] public Visibility LockScreenVisibility { get; }
 
 	public ReactiveCommand<DivinityModData, Unit> ValidateCommand { get; }
 	public RxCommandUnit CancelValidateCommand { get; }
@@ -152,7 +154,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		await Observable.Start(() =>
 		{
 			TimeTaken = DateTimeOffset.Now - startTime;
-			DivinityApp.ShowAlert($"Validation complete for {string.Join(";", data.Mods.Select(x => x.DisplayName))}", AlertType.Success, 10);
+			DivinityApp.ShowAlert($"Validation complete for {string.Join(";", data.Mods.Select(x => x.DisplayName))}", AlertType.Success, 30);
 		}, RxApp.MainThreadScheduler);
 
 		await DivinityInteractions.OpenValidateStatsResults.Handle(results);
@@ -164,11 +166,19 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 			.TakeUntil(CancelValidateCommand);
 	}
 
+	private static string TimeTakenToText(TimeSpan time)
+	{
+		if (time == TimeSpan.Zero) return string.Empty;
+		return time.Humanize(1, CultureInfo.CurrentCulture, TimeUnit.Second, TimeUnit.Second).ApplyCase(LetterCasing.Title);
+	}
+
 	public StatsValidatorWindowViewModel()
 	{
 		Entries = [];
 
 		this.WhenAnyValue(x => x.Mod).WhereNotNull().Select(x => x.DisplayName).ToUIProperty(this, x => x.ModName);
+		this.WhenAnyValue(x => x.TimeTaken).Select(TimeTakenToText).ToUIProperty(this, x => x.TimeTakenText, "");
+		this.WhenAnyValue(x => x.TimeTakenText).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.HasTimeTakenText, Visibility.Collapsed);
 
 		var canValidate = this.WhenAnyValue(x => x.Mod).Select(x => x != null);
 
@@ -176,10 +186,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
 		ValidateCommand.IsExecuting.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.LockScreenVisibility, Visibility.Collapsed);
-		this.WhenAnyValue(x => x.TimeTaken)
-			.Select(x => x.Humanize(1, CultureInfo.CurrentCulture, Humanizer.Localisation.TimeUnit.Hour).ApplyCase(LetterCasing.Title))
-			.ToUIProperty(this, x => x.TimeTakenText, "");
-
+		
 		DivinityInteractions.RequestValidateModStats.RegisterHandler(async interaction =>
 		{
 			interaction.SetOutput(true);
