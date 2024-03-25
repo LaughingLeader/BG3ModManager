@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/">
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:svgc="http://sharpvectors.codeplex.com/svgc/">
 	<BitmapImage x:Key="AddItemImage" UriSource="pack://application:,,,/Resources/Icons/AddItem_16x.png" />
 	<BitmapImage x:Key="AddPropertyImage" UriSource="pack://application:,,,/Resources/Icons/AddProperty_16x.png" />
 	<BitmapImage x:Key="AlertBar_Close" UriSource="pack://application:,,,/Resources/Icons/AlertBar_Close.png" />
@@ -49,101 +49,101 @@
 	<PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
 	<!--  x:Shared is required so prevent the next MenuItem from unsetting the previous icon.  -->
 	<Image
-        x:Key="CopyToClipboardIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource CopyToClipboardImage}" />
+		x:Key="CopyToClipboardIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource CopyToClipboardImage}" />
 	<Image
-        x:Key="OpenFolderIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource OpenFolderImage}" />
+		x:Key="OpenFolderIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource OpenFolderImage}" />
 	<Image
-        x:Key="OpenFileIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource OpenFileImage}" />
+		x:Key="OpenFileIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource OpenFileImage}" />
 	<Image
-        x:Key="OpenInBrowserIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource OpenInBrowserImage}" />
+		x:Key="OpenInBrowserIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource OpenInBrowserImage}" />
 	<Image
-        x:Key="OpenSteamWorkshopFolderIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource OpenSteamWorkshopFolderImage}" />
+		x:Key="OpenSteamWorkshopFolderIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource OpenSteamWorkshopFolderImage}" />
 	<Image
-        x:Key="ModDeveloperIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource OsirisImage}" />
+		x:Key="ModDeveloperIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource OsirisImage}" />
 	<Image
-        x:Key="ModPropertiesIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource ConfigurationFileImage}" />
+		x:Key="ModPropertiesIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource ConfigurationFileImage}" />
 	<Image
-        x:Key="DeleteModIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource DeleteModImage}" />
+		x:Key="DeleteModIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource DeleteModImage}" />
 	<Image
-        x:Key="SelectIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource SelectImage}" />
+		x:Key="SelectIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource SelectImage}" />
 	<Image
-        x:Key="ShowAllFilesIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        Source="{StaticResource ShowAllFilesImage}" />
+		x:Key="ShowAllFilesIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		Source="{StaticResource ShowAllFilesImage}" />
 	<Image
-        x:Key="LargeFileIcon"
-        Width="36"
-        Height="36"
-        x:Shared="false"
-        Source="{svgc:SvgImage Source=/Resources/Icons/CurrentFile_16x.svg,
-        AppName=BG3ModManager}" />
+		x:Key="LargeFileIcon"
+		Width="36"
+		Height="36"
+		x:Shared="false"
+		Source="{svgc:SvgImage Source=/Resources/Icons/CurrentFile_16x.svg,
+		                       AppName=BG3ModManager}" />
 	<Image
-        x:Key="LargeFolderIcon"
-        Width="36"
-        Height="36"
-        x:Shared="false"
-        Source="{svgc:SvgImage Source=/Resources/Icons/Folder_16x.svg,
-        AppName=BG3ModManager}" />
+		x:Key="LargeFolderIcon"
+		Width="36"
+		Height="36"
+		x:Shared="false"
+		Source="{svgc:SvgImage Source=/Resources/Icons/Folder_16x.svg,
+		                       AppName=BG3ModManager}" />
 
 	<svgc:SvgBitmap
-        x:Key="HelpIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        AppName="BG3ModManager"
-        UriSource="/Resources/Icons/StatusHelp_16x.svg" />
+		x:Key="HelpIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/StatusHelp_16x.svg" />
 
 	<svgc:SvgBitmap
-        x:Key="ListViewIcon"
-        Width="16"
-        Height="16"
-        x:Shared="false"
-        AppName="BG3ModManager"
-        UriSource="/Resources/Icons/ListView_16x.svg" />
+		x:Key="ListViewIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/ListView_16x.svg" />
 
 	<svgc:SvgBitmap
-        x:Key="ListViewIconToggled"
-        Width="16"
-        Height="16"
-        x:Shared="false">
+		x:Key="ListViewIconToggled"
+		Width="16"
+		Height="16"
+		x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
@@ -158,18 +158,18 @@
 	</svgc:SvgBitmap>
 
 	<svgc:SvgBitmap
-            x:Key="CardViewIcon"
-            Width="16"
-            Height="16"
-            x:Shared="false"
-            AppName="BG3ModManager"
-            UriSource="/Resources/Icons/ViewPortrait_16x.svg" />
+		x:Key="CardViewIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/ViewPortrait_16x.svg" />
 
 	<svgc:SvgBitmap
-            x:Key="CardViewIconToggled"
-            Width="16"
-            Height="16"
-            x:Shared="false">
+		x:Key="CardViewIconToggled"
+		Width="16"
+		Height="16"
+		x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
@@ -184,42 +184,42 @@
 	</svgc:SvgBitmap>
 
 	<svgc:SvgBitmap
-                x:Key="CheckboxCheckAllIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false"
-                AppName="BG3ModManager"
-                UriSource="/Resources/Icons/CheckboxCheckAll_16x.svg" />
+		x:Key="CheckboxCheckAllIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/CheckboxCheckAll_16x.svg" />
 
 	<svgc:SvgBitmap
-                x:Key="CheckboxClearAllIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false"
-                AppName="BG3ModManager"
-                UriSource="/Resources/Icons/CheckboxClearAll_16x.svg" />
+		x:Key="CheckboxClearAllIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/CheckboxClearAll_16x.svg" />
 
 	<svgc:SvgBitmap
-                x:Key="ValidateModelIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false"
-                AppName="BG3ModManager"
-                UriSource="/Resources/Icons/ValidateModel_16x.svg" />
+		x:Key="ValidateModelIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/ValidateModel_16x.svg" />
 
 	<svgc:SvgBitmap
-                x:Key="QuickRefreshIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false"
-                AppName="BG3ModManager"
-                UriSource="/Resources/Icons/QuickRefresh_16x.svg" />
+		x:Key="QuickRefreshIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false"
+		AppName="BG3ModManager"
+		UriSource="/Resources/Icons/QuickRefresh_16x.svg" />
 
 	<svgc:SvgBitmap
-                x:Key="RedCloseIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false">
+		x:Key="RedCloseIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
@@ -235,10 +235,10 @@
 	</svgc:SvgBitmap>
 
 	<svgc:SvgBitmap
-                x:Key="RedCloseIconHover"
-                Width="16"
-                Height="16"
-                x:Shared="false">
+		x:Key="RedCloseIconHover"
+		Width="16"
+		Height="16"
+		x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
@@ -254,10 +254,10 @@
 	</svgc:SvgBitmap>
 
 	<svgc:SvgBitmap
-                x:Key="NexusModsIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false">
+		x:Key="NexusModsIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
 <svg width="64px" height="64px" viewBox="0 0 1024 1024"
@@ -272,12 +272,12 @@
                         ]]>
 		</svgc:SvgBitmap.SvgSource>
 	</svgc:SvgBitmap>
-	
+
 	<svgc:SvgBitmap
-                x:Key="GitHubIcon"
-                Width="16"
-                Height="16"
-                x:Shared="false">
+		x:Key="GitHubIcon"
+		Width="16"
+		Height="16"
+		x:Shared="false">
 		<svgc:SvgBitmap.SvgSource>
 			<![CDATA[
 <svg width="64px" height="64px" viewBox="0 0 20 20" version="1.1"

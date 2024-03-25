@@ -1,0 +1,2247 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:Collections="clr-namespace:System.Collections;assembly=mscorlib"
+	xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Classic"
+	xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+	xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+	xmlns:appdata="clr-namespace:ModManager.Models.App;assembly=ModManager.Core"
+	xmlns:behavior="clr-namespace:ModManager.Controls.Behavior"
+	xmlns:chrome="clr-namespace:Xceed.Wpf.Toolkit.Chromes;assembly=Xceed.Wpf.Toolkit.NET5"
+	xmlns:controls="clr-namespace:ModManager.Controls"
+	xmlns:conv="clr-namespace:ModManager.Converters"
+	xmlns:dapp="clr-namespace:ModManager;assembly=ModManager.Core"
+	xmlns:data="clr-namespace:ModManager.Models;assembly=ModManager.Core"
+	xmlns:dd="urn:gong-wpf-dragdrop"
+	xmlns:divThemes="clr-namespace:ModManager.Themes"
+	xmlns:dmcore="clr-namespace:ModManager;assembly=ModManager.Core"
+	xmlns:extdata="clr-namespace:ModManager.Models.Extender;assembly=ModManager.Core"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:local="clr-namespace:ModManager.Views"
+	xmlns:moddata="clr-namespace:ModManager.Models.Mod;assembly=ModManager.Core"
+	xmlns:nexusData="clr-namespace:ModManager.Models.NexusMods;assembly=ModManager.Core"
+	xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	xmlns:templateSelectors="clr-namespace:ModManager.Controls.TemplateSelectors"
+	xmlns:updates="clr-namespace:ModManager.Models.Updates;assembly=ModManager.Core"
+	xmlns:views="clr-namespace:ModManager.Controls.Views"
+	xmlns:vm="clr-namespace:ModManager.ViewModels;assembly=ModManager.Core"
+	xmlns:xc="http://schemas.xceed.com/wpf/xaml/toolkit"
+	xmlns:xconv="clr-namespace:Xceed.Wpf.Toolkit.Converters;assembly=Xceed.Wpf.Toolkit.NET5"
+	xmlns:xcthemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit.NET5"
+	x:Name="MainResources">
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="DefaultStyles/ComboBox.xaml" />
+		<ResourceDictionary Source="DefaultStyles/MarkdownStyle.xaml" />
+		<ResourceDictionary Source="Images.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+	<conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+	<conv:BoolToVisibilityConverterReversed x:Key="BoolToVisibilityConverterReversed" />
+	<conv:ModIsAvailableConverter x:Key="ModIsAvailableConverter" />
+	<conv:StringToUriConverter x:Key="StringToUriConverter" />
+	<conv:DivinityGameLaunchWindowActionToStringConverter x:Key="GameLaunchActionToStringConverter" />
+	<conv:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
+	<conv:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+	<conv:StringToSolidBrushConverter x:Key="StringToSolidBrushConverter" />
+	<conv:StringToLinearBrushConverter x:Key="StringToLinearBrushConverter" />
+	<conv:UriToBitmapImageConverter x:Key="UriToBitmapImageConverter" />
+	<conv:TimeSpanToReadableStringConverter x:Key="TimeSpanToReadableStringConverter" />
+	<conv:StringToMarkdownConverter x:Key="StringToMarkdownConverter" />
+	<xconv:ProgressBarWidthConverter x:Key="ProgressBarWidthConverter" />
+	<templateSelectors:TagTemplateSelector x:Key="TagTemplateSelector" />
+
+	<!--
+		This avoids a System.Windows.Data relative binding error for these properties.
+		"This happens when you set MenuItem.ItemsSource to a Collection that contains MenuItems.
+		This error has already been handled internally, so you can just leave it alone.
+		Or you can explicit set MenuItem.HorizontalContentAlignment property and VerticalContentAlignment property to avoid this error."
+		See here: https://stackoverflow.com/a/14528872
+	-->
+	<Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="DefaultMenuItemStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="MenuItemCopyToClipboardStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource CopyToClipboardIcon}" />
+			<Setter Property="Command" Value="{Binding Path=CopyToClipboardCommand, Source={x:Static dapp:DivinityApp.Commands}}" />
+			<Setter Property="Header" Value="Copy Path to Clipboard" />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="MenuItemOpenInExplorerStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource OpenFolderIcon}" />
+			<Setter Property="Command" Value="{Binding Path=OpenInFileExplorerCommand, Source={x:Static dapp:DivinityApp.Commands}}" />
+			<Setter Property="Header" Value="Open in File Explorer..." />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="MenuItemOpenFileStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource OpenFileIcon}" />
+			<Setter Property="Command" Value="{Binding Path=OpenInFileExplorerCommand, Source={x:Static dapp:DivinityApp.Commands}}" />
+			<Setter Property="Header" Value="Open File..." />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="MenuItemOpenURLStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource OpenInBrowserIcon}" />
+			<Setter Property="Command" Value="{Binding Path=OpenURLCommand, Source={x:Static dapp:DivinityApp.Commands}}" />
+			<Setter Property="Header" Value="Open URL in Browser..." />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="MenuItemDeleteModStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource DeleteModIcon}" />
+		</Style.Setters>
+	</Style>
+	<Collections:ArrayList x:Key="ModDeveloperModMenuItems" x:Shared="false">
+		<MenuItem
+			CommandParameter="{Binding UUID}"
+			Header="Copy UUID to Clipboard"
+			Style="{StaticResource MenuItemCopyToClipboardStyle}" />
+		<MenuItem
+			CommandParameter="{Binding Folder}"
+			Header="Copy FolderName to Clipboard"
+			Style="{StaticResource MenuItemCopyToClipboardStyle}" />
+		<MenuItem
+			Command="{Binding Path=CopyModAsDependencyCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+			CommandParameter="{Binding}"
+			Header="Copy ModuleShortDesc to Clipboard"
+			Style="{StaticResource MenuItemCopyToClipboardStyle}"
+			ToolTip="Copy the mod's information as a ModuleShortDesc node, typically for dependencies in a meta.lsx" />
+		<Separator />
+		<!--  Fixed RelativeSource Ancestor ItemsControl binding error by setting a style  -->
+		<MenuItem
+			Command="{Binding Path=ValidateStatsCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+			CommandParameter="{Binding}"
+			Header="Validate Stats"
+			Icon="{StaticResource ValidateModelIcon}"
+			Style="{StaticResource DefaultMenuItemStyle}"
+			ToolTip="Run lslib's stats validator on this specific mod" />
+	</Collections:ArrayList>
+	<Style
+		x:Key="MenuItemModDeveloperStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource ModDeveloperIcon}" />
+			<Setter Property="Header" Value="Mod Developer..." />
+			<Setter Property="Visibility" Value="{Binding Path=(dapp:DivinityApp.DeveloperModeEnabled), Converter={StaticResource BoolToVisibilityConverter}}" />
+			<Setter Property="ItemsSource" Value="{StaticResource ModDeveloperModMenuItems}" />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="MenuItemModPropertiesStyle"
+		BasedOn="{StaticResource {x:Type MenuItem}}"
+		TargetType="{x:Type MenuItem}">
+		<Style.Setters>
+			<Setter Property="Icon" Value="{StaticResource ModPropertiesIcon}" />
+			<Setter Property="Header" Value="Properties" />
+			<Setter Property="Command" Value="{Binding Path=OpenModPropertiesCommand, Source={x:Static dapp:DivinityApp.Commands}}" />
+			<Setter Property="CommandParameter" Value="{Binding}" />
+		</Style.Setters>
+	</Style>
+	<Style
+		x:Key="IconButtonStyle"
+		BasedOn="{StaticResource {x:Type Button}}"
+		TargetType="Button">
+		<Setter Property="Width" Value="24" />
+		<Setter Property="Height" Value="24" />
+		<Setter Property="Margin" Value="2,0,2,0" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+	<Style
+		x:Key="TextBlockAutoToolTip"
+		BasedOn="{StaticResource {x:Type TextBlock}}"
+		TargetType="TextBlock">
+		<Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
+	</Style>
+	<Style TargetType="{x:Type controls:AutoGrayableImage}">
+		<Setter Property="Width" Value="16" />
+		<Setter Property="Height" Value="16" />
+		<Setter Property="MaxWidth" Value="16" />
+		<Setter Property="MaxHeight" Value="16" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="Stretch" Value="Uniform" />
+		<Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="UseLayoutRounding" Value="True" />
+	</Style>
+	<Style x:Key="VerticalSeparator" TargetType="Rectangle">
+		<Setter Property="Width" Value="1" />
+		<Setter Property="Margin" Value="16,0,16,0" />
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+		<Setter Property="Fill" Value="{DynamicResource {x:Static adonisUI:Brushes.DisabledForegroundBrush}}" />
+	</Style>
+
+	<ContextMenu x:Key="TextBoxSelectAllContextMenu">
+		<MenuItem Command="{x:Static ApplicationCommands.Cut}" />
+		<MenuItem Command="{x:Static ApplicationCommands.Copy}" />
+		<MenuItem Command="{x:Static ApplicationCommands.Paste}" />
+		<Separator />
+		<MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
+	</ContextMenu>
+
+	<ContextMenu x:Key="ReadOnlySelectAllContextMenu">
+		<MenuItem Command="{x:Static ApplicationCommands.Copy}" />
+		<Separator />
+		<MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
+	</ContextMenu>
+
+	<Style
+		x:Key="TextBoxWithSelectAll"
+		BasedOn="{StaticResource {x:Type TextBox}}"
+		TargetType="TextBox">
+		<Setter Property="ContextMenu" Value="{StaticResource TextBoxSelectAllContextMenu}" />
+	</Style>
+
+	<Style BasedOn="{StaticResource TextBoxWithSelectAll}" TargetType="{x:Type controls:UnfocusableTextBox}" />
+	<Style BasedOn="{StaticResource {x:Type ListBox}}" TargetType="ListBox" />
+
+	<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="controls:SelectableTextBlock">
+		<Setter Property="ContextMenu" Value="{StaticResource ReadOnlySelectAllContextMenu}" />
+	</Style>
+
+	<Style
+		x:Key="ReadOnlyTextBox"
+		BasedOn="{StaticResource TextBoxWithSelectAll}"
+		TargetType="TextBox">
+		<Setter Property="IsReadOnly" Value="True" />
+		<Setter Property="Padding" Value="5" />
+		<Setter Property="Margin" Value="0" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+		<Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+		<Setter Property="TextAlignment" Value="Right" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+	</Style>
+
+	<Style BasedOn="{StaticResource {x:Type ToolTip}}" TargetType="{x:Type ToolTip}">
+		<Setter Property="OverridesDefaultStyle" Value="true" />
+		<Setter Property="HasDropShadow" Value="True" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToolTip">
+					<Border
+						Name="Border"
+						Width="{TemplateBinding Width}"
+						Height="{TemplateBinding Height}"
+						Padding="4"
+						Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}"
+						BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}"
+						BorderThickness="2">
+						<ContentPresenter
+							Margin="4"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Top" />
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="HasDropShadow" Value="true">
+							<Setter TargetName="Border" Property="CornerRadius" Value="4" />
+							<Setter TargetName="Border" Property="SnapsToDevicePixels" Value="true" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<DataTemplate DataType="{x:Type data:DivinityProfileData}">
+		<TextBlock Text="{Binding Name}" />
+	</DataTemplate>
+	<DataTemplate DataType="{x:Type data:DivinityLoadOrder}">
+		<TextBlock Text="{Binding Name}" />
+	</DataTemplate>
+	<!--<DataTemplate DataType="{x:Type data:DivinityModSeparator}">
+    <Grid>
+    <Grid.RowDefinitions>
+    <RowDefinition Height="*" />
+    <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Rectangle Fill="Orange" Opacity="0.2" IsHitTestVisible="False" />
+    <TextBlock Text="Unordered Mods:" Background="Transparent" Margin="4" />
+    <Separator BorderThickness="1" BorderBrush="Orange" Grid.Row="1" />
+    </Grid>
+    </DataTemplate>-->
+	<DataTemplate DataType="{x:Type data:DivinityModDependencyData}">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<Grid.Resources>
+				<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Converter={StaticResource ModIsAvailableConverter}}" Value="True">
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.SuccessBrush}}" />
+						</DataTrigger>
+						<DataTrigger Binding="{Binding Converter={StaticResource ModIsAvailableConverter}}" Value="False">
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ErrorBrush}}" />
+							<Setter Property="FontWeight" Value="Bold" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Grid.Resources>
+			<TextBlock Text="{Binding Name}" />
+			<StackPanel
+				Grid.Column="1"
+				Margin="4,0,0,0"
+				Orientation="Horizontal">
+				<TextBlock Text="v" />
+				<TextBlock Grid.Column="1" Text="{Binding Version.Version}" />
+			</StackPanel>
+		</Grid>
+	</DataTemplate>
+	<Style
+		x:Key="DivinityModDataListItem"
+		BasedOn="{StaticResource {x:Type ListViewItem}}"
+		TargetType="ListViewItem">
+		<Setter Property="behavior:ScreenReaderHelperBehavior.Automatic" Value="True" />
+		<!--<Style.Resources>
+        <LinearGradientBrush x:Key="ListItemHoverFill_Selected" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#FFD1FFD1" />
+        <GradientStop Offset="1" Color="#FFA3FFAB" />
+        </LinearGradientBrush>
+        </Style.Resources>-->
+		<Setter Property="Tag" Value="{Binding}" />
+		<Setter Property="ContextMenu">
+			<Setter.Value>
+				<ContextMenu DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
+					<ContextMenu.Resources>
+						<Style TargetType="Image">
+							<Setter Property="Width" Value="16" />
+							<Setter Property="Height" Value="16" />
+						</Style>
+					</ContextMenu.Resources>
+					<MenuItem CommandParameter="{Binding FilePath}" Style="{StaticResource MenuItemOpenInExplorerStyle}" />
+					<MenuItem CommandParameter="{Binding FilePath}" Style="{StaticResource MenuItemCopyToClipboardStyle}" />
+					<Separator />
+					<MenuItem
+						Command="{Binding Path=OpenGitHubPageCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Header="Open GitHub Page (Browser)..."
+						Style="{StaticResource MenuItemOpenURLStyle}"
+						Visibility="{Binding OpenGitHubLinkVisibility}" />
+					<MenuItem
+						Command="{Binding Path=OpenNexusModsPageCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Header="Open NexusMods Page (Browser)..."
+						Style="{StaticResource MenuItemOpenURLStyle}"
+						Visibility="{Binding OpenNexusModsLinkVisibility}" />
+					<MenuItem
+						Command="{Binding Path=OpenSteamWorkshopPageCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Header="Open Steam Workshop Page (Browser)..."
+						Style="{StaticResource MenuItemOpenURLStyle}"
+						Visibility="{Binding OpenWorkshopLinkVisibility}" />
+					<MenuItem
+						Command="{Binding Path=OpenSteamWorkshopPageInSteamCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Header="Open Steam Workshop Page (Steam)..."
+						Visibility="{Binding OpenWorkshopLinkVisibility}">
+						<MenuItem.Icon>
+							<Image Source="{StaticResource OpenSteamWorkshopFolderImage}" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator />
+					<MenuItem
+						Command="{Binding Path=ToggleForceAllowInLoadOrderCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Visibility="{Binding ToggleForceAllowInLoadOrderVisibility}">
+						<MenuItem.Icon>
+							<Image>
+								<Image.Style>
+									<Style TargetType="Image">
+										<Setter Property="Source" Value="{StaticResource ExpandUpImage}" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding ForceAllowInLoadOrder}" Value="true">
+												<Setter Property="Source" Value="{StaticResource ExpandDownImage}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Image.Style>
+							</Image>
+						</MenuItem.Icon>
+						<MenuItem.Header>
+							<TextBlock>
+								<TextBlock.Style>
+									<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+										<Setter Property="Text" Value="Allow in Load Order" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding ForceAllowInLoadOrder}" Value="true">
+												<Setter Property="Text" Value="Remove from Load Order" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+						</MenuItem.Header>
+					</MenuItem>
+					<Separator />
+					<MenuItem Header="Delete..." Style="{StaticResource MenuItemDeleteModStyle}">
+						<MenuItem
+							Command="{Binding Path=DeleteModCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+							CommandParameter="{Binding}"
+							Header="Mod..."
+							Icon="{StaticResource SelectIcon}"
+							IsEnabled="{Binding CanDelete}" />
+						<MenuItem
+							Command="{Binding Path=DeleteSelectedModsCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+							CommandParameter="{Binding}"
+							Header="Selected Mods..."
+							Icon="{StaticResource ShowAllFilesIcon}" />
+					</MenuItem>
+					<Separator />
+					<MenuItem Command="{Binding Path=ToggleNameDisplayCommand, Source={x:Static dapp:DivinityApp.Commands}}" CommandParameter="{Binding}">
+						<MenuItem.Header>
+							<TextBlock>
+								<TextBlock.Style>
+									<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+										<Setter Property="Text" Value="Show File Name" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding DisplayFileForName}" Value="true">
+												<Setter Property="Text" Value="Show Mod Display Name" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+						</MenuItem.Header>
+						<MenuItem.Icon>
+							<Image Source="{StaticResource RenameFileImage}" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem DataContext="{Binding}" Style="{StaticResource MenuItemModDeveloperStyle}" />
+					<Separator />
+					<MenuItem DataContext="{Binding}" Style="{StaticResource MenuItemModPropertiesStyle}" />
+				</ContextMenu>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<!--
+			IsSelected is set via ActiveModListView_ItemContainerStatusChanged.UpdateViewSelection instead,
+			so focus and selection can be more finely controlled.
+		-->
+		<!--<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />-->
+		<Setter Property="Visibility" Value="{Binding Visibility, FallbackValue='Visible'}" />
+		<Setter Property="FocusVisualStyle">
+			<Setter.Value>
+				<Style>
+					<Setter Property="Control.Template">
+						<Setter.Value>
+							<ControlTemplate>
+								<Rectangle
+									SnapsToDevicePixels="true"
+									Stroke="{DynamicResource {x:Static adonisUI:Brushes.AccentIntenseHighlightBorderBrush}}"
+									StrokeThickness="2" />
+							</ControlTemplate>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</Setter.Value>
+		</Setter>
+		<Style.Triggers>
+			<MultiDataTrigger>
+				<MultiDataTrigger.Conditions>
+					<Condition Binding="{Binding HasColorOverride}" Value="True" />
+					<Condition Binding="{Binding IsSelected}" Value="False" />
+				</MultiDataTrigger.Conditions>
+				<MultiDataTrigger.Setters>
+					<Setter Property="Background" Value="{Binding ListColor, Converter={StaticResource StringToSolidBrushConverter}}" />
+				</MultiDataTrigger.Setters>
+			</MultiDataTrigger>
+			<MultiDataTrigger>
+				<MultiDataTrigger.Conditions>
+					<Condition Binding="{Binding HasColorOverride}" Value="True" />
+					<Condition Binding="{Binding IsSelected}" Value="True" />
+				</MultiDataTrigger.Conditions>
+				<MultiDataTrigger.Setters>
+					<Setter Property="Background" Value="{Binding SelectedColor, Converter={StaticResource StringToLinearBrushConverter}}" />
+				</MultiDataTrigger.Setters>
+			</MultiDataTrigger>
+		</Style.Triggers>
+	</Style>
+	<Style
+		x:Key="DivinityModUpdateNewListItem"
+		BasedOn="{StaticResource {x:Type ListViewItem}}"
+		TargetType="ListViewItem">
+		<Setter Property="Tag" Value="{Binding}" />
+		<Setter Property="ContextMenu">
+			<Setter.Value>
+				<ContextMenu DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
+					<MenuItem
+						Command="{Binding Path=OpenInFileExplorerCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding FilePath}"
+						Header="Open in File Explorer..." />
+					<MenuItem
+						Command="{Binding Path=OpenSteamWorkshopPageCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Header="Open Steam Workshop Page (Browser)..."
+						Icon="{StaticResource OpenInBrowserIcon}"
+						IsEnabled="{Binding CanOpenWorkshopLink}"
+						Visibility="{Binding OpenWorkshopLinkVisibility}" />
+					<MenuItem
+						Command="{Binding Path=OpenSteamWorkshopPageInSteamCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+						CommandParameter="{Binding}"
+						Header="Open Steam Workshop Page (Steam)..."
+						Icon="{StaticResource OpenSteamWorkshopFolderIcon}"
+						IsEnabled="{Binding CanOpenWorkshopLink}"
+						Visibility="{Binding OpenWorkshopLinkVisibility}" />
+					<MenuItem Command="{Binding Path=ToggleNameDisplayCommand, Source={x:Static dapp:DivinityApp.Commands}}" CommandParameter="{Binding}">
+						<MenuItem.Header>
+							<TextBlock>
+								<TextBlock.Style>
+									<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+										<Setter Property="Text" Value="Show File Name" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding DisplayFileForName}" Value="true">
+												<Setter Property="Text" Value="Show Mod Display Name" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+						</MenuItem.Header>
+					</MenuItem>
+				</ContextMenu>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+	</Style>
+
+	<Style BasedOn="{StaticResource {x:Type ListView}}" TargetType="views:ModListView">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
+	</Style>
+
+	<Style x:Key="ModListViewDefaultStyle" TargetType="views:ModListView">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
+	</Style>
+
+	<Style x:Key="PlainListView" TargetType="ListView">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
+	</Style>
+
+	<Style
+		x:Key="ModOrderListView"
+		BasedOn="{StaticResource {x:Type ListView}}"
+		TargetType="ListView">
+		<Setter Property="KeyboardNavigation.AcceptsReturn" Value="False" />
+		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
+		<Setter Property="dd:DragDrop.IsDragSource" Value="True" />
+		<Setter Property="dd:DragDrop.IsDropTarget" Value="True" />
+		<Setter Property="ItemContainerStyle" Value="{StaticResource DivinityModDataListItem}" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type views:ModListView}">
+					<Grid>
+						<ScrollViewer Name="ListScrollViewer" Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
+							<ItemsPresenter x:Name="ListItemsPresenter" />
+						</ScrollViewer>
+						<Rectangle
+							Name="DisabledRect"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
+							Fill="{DynamicResource {x:Static divThemes:DivinityColors.ListInactiveBrush}}"
+							IsHitTestVisible="False"
+							KeyboardNavigation.IsTabStop="False"
+							Visibility="Collapsed" />
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsGrouping" Value="True">
+							<Setter TargetName="ListScrollViewer" Property="CanContentScroll" Value="False" />
+						</Trigger>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition Binding="{Binding Path=IsKeyboardFocusWithin, RelativeSource={RelativeSource Self}}" Value="False" />
+								<Condition Binding="{Binding Path=(dapp:DivinityApp.IsKeyboardNavigating)}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<MultiDataTrigger.Setters>
+								<Setter TargetName="DisabledRect" Property="Visibility" Value="Visible" />
+							</MultiDataTrigger.Setters>
+						</MultiDataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<DataTemplate x:Key="TagTemplate">
+		<Border
+			Background="{DynamicResource {x:Static divThemes:DivinityColors.TagBackgroundBrush}}"
+			BorderThickness="2"
+			CornerRadius="12">
+			<TextBlock
+				Padding="12,2"
+				Foreground="{DynamicResource {x:Static adonisUI:Brushes.Layer3InteractionForegroundBrush}}"
+				Text="{Binding}">
+				<TextBlock.Effect>
+					<DropShadowEffect
+						BlurRadius="4"
+						Direction="330"
+						Opacity="0.5"
+						ShadowDepth="4"
+						Color="Black" />
+				</TextBlock.Effect>
+			</TextBlock>
+			<Border.Effect>
+				<DropShadowEffect
+					BlurRadius="4"
+					Direction="330"
+					Opacity="0.35"
+					ShadowDepth="2"
+					Color="Black" />
+			</Border.Effect>
+		</Border>
+	</DataTemplate>
+	<DataTemplate x:Key="ModeTagTemplate">
+		<Border
+			Background="{DynamicResource {x:Static divThemes:DivinityColors.ModeTagBackgroundBrush}}"
+			BorderThickness="2"
+			CornerRadius="12">
+			<TextBlock
+				Padding="12,2"
+				Foreground="{DynamicResource {x:Static adonisUI:Brushes.Layer3InteractionForegroundBrush}}"
+				Text="{Binding}">
+				<TextBlock.Effect>
+					<DropShadowEffect
+						BlurRadius="4"
+						Direction="330"
+						Opacity="0.5"
+						ShadowDepth="4"
+						Color="Black" />
+				</TextBlock.Effect>
+			</TextBlock>
+			<Border.Effect>
+				<DropShadowEffect
+					BlurRadius="4"
+					Direction="330"
+					Opacity="0.35"
+					ShadowDepth="2"
+					Color="Black" />
+			</Border.Effect>
+		</Border>
+	</DataTemplate>
+	<DataTemplate x:Key="CustomTagTemplate">
+		<Border
+			Background="{DynamicResource {x:Static divThemes:DivinityColors.CustomTagBackgroundBrush}}"
+			BorderThickness="2"
+			CornerRadius="12">
+			<TextBlock
+				Padding="12,2"
+				Foreground="{DynamicResource {x:Static adonisUI:Brushes.Layer3InteractionForegroundBrush}}"
+				Text="{Binding}">
+				<TextBlock.Effect>
+					<DropShadowEffect
+						BlurRadius="4"
+						Direction="330"
+						Opacity="0.5"
+						ShadowDepth="4"
+						Color="Black" />
+				</TextBlock.Effect>
+			</TextBlock>
+			<Border.Effect>
+				<DropShadowEffect
+					BlurRadius="4"
+					Direction="330"
+					Opacity="0.35"
+					ShadowDepth="2"
+					Color="Black" />
+			</Border.Effect>
+		</Border>
+	</DataTemplate>
+	<Style
+		x:Key="TitleWithDropShadow"
+		BasedOn="{StaticResource {x:Type TextBlock}}"
+		TargetType="TextBlock">
+		<Setter Property="Effect">
+			<Setter.Value>
+				<DropShadowEffect
+					BlurRadius="4"
+					Direction="330"
+					Opacity="0.25"
+					ShadowDepth="3"
+					Color="Black" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="TextWrapping" Value="Wrap" />
+		<Setter Property="Margin" Value="2" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+	</Style>
+	<Style BasedOn="{StaticResource {x:Type ToolTip}}" TargetType="controls:AutomationTooltip">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="controls:AutomationTooltip">
+					<Border
+						Padding="8"
+						Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}"
+						BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}"
+						BorderThickness="2">
+						<ContentPresenter />
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<controls:AutomationTooltip x:Key="ModToolTip" DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<StackPanel
+				x:Name="InfoStackPanel"
+				MaxWidth="700"
+				Background="Transparent"
+				Orientation="Vertical">
+				<StackPanel.Resources>
+					<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+						<Setter Property="TextWrapping" Value="Wrap" />
+						<Setter Property="Margin" Value="2" />
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+						<!--<Setter Property="FontFamily" Value="Arial" />-->
+					</Style>
+					<Style BasedOn="{StaticResource {x:Type ListBox}}" TargetType="ListBox" />
+				</StackPanel.Resources>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<TextBlock
+						FontSize="16"
+						FontWeight="Bold"
+						Foreground="{DynamicResource {x:Static adonisUI:Brushes.AlertBrush}}"
+						Style="{StaticResource TitleWithDropShadow}"
+						Text="{Binding Name}" />
+					<TextBlock Grid.Column="1" Text="{Binding DisplayVersion}" />
+					<StackPanel
+						Grid.Column="2"
+						HorizontalAlignment="Right"
+						Orientation="Horizontal">
+						<TextBlock
+							HorizontalAlignment="Right"
+							Foreground="Lime"
+							Text="(Editor Project)"
+							Visibility="{Binding IsEditorMod, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+						<TextBlock
+							HorizontalAlignment="Right"
+							Foreground="Orange"
+							Text="(Override)"
+							Visibility="{Binding IsForceLoaded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+					</StackPanel>
+				</Grid>
+
+				<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+				<TextBlock TextWrapping="Wrap" Visibility="{Binding AuthorVisibility}"><Run Text="Created by " />
+					<TextBlock
+						FontWeight="Bold"
+						Foreground="#3da2fa"
+						Style="{StaticResource TitleWithDropShadow}"
+						Text="{Binding AuthorDisplayName, Mode=OneWay}" />
+				</TextBlock>
+				<TextBlock
+					Text="{Binding Description}"
+					TextWrapping="Wrap"
+					Visibility="{Binding DescriptionVisibility}" />
+				<StackPanel Orientation="Vertical" Visibility="{Binding NexusModsInformationVisibility}">
+					<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+					<TextBlock Text="{Binding NexusModsTooltipInfo}" />
+					<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+				</StackPanel>
+				<StackPanel
+					Margin="2"
+					Orientation="Vertical"
+					Visibility="{Binding DependencyVisibility, FallbackValue=Collapsed}">
+					<TextBlock FontWeight="Bold" Text="Dependencies:" />
+					<ListBox
+						Margin="2"
+						Padding="0"
+						BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}"
+						BorderThickness="1"
+						ItemsSource="{Binding DisplayedDependencies}" />
+				</StackPanel>
+				<StackPanel
+					Margin="2"
+					DataContext="{Binding}"
+					Orientation="Vertical">
+					<ItemsControl ItemTemplateSelector="{StaticResource TagTemplateSelector}" ItemsSource="{Binding Tags}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.Style>
+							<Style>
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding}" />
+								</Style.Triggers>
+							</Style>
+						</ItemsControl.Style>
+					</ItemsControl>
+				</StackPanel>
+				<StackPanel Orientation="Vertical">
+					<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+					<TextBlock Text="{Binding FileName}" Visibility="{Binding HasFilePathVisibility}" />
+					<TextBlock
+						Foreground="Goldenrod"
+						Text="{Binding ScriptExtenderSupportToolTipText}"
+						Visibility="{Binding ExtenderStatusVisibility}" />
+					<TextBlock Margin="2" Text="{Binding LastModifiedDateText}" />
+				</StackPanel>
+				<StackPanel
+					Margin="2"
+					Orientation="Vertical"
+					Visibility="{Binding IsForceLoaded, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+					<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+					<TextBlock Foreground="OrangeRed">
+						This mod overrides base game files directly.<LineBreak />
+						As long as this mod exists in the Mods folder,<LineBreak />
+						these files will be overwritten, even if the mod is disabled.</TextBlock>
+					<TextBlock Text="If this is intended, you can ignore this warning." />
+					<TextBlock
+						Foreground="Lime"
+						Text="This mod can be rearranged in the load order, due to it also having files of its own. Note that disabling it will not disable the file overrides."
+						Visibility="{Binding IsForceLoadedMergedMod, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+					<TextBlock Foreground="OrangeRed" Text="Overwritten builtin folders:" />
+					<TextBlock Text="{Binding BuiltinOverrideModsText}" />
+				</StackPanel>
+				<Image
+					MaxWidth="256"
+					MaxHeight="256"
+					RenderOptions.BitmapScalingMode="HighQuality"
+					Source="{Binding NexusModsData.PictureUrl, Converter={StaticResource UriToBitmapImageConverter}}"
+					Stretch="UniformToFill"
+					Visibility="{Binding NexusImageVisibility}" />
+			</StackPanel>
+
+			<Grid Grid.Column="1" Visibility="{Binding NotesVisibility}">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<TextBlock
+					FontSize="24"
+					Text="Notes"
+					TextAlignment="Center" />
+				<FlowDocumentScrollViewer
+					Grid.Row="1"
+					Document="{Binding Notes, Converter={StaticResource StringToMarkdownConverter}, ConverterParameter={StaticResource DefaultMarkdown}}"
+					ScrollViewer.CanContentScroll="True"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+					ScrollViewer.VerticalScrollBarVisibility="Auto">
+					<FlowDocumentScrollViewer.Resources>
+						<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+							<Setter Property="TextWrapping" Value="Wrap" />
+							<Setter Property="Foreground" Value="Red" />
+						</Style>
+					</FlowDocumentScrollViewer.Resources>
+				</FlowDocumentScrollViewer>
+			</Grid>
+		</Grid>
+	</controls:AutomationTooltip>
+	<Style
+		x:Key="AdventureModTooltipStyle"
+		BasedOn="{StaticResource {x:Type ToolTip}}"
+		TargetType="controls:AutomationTooltip">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToolTip">
+					<Border
+						Padding="8"
+						Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}"
+						BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}"
+						BorderThickness="2">
+						<ContentPresenter />
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<controls:AutomationTooltip
+		x:Key="AdventureModTooltip"
+		DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}"
+		Style="{StaticResource AdventureModTooltipStyle}">
+		<StackPanel
+			MaxWidth="700"
+			Background="Transparent"
+			Orientation="Vertical">
+			<StackPanel.Resources>
+				<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+					<Setter Property="TextWrapping" Value="Wrap" />
+					<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+					<!--<Setter Property="FontFamily" Value="Arial" />-->
+				</Style>
+			</StackPanel.Resources>
+			<StackPanel Orientation="Horizontal">
+				<TextBlock
+					Margin="2"
+					FontSize="16"
+					FontWeight="Bold"
+					Foreground="{DynamicResource {x:Static adonisUI:Brushes.AlertBrush}}"
+					Text="{Binding Name}">
+					<TextBlock.Effect>
+						<DropShadowEffect
+							BlurRadius="4"
+							Direction="330"
+							Opacity="0.5"
+							ShadowDepth="4"
+							Color="Black" />
+					</TextBlock.Effect>
+				</TextBlock>
+			</StackPanel>
+			<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+			<TextBlock
+				Margin="2"
+				TextWrapping="Wrap"
+				Visibility="{Binding AuthorVisibility}"><Run Text="Created by " /><Run
+					FontWeight="Bold"
+					Foreground="#3da2fa"
+					Text="{Binding AuthorDisplayName, Mode=OneWay}" />
+				<TextBlock.Effect>
+					<DropShadowEffect
+						BlurRadius="4"
+						Direction="330"
+						Opacity="0.5"
+						ShadowDepth="4"
+						Color="Black" />
+				</TextBlock.Effect>
+			</TextBlock>
+			<TextBlock
+				Margin="2"
+				Text="{Binding Description}"
+				TextWrapping="Wrap"
+				Visibility="{Binding Description, Converter={StaticResource StringNotEmptyToVisibilityConverter}, FallbackValue=Collapsed}" />
+			<StackPanel
+				Margin="2"
+				Orientation="Vertical"
+				Visibility="{Binding DependencyVisibility, FallbackValue=Collapsed}">
+				<TextBlock FontWeight="Bold" Text="Dependencies:" />
+				<ListBox
+					Margin="2"
+					Padding="0"
+					BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBorderBrush}}"
+					BorderThickness="1"
+					ItemsSource="{Binding DisplayedDependencies}" />
+			</StackPanel>
+			<StackPanel
+				Margin="2"
+				DataContext="{Binding}"
+				Orientation="Vertical">
+				<ItemsControl ItemTemplateSelector="{StaticResource TagTemplateSelector}" ItemsSource="{Binding Tags}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.Style>
+						<Style>
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding}" />
+							</Style.Triggers>
+						</Style>
+					</ItemsControl.Style>
+				</ItemsControl>
+			</StackPanel>
+			<StackPanel Orientation="Vertical" Visibility="{Binding FileName, Converter={StaticResource StringNotEmptyToVisibilityConverter}, FallbackValue=Collapsed}">
+				<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+				<TextBlock Margin="2" Text="{Binding FileName}" />
+			</StackPanel>
+		</StackPanel>
+	</controls:AutomationTooltip>
+	<controls:AutomationTooltip
+		x:Key="GMCampaignTooltip"
+		DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}"
+		Style="{StaticResource AdventureModTooltipStyle}">
+		<StackPanel
+			MaxWidth="700"
+			Background="Transparent"
+			Orientation="Vertical">
+			<StackPanel.Resources>
+				<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+					<Setter Property="TextWrapping" Value="Wrap" />
+					<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+				</Style>
+				<Style BasedOn="{StaticResource {x:Type ListBox}}" TargetType="ListBox" />
+			</StackPanel.Resources>
+			<StackPanel Orientation="Horizontal">
+				<TextBlock
+					Margin="2"
+					FontSize="16"
+					FontWeight="Bold"
+					Foreground="{DynamicResource {x:Static adonisUI:Brushes.AlertBrush}}"
+					Text="{Binding Name}">
+					<TextBlock.Effect>
+						<DropShadowEffect
+							BlurRadius="4"
+							Direction="330"
+							Opacity="0.5"
+							ShadowDepth="4"
+							Color="Black" />
+					</TextBlock.Effect>
+				</TextBlock>
+			</StackPanel>
+			<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+			<TextBlock
+				Margin="2"
+				TextWrapping="Wrap"
+				Visibility="{Binding AuthorVisibility}"><Run Text="Created by " /><Run
+					FontWeight="Bold"
+					Foreground="#3da2fa"
+					Text="{Binding AuthorDisplayName, Mode=OneWay}" />
+				<TextBlock.Effect>
+					<DropShadowEffect
+						BlurRadius="4"
+						Direction="330"
+						Opacity="0.5"
+						ShadowDepth="4"
+						Color="Black" />
+				</TextBlock.Effect>
+			</TextBlock>
+			<TextBlock
+				Margin="2"
+				Text="{Binding Description}"
+				TextWrapping="Wrap"
+				Visibility="{Binding DescriptionVisibility}" />
+			<StackPanel
+				Margin="2"
+				DataContext="{Binding}"
+				Orientation="Vertical">
+				<ItemsControl ItemTemplateSelector="{StaticResource TagTemplateSelector}" ItemsSource="{Binding Tags}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.Style>
+						<Style>
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding}" />
+							</Style.Triggers>
+						</Style>
+					</ItemsControl.Style>
+				</ItemsControl>
+			</StackPanel>
+			<StackPanel Orientation="Vertical">
+				<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+				<TextBlock Margin="2" Text="{Binding Folder}" />
+			</StackPanel>
+		</StackPanel>
+	</controls:AutomationTooltip>
+	<DataTemplate x:Key="ModNameTemplate" DataType="{x:Type moddata:DivinityModData}">
+		<controls:ModEntryGrid>
+			<controls:ModEntryGrid.ColumnDefinitions>
+				<ColumnDefinition Width="*" MinWidth="50" />
+				<ColumnDefinition Width="Auto" SharedSizeGroup="ModPropertiesImageColumn" />
+			</controls:ModEntryGrid.ColumnDefinitions>
+			<TextBlock
+				x:Name="ModNameText"
+				HorizontalAlignment="Stretch"
+				Tag="{Binding}"
+				Text="{Binding DisplayName}"
+				ToolTip="{StaticResource ModToolTip}"
+				ToolTipService.IsEnabled="{Binding HasToolTip}" />
+			<Border
+				Grid.Column="1"
+				Padding="0,0,4,0"
+				BorderThickness="0">
+				<StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+					<!--<Image
+                    Width="16"
+                    Height="16"
+                    MaxWidth="16"
+                    MaxHeight="16"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    DataContext="{Binding}"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Source="{StaticResource NotesImage}"
+                    Stretch="UniformToFill"
+                    Visibility="{Binding NotesVisibility}">
+                    <Image.ToolTip>
+                    <FlowDocumentScrollViewer
+                    Document="{Binding Notes, Converter={StaticResource StringToMarkdownConverter}, ConverterParameter={StaticResource DefaultMarkdown}}"
+                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <FlowDocumentScrollViewer.Resources>
+                    <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                    <Setter Property="Foreground" Value="Red" />
+                    </Style>
+                    </FlowDocumentScrollViewer.Resources>
+                    </FlowDocumentScrollViewer>
+                    </Image.ToolTip>
+                    </Image>-->
+					<Image
+						x:Name="ExtenderStatusImage"
+						Width="16"
+						Height="16"
+						MaxWidth="16"
+						MaxHeight="16"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						DataContext="{Binding}"
+						RenderOptions.BitmapScalingMode="HighQuality"
+						Stretch="UniformToFill"
+						ToolTip="{Binding ScriptExtenderSupportToolTipText}"
+						Visibility="{Binding ExtenderStatusVisibility}">
+						<Image.Style>
+							<Style TargetType="{x:Type Image}">
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.REQUIRED_MISSING}">
+										<Setter Property="Source" Value="{StaticResource AlertBar_Danger}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.REQUIRED_DISABLED}">
+										<Setter Property="Source" Value="{StaticResource AlertBar_Warning}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.REQUIRED_MISSING_UPDATER}">
+										<Setter Property="Source" Value="{StaticResource AlertBar_Warning}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.REQUIRED_OLD}">
+										<Setter Property="Source" Value="{StaticResource AlertBar_Warning}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.REQUIRED}">
+										<Setter Property="Source" Value="{StaticResource DivinityEngine2}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Path=ExtenderModStatus}" Value="{x:Static dapp:DivinityExtenderModStatus.SUPPORTS}">
+										<Setter Property="Source" Value="{StaticResource DivinityEngine2}" />
+										<Setter Property="Opacity" Value="0.5" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
+					<Image
+						x:Name="OsirisStatusImage"
+						Width="16"
+						Height="16"
+						MaxWidth="16"
+						MaxHeight="16"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						DataContext="{Binding}"
+						RenderOptions.BitmapScalingMode="HighQuality"
+						Stretch="UniformToFill"
+						ToolTip="{Binding OsirisStatusToolTipText}"
+						Visibility="{Binding OsirisStatusVisibility}">
+						<Image.Style>
+							<Style TargetType="{x:Type Image}">
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Path=OsirisModStatus}" Value="{x:Static dapp:DivinityOsirisModStatus.SCRIPTS}">
+										<Setter Property="Source" Value="{StaticResource OsirisImage}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Path=OsirisModStatus}" Value="{x:Static dapp:DivinityOsirisModStatus.MODFIXER}">
+										<Setter Property="Source" Value="{StaticResource OsirisModFixerImage}" />
+										<Setter Property="Opacity" Value="1.0" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
+				</StackPanel>
+			</Border>
+		</controls:ModEntryGrid>
+	</DataTemplate>
+	<Style
+		x:Key="GridViewLeftContainerStyle"
+		BasedOn="{StaticResource {x:Type GridViewColumnHeader}}"
+		TargetType="{x:Type GridViewColumnHeader}">
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="Padding" Value="4,0,0,0" />
+	</Style>
+	<Style
+		x:Key="GridViewCenteredContainerStyle"
+		BasedOn="{StaticResource {x:Type GridViewColumnHeader}}"
+		TargetType="{x:Type GridViewColumnHeader}">
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Padding" Value="2,0" />
+	</Style>
+	<DataTemplate x:Key="GridViewTextblockHeaderTemplate">
+		<TextBlock Padding="2,0,2,0" Text="{Binding}" />
+	</DataTemplate>
+	<GridView
+		x:Key="ModGridView"
+		x:Shared="False"
+		AllowsColumnReorder="True"
+		ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
+		<GridView.Columns>
+			<GridViewColumn
+				Width="40"
+				behavior:ScreenReaderHelperBehavior.HelpText="The mod order index column"
+				behavior:ScreenReaderHelperBehavior.Name="Index"
+				Header="#"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock
+							Margin="2,0,2,0"
+							Background="Transparent"
+							Text="{Binding Index}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn Width="400" CellTemplate="{StaticResource ModNameTemplate}">
+				<GridViewColumn.Header>
+					<TextBlock Text="Name" />
+				</GridViewColumn.Header>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="80"
+				Header="Version"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding DisplayVersion, Mode=OneWay}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="100"
+				Header="Author"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding AuthorDisplayName, Mode=OneWay}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="Auto"
+				Header="Last Updated"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding LastUpdated, StringFormat={x:Static dapp:DivinityApp.DateTimeColumnFormat}}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+		</GridView.Columns>
+	</GridView>
+	<Style
+		x:Key="GridViewHiddenLeftContainerStyle"
+		BasedOn="{StaticResource {x:Type GridViewColumnHeader}}"
+		TargetType="{x:Type GridViewColumnHeader}">
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="Margin" Value="4,0,0,0" />
+		<Setter Property="Visibility" Value="Collapsed" />
+	</Style>
+	<GridView
+		x:Key="HeaderlessModGridView"
+		x:Shared="False"
+		AllowsColumnReorder="False"
+		ColumnHeaderContainerStyle="{StaticResource GridViewHiddenLeftContainerStyle}">
+		<GridView.Columns>
+			<GridViewColumn
+				Width="40"
+				behavior:ScreenReaderHelperBehavior.HelpText="The mod order index column"
+				behavior:ScreenReaderHelperBehavior.Name="Index"
+				Header="#"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock
+							Margin="2,0,2,0"
+							Background="Transparent"
+							Text="" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn Width="400" CellTemplate="{StaticResource ModNameTemplate}">
+				<GridViewColumn.Header>
+					<TextBlock Text="Name" />
+				</GridViewColumn.Header>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="80"
+				Header="Version"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding DisplayVersion, Mode=OneWay}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="100"
+				Header="Author"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding AuthorDisplayName, Mode=OneWay}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="Auto"
+				Header="Last Updated"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding LastUpdated, StringFormat={x:Static dapp:DivinityApp.DateTimeColumnFormat}}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+		</GridView.Columns>
+	</GridView>
+	<GridView
+		x:Key="InactiveModGridView"
+		x:Shared="False"
+		AllowsColumnReorder="True"
+		ColumnHeaderContainerStyle="{StaticResource GridViewLeftContainerStyle}">
+		<GridView.Columns>
+			<GridViewColumn
+				Width="400"
+				CellTemplate="{StaticResource ModNameTemplate}"
+				Header="Name"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}" />
+			<GridViewColumn
+				Width="80"
+				Header="Version"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding DisplayVersion, Mode=OneWay}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="100"
+				Header="Author"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding AuthorDisplayName, Mode=OneWay}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+			<GridViewColumn
+				Width="Auto"
+				Header="Last Updated"
+				HeaderTemplate="{StaticResource GridViewTextblockHeaderTemplate}">
+				<GridViewColumn.CellTemplate>
+					<DataTemplate>
+						<TextBlock Style="{StaticResource TextBlockAutoToolTip}" Text="{Binding LastUpdated, StringFormat={x:Static dapp:DivinityApp.DateTimeColumnFormat}}" />
+					</DataTemplate>
+				</GridViewColumn.CellTemplate>
+			</GridViewColumn>
+		</GridView.Columns>
+	</GridView>
+
+	<Style x:Key="BusyIndicatorProgressStyle" TargetType="{x:Type xc:BusyIndicator}">
+		<Setter Property="OverlayStyle">
+			<Setter.Value>
+				<Style TargetType="Rectangle">
+					<Setter Property="Fill" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}" />
+					<!--<Setter Property="Opacity" Value="0.75" />-->
+				</Style>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="ProgressBarStyle">
+			<Setter.Value>
+				<Style BasedOn="{StaticResource {x:Type ProgressBar}}" TargetType="ProgressBar">
+					<Setter Property="Visibility" Value="Collapsed" />
+					<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentInteractionBrush}}" />
+				</Style>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type xc:BusyIndicator}">
+					<Grid>
+						<ContentControl
+							x:Name="content"
+							HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							Focusable="False"
+							IsTabStop="False" />
+						<Rectangle x:Name="overlay" Style="{TemplateBinding OverlayStyle}" />
+						<ContentPresenter x:Name="busycontent">
+							<ContentPresenter.Content>
+								<Grid>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="2*" />
+										<RowDefinition Height="1*" />
+										<RowDefinition Height="2*" />
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="2*" />
+										<ColumnDefinition Width="6*" />
+										<ColumnDefinition Width="2*" />
+									</Grid.ColumnDefinitions>
+									<Grid
+										Grid.Row="1"
+										Grid.Column="1"
+										HorizontalAlignment="Stretch"
+										VerticalAlignment="Stretch">
+										<Border
+											Background="{DynamicResource {x:Static adonisUI:Brushes.Layer4BackgroundBrush}}"
+											BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer4InteractionBorderBrush}}"
+											BorderThickness="1"
+											CornerRadius="2">
+											<Border
+												Margin="1"
+												Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+												CornerRadius="1.5">
+												<Grid x:Name="_grid" MinWidth="150">
+													<Grid.RowDefinitions>
+														<RowDefinition />
+														<RowDefinition Height="Auto" />
+													</Grid.RowDefinitions>
+													<ContentPresenter
+														x:Name="busyContent"
+														Margin="8"
+														HorizontalAlignment="Stretch"
+														Content="{TemplateBinding BusyContent}"
+														ContentTemplate="{TemplateBinding BusyContentTemplate}" />
+													<ProgressBar Grid.Row="1" Style="{TemplateBinding ProgressBarStyle}">
+														<ProgressBar.Width>
+															<MultiBinding Converter="{StaticResource ProgressBarWidthConverter}">
+																<Binding ElementName="busyContent" Path="ActualWidth" />
+																<Binding ElementName="_grid" Path="MinWidth" />
+															</MultiBinding>
+														</ProgressBar.Width>
+													</ProgressBar>
+												</Grid>
+											</Border>
+										</Border>
+									</Grid>
+								</Grid>
+							</ContentPresenter.Content>
+						</ContentPresenter>
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="VisibilityStates">
+								<VisualState x:Name="Hidden">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames
+											BeginTime="00:00:00"
+											Storyboard.TargetName="busycontent"
+											Storyboard.TargetProperty="(UIElement.Visibility)"
+											Duration="00:00:00.001">
+											<DiscreteObjectKeyFrame KeyTime="00:00:00">
+												<DiscreteObjectKeyFrame.Value>
+													<Visibility>Collapsed</Visibility>
+												</DiscreteObjectKeyFrame.Value>
+											</DiscreteObjectKeyFrame>
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames
+											BeginTime="00:00:00"
+											Storyboard.TargetName="overlay"
+											Storyboard.TargetProperty="(UIElement.Visibility)"
+											Duration="00:00:00.001">
+											<DiscreteObjectKeyFrame KeyTime="00:00:00">
+												<DiscreteObjectKeyFrame.Value>
+													<Visibility>Collapsed</Visibility>
+												</DiscreteObjectKeyFrame.Value>
+											</DiscreteObjectKeyFrame>
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Visible">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames
+											BeginTime="00:00:00"
+											Storyboard.TargetName="busycontent"
+											Storyboard.TargetProperty="(UIElement.Visibility)"
+											Duration="00:00:00.001">
+											<DiscreteObjectKeyFrame KeyTime="00:00:00">
+												<DiscreteObjectKeyFrame.Value>
+													<Visibility>Visible</Visibility>
+												</DiscreteObjectKeyFrame.Value>
+											</DiscreteObjectKeyFrame>
+										</ObjectAnimationUsingKeyFrames>
+										<ObjectAnimationUsingKeyFrames
+											BeginTime="00:00:00"
+											Storyboard.TargetName="overlay"
+											Storyboard.TargetProperty="(UIElement.Visibility)"
+											Duration="00:00:00.001">
+											<DiscreteObjectKeyFrame KeyTime="00:00:00">
+												<DiscreteObjectKeyFrame.Value>
+													<Visibility>Visible</Visibility>
+												</DiscreteObjectKeyFrame.Value>
+											</DiscreteObjectKeyFrame>
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+							<VisualStateGroup x:Name="BusyStatusStates">
+								<VisualState x:Name="Idle">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames
+											BeginTime="00:00:00"
+											Storyboard.TargetName="content"
+											Storyboard.TargetProperty="(Control.IsEnabled)"
+											Duration="00:00:00.001">
+											<DiscreteObjectKeyFrame KeyTime="00:00:00">
+												<DiscreteObjectKeyFrame.Value>
+													<sys:Boolean>True</sys:Boolean>
+												</DiscreteObjectKeyFrame.Value>
+											</DiscreteObjectKeyFrame>
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Busy">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames
+											BeginTime="00:00:00"
+											Storyboard.TargetName="content"
+											Storyboard.TargetProperty="(Control.IsEnabled)"
+											Duration="00:00:00.001">
+											<DiscreteObjectKeyFrame KeyTime="00:00:00">
+												<DiscreteObjectKeyFrame.Value>
+													<sys:Boolean>False</sys:Boolean>
+												</DiscreteObjectKeyFrame.Value>
+											</DiscreteObjectKeyFrame>
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<ControlTemplate x:Key="MessageBoxSelectableText" TargetType="{x:Type xc:MessageBox}">
+		<Grid>
+			<xc:WindowControl
+				x:Name="PART_WindowControl"
+				Background="{TemplateBinding Background}"
+				BorderBrush="{TemplateBinding BorderBrush}"
+				BorderThickness="{TemplateBinding BorderThickness}"
+				Caption="{TemplateBinding Caption}"
+				CaptionFontSize="{TemplateBinding CaptionFontSize}"
+				CaptionForeground="{TemplateBinding CaptionForeground}"
+				CaptionIcon="{TemplateBinding CaptionIcon}"
+				CaptionShadowBrush="{TemplateBinding CaptionShadowBrush}"
+				CloseButtonStyle="{TemplateBinding CloseButtonStyle}"
+				IsActive="{TemplateBinding IsActive}"
+				WindowBackground="{TemplateBinding WindowBackground}"
+				WindowBorderBrush="{TemplateBinding WindowBorderBrush}"
+				WindowBorderThickness="{TemplateBinding WindowBorderThickness}"
+				WindowInactiveBackground="{TemplateBinding WindowInactiveBackground}"
+				WindowOpacity="{TemplateBinding WindowOpacity}">
+				<xc:WindowControl.Content>
+					<Grid MinWidth="350">
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<!--  Message Image  -->
+							<Image
+								x:Name="MessageBoxImage"
+								VerticalAlignment="Top"
+								SnapsToDevicePixels="True"
+								Source="{TemplateBinding ImageSource}"
+								Stretch="None" />
+							<!--  Message Text  -->
+							<ScrollViewer
+								Grid.Column="1"
+								Margin="2"
+								VerticalScrollBarVisibility="Auto">
+								<TextBox
+									x:Name="MessageText"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Stretch"
+									FontFamily="{TemplateBinding FontFamily}"
+									FontSize="{TemplateBinding FontSize}"
+									FontStyle="{TemplateBinding FontStyle}"
+									FontWeight="{TemplateBinding FontWeight}"
+									Foreground="{TemplateBinding Foreground}"
+									IsReadOnly="True"
+									Text="{TemplateBinding Text}"
+									TextWrapping="Wrap" />
+							</ScrollViewer>
+						</Grid>
+						<!--  Buttons  -->
+						<Border Grid.Row="1" Background="{TemplateBinding ButtonRegionBackground}">
+							<Grid Margin="12">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<Grid Grid.Column="0" HorizontalAlignment="Left">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Button
+										MinWidth="65"
+										Margin="6,0,0,0"
+										Padding="6,0,6,0"
+										Command="{Binding Path=CopyToClipboardCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+										CommandParameter="{Binding ElementName=MessageText, Path=Text}"
+										Content="Copy to Clipboard"
+										Style="{TemplateBinding OkButtonStyle}"
+										ToolTip="Copy to Clipboard" />
+									<Button
+										Grid.Column="1"
+										MinWidth="65"
+										Margin="6,0,0,0"
+										Padding="6,0,6,0"
+										Command="{Binding Path=ClearMissingModsCommand, Source={x:Static dapp:DivinityApp.Commands}}"
+										Content="Remove All Missing"
+										Style="{TemplateBinding OkButtonStyle}"
+										ToolTip="Remove all missing mods from the load order." />
+								</Grid>
+								<Grid Grid.Column="1" HorizontalAlignment="Right">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<Button
+										x:Name="PART_YesButton"
+										Grid.Column="0"
+										MinWidth="65"
+										Margin="6,0,0,0"
+										Content="{TemplateBinding YesButtonContent}"
+										Style="{TemplateBinding YesButtonStyle}"
+										Visibility="Collapsed" />
+									<Button
+										x:Name="PART_NoButton"
+										Grid.Column="1"
+										MinWidth="65"
+										Margin="6,0,0,0"
+										Content="{TemplateBinding NoButtonContent}"
+										Style="{TemplateBinding NoButtonStyle}"
+										Visibility="Collapsed" />
+									<Button
+										x:Name="PART_OkButton"
+										Grid.Column="2"
+										MinWidth="65"
+										Margin="6,0,0,0"
+										Content="{TemplateBinding OkButtonContent}"
+										Style="{TemplateBinding OkButtonStyle}"
+										Visibility="Collapsed" />
+									<Button
+										x:Name="PART_CancelButton"
+										Grid.Column="3"
+										MinWidth="65"
+										Margin="6,0,0,0"
+										Content="{TemplateBinding CancelButtonContent}"
+										IsCancel="True"
+										Style="{TemplateBinding CancelButtonStyle}"
+										Visibility="Collapsed" />
+								</Grid>
+							</Grid>
+						</Border>
+					</Grid>
+				</xc:WindowControl.Content>
+			</xc:WindowControl>
+			<VisualStateManager.VisualStateGroups>
+				<VisualStateGroup x:Name="group1">
+					<VisualState x:Name="OK">
+						<Storyboard>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_OkButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+						</Storyboard>
+					</VisualState>
+					<VisualState x:Name="OKCancel">
+						<Storyboard>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_OkButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_CancelButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+						</Storyboard>
+					</VisualState>
+					<VisualState x:Name="YesNo">
+						<Storyboard>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_YesButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_NoButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+						</Storyboard>
+					</VisualState>
+					<VisualState x:Name="YesNoCancel">
+						<Storyboard>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_YesButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_NoButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_CancelButton" Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0">
+									<DiscreteObjectKeyFrame.Value>
+										<Visibility>Visible</Visibility>
+									</DiscreteObjectKeyFrame.Value>
+								</DiscreteObjectKeyFrame>
+							</ObjectAnimationUsingKeyFrames>
+						</Storyboard>
+					</VisualState>
+				</VisualStateGroup>
+			</VisualStateManager.VisualStateGroups>
+		</Grid>
+	</ControlTemplate>
+	<DataTemplate x:Key="HotkeyTemplate" DataType="{x:Type appdata:IHotkey}">
+		<controls:HotkeyEditorControl Hotkey="{Binding}" />
+	</DataTemplate>
+
+	<!--  Xceed WPF Toolkit  -->
+	<SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ControlDisabledBackgroundKey}" Color="{DynamicResource {x:Static adonisUI:Colors.Layer0BackgroundColor}}" />
+	<SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ControlDisabledBorderKey}" Color="{DynamicResource {x:Static adonisUI:Colors.Layer0BorderColor}}" />
+	<SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ControlNormalBackgroundKey}" Color="{DynamicResource {x:Static adonisUI:Colors.Layer1BackgroundColor}}" />
+	<SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ControlNormalBorderKey}" Color="{DynamicResource {x:Static adonisUI:Colors.Layer1BorderColor}}" />
+
+	<DataTemplate x:Key="DefaultXCWatermarkTemplate">
+		<ContentControl
+			Margin="0,0,3,0"
+			BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+			BorderThickness="0"
+			Content="{Binding}"
+			Focusable="False"
+			Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+	</DataTemplate>
+	<Style BasedOn="{StaticResource {x:Type xc:IntegerUpDown}}" TargetType="{x:Type xc:IntegerUpDown}">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="WatermarkTemplate" Value="{StaticResource DefaultXCWatermarkTemplate}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="MinHeight" Value="25" />
+		<Setter Property="Margin" Value="2" />
+		<Setter Property="ClipValueToMinMax" Value="True" />
+	</Style>
+	<Style BasedOn="{StaticResource {x:Type xc:ULongUpDown}}" TargetType="{x:Type xc:ULongUpDown}">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="WatermarkTemplate" Value="{StaticResource DefaultXCWatermarkTemplate}" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+	<Style BasedOn="{StaticResource {x:Type xc:DoubleUpDown}}" TargetType="{x:Type xc:DoubleUpDown}">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="WatermarkTemplate" Value="{StaticResource DefaultXCWatermarkTemplate}" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+	<Style BasedOn="{StaticResource {x:Type xc:LongUpDown}}" TargetType="{x:Type xc:LongUpDown}">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="WatermarkTemplate" Value="{StaticResource DefaultXCWatermarkTemplate}" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+	<Style BasedOn="{StaticResource {x:Type xc:DateTimeUpDown}}" TargetType="{x:Type xc:DateTimeUpDown}">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="WatermarkTemplate" Value="{StaticResource DefaultXCWatermarkTemplate}" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+	<Style BasedOn="{StaticResource {x:Type xc:TimeSpanUpDown}}" TargetType="{x:Type xc:TimeSpanUpDown}">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="WatermarkTemplate" Value="{StaticResource DefaultXCWatermarkTemplate}" />
+		<Setter Property="BorderThickness" Value="0" />
+	</Style>
+	<DataTemplate x:Key="TimePeriodPicker">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="2*" />
+			</Grid.ColumnDefinitions>
+			<TextBlock Text="{Binding ElementName=TimeSpanPicker, Path=Value, Converter={StaticResource TimeSpanToReadableStringConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Left" />
+			<xc:TimeSpanUpDown
+				x:Name="TimeSpanPicker"
+				Grid.Column="1"
+				CurrentDateTimePart="Minute"
+				Minimum="0"
+				ShowSeconds="False"
+				Value="{Binding Path=.}" />
+		</Grid>
+	</DataTemplate>
+	<Style x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=SpinnerButtonStyleKey}" TargetType="RepeatButton">
+		<Setter Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" />
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="2,2" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="RepeatButton">
+					<Grid>
+						<chrome:ButtonChrome
+							x:Name="Chrome"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="0"
+							CornerRadius="{DynamicResource {x:Static xcthemes:ResourceKeys.SpinButtonCornerRadiusKey}}"
+							RenderEnabled="{TemplateBinding IsEnabled}"
+							RenderMouseOver="{TemplateBinding IsMouseOver}"
+							RenderNormal="True"
+							RenderPressed="{TemplateBinding IsPressed}"
+							SnapsToDevicePixels="true" />
+
+						<ContentPresenter
+							Margin="{TemplateBinding Padding}"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<!--
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ControlDisabledBackgroundKey}" Color="Red" />
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ControlNormalBackgroundKey}" Color="Red" />
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ButtonNormalBackgroundKey}" Color="Red" />
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ButtonMouseOverBackgroundKey}" Color="Red" />
+    <SolidColorBrush x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type xcthemes:ResourceKeys}, ResourceId=ButtonFocusedBackgroundKey}" Color="Red" />
+    <Style x:Key="{x:Static xcthemes:ResourceKeys.SpinnerButtonStyleKey}" TargetType="RepeatButton">
+    <Setter Property="Background" Value="Red" />
+    <Setter Property="BorderBrush" Value="Pink" />
+    </Style>
+	-->
+
+	<Style x:Key="VanillaCheckBox" TargetType="{x:Type CheckBox}">
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="SnapsToDevicePixels" Value="true" />
+		<Setter Property="OverridesDefaultStyle" Value="true" />
+		<Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisual}" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type CheckBox}">
+					<BulletDecorator Background="Transparent">
+						<BulletDecorator.Bullet>
+							<Border
+								x:Name="Border"
+								Width="13"
+								Height="13"
+								BorderThickness="1"
+								CornerRadius="0">
+								<Border.BorderBrush>
+									<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+										<LinearGradientBrush.GradientStops>
+											<GradientStopCollection>
+												<GradientStop Offset="0.0" Color="{DynamicResource {x:Static adonisUI:Colors.Layer0BorderColor}}" />
+												<GradientStop Offset="1.0" Color="{DynamicResource {x:Static adonisUI:Colors.Layer1BorderColor}}" />
+											</GradientStopCollection>
+										</LinearGradientBrush.GradientStops>
+									</LinearGradientBrush>
+								</Border.BorderBrush>
+								<Border.Background>
+									<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+										<LinearGradientBrush.GradientStops>
+											<GradientStopCollection>
+												<GradientStop Color="{DynamicResource {x:Static adonisUI:Colors.Layer0BackgroundColor}}" />
+												<GradientStop Offset="1.0" Color="{DynamicResource {x:Static adonisUI:Colors.Layer1BackgroundColor}}" />
+											</GradientStopCollection>
+										</LinearGradientBrush.GradientStops>
+									</LinearGradientBrush>
+
+								</Border.Background>
+								<Grid>
+									<Path
+										x:Name="CheckMark"
+										Width="7"
+										Height="7"
+										Data="M 0 0 L 7 7 M 0 7 L 7 0"
+										SnapsToDevicePixels="False"
+										Stroke="{TemplateBinding Foreground}"
+										StrokeThickness="2"
+										Visibility="Collapsed" />
+									<Path
+										x:Name="InderminateMark"
+										Width="7"
+										Height="7"
+										Data="M 0 7 L 7 0"
+										SnapsToDevicePixels="False"
+										Stroke="{TemplateBinding Foreground}"
+										StrokeThickness="2"
+										Visibility="Collapsed" />
+								</Grid>
+							</Border>
+						</BulletDecorator.Bullet>
+						<ContentPresenter
+							Margin="4,0,0,0"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Center"
+							RecognizesAccessKey="True" />
+						<VisualStateManager.VisualStateGroups>
+							<VisualStateGroup x:Name="CommonStates">
+								<VisualState x:Name="Normal" />
+								<VisualState x:Name="MouseOver">
+									<Storyboard>
+										<ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+											<EasingColorKeyFrame KeyTime="0" Value="{DynamicResource {x:Static adonisUI:Colors.Layer1IntenseHighlightBorderColor}}" />
+										</ColorAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Pressed">
+									<Storyboard>
+										<ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+											<EasingColorKeyFrame KeyTime="0" Value="{DynamicResource {x:Static adonisUI:Colors.Layer1IntenseHighlightBorderColor}}" />
+										</ColorAnimationUsingKeyFrames>
+										<ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[0].(GradientStop.Color)">
+											<EasingColorKeyFrame KeyTime="0" Value="{DynamicResource {x:Static adonisUI:Colors.Layer1IntenseHighlightColor}}" />
+										</ColorAnimationUsingKeyFrames>
+										<ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+											<EasingColorKeyFrame KeyTime="0" Value="{DynamicResource {x:Static adonisUI:Colors.Layer2IntenseHighlightColor}}" />
+										</ColorAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Disabled" />
+							</VisualStateGroup>
+							<VisualStateGroup x:Name="CheckStates">
+								<VisualState x:Name="Checked">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckMark" Storyboard.TargetProperty="(UIElement.Visibility)">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+								<VisualState x:Name="Unchecked" />
+								<VisualState x:Name="Indeterminate">
+									<Storyboard>
+										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="InderminateMark" Storyboard.TargetProperty="(UIElement.Visibility)">
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+										</ObjectAnimationUsingKeyFrames>
+									</Storyboard>
+								</VisualState>
+							</VisualStateGroup>
+						</VisualStateManager.VisualStateGroups>
+					</BulletDecorator>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<controls:AutomationTooltip x:Key="NexusModsCollectionModToolTip" DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.Tag}">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<StackPanel
+				MaxWidth="700"
+				Background="Transparent"
+				Orientation="Vertical">
+				<StackPanel.Resources>
+					<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+						<Setter Property="TextWrapping" Value="Wrap" />
+						<Setter Property="Margin" Value="2" />
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+						<!--<Setter Property="FontFamily" Value="Arial" />-->
+					</Style>
+				</StackPanel.Resources>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<TextBlock
+						FontSize="16"
+						FontWeight="Bold"
+						Foreground="{DynamicResource {x:Static adonisUI:Brushes.AlertBrush}}"
+						Style="{StaticResource TitleWithDropShadow}"
+						Text="{Binding Name}" />
+					<TextBlock Grid.Column="1" Text="{Binding Version}" />
+				</Grid>
+
+				<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+				<StackPanel Orientation="Horizontal">
+					<TextBlock
+						Style="{StaticResource TitleWithDropShadow}"
+						Text="{Binding AuthorDisplayText}"
+						TextWrapping="Wrap" />
+					<Image
+						MaxWidth="16"
+						MaxHeight="16"
+						Margin="4"
+						RenderOptions.BitmapScalingMode="HighQuality"
+						Source="{Binding AuthorAvatarUrl, Converter={StaticResource UriToBitmapImageConverter}}"
+						Stretch="UniformToFill"
+						Visibility="{Binding AuthorAvatarVisibility, FallbackValue=Collapsed}" />
+				</StackPanel>
+				<TextBlock
+					Text="{Binding Description}"
+					TextWrapping="Wrap"
+					Visibility="{Binding DescriptionVisibility}" />
+				<StackPanel Orientation="Vertical">
+					<Separator Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1HighlightBorderBrush}}" />
+					<TextBlock Margin="2" Text="{Binding CreatedDateText}" />
+					<TextBlock Margin="2" Text="{Binding UpdatedDateText}" />
+					<TextBlock Text="{Binding SizeText}" />
+				</StackPanel>
+				<Image
+					MaxWidth="256"
+					MaxHeight="256"
+					RenderOptions.BitmapScalingMode="HighQuality"
+					Source="{Binding ImageUrl, Converter={StaticResource UriToBitmapImageConverter}}"
+					Stretch="UniformToFill"
+					Visibility="{Binding ImageVisibility}" />
+			</StackPanel>
+		</Grid>
+	</controls:AutomationTooltip>
+
+	<Style
+		x:Key="CardViewBase"
+		BasedOn="{StaticResource {x:Type ListBox}}"
+		TargetType="{x:Type ListView}">
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}" />
+		<Setter Property="BorderThickness" Value="{DynamicResource {x:Static adonisUI:Dimensions.BorderThickness}}" />
+		<Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="ExpandOnHover" />
+		<Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="ExpandOnHover" />
+		<Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked" />
+		<Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="ItemContainerStyle" Value="{Binding (ListView.View).ItemContainerStyle, RelativeSource={RelativeSource Self}}" />
+		<Setter Property="ItemTemplate" Value="{Binding (ListView.View).ItemTemplate, RelativeSource={RelativeSource Self}}" />
+		<Setter Property="ItemsPanel">
+			<Setter.Value>
+				<ItemsPanelTemplate>
+					<WrapPanel
+						Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
+						MinWidth="{Binding (ListView.View).ItemWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
+						ItemHeight="{Binding (ListView.View).ItemHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
+						ItemWidth="{Binding (ListView.View).ItemWidth, RelativeSource={RelativeSource AncestorType=ListView}}" />
+				</ItemsPanelTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style
+		x:Key="CardViewItemBase"
+		BasedOn="{StaticResource {x:Type ListBoxItem}}"
+		TargetType="{x:Type ListViewItem}">
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		<Setter Property="Padding" Value="4" />
+		<Setter Property="Margin" Value="2" />
+		<!--<Setter Property="ContentTemplate">
+        <Setter.Value>
+        <DataTemplate>
+        <StackPanel>
+		-->
+		<!--<Border Background="White">
+        <Image Margin="3" Source="{Binding ImageUrl, Converter={StaticResource UriToBitmapImageConverter}}" />
+        </Border>-->
+		<!--
+        <TextBlock Text="{Binding Name}" TextAlignment="Center" />
+        </StackPanel>
+        </DataTemplate>
+        </Setter.Value>
+        </Setter>-->
+	</Style>
+
+	<DataTemplate x:Key="NexusCollectionModCard" DataType="nexusData:NexusModsCollectionModData">
+		<Border
+			x:Name="TopBorder"
+			Background="#33000000"
+			BorderThickness="0">
+			<Border.Effect>
+				<DropShadowEffect
+					BlurRadius="4"
+					Direction="330"
+					Opacity="0.5"
+					ShadowDepth="4"
+					Color="Black" />
+			</Border.Effect>
+			<Grid>
+				<Grid.Resources>
+					<DataTemplate x:Key="ModImage">
+						<Image
+							RenderOptions.BitmapScalingMode="HighQuality"
+							Source="{Binding ImageUrl, Converter={StaticResource UriToBitmapImageConverter}}"
+							Stretch="UniformToFill" />
+					</DataTemplate>
+					<DataTemplate x:Key="ModFallBackImage">
+						<Border Background="Gray">
+							<TextBlock Text="?" />
+						</Border>
+					</DataTemplate>
+				</Grid.Resources>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<ContentControl
+					Grid.Row="0"
+					Height="132"
+					HorizontalAlignment="Stretch"
+					Content="{Binding}">
+					<ContentControl.Style>
+						<Style TargetType="{x:Type ContentControl}">
+							<Setter Property="ContentTemplate" Value="{StaticResource ModFallBackImage}" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding ImageVisibility}" Value="Visible">
+									<Setter Property="ContentTemplate" Value="{StaticResource ModImage}" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</ContentControl.Style>
+				</ContentControl>
+
+				<CheckBox
+					Grid.Row="0"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					BorderBrush="WhiteSmoke"
+					BorderThickness="2"
+					IsChecked="{Binding IsSelected}"
+					ToolTip="Select Mod for Download"
+					Visibility="Hidden">
+					<CheckBox.Style>
+						<Style TargetType="CheckBox">
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding ElementName=TopBorder, Path=IsMouseOver}" Value="True">
+									<Setter Property="Visibility" Value="Visible" />
+								</DataTrigger>
+								<DataTrigger Binding="{Binding IsSelected}" Value="True">
+									<Setter Property="Visibility" Value="Visible" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</CheckBox.Style>
+				</CheckBox>
+
+				<controls:AutoGrid
+					Grid.Row="1"
+					Margin="8"
+					Columns="*"
+					RowCount="4"
+					Rows="auto,auto,auto,*">
+					<TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+					<TextBlock
+						FontSize="12"
+						Foreground="#d98f40"
+						Text="{Binding Category}" />
+					<StackPanel Orientation="Vertical">
+						<StackPanel.Resources>
+							<Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+								<Setter Property="FontSize" Value="12" />
+								<Setter Property="TextWrapping" Value="Wrap" />
+							</Style>
+						</StackPanel.Resources>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Foreground="#898989" Text="Uploaded: " />
+							<TextBlock Text="{Binding CreatedDateText}" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Foreground="#898989" Text="Last Updated: " />
+							<TextBlock Text="{Binding UpdatedDateText}" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Foreground="#898989" Text="Author:" />
+							<TextBlock Text="{Binding Author}" />
+						</StackPanel>
+					</StackPanel>
+					<TextBlock
+						VerticalAlignment="Stretch"
+						Foreground="LightGray"
+						Text="{Binding Description}"
+						TextWrapping="Wrap"
+						ToolTip="{Binding Description}" />
+				</controls:AutoGrid>
+			</Grid>
+		</Border>
+	</DataTemplate>
+
+	<!--  Source: https://stackoverflow.com/a/72915152  -->
+	<Style x:Key="TransparentToggleButtonStyle" TargetType="ToggleButton">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToggleButton">
+					<Grid x:Name="RootGrid" Background="Transparent">
+						<ContentPresenter
+							x:Name="ContentPresenter"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>

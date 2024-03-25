@@ -39,12 +39,6 @@
 				<RowDefinition Height="auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<!--<Menu>
-				<MenuItem
-					x:Name="ValidateButton"
-					Header="Re-Validate"
-					Icon="{StaticResource QuickRefreshIcon}" />
-			</Menu>-->
 			<ToolBarTray>
 				<ToolBar
 					HorizontalAlignment="Stretch"
