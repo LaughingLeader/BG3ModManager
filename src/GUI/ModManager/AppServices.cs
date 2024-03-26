@@ -2,9 +2,6 @@
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
-using ModManager.Views.Main;
-using ModManager.Windows;
-
 using ReactiveUI;
 
 using Splat;

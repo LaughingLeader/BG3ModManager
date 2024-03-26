@@ -2,16 +2,15 @@
 	<PropertyGroup>
 		<AssemblyName>ModManager</AssemblyName>
 		<AssemblyTitle>BG3ModManager</AssemblyTitle>
-		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" />
-		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
-		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
-		<ProjectReference Include="..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
-		<ProjectReference Include="..\Core\Core.csproj" />
-		<ProjectReference Include="..\Services\Services.csproj" />
+		<ProjectReference Include="..\..\..\External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" />
+		<ProjectReference Include="..\..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
+		<ProjectReference Include="..\..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
+		<ProjectReference Include="..\..\Core\Core.csproj" />
+		<ProjectReference Include="..\..\Services\Services.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -22,5 +21,7 @@
 		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="Splat" Version="14.8.12" />
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
+		<PackageReference Include="SharpCompress" Version="0.36.0" />
+		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
 	</ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ namespace ModManager.Converters;
 
 public class StringToLinearBrushConverter : IValueConverter
 {
-	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
 		if (value is string str && !String.IsNullOrEmpty(str))
 		{
@@ -17,5 +17,5 @@ public class StringToLinearBrushConverter : IValueConverter
 		return null;
 	}
 
-	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
+	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => null;
 }

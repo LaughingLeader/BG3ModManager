@@ -1,11 +1,7 @@
-﻿using ReactiveUI;
-
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows;
 
-namespace ModManager.Util;
+namespace ModManager;
 
 public class CustomPropertyResolver : ICreatesObservableForProperty
 {

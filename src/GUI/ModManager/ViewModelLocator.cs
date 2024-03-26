@@ -1,12 +1,5 @@
-﻿using ModManager.Services;
-using ModManager.Util;
-using ModManager.ViewModels;
+﻿using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
-using ModManager.Windows;
-
-using ReactiveUI;
-
-using Splat;
 
 namespace ModManager;
 
@@ -28,4 +21,9 @@ public static class ViewModelLocator
 	public static StatsValidatorWindowViewModel StatsValidator => AppServices.Get<StatsValidatorWindowViewModel>()!;
 	public static VersionGeneratorViewModel VersionGenerator => AppServices.Get<VersionGeneratorViewModel>()!;
 	public static ExportOrderToArchiveViewModel ExportOrderToArchive => AppServices.Get<ExportOrderToArchiveViewModel>()!;
+
+	static ViewModelLocator()
+	{
+
+	}
 }

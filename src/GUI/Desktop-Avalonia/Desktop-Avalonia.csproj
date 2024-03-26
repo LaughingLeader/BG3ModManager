@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<Nullable>enable</Nullable>
 
 		<AssemblyName>BG3ModManager</AssemblyName>
 		<AssemblyTitle>BG3ModManager</AssemblyTitle>
