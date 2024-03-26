@@ -63,7 +63,12 @@
 	</Target>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ModManager\ModManager.csproj" />
+		<ProjectReference Include="..\..\..\External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" />
+		<ProjectReference Include="..\..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
+		<ProjectReference Include="..\..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
+		<ProjectReference Include="..\..\Core\Core.csproj" />
+		<ProjectReference Include="..\..\Services\Services.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

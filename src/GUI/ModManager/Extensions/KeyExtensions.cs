@@ -1,10 +1,9 @@
-﻿using System.Windows.Input;
+﻿using Avalonia.Input;
 
 namespace ModManager;
 
 public static class KeyExtensions
 {
-#if WPF
 	private static readonly Dictionary<Key, string> KeyToName = new()
 	{
 		{Key.Add, "+"},
@@ -44,6 +43,4 @@ public static class KeyExtensions
 		}
 		return key.ToString();
 	}
-
-#endif
 }

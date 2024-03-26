@@ -1,4 +1,6 @@
-﻿using DynamicData;
+﻿using Avalonia.Input;
+
+using DynamicData;
 
 using ModManager.Models.App;
 using ModManager.Util;

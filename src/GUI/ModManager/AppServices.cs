@@ -45,9 +45,6 @@ public static class AppServices
 
 		resolver.RegisterConstant<IViewLocator>(new ViewLocator());
 
-		// POCO type warning suppression
-		SplatRegistrations.RegisterConstant<ICreatesObservableForProperty>(new CustomPropertyResolver());
-
 		SplatRegistrations.Register<ModListDropHandler>();
 		SplatRegistrations.Register<ModListDragHandler>();
 
@@ -70,7 +67,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ExportOrderToArchiveViewModel>();
 
-		SplatRegistrations.RegisterLazySingleton<AboutWindow>();
+		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
 		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindow>();
@@ -82,7 +79,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesConfirmationView>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
-		SplatRegistrations.RegisterLazySingleton<ModUpdatesLayout>();
+		SplatRegistrations.RegisterLazySingleton<ModUpdatesLayout>();*/
 
 		//SplatRegistrations.RegisterLazySingleton<MainWindow>();
 

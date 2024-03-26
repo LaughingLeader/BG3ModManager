@@ -1,6 +1,4 @@
-﻿using AutoUpdaterDotNET;
-
-using DynamicData;
+﻿using DynamicData;
 using DynamicData.Binding;
 
 using Microsoft.Win32;
@@ -38,7 +36,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace ModManager.ViewModels;
+namespace ModManager.ViewModels.Main;
 
 public class MainWindowViewModel : BaseWindowViewModel, IScreen
 {

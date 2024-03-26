@@ -15,3 +15,4 @@ global using System.Reactive.Linq;
 global using Splat;
 
 global using RxCommandUnit = ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>;
+global using ModifierKeys = Avalonia.Input.KeyModifiers;
