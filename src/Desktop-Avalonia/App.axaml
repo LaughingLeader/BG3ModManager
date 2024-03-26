@@ -1,0 +1,21 @@
+<Application
+	x:Class="ModManager.App"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="using:ModManager"
+	xmlns:ui="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+	RequestedThemeVariant="Default">
+	<!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
+
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://BG3ModManager/Styling/Resources.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
+
+	<Application.Styles>
+		<ui:FluentAvaloniaTheme CustomAccentColor="Coral" PreferSystemTheme="False" />
+	</Application.Styles>
+</Application>
