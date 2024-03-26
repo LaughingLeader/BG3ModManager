@@ -13,7 +13,7 @@ public record struct ValidateModStatsRequest(List<DivinityModData> Mods, Cancell
 public record struct ValidateModStatsResults(List<DivinityModData> Mods, List<StatLoadingError> Errors, Dictionary<string, string[]> FileText, TimeSpan TimeTaken);
 public record DeleteModsRequestData(List<DivinityModData> TargetMods, bool IsDeletingDuplicates = false, IEnumerable<DivinityModData> LoadedMods = null);
 public record struct ShowAlertData(string Message, AlertType AlertType, int Timeout);
-public record struct ShowMessageBoxData(string Message, string Title, MessageBoxButton Button, MessageBoxImage Image, MessageBoxResult DefaultResult);
+//public record struct ShowMessageBoxData(string Message, string Title, MessageBoxButton Button, MessageBoxImage Image, MessageBoxResult DefaultResult);
 public record struct OpenFolderBrowserDialogRequest(string Description, string StartingPath, bool MultiSelect = false, string Title = "");
 public record struct OpenFolderBrowserDialogResults(bool Success, string File, string[] Files, bool IsSingleFile);
 
@@ -27,6 +27,6 @@ public static class DivinityInteractions
 	public static readonly Interaction<DeleteModsRequestData, bool> DeleteMods = new();
 	public static readonly Interaction<ShowAlertData, bool> ShowAlert = new();
 	public static readonly Interaction<bool, bool> ToggleModFileNameDisplay = new();
-	public static readonly Interaction<ShowMessageBoxData, MessageBoxResult> ShowMessageBox = new();
+	//public static readonly Interaction<ShowMessageBoxData, MessageBoxResult> ShowMessageBox = new();
 	public static readonly Interaction<OpenFolderBrowserDialogRequest, OpenFolderBrowserDialogResults> OpenFolderBrowserDialog = new();
 }

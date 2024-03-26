@@ -9,6 +9,7 @@ public interface IModEntry
 
 	int Index { get; set; }
 	bool IsActive { get; set; }
+	bool IsVisible { get; set; }
 
 	string Export(ModExportType exportType);
 }

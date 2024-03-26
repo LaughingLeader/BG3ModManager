@@ -74,7 +74,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 
 	[Reactive] public string HelpText { get; set; }
 
-	[Reactive] public Visibility Visibility { get; set; }
+	[Reactive] public bool IsVisible { get; set; }
 
 	[Reactive] public int Index { get; set; }
 
@@ -123,10 +123,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 		get => isSelected;
 		set
 		{
-			if (value && Visibility != Visibility.Visible)
-			{
-				value = false;
-			}
+			if (!IsVisible) value = false;
 			this.RaiseAndSetIfChanged(ref isSelected, value);
 		}
 	}
@@ -144,21 +141,21 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 	[ObservableAsProperty] public string LastModifiedDateText { get; }
 	[ObservableAsProperty] public string DisplayVersion { get; }
 	[ObservableAsProperty] public string Notes { get; }
-	[ObservableAsProperty] public Visibility DescriptionVisibility { get; }
-	[ObservableAsProperty] public Visibility AuthorVisibility { get; }
-	[ObservableAsProperty] public Visibility DependencyVisibility { get; }
-	[ObservableAsProperty] public Visibility OpenGitHubLinkVisibility { get; }
-	[ObservableAsProperty] public Visibility OpenNexusModsLinkVisibility { get; }
-	[ObservableAsProperty] public Visibility OpenWorkshopLinkVisibility { get; }
-	[ObservableAsProperty] public Visibility ToggleForceAllowInLoadOrderVisibility { get; }
-	[ObservableAsProperty] public Visibility ExtenderStatusVisibility { get; }
-	[ObservableAsProperty] public Visibility OsirisStatusVisibility { get; }
-	[ObservableAsProperty] public Visibility NotesVisibility { get; }
-	[ObservableAsProperty] public Visibility HasFilePathVisibility { get; }
+	[ObservableAsProperty] public bool DescriptionVisibility { get; }
+	[ObservableAsProperty] public bool AuthorVisibility { get; }
+	[ObservableAsProperty] public bool DependencyVisibility { get; }
+	[ObservableAsProperty] public bool OpenGitHubLinkVisibility { get; }
+	[ObservableAsProperty] public bool OpenNexusModsLinkVisibility { get; }
+	[ObservableAsProperty] public bool OpenWorkshopLinkVisibility { get; }
+	[ObservableAsProperty] public bool ToggleForceAllowInLoadOrderVisibility { get; }
+	[ObservableAsProperty] public bool ExtenderStatusVisibility { get; }
+	[ObservableAsProperty] public bool OsirisStatusVisibility { get; }
+	[ObservableAsProperty] public bool NotesVisibility { get; }
+	[ObservableAsProperty] public bool HasFilePathVisibility { get; }
 
 	#region NexusMods Properties
-	[ObservableAsProperty] public Visibility NexusImageVisibility { get; }
-	[ObservableAsProperty] public Visibility NexusModsInformationVisibility { get; }
+	[ObservableAsProperty] public bool NexusImageVisibility { get; }
+	[ObservableAsProperty] public bool NexusModsInformationVisibility { get; }
 	[ObservableAsProperty] public DateTime NexusModsCreatedDate { get; }
 	[ObservableAsProperty] public DateTime NexusModsUpdatedDate { get; }
 	[ObservableAsProperty] public string NexusModsTooltipInfo { get; }
@@ -613,6 +610,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 		Targets = "";
 		Index = -1;
 		CanDrag = true;
+		IsVisible = true;
 
 		WorkshopData = new SteamWorkshopModData();
 		NexusModsData = new NexusModsModData();
@@ -631,13 +629,8 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 			.Select(CanAddToLoadOrderCheck).ToUIPropertyImmediate(this, x => x.CanAddToLoadOrder, true);
 
 		this.WhenAnyValue(x => x.UUID).BindTo(NexusModsData, x => x.UUID);
-		this.WhenAnyValue(x => x.NexusModsData.PictureUrl)
-			.Select(uri => uri != null && !string.IsNullOrEmpty(uri.AbsolutePath) ? Visibility.Visible : Visibility.Collapsed)
-			.ToUIProperty(this, x => x.NexusImageVisibility, Visibility.Collapsed);
-
-		this.WhenAnyValue(x => x.NexusModsData.IsUpdated)
-			.Select(PropertyConverters.BoolToVisibility)
-			.ToUIProperty(this, x => x.NexusModsInformationVisibility, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.NexusModsData.PictureUrl).Select(Validators.IsValid).ToUIProperty(this, x => x.NexusImageVisibility);
+		this.WhenAnyValue(x => x.NexusModsData.IsUpdated).ToUIProperty(this, x => x.NexusModsInformationVisibility);
 
 		this.WhenAnyValue(x => x.NexusModsData.CreatedTimestamp).SkipWhile(x => x <= 0).Select(x => DateUtils.UnixTimeStampToDateTime(x)).ToUIProperty(this, x => x.NexusModsCreatedDate);
 		this.WhenAnyValue(x => x.NexusModsData.UpdatedTimestamp).SkipWhile(x => x <= 0).Select(x => DateUtils.UnixTimeStampToDateTime(x)).ToUIProperty(this, x => x.NexusModsUpdatedDate);
@@ -646,25 +639,22 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 			.Select(x => NexusModsInfoToTooltip(x.Item1, x.Item2, x.Item3)).ToUIProperty(this, x => x.NexusModsTooltipInfo);
 
 		this.WhenAnyValue(x => x.IsForceLoaded, x => x.HasMetadata, x => x.IsForceLoadedMergedMod)
-			.Select(b => b.Item1 && b.Item2 && !b.Item3 ? Visibility.Visible : Visibility.Collapsed)
-			.ToUIProperty(this, x => x.ToggleForceAllowInLoadOrderVisibility, Visibility.Collapsed);
+			.Select(b => b.Item1 && b.Item2 && !b.Item3)
+			.ToUIProperty(this, x => x.ToggleForceAllowInLoadOrderVisibility);
 
 		this.WhenAnyValue(x => x.GitHubEnabled, x => x.GitHubData.IsEnabled, (b1, b2) => b1 && b2)
-			.Select(PropertyConverters.BoolToVisibility)
-			.ToUIProperty(this, x => x.OpenGitHubLinkVisibility, Visibility.Collapsed);
+			.ToUIProperty(this, x => x.OpenGitHubLinkVisibility);
 
 		this.WhenAnyValue(x => x.NexusModsEnabled, x => x.NexusModsData.ModId, (b, id) => b && id >= DivinityApp.NEXUSMODS_MOD_ID_START)
-			.Select(PropertyConverters.BoolToVisibility)
-			.ToUIProperty(this, x => x.OpenNexusModsLinkVisibility, Visibility.Collapsed);
+			.ToUIProperty(this, x => x.OpenNexusModsLinkVisibility);
 
 		this.WhenAnyValue(x => x.SteamWorkshopEnabled, x => x.IsHidden, x => x.IsLarianMod, x => x.WorkshopData.ModId, CanOpenWorkshopBoolCheck)
-			.Select(PropertyConverters.BoolToVisibility)
-			.ToUIProperty(this, x => x.OpenWorkshopLinkVisibility, Visibility.Collapsed);
+			.ToUIProperty(this, x => x.OpenWorkshopLinkVisibility);
 
 		var dependenciesChanged = Dependencies.CountChanged;
 		dependenciesChanged.ToUIProperty(this, x => x.TotalDependencies);
 		dependenciesChanged.Select(x => x > 0).ToUIProperty(this, x => x.HasDependencies);
-		dependenciesChanged.Select(x => PropertyConverters.BoolToVisibility(x > 0)).ToUIProperty(this, x => x.DependencyVisibility, Visibility.Collapsed);
+		dependenciesChanged.Select(x => PropertyConverters.BoolToVisibility(x > 0)).ToUIProperty(this, x => x.DependencyVisibility);
 		Dependencies.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out _displayedDependencies).Subscribe();
 
 		this.WhenAnyValue(x => x.IsActive, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod, x => x.ForceAllowInLoadOrder).Subscribe((b) =>
@@ -700,20 +690,20 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 
 		var whenExtenderProp = this.WhenAnyValue(x => x.ExtenderModStatus, x => x.ScriptExtenderData.RequiredVersion, x => x.CurrentExtenderVersion);
 		whenExtenderProp.Select(x => ExtenderStatusToToolTipText(x.Item1, x.Item2, x.Item3)).ToUIProperty(this, x => x.ScriptExtenderSupportToolTipText);
-		this.WhenAnyValue(x => x.ExtenderModStatus).Select(x => x != DivinityExtenderModStatus.NONE ? Visibility.Visible : Visibility.Collapsed)
-			.ToUIPropertyImmediate(this, x => x.ExtenderStatusVisibility, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.ExtenderModStatus).Select(x => x != DivinityExtenderModStatus.NONE)
+			.ToUIPropertyImmediate(this, x => x.ExtenderStatusVisibility);
 
 		var whenOsirisStatusChanges = this.WhenAnyValue(x => x.OsirisModStatus);
-		whenOsirisStatusChanges.Select(x => x != DivinityOsirisModStatus.NONE ? Visibility.Visible : Visibility.Collapsed).ToUIProperty(this, x => x.OsirisStatusVisibility);
+		whenOsirisStatusChanges.Select(x => x != DivinityOsirisModStatus.NONE).ToUIProperty(this, x => x.OsirisStatusVisibility);
 		whenOsirisStatusChanges.Select(OsirisStatusToTooltipText).ToUIProperty(this, x => x.OsirisStatusToolTipText);
 
-		this.WhenAnyValue(x => x.Notes).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.NotesVisibility, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.Notes).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.NotesVisibility);
 
 		this.WhenAnyValue(x => x.LastUpdated).SkipWhile(x => !x.HasValue)
 			.Select(x => $"Last Modified on {x.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture)}")
 			.ToUIProperty(this, x => x.LastModifiedDateText, "");
 
-		this.WhenAnyValue(x => x.FilePath).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.HasFilePathVisibility, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.FilePath).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.HasFilePathVisibility);
 		this.WhenAnyValue(x => x.Version.Version).ToUIProperty(this, x => x.DisplayVersion, "0.0.0.0");
 
 		SetIsBaseGameMod(false);

@@ -33,9 +33,9 @@ public class NexusModsCollectionModData : ReactiveObject
 	[ObservableAsProperty] public string UpdatedDateText { get; }
 	public string NexusModsURL { get; }
 	public string NexusModsURLDisplayText { get; }
-	[ObservableAsProperty] public Visibility DescriptionVisibility { get; }
-	[ObservableAsProperty] public Visibility AuthorAvatarVisibility { get; }
-	[ObservableAsProperty] public Visibility ImageVisibility { get; }
+	[ObservableAsProperty] public bool DescriptionVisibility { get; }
+	[ObservableAsProperty] public bool AuthorAvatarVisibility { get; }
+	[ObservableAsProperty] public bool ImageVisibility { get; }
 
 
 	public NexusModsCollectionModData(NexusGraphCollectionRevisionMod mod)
@@ -63,9 +63,9 @@ public class NexusModsCollectionModData : ReactiveObject
 		this.WhenAnyValue(x => x.SizeInBytes).Select(StringUtils.BytesToString).ToUIProperty(this, x => x.SizeText);
 		this.WhenAnyValue(x => x.Author).Select(x => $"Created by {x}").ToUIProperty(this, x => x.AuthorDisplayText);
 
-		this.WhenAnyValue(x => x.Description).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.DescriptionVisibility);
-		this.WhenAnyValue(x => x.ImageUrl).Select(PropertyConverters.UriToVisibility).ToUIProperty(this, x => x.ImageVisibility);
-		this.WhenAnyValue(x => x.AuthorAvatarUrl).Select(PropertyConverters.UriToVisibility).ToUIProperty(this, x => x.AuthorAvatarVisibility);
+		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.DescriptionVisibility);
+		this.WhenAnyValue(x => x.ImageUrl).Select(Validators.IsValid).ToUIProperty(this, x => x.ImageVisibility);
+		this.WhenAnyValue(x => x.AuthorAvatarUrl).Select(Validators.IsValid).ToUIProperty(this, x => x.AuthorAvatarVisibility);
 
 		this.WhenAnyValue(x => x.CreatedAt).Select(PropertyConverters.DateToString).ToUIProperty(this, x => x.CreatedDateText);
 		this.WhenAnyValue(x => x.UpdatedAt).Select(PropertyConverters.DateToString).ToUIProperty(this, x => x.UpdatedDateText);

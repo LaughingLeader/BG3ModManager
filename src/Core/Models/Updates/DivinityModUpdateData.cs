@@ -11,7 +11,7 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 	[Reactive] public ModDownloadData DownloadData { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
-	[Reactive] public Visibility Visibility { get; set; }
+	[Reactive] public bool IsVisible { get; set; }
 
 	[ObservableAsProperty] public ModSourceType Source { get; }
 	[ObservableAsProperty] public bool IsEditorMod { get; }
@@ -69,7 +69,7 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 	{
 		IsSelected = true;
 		CanDrag = true;
-		Visibility = Visibility.Visible;
+		IsVisible = true;
 
 		this.WhenAnyValue(x => x.Mod.IsEditorMod).ToUIProperty(this, x => x.IsEditorMod);
 		this.WhenAnyValue(x => x.Mod.AuthorDisplayName).ToUIProperty(this, x => x.Author);
