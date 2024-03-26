@@ -38,10 +38,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "src\Services\Services.csproj", "{E48B34B8-B601-41D6-8915-AF985A10CC1C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{55CF70E6-703F-42DB-BEC3-CBD2491A4AA3}"
+	ProjectSection(SolutionItems) = preProject
+		src\GUI\Directory.build.props = src\GUI\Directory.build.props
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop-Avalonia", "src\GUI\Desktop-Avalonia\Desktop-Avalonia.csproj", "{E8788980-054D-4BCC-9DFC-45E9112D8C51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop-Avalonia", "src\GUI\Desktop-Avalonia\Desktop-Avalonia.csproj", "{E8788980-054D-4BCC-9DFC-45E9112D8C51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModManager", "src\GUI\ModManager\ModManager.csproj", "{DC87C7F9-463F-4537-B1E6-B7EC54A56216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModManager", "src\GUI\ModManager\ModManager.csproj", "{DC87C7F9-463F-4537-B1E6-B7EC54A56216}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
