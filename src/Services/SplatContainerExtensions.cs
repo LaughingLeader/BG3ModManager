@@ -1,6 +1,4 @@
-﻿using HanumanInstitute.Validators;
-
-using ModManager.Services;
+﻿using ModManager.Services;
 
 using System.IO.Abstractions;
 using System.Net.Http;
@@ -15,8 +13,6 @@ public static class SplatContainerExtensions
 	/// <param name="services">The IoC services container.</param>
 	public static IMutableDependencyResolver AddCommonServices(this IMutableDependencyResolver services)
 	{
-		services.CheckNotNull(nameof(services));
-
 		SplatRegistrations.RegisterLazySingleton<IEnvironmentService, EnvironmentService>();
 
 		SplatRegistrations.RegisterLazySingleton<IFileSystem, FileSystem>();

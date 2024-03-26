@@ -75,9 +75,7 @@
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.0" />
 		<PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" />
 		<PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
-		<PackageReference Include="HanumanInstitute.MvvmDialogs.Wpf" Version="2.1.0" />
 		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
-		<PackageReference Include="HanumanInstitute.Validators" Version="1.2.2" />
 		<PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
 		<PackageReference Include="ReactiveUI" Version="19.6.1" TreatAsUsed="true" />
 		<PackageReference Include="ReactiveUI.Events.WPF" Version="15.1.1" />

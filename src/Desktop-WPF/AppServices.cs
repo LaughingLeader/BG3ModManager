@@ -1,7 +1,4 @@
-﻿using HanumanInstitute.MvvmDialogs;
-using HanumanInstitute.MvvmDialogs.Wpf;
-
-using ModManager.Services;
+﻿using ModManager.Services;
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
@@ -49,13 +46,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<ModImportService>();
 
-		var viewLocator = new ViewLocator();
-
-		resolver.RegisterConstant<ReactiveUI.IViewLocator>(viewLocator);
-
-		resolver.RegisterLazySingleton(() => (IDialogService)new DialogService(
-			new DialogManager(viewLocator, new DialogFactory()),
-			viewModelFactory: x => Locator.Current.GetService(x)));
+		resolver.RegisterConstant<IViewLocator>(new ViewLocator());
 
 		// POCO type warning suppression
 		SplatRegistrations.RegisterConstant<ICreatesObservableForProperty>(new CustomPropertyResolver());

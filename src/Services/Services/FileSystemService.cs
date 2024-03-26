@@ -1,6 +1,4 @@
-﻿using HanumanInstitute.Validators;
-
-using System.IO;
+﻿using System.IO;
 using System.IO.Abstractions;
 
 namespace ModManager.Services;
@@ -22,6 +20,7 @@ public class FileSystemService(IFileSystem fileSystemService) : IFileSystemServi
 	/// <inheritdoc />
 	public virtual void EnsureDirectoryExists(string path)
 	{
+		ArgumentNullException.ThrowIfNullOrEmpty(path);
 		if (_fileSystem.Path.IsPathRooted(path))
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(path)!);
@@ -29,46 +28,16 @@ public class FileSystemService(IFileSystem fileSystemService) : IFileSystemServi
 	}
 
 	/// <inheritdoc />
-	public virtual void DeleteFileSilent(string path)
-	{
-		try
-		{
-			if (File.Exists(path))
-			{
-				File.Delete(path);
-			}
-		}
-		catch (IOException) { }
-	}
-
-	/// <inheritdoc />
-	public virtual IEnumerable<string> GetFilesByExtensions(string path, IEnumerable<string> extensions, SearchOption searchOption = SearchOption.TopDirectoryOnly)
-	{
-		if (path == null) { throw new ArgumentNullException(nameof(path)); }
-		if (string.IsNullOrWhiteSpace(path)) { throw new ArgumentException("The passed value may not be empty or whithespace.", nameof(path)); }
-
-		try
-		{
-			return Directory.EnumerateFiles(path, "*", searchOption).Where(f => extensions.Any(s => f.EndsWith(s, StringComparison.InvariantCultureIgnoreCase)));
-		}
-		catch (DirectoryNotFoundException) { }
-		catch (UnauthorizedAccessException) { }
-		catch (PathTooLongException) { }
-
-		return Array.Empty<string>();
-	}
-
-	/// <inheritdoc />
 	public virtual string GetPathWithoutExtension(string path)
 	{
-		path.CheckNotNullOrEmpty(nameof(path));
+		ArgumentNullException.ThrowIfNullOrEmpty(path);
 		return Path.Join(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
 	}
 
 	/// <inheritdoc />
 	public virtual string GetPathWithFinalSeparator(string path)
 	{
-		path.CheckNotNullOrEmpty(nameof(path));
+		ArgumentNullException.ThrowIfNullOrEmpty(path);
 		if (!path.EndsWith(Path.DirectorySeparatorChar))
 		{
 			path += Path.DirectorySeparatorChar;
@@ -79,15 +48,11 @@ public class FileSystemService(IFileSystem fileSystemService) : IFileSystemServi
 	/// <inheritdoc />
 	public virtual string SanitizeFileName(string fileName, char replacementChar = '_')
 	{
-		var blackList = new HashSet<char>(System.IO.Path.GetInvalidFileNameChars()) { '"' }; // '"' not invalid in Linux, but causes problems
-		var output = fileName.ToCharArray();
-		for (int i = 0, ln = output.Length; i < ln; i++)
+		ArgumentNullException.ThrowIfNullOrEmpty(fileName);
+		foreach (var character in Path.GetInvalidFileNameChars())
 		{
-			if (blackList.Contains(output[i]))
-			{
-				output[i] = replacementChar;
-			}
+			fileName = fileName.Replace(character, replacementChar);
 		}
-		return new string(output);
+		return fileName.Trim();
 	}
 }

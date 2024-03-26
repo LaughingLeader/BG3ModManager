@@ -1,6 +1,4 @@
-﻿using HanumanInstitute.Validators;
-
-using ReactiveUI;
+﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System.Diagnostics;
@@ -33,7 +31,13 @@ public class GameUtilitiesService : ReactiveObject, IGameUtilitiesService
 	}
 
 	public void AddGameProcessName(string name) => _processNames.Add(name);
-	public void AddGameProcessName(IEnumerable<string> names) => _processNames.AddRange(names);
+	public void AddGameProcessName(IEnumerable<string> names)
+	{
+		foreach (var x in names)
+		{
+			_processNames.Add(x);
+		}
+	}
 
 	public void RemoveGameProcessName(string name) => _processNames.Remove(name);
 	public void RemoveGameProcessName(IEnumerable<string> names)
