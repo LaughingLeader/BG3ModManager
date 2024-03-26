@@ -1,7 +1,4 @@
-﻿using HanumanInstitute.MvvmDialogs;
-using HanumanInstitute.MvvmDialogs.Wpf;
-
-using ModManager.Controls;
+﻿using ModManager.Controls;
 using ModManager.Models.View;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
@@ -12,39 +9,61 @@ using ModManager.Windows;
 
 using ReactiveUI;
 
+using Splat;
+
 using System.Windows.Controls;
 
 namespace ModManager;
 
-public class ViewLocator : StrongViewLocator, ReactiveUI.IViewLocator
+public class ViewLocatorErrorView : TextBlock, IViewFor
 {
-	private void RegisterConstant<TViewModel, TView>() where TViewModel : ReactiveObject where TView : Control, new()
+	public object ViewModel { get; set; }
+}
+
+
+public class ViewLocator : IViewLocator
+{
+	private static readonly Type _viewForType = typeof(IViewFor<>);
+
+	public IViewFor ResolveView<T>(T viewModel, string contract = null)
 	{
-		Register<TViewModel>(new ViewDefinition(typeof(TView), () => AppServices.Get<TView>()));
+		try
+		{
+			var viewType = _viewForType.MakeGenericType(viewModel.GetType());
+			var registered = Locator.Current.GetService(viewType, contract);
+			if (registered is IViewFor view)
+			{
+				return view;
+			}
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error fetching view: {ex}");
+		}
+		return new ViewLocatorErrorView() { Text = $"Failed to find view for {viewModel}" };
 	}
 
-	public ViewLocator()
+	private static void RegisterConstant<TViewModel, TView>(IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>
 	{
-		//RegisterConstant<MainWindowViewModel, MainWindow>();
-		//RegisterConstant<AboutWindowViewModel, AboutWindow>();
-		//RegisterConstant<CollectionDownloadWindowViewModel, CollectionDownloadWindow>();
-		//RegisterConstant<AppUpdateWindowViewModel, AppUpdateWindow>();
-		//RegisterConstant<ExportOrderToArchiveViewModel, ExportOrderToArchiveView>();
-		//RegisterConstant<HelpWindowViewModel, HelpWindow>();
-		//RegisterConstant<ModPropertiesWindowViewModel, ModPropertiesWindow>();
-		//RegisterConstant<NxmDownloadWindowViewModel, NxmDownloadWindow>();
-		//RegisterConstant<SettingsWindowViewModel, SettingsWindow>();
-		//RegisterConstant<VersionGeneratorViewModel, VersionGeneratorWindow>();
-
-		RegisterConstant<DeleteFilesViewModel, DeleteFilesConfirmationView>();
-		RegisterConstant<ModOrderViewModel, ModOrderView>();
-		RegisterConstant<ModUpdatesViewModel, ModUpdatesLayout>();
-
-		Register<DownloadActivityBarViewModel, DownloadActivityBar>();
-		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>();
-		Register<StatsValidatorErrorEntry, StatsValidatorEntryView>();
-		Register<StatsValidatorLineText, StatsValidatorLineView>();
+		resolver.RegisterLazySingleton<IViewFor<TViewModel>>(() => AppServices.Get<TView>());
 	}
 
-	public IViewFor ResolveView<T>(T viewModel, string contract = null) => (IViewFor)Create(viewModel);
+	private static void Register<TViewModel, TView>(IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>, new()
+	{
+		resolver.Register(() => new TView());
+	}
+
+	static ViewLocator()
+	{
+		var resolver = Locator.CurrentMutable;
+
+		RegisterConstant<DeleteFilesViewModel, DeleteFilesConfirmationView>(resolver);
+		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
+		RegisterConstant<ModUpdatesViewModel, ModUpdatesLayout>(resolver);
+
+		Register<DownloadActivityBarViewModel, DownloadActivityBar>(resolver);
+		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>(resolver);
+		Register<StatsValidatorErrorEntry, StatsValidatorEntryView>(resolver);
+		Register<StatsValidatorLineText, StatsValidatorLineView>(resolver);
+	}
 }
