@@ -265,7 +265,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 				DivinityApp.Log($"{String.Join(Environment.NewLine, modLoadingResults.Duplicates.Select(x => x.ToString()))}");
 				DivinityApp.Log("=======");
 				DivinityApp.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
-				await DivinityInteractions.DeleteMods.Handle(new DeleteModsRequestData(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
+				await DivinityInteractions.DeleteMods.Handle(new DeleteModsRequest(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
 			}
 		}
 		//if (projects != null) MergeModLists(ref finalMods, projects, true);
