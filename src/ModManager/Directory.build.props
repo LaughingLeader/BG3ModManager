@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <BaseIntermediateOutputPath>$(SolutionDir)obj\ModManager\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+</Project>

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>ModManager</AssemblyName>
+		<AssemblyTitle>BG3ModManager</AssemblyTitle>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" />
+		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
+		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
+		<ProjectReference Include="..\Services\Services.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ReactiveUI" Version="19.6.1" />
+		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
+		<PackageReference Include="DynamicData" Version="8.4.1" />
+		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
+		<PackageReference Include="Splat" Version="14.8.12" />
+		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
+	</ItemGroup>
+</Project>

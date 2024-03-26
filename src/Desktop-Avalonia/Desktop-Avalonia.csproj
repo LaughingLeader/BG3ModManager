@@ -29,15 +29,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\External\AutoUpdater.NET\AutoUpdater.NET\AutoUpdater.NET.csproj" />
-		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
-		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
-		<ProjectReference Include="..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
-		<ProjectReference Include="..\Core\Core.csproj" />
-		<ProjectReference Include="..\Services\Services.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="11.0.10" />
 		<PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
@@ -53,5 +44,9 @@
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
 		<PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ModManager\ModManager.csproj" />
 	</ItemGroup>
 </Project>
