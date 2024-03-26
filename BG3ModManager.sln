@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Core\Core.csproj", "{E24CFB13-F468-4B1D-BC4D-245CD4BD1A23}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop-WPF", "src\Desktop-WPF\Desktop-WPF.csproj", "{14BD698D-2A4F-44BB-A41E-6E36D80A8459}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop-WPF", "src\GUI\Desktop-WPF\Desktop-WPF.csproj", "{14BD698D-2A4F-44BB-A41E-6E36D80A8459}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{943120CC-2315-475E-9597-7136811228E6}"
 	ProjectSection(SolutionItems) = preProject
@@ -39,9 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "src\Services\Se
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{55CF70E6-703F-42DB-BEC3-CBD2491A4AA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop-Avalonia", "src\Desktop-Avalonia\Desktop-Avalonia.csproj", "{E8788980-054D-4BCC-9DFC-45E9112D8C51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop-Avalonia", "src\GUI\Desktop-Avalonia\Desktop-Avalonia.csproj", "{E8788980-054D-4BCC-9DFC-45E9112D8C51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModManager", "src\ModManager\ModManager.csproj", "{DC87C7F9-463F-4537-B1E6-B7EC54A56216}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModManager", "src\GUI\ModManager\ModManager.csproj", "{DC87C7F9-463F-4537-B1E6-B7EC54A56216}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
