@@ -214,12 +214,12 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 			_jsonConfigExportSettings.DefaultValueHandling = ExtenderSettings.ExportDefaultExtenderSettings ? DefaultValueHandling.Include : DefaultValueHandling.Ignore;
 			var contents = JsonConvert.SerializeObject(Settings.ExtenderSettings, _jsonConfigExportSettings);
 			File.WriteAllText(outputFile, contents);
-			DivinityApp.ShowAlert($"Saved Script Extender settings to '{outputFile}'", AlertType.Success, 20);
+			AppServices.Commands.ShowAlert($"Saved Script Extender settings to '{outputFile}'", AlertType.Success, 20);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			DivinityApp.ShowAlert($"Error saving Script Extender settings to '{outputFile}':\n{ex}", AlertType.Danger);
+			AppServices.Commands.ShowAlert($"Error saving Script Extender settings to '{outputFile}':\n{ex}", AlertType.Danger);
 		}
 		return false;
 	}
@@ -232,7 +232,7 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 			_jsonConfigExportSettings.DefaultValueHandling = ExtenderSettings.ExportDefaultExtenderSettings ? DefaultValueHandling.Include : DefaultValueHandling.Ignore;
 			var contents = JsonConvert.SerializeObject(Settings.ExtenderUpdaterSettings, _jsonConfigExportSettings);
 			File.WriteAllText(outputFile, contents);
-			DivinityApp.ShowAlert($"Saved Script Extender Updater settings to '{outputFile}'", AlertType.Success, 20);
+			AppServices.Commands.ShowAlert($"Saved Script Extender Updater settings to '{outputFile}'", AlertType.Success, 20);
 
 			_main.UpdateExtender(true);
 
@@ -240,7 +240,7 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 		}
 		catch (Exception ex)
 		{
-			DivinityApp.ShowAlert($"Error saving Script Extender Updater settings to '{outputFile}':\n{ex}", AlertType.Danger);
+			AppServices.Commands.ShowAlert($"Error saving Script Extender Updater settings to '{outputFile}':\n{ex}", AlertType.Danger);
 		}
 		return false;
 	}
@@ -281,7 +281,7 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 				case SettingsWindowTab.Update:
 				case SettingsWindowTab.Advanced:
 					//Handled in _main.SaveSettings
-					DivinityApp.ShowAlert("Saved settings.", AlertType.Success, 10);
+					AppServices.Commands.ShowAlert("Saved settings.", AlertType.Success, 10);
 					break;
 				case SettingsWindowTab.Extender:
 					ExportExtenderSettings();
@@ -293,11 +293,11 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 					var success = _main.Keys.SaveKeybindings(out var msg);
 					if (!success)
 					{
-						DivinityApp.ShowAlert(msg, AlertType.Danger);
+						AppServices.Commands.ShowAlert(msg, AlertType.Danger);
 					}
 					else if (!String.IsNullOrEmpty(msg))
 					{
-						DivinityApp.ShowAlert(msg, AlertType.Success, 10);
+						AppServices.Commands.ShowAlert(msg, AlertType.Success, 10);
 					}
 					break;
 			}
@@ -322,12 +322,12 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 				if (DivinityRegistryHelper.AssociateWithNXMProtocol(DivinityApp.GetExePath()))
 				{
 					UpdateSettings.IsAssociatedWithNXM = true;
-					DivinityApp.ShowAlert("nxm:// protocol assocation successfully set");
+					AppServices.Commands.ShowAlert("nxm:// protocol assocation successfully set");
 				}
 				else
 				{
 					UpdateSettings.IsAssociatedWithNXM = false;
-					DivinityApp.ShowAlert("Failed to set nxm protocol in the registry. Check the log", AlertType.Danger);
+					AppServices.Commands.ShowAlert("Failed to set nxm protocol in the registry. Check the log", AlertType.Danger);
 				}
 			}
 		});
@@ -464,16 +464,16 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 					{
 						if (AppServices.Get<IModUpdaterService>().DeleteCache())
 						{
-							DivinityApp.ShowAlert($"Deleted local cache in {DivinityApp.GetAppDirectory("Data")}", AlertType.Success, 20);
+							AppServices.Commands.ShowAlert($"Deleted local cache in {DivinityApp.GetAppDirectory("Data")}", AlertType.Success, 20);
 						}
 						else
 						{
-							DivinityApp.ShowAlert($"No cache to delete.", AlertType.Warning, 20);
+							AppServices.Commands.ShowAlert($"No cache to delete.", AlertType.Warning, 20);
 						}
 					}
 					catch (Exception ex)
 					{
-						DivinityApp.ShowAlert($"Error deleting workshop cache:\n{ex}", AlertType.Danger);
+						AppServices.Commands.ShowAlert($"Error deleting workshop cache:\n{ex}", AlertType.Danger);
 					}
 				}
 			});

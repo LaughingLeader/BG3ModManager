@@ -970,7 +970,7 @@ Directory the zip will be extracted to:
 					}
 					else
 					{
-						DivinityApp.ShowAlert("Failed to find Data folder with given installation directory", AlertType.Danger);
+						AppServices.Commands.ShowAlert("Failed to find Data folder with given installation directory", AlertType.Danger);
 					}
 					if (File.Exists(exePath))
 					{
@@ -978,7 +978,7 @@ Directory the zip will be extracted to:
 					}
 					else
 					{
-						DivinityApp.ShowAlert("Failed to find bg3.exe path with given installation directory", AlertType.Danger);
+						AppServices.Commands.ShowAlert("Failed to find bg3.exe path with given installation directory", AlertType.Danger);
 					}
 					data.InstallPath = dir;
 					//Services.Settings.TrySaveAll(out _);
@@ -1426,7 +1426,7 @@ Directory the zip will be extracted to:
 		}
 		else
 		{
-			DivinityApp.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
+			AppServices.Commands.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
 		}
 	}
 

@@ -1,4 +1,5 @@
-﻿using ModManager.Services;
+﻿using ModManager.Interfaces;
+using ModManager.Services;
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
@@ -19,28 +20,16 @@ public static class AppServices
 	public static IModUpdaterService Updater => Get<IModUpdaterService>()!;
 	public static ModImportService ModImporter => Get<ModImportService>()!;
 
+	public static IGlobalCommandsService Commands => Get<IGlobalCommandsService>()!;
+	public static IInteractionsService Interactions => Get<IInteractionsService>()!;
+
 	static AppServices()
 	{
 		var resolver = Locator.CurrentMutable;
 		resolver.AddCommonServices();
-
-		var settingsService = new SettingsService();
-		SplatRegistrations.RegisterConstant<ISettingsService>(settingsService);
-		SplatRegistrations.RegisterConstant<IPathwaysService>(new PathwaysService(settingsService));
-
-		SplatRegistrations.RegisterLazySingleton<INexusModsService, NexusModsService>();
-		SplatRegistrations.RegisterLazySingleton<IGitHubService, GitHubService>();
-		//SplatRegistrations.RegisterLazySingleton<ISteamWorkshopService, SteamWorkshopService>();
-
-		SplatRegistrations.RegisterConstant<IModManagerService>(new ModManagerService());
-		SplatRegistrations.RegisterConstant<IModUpdaterService>(new ModUpdaterService());
-
-		SplatRegistrations.RegisterConstant<IGameUtilitiesService>(new GameUtilitiesService());
-
-		SplatRegistrations.RegisterLazySingleton<IStatsValidatorService, StatsValidatorService>();
+		resolver.AddAppServices();
 
 		SplatRegistrations.RegisterConstant<IBackgroundCommandService>(new BackgroundCommandService(DivinityApp.PIPE_ID));
-
 		SplatRegistrations.RegisterLazySingleton<ModImportService>();
 
 		resolver.RegisterConstant<IViewLocator>(new ViewLocator());

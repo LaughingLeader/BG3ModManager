@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
+using ModManager.Interfaces;
 using ModManager.Models.Mod;
 using ModManager.Models.NexusMods;
 using ModManager.Models.NexusMods.NXM;
@@ -291,18 +292,23 @@ public class NexusModsService : ReactiveObject, INexusModsService
 						var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
 						var collectionData = await _dataLoader.Graph.PostAsync<NexusGraphQueryCollectionRevisionResult>(content, token);
-						if (collectionData?.Data != null)
+						if (collectionData?.Data != null && collectionData.Data.CollectionRevision != null)
 						{
-							var modFiles = collectionData.Data.CollectionRevision?.ModFiles;
+							var modFiles = collectionData.Data.CollectionRevision.ModFiles;
 							if (modFiles != null && modFiles.Length > 0)
 							{
 								DivinityApp.Log($"Total mods in collection: {modFiles.Length}");
-								var doDownload = await DivinityInteractions.OpenDownloadCollectionView.Handle(collectionData.Data.CollectionRevision);
-								DivinityApp.Log($"doDownload: {doDownload}");
-								if (doDownload)
+								var interactions = Locator.Current.GetService<IInteractionsService>();
+								if (interactions != null)
 								{
-
+									var doDownload = await interactions.OpenDownloadCollectionView.Handle(collectionData.Data.CollectionRevision);
+									DivinityApp.Log($"doDownload: {doDownload}");
+									if (doDownload)
+									{
+										//TODO
+									}
 								}
+								
 							}
 						}
 						break;

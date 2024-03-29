@@ -1,7 +1,7 @@
-﻿using DynamicData;
-using DynamicData.Aggregation;
+﻿using FluentAvalonia.UI;
 
-using Microsoft.Win32;
+using DynamicData;
+using DynamicData.Aggregation;
 
 using ModManager.Extensions;
 using ModManager.Models;
@@ -11,11 +11,9 @@ using ModManager.Models.NexusMods;
 using ModManager.Models.Settings;
 using ModManager.ModUpdater.Cache;
 using ModManager.Util;
-using ModManager.ViewModels;
+using ModManager.ViewModels.Main;
 
 using Newtonsoft.Json;
-
-using ReactiveUI;
 
 using SharpCompress.Archives;
 using SharpCompress.Common;
@@ -26,14 +24,10 @@ using SharpCompress.Writers;
 
 using System.Collections.Immutable;
 using System.Globalization;
-using System.IO;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Text;
-using System.Windows;
 
 using ZstdSharp;
+using Avalonia;
 
 namespace ModManager.Services;
 
@@ -114,7 +108,7 @@ public class ModImportService()
 			catch (System.IO.IOException ex)
 			{
 				DivinityApp.Log($"File may be in use by another process:\n{ex}");
-				DivinityApp.ShowAlert($"Failed to copy file '{Path.GetFileName(filePath)} - It may be locked by another process'", AlertType.Danger);
+				AppServices.Commands.ShowAlert($"Failed to copy file '{Path.GetFileName(filePath)} - It may be locked by another process'", AlertType.Danger);
 			}
 			catch (Exception ex)
 			{
@@ -158,6 +152,7 @@ public class ModImportService()
 
 	public void ImportOrderFromArchive()
 	{
+		
 		var dialog = new OpenFileDialog
 		{
 			CheckFileExists = true,
@@ -278,11 +273,11 @@ public class ModImportService()
 							messages.Add($"{result.Mods.Count} mod(s)");
 						}
 						var msg = String.Join(", ", messages);
-						DivinityApp.ShowAlert($"Imported {msg}", AlertType.Success, 20);
+						AppServices.Commands.ShowAlert($"Imported {msg}", AlertType.Success, 20);
 					}
 					else
 					{
-						DivinityApp.ShowAlert($"Successfully extracted archive, but no mods or load orders were found", AlertType.Warning, 20);
+						AppServices.Commands.ShowAlert($"Successfully extracted archive, but no mods or load orders were found", AlertType.Warning, 20);
 					}
 				});
 				return Disposable.Empty;
@@ -498,28 +493,28 @@ public class ModImportService()
 					{
 						if (result.Mods.Count > 1)
 						{
-							DivinityApp.ShowAlert($"Successfully imported {total} mods", AlertType.Success, 20);
+							AppServices.Commands.ShowAlert($"Successfully imported {total} mods", AlertType.Success, 20);
 						}
 						else if (total == 1)
 						{
 							var modFileName = result.Mods.First().FileName;
 							var fileNames = String.Join(", ", files.Select(x => Path.GetFileName(x)));
-							DivinityApp.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
+							AppServices.Commands.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
 						}
 						else
 						{
-							DivinityApp.ShowAlert("Skipped importing mod - No .pak file found", AlertType.Success, 20);
+							AppServices.Commands.ShowAlert("Skipped importing mod - No .pak file found", AlertType.Success, 20);
 						}
 					}
 					else
 					{
 						if (total == 0)
 						{
-							DivinityApp.ShowAlert("No mods imported. Does the file contain a .pak?", AlertType.Warning, 60);
+							AppServices.Commands.ShowAlert("No mods imported. Does the file contain a .pak?", AlertType.Warning, 60);
 						}
 						else
 						{
-							DivinityApp.ShowAlert($"Only imported {total}/{result.TotalPaks} mods - Check the log", AlertType.Danger, 60);
+							AppServices.Commands.ShowAlert($"Only imported {total}/{result.TotalPaks} mods - Check the log", AlertType.Danger, 60);
 						}
 					}
 				});
@@ -623,26 +618,26 @@ public class ModImportService()
 						{
 							if (result.Mods.Count > 1)
 							{
-								DivinityApp.ShowAlert($"Successfully imported NexusMods ids for {total} mods", AlertType.Success, 20);
+								AppServices.Commands.ShowAlert($"Successfully imported NexusMods ids for {total} mods", AlertType.Success, 20);
 							}
 							else if (total == 1)
 							{
-								DivinityApp.ShowAlert($"Successfully imported the NexusMods id for '{result.Mods.First().Name}'", AlertType.Success, 20);
+								AppServices.Commands.ShowAlert($"Successfully imported the NexusMods id for '{result.Mods.First().Name}'", AlertType.Success, 20);
 							}
 							else
 							{
-								DivinityApp.ShowAlert("No NexusMods ids found", AlertType.Success, 20);
+								AppServices.Commands.ShowAlert("No NexusMods ids found", AlertType.Success, 20);
 							}
 						}
 						else
 						{
 							if (total == 0)
 							{
-								DivinityApp.ShowAlert("No NexusMods ids found. Does the .zip name contain an id, with a .pak file inside?", AlertType.Warning, 60);
+								AppServices.Commands.ShowAlert("No NexusMods ids found. Does the .zip name contain an id, with a .pak file inside?", AlertType.Warning, 60);
 							}
 							else if (result.Errors.Count > 0)
 							{
-								DivinityApp.ShowAlert($"Encountered some errors fetching ids - Check the log", AlertType.Danger, 60);
+								AppServices.Commands.ShowAlert($"Encountered some errors fetching ids - Check the log", AlertType.Danger, 60);
 							}
 						}
 					});
@@ -772,7 +767,7 @@ public class ModImportService()
 
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					DivinityApp.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15);
+					AppServices.Commands.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15);
 					var dir = Path.GetFullPath(Path.GetDirectoryName(outputPath));
 					if (Directory.Exists(dir))
 					{
@@ -788,7 +783,7 @@ public class ModImportService()
 				{
 					var msg = $"Error writing load order archive '{outputPath}': {ex}";
 					DivinityApp.Log(msg);
-					DivinityApp.ShowAlert(msg, AlertType.Danger);
+					AppServices.Commands.ShowAlert(msg, AlertType.Danger);
 				});
 			}
 
@@ -798,7 +793,7 @@ public class ModImportService()
 		{
 			RxApp.MainThreadScheduler.Schedule(() =>
 			{
-				DivinityApp.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
+				AppServices.Commands.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
 			});
 		}
 

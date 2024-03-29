@@ -347,7 +347,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 				if (selectedMods.Any(x => x.IsEditorMod))
 				{
-					DivinityApp.ShowAlert("Editor mods cannot be deleted with the Mod Manager", AlertType.Warning, 60);
+					AppServices.Commands.ShowAlert("Editor mods cannot be deleted with the Mod Manager", AlertType.Warning, 60);
 				}
 			}
 		}, canExecuteCommands);
@@ -454,16 +454,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						if (i < ActiveMods.Count - 1) text += Environment.NewLine;
 					}
 					Clipboard.SetText(text);
-					DivinityApp.ShowAlert("Copied mod order to clipboard", AlertType.Info, 10);
+					AppServices.Commands.ShowAlert("Copied mod order to clipboard", AlertType.Info, 10);
 				}
 				else
 				{
-					DivinityApp.ShowAlert("Current order is empty", AlertType.Warning, 10);
+					AppServices.Commands.ShowAlert("Current order is empty", AlertType.Warning, 10);
 				}
 			}
 			catch (Exception ex)
 			{
-				DivinityApp.ShowAlert($"Error copying order to clipboard: {ex}", AlertType.Danger, 15);
+				AppServices.Commands.ShowAlert($"Error copying order to clipboard: {ex}", AlertType.Danger, 15);
 			}
 		}, RxApp.MainThreadScheduler));
 
@@ -620,7 +620,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					var modSettingsData = await DivinityModDataLoader.LoadModSettingsFileAsync(e.FullPath);
 					if (ActiveMods.Count > 0 && modSettingsData.ActiveMods.Count <= 1)
 					{
-						DivinityApp.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
+						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
 						RxApp.MainThreadScheduler.Schedule(() =>
 						{
 							//Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Indeterminate;
@@ -1059,13 +1059,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			catch (Exception ex)
 			{
-				DivinityApp.ShowAlert($"Failed to save mod load order to '{outputPath}': {ex.Message}", AlertType.Danger);
+				AppServices.Commands.ShowAlert($"Failed to save mod load order to '{outputPath}': {ex.Message}", AlertType.Danger);
 				result = false;
 			}
 
 			if (result && !skipSaveConfirmation)
 			{
-				DivinityApp.ShowAlert($"Saved mod load order to '{outputPath}'", AlertType.Success, 10);
+				AppServices.Commands.ShowAlert($"Saved mod load order to '{outputPath}'", AlertType.Success, 10);
 			}
 		}
 
@@ -1118,7 +1118,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			tempOrder.Order.AddRange(SelectedModOrder.Order.Where(x => modManager.ModExists(x.UUID)));
 			if (DivinityModDataLoader.ExportLoadOrderToFile(outputPath, tempOrder))
 			{
-				DivinityApp.ShowAlert($"Saved mod load order to '{outputPath}'", AlertType.Success, 10);
+				AppServices.Commands.ShowAlert($"Saved mod load order to '{outputPath}'", AlertType.Success, 10);
 				var updatedOrder = false;
 				var updatedOrderIndex = -1;
 				for (var i = 0; i < ModOrderList.Count; i++)
@@ -1144,7 +1144,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				DivinityApp.ShowAlert($"Failed to save mod load order to '{outputPath}'", AlertType.Danger);
+				AppServices.Commands.ShowAlert($"Failed to save mod load order to '{outputPath}'", AlertType.Danger);
 			}
 		}
 	}
@@ -1186,7 +1186,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					await Observable.Start(() =>
 					{
-						DivinityApp.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15);
+						AppServices.Commands.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15);
 
 						if (DivinityModDataLoader.ExportedSelectedProfile(PathwayData.AppDataProfilesPath, SelectedProfile.UUID))
 						{
@@ -1219,7 +1219,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					var message = $"Problem exporting load order to '{outputPath}'. Is the file locked?";
 					var title = "Mod Order Export Failed";
-					DivinityApp.ShowAlert(message, AlertType.Danger);
+					AppServices.Commands.ShowAlert(message, AlertType.Danger);
 					await DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK));
 				}
 			}
@@ -1227,7 +1227,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				await Observable.Start(() =>
 				{
-					DivinityApp.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
+					AppServices.Commands.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
 				}, RxApp.MainThreadScheduler);
 			}
 		}
@@ -1246,7 +1246,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 						await Observable.Start(() =>
 						{
-							DivinityApp.ShowAlert($"Exported load order to '{SelectedGameMasterCampaign.FilePath}'", AlertType.Success, 15);
+							AppServices.Commands.ShowAlert($"Exported load order to '{SelectedGameMasterCampaign.FilePath}'", AlertType.Success, 15);
 
 							if (DivinityModDataLoader.ExportedSelectedProfile(PathwayData.AppDataProfilesPath, SelectedProfile.UUID))
 							{
@@ -1277,14 +1277,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					else
 					{
 						var message = $"Problem exporting load order to '{SelectedGameMasterCampaign.FilePath}'";
-						DivinityApp.ShowAlert(message, AlertType.Danger);
+						AppServices.Commands.ShowAlert(message, AlertType.Danger);
 						DivinityInteractions.ShowMessageBox.Handle(new(message, "Mod Order Export Failed", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
 					}
 				}
 			}
 			else
 			{
-				DivinityApp.ShowAlert("SelectedGameMasterCampaign is null! Failed to export mod order", AlertType.Danger);
+				AppServices.Commands.ShowAlert("SelectedGameMasterCampaign is null! Failed to export mod order", AlertType.Danger);
 			}
 		}
 
@@ -1394,7 +1394,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			if (!String.IsNullOrEmpty(order.FilePath) && File.Exists(order.FilePath))
 			{
 				RecycleBinHelper.DeleteFile(order.FilePath, false, false);
-				DivinityApp.ShowAlert($"Sent load order '{order.FilePath}' to the recycle bin", AlertType.Warning, 25);
+				AppServices.Commands.ShowAlert($"Sent load order '{order.FilePath}' to the recycle bin", AlertType.Warning, 25);
 			}
 		}
 	}
@@ -1459,7 +1459,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		if (totalRemoved > 0)
 		{
-			DivinityApp.ShowAlert($"Removed {totalRemoved} missing mods from the current order. Save to confirm", AlertType.Warning);
+			AppServices.Commands.ShowAlert($"Removed {totalRemoved} missing mods from the current order. Save to confirm", AlertType.Warning);
 		}
 	}
 
@@ -1486,7 +1486,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 		else
 		{
-			DivinityApp.ShowAlert("Unable to delete mod", AlertType.Danger, 30);
+			AppServices.Commands.ShowAlert("Unable to delete mod", AlertType.Danger, 30);
 		}
 	}
 
@@ -1502,7 +1502,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 		else
 		{
-			DivinityApp.ShowAlert("Unable to delete selected mod(s)", AlertType.Danger, 30);
+			AppServices.Commands.ShowAlert("Unable to delete selected mod(s)", AlertType.Danger, 30);
 		}
 	}
 
@@ -1908,18 +1908,18 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				try
 				{
 					File.WriteAllText(dialog.FileName, outputText);
-					DivinityApp.ShowAlert($"Exported order to '{dialog.FileName}'", AlertType.Success, 20);
+					AppServices.Commands.ShowAlert($"Exported order to '{dialog.FileName}'", AlertType.Success, 20);
 				}
 				catch (Exception ex)
 				{
-					DivinityApp.ShowAlert($"Error exporting mod order to '{dialog.FileName}':\n{ex}", AlertType.Danger);
+					AppServices.Commands.ShowAlert($"Error exporting mod order to '{dialog.FileName}':\n{ex}", AlertType.Danger);
 				}
 			}
 		}
 		else
 		{
 			DivinityApp.Log($"SelectedProfile({SelectedProfile}) SelectedModOrder({SelectedModOrder})");
-			DivinityApp.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
+			AppServices.Commands.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
 		}
 	}
 
@@ -1964,7 +1964,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			else
 			{
 				DivinityApp.Log($"Failed to load order from '{dialog.FileName}'.");
-				DivinityApp.ShowAlert($"No mod order found in save \"{Path.GetFileNameWithoutExtension(dialog.FileName)}\"", AlertType.Danger, 30);
+				AppServices.Commands.ShowAlert($"No mod order found in save \"{Path.GetFileNameWithoutExtension(dialog.FileName)}\"", AlertType.Danger, 30);
 			}
 		}
 		return null;
@@ -2032,30 +2032,30 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						SelectedModOrder.SetOrder(newOrder);
 						if (LoadModOrder(SelectedModOrder))
 						{
-							DivinityApp.ShowAlert($"Successfully overwrote order '{SelectedModOrder.Name}' with with imported order", AlertType.Success, 20);
+							AppServices.Commands.ShowAlert($"Successfully overwrote order '{SelectedModOrder.Name}' with with imported order", AlertType.Success, 20);
 						}
 						else
 						{
-							DivinityApp.ShowAlert($"Failed to reset order to '{dialog.FileName}'", AlertType.Danger, 60);
+							AppServices.Commands.ShowAlert($"Failed to reset order to '{dialog.FileName}'", AlertType.Danger, 60);
 						}
 					}
 					else
 					{
 						AddNewModOrder(newOrder);
 						LoadModOrder(newOrder);
-						DivinityApp.ShowAlert($"Successfully imported order '{newOrder.Name}'", AlertType.Success, 20);
+						AppServices.Commands.ShowAlert($"Successfully imported order '{newOrder.Name}'", AlertType.Success, 20);
 					}
 				}
 				else
 				{
 					AddNewModOrder(newOrder);
 					LoadModOrder(newOrder);
-					DivinityApp.ShowAlert($"Successfully imported order '{newOrder.Name}'", AlertType.Success, 20);
+					AppServices.Commands.ShowAlert($"Successfully imported order '{newOrder.Name}'", AlertType.Success, 20);
 				}
 			}
 			else
 			{
-				DivinityApp.ShowAlert($"Failed to import order from '{dialog.FileName}'", AlertType.Danger, 60);
+				AppServices.Commands.ShowAlert($"Failed to import order from '{dialog.FileName}'", AlertType.Danger, 60);
 			}
 		}
 	}

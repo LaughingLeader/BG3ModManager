@@ -113,7 +113,7 @@ public class PathwaysService : IPathwaysService
 			}
 			else
 			{
-				DivinityApp.ShowAlert("Failed to find %LOCALAPPDATA% folder - This is weird", AlertType.Danger);
+				Locator.Current.GetService<IGlobalCommandsService>()?.ShowAlert("Failed to find %LOCALAPPDATA% folder - This is weird", AlertType.Danger);
 				DivinityApp.Log($"Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify) return a non-existent path?\nResult({Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify)})");
 			}
 

@@ -4,8 +4,11 @@ using NexusModsNET.DataModels.GraphQL.Types;
 
 using ReactiveUI;
 
-namespace ModManager.Interfaces;
-public interface IInteractionService
+using System.Reactive;
+
+namespace ModManager;
+
+public interface IInteractionsService
 {
 	/// <summary>
 	/// Confirm deletion of mods.
@@ -23,6 +26,11 @@ public interface IInteractionService
 	Interaction<DeleteModsRequest, bool> DeleteMods { get; }
 
 	/// <summary>
+	/// Requests the ViewModel to delete all selected mods.
+	/// </summary>
+	Interaction<Unit, bool> DeleteSelectedMods { get; }
+
+	/// <summary>
 	/// Open the mod properties view.
 	/// </summary>
 	Interaction<DivinityModData, bool> OpenModProperties { get; }
@@ -31,6 +39,11 @@ public interface IInteractionService
 	/// Open a view for downloading a Nexus Mods collection.
 	/// </summary>
 	Interaction<NexusGraphCollectionRevision, bool> OpenDownloadCollectionView { get; }
+
+	/// <summary>
+	/// Request a file browser dialog window.
+	/// </summary>
+	Interaction<OpenFileBrowserDialogRequest, OpenFileBrowserDialogResults> OpenFileBrowserDialog { get; }
 
 	/// <summary>
 	/// Request a folder browser dialog window.

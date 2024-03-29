@@ -14,6 +14,7 @@
 		<PackageReference Include="Splat" Version="14.8.12" />
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" Version="1.2.3" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
 		<PackageReference Include="System.IO.Abstractions" Version="21.0.2" />
+		<PackageReference Include="TextCopy" Version="6.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>

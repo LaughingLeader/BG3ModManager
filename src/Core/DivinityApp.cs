@@ -1,6 +1,8 @@
 ﻿using ModManager.Models.Mod;
 using ModManager.Util;
 
+using Splat;
+
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -108,14 +110,12 @@ public static class DivinityApp
 	public static HashSet<DivinityModData> IgnoredMods { get; private set; }
 	public static HashSet<DivinityModData> IgnoredDependencyMods { get; private set; }
 
-	public static DivinityGlobalCommands Commands { get; private set; }
 	public static DivinityGlobalEvents Events { get; private set; }
 
 	static DivinityApp()
 	{
 		IgnoredMods = [];
 		IgnoredDependencyMods = [];
-		Commands = new DivinityGlobalCommands();
 		Events = new DivinityGlobalEvents();
 	}
 
@@ -195,16 +195,22 @@ public static class DivinityApp
 		return Path.Join(paths);
 	}
 
-	public static string GetExePath() => Process.GetCurrentProcess().MainModule.FileName;
+	public static string? GetExePath() => Process.GetCurrentProcess()?.MainModule?.FileName;
 	public static string GetToolboxPath() => GetAppDirectory("Tools", "Toolbox.exe");
 
+	[Obsolete("Use a direct service reference instead")]
 	public static void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0)
 	{
-		DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout)).Subscribe();
+		Locator.Current.GetService<IGlobalCommandsService>()?.ShowAlert(message, alertType, timeout);
 	}
 
+	[Obsolete("Use a direct service reference instead")]
 	public static async Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0)
 	{
-		await DivinityInteractions.ShowAlert.Handle(new ShowAlertData(message, alertType, timeout));
+		var commands = Locator.Current.GetService<IGlobalCommandsService>();
+		if(commands != null)
+		{
+			await commands.ShowAlertAsync(message, alertType, timeout);
+		}
 	}
 }

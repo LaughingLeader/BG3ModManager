@@ -134,7 +134,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 
 		if (validator.GameDataPath != gameDataPath)
 		{
-			await DivinityApp.ShowAlertAsync("Initializing base data...", AlertType.Info);
+			await AppServices.Commands.ShowAlertAsync("Initializing base data...", AlertType.Info);
 			await Task.Run(() =>
 			{
 				validator.Initialize(gameDataPath);
@@ -142,7 +142,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		}
 		else
 		{
-			await DivinityApp.ShowAlertAsync("Validating mod stats...", AlertType.Info, 200);
+			await AppServices.Commands.ShowAlertAsync("Validating mod stats...", AlertType.Info, 200);
 		}
 
 		var results = await Observable.StartAsync(async () =>
@@ -154,7 +154,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		await Observable.Start(() =>
 		{
 			TimeTaken = DateTimeOffset.Now - startTime;
-			DivinityApp.ShowAlert($"Validation complete for {string.Join(";", data.Mods.Select(x => x.DisplayName))}", AlertType.Success, 30);
+			AppServices.Commands.ShowAlert($"Validation complete for {string.Join(";", data.Mods.Select(x => x.DisplayName))}", AlertType.Success, 30);
 		}, RxApp.MainThreadScheduler);
 
 		await DivinityInteractions.OpenValidateStatsResults.Handle(results);

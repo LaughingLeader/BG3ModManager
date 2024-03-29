@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 
+using ModManager.Interfaces;
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
@@ -190,7 +191,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		}
 	}
 
-	public static async Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
+	public async Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
 	{
 		var settings = Locator.Current.GetService<ISettingsService>().ManagerSettings;
 
@@ -264,8 +265,8 @@ public class ModManagerService : ReactiveObject, IModManagerService
 				DivinityApp.Log("=======");
 				DivinityApp.Log($"{String.Join(Environment.NewLine, modLoadingResults.Duplicates.Select(x => x.ToString()))}");
 				DivinityApp.Log("=======");
-				DivinityApp.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
-				await DivinityInteractions.DeleteMods.Handle(new DeleteModsRequest(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
+				_commands.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
+				await _interactions.DeleteMods.Handle(new DeleteModsRequest(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
 			}
 		}
 		//if (projects != null) MergeModLists(ref finalMods, projects, true);
@@ -302,8 +303,14 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	#endregion
 
-	public ModManagerService()
+	private readonly IInteractionsService _interactions;
+	private readonly IGlobalCommandsService _commands;
+
+	public ModManagerService(IInteractionsService interactions, IGlobalCommandsService commands)
 	{
+		_interactions = interactions;
+		_commands = commands;
+
 		_modsConnection = mods.Connect().Publish();
 
 		_modsConnection.Filter(x => x.IsUserMod).Bind(out _userMods).Subscribe();
@@ -324,7 +331,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 		_modsConnection.Connect();
 
-		DivinityInteractions.ToggleModFileNameDisplay.RegisterHandler(interaction =>
+		_interactions.ToggleModFileNameDisplay.RegisterHandler(interaction =>
 		{
 			foreach (var mod in mods.Items)
 			{

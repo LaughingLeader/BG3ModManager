@@ -4,6 +4,7 @@ using ModManager.Models.Mod;
 
 using ReactiveUI.Fody.Helpers;
 
+using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 
 namespace ModManager;
