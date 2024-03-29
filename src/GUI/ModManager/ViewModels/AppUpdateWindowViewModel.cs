@@ -1,11 +1,13 @@
-﻿using AutoUpdaterDotNET;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 
 using ModManager.Util;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using Onova;
+using Onova.Models;
+using Onova.Services;
 
-using System.Reactive.Concurrency;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
@@ -13,16 +15,16 @@ namespace ModManager.ViewModels;
 
 public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 {
-	public UpdateInfoEventArgs UpdateArgs { get; set; }
+	public CheckForUpdatesResult? UpdateArgs { get; set; }
 
 	[Reactive] public bool CanConfirm { get; set; }
 	[Reactive] public bool CanSkip { get; set; }
-	[Reactive] public string SkipButtonText { get; set; }
-	[Reactive] public string UpdateDescription { get; set; }
-	[Reactive] public string UpdateChangelogView { get; set; }
+	[Reactive] public string? SkipButtonText { get; set; }
+	[Reactive] public string? UpdateDescription { get; set; }
+	[Reactive] public string? UpdateChangelogView { get; set; }
 
-	public ICommand ConfirmCommand { get; private set; }
-	public ICommand SkipCommand { get; private set; }
+	public RxCommandUnit ConfirmCommand { get; private set; }
+	public RxCommandUnit SkipCommand { get; private set; }
 
 
 	[GeneratedRegex(@"^\s+$[\r\n]*", RegexOptions.Multiline)]
@@ -30,18 +32,13 @@ public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 
 	private static readonly Regex RemoveEmptyLinesPattern = RemoveEmptyLinesRe();
 
+	private readonly UpdateManager _updateManager;
+
 	private async Task CheckArgsAsync(IScheduler scheduler, CancellationToken token)
 	{
 		string markdownText;
 
-		if (!UpdateArgs.ChangelogURL.EndsWith(".md"))
-		{
-			markdownText = await WebHelper.DownloadUrlAsStringAsync(DivinityApp.URL_CHANGELOG_RAW, CancellationToken.None);
-		}
-		else
-		{
-			markdownText = await WebHelper.DownloadUrlAsStringAsync(UpdateArgs.ChangelogURL, CancellationToken.None);
-		}
+		markdownText = await WebHelper.DownloadUrlAsStringAsync(DivinityApp.URL_CHANGELOG_RAW, CancellationToken.None);
 
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
@@ -51,31 +48,45 @@ public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 				UpdateChangelogView = markdownText;
 			}
 
-			if (UpdateArgs.IsUpdateAvailable)
+			var env = AppServices.Get<IEnvironmentService>()!;
+
+			if (UpdateArgs?.CanUpdate == true)
 			{
-				UpdateDescription = $"{AutoUpdater.AppTitle} {UpdateArgs.CurrentVersion} is now available.{Environment.NewLine}You have version {UpdateArgs.InstalledVersion} installed.";
+				UpdateDescription = $"{env.AppFriendlyName} {UpdateArgs.LastVersion} is now available.{Environment.NewLine}You have version {env.AppVersion} installed.";
 
 				CanConfirm = true;
 				SkipButtonText = "Skip";
-				CanSkip = UpdateArgs.Mandatory?.Value != true;
+				CanSkip = true;
 			}
 			else
 			{
-				UpdateDescription = $"{AutoUpdater.AppTitle} is up-to-date.";
+				UpdateDescription = $"{env.AppFriendlyName} is up-to-date.";
 				CanConfirm = false;
 				CanSkip = true;
 				SkipButtonText = "Close";
 			}
 
-			App.WM.AppUpdate.Toggle(true);
+			IsVisible = true;
 		});
 	}
 
-	public void CheckArgsAndOpen(UpdateInfoEventArgs args)
+	public void CheckArgsAndOpen(CheckForUpdatesResult? args)
 	{
-		if (args == null) return;
 		UpdateArgs = args;
 		RxApp.TaskpoolScheduler.ScheduleAsync(CheckArgsAsync);
+	}
+
+	private async Task RunUpdateAsync(CancellationToken token)
+	{
+		if(UpdateArgs?.LastVersion != null)
+		{
+			await _updateManager.PrepareUpdateAsync(UpdateArgs.LastVersion);
+			_updateManager.LaunchUpdater(UpdateArgs.LastVersion);
+			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+			{
+				desktop.Shutdown();
+			}
+		}
 	}
 
 	public AppUpdateWindowViewModel()
@@ -83,24 +94,17 @@ public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 		CanSkip = true;
 		SkipButtonText = "Close";
 
+		_updateManager = new UpdateManager(
+			new GithubPackageResolver(Locator.Current.GetService<HttpClient>()!,
+			DivinityApp.GITHUB_USER, DivinityApp.GITHUB_REPO, DivinityApp.GITHUB_RELEASE_ASSET),
+			new ZipPackageExtractor());
+
 		var canConfirm = this.WhenAnyValue(x => x.CanConfirm);
-		ConfirmCommand = ReactiveCommand.Create(() =>
-		{
-			try
-			{
-				if (AutoUpdater.DownloadUpdate(UpdateArgs))
-				{
-					System.Windows.Application.Current.Shutdown();
-				}
-			}
-			catch (Exception ex)
-			{
-				App.WM.Main.Window.DisplayError($"Error occurred while updating:\n{ex}");
-				App.WM.AppUpdate.Toggle(false);
-			}
-		}, canConfirm, RxApp.MainThreadScheduler);
+		ConfirmCommand = ReactiveCommand.CreateFromTask(RunUpdateAsync, canConfirm, RxApp.MainThreadScheduler);
 
 		var canSkip = this.WhenAnyValue(x => x.CanSkip);
-		SkipCommand = ReactiveCommand.Create(() => App.WM.AppUpdate.Toggle(false), canSkip);
+		SkipCommand = ReactiveCommand.Create(() => {
+			IsVisible = false;
+		}, canSkip);
 	}
 }

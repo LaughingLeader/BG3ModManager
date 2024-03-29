@@ -6,19 +6,11 @@ using ModManager.Models.App;
 using ModManager.Models.Extender;
 using ModManager.Models.Settings;
 using ModManager.Util;
+using ModManager.ViewModels.Main;
 
 using Newtonsoft.Json;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.ComponentModel;
-using System.IO;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Windows;
-using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
@@ -56,9 +48,16 @@ public class GameLaunchParamEntry : ReactiveObject
 	}
 }
 
-public class SettingsWindowViewModel : BaseWindowViewModel
+public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
 {
-	private readonly MainWindowViewModel _main;
+	#region IClosableViewModel/IRoutableViewModel
+	public string UrlPathSegment => "settings";
+	public IScreen HostScreen { get; }
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
+	private readonly IInteractionsService _interactions;
 
 	public ObservableCollectionExtended<ScriptExtenderUpdateVersion> ScriptExtenderUpdates { get; private set; }
 	[Reactive] public ScriptExtenderUpdateVersion TargetVersion { get; set; }
@@ -68,27 +67,24 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 	[Reactive] public Hotkey SelectedHotkey { get; set; }
 	[Reactive] public bool HasFetchedManifest { get; set; }
 
-	[ObservableAsProperty] public bool IsVisible { get; }
 	[ObservableAsProperty] public bool ExtenderTabIsVisible { get; }
 	[ObservableAsProperty] public bool KeybindingsTabIsVisible { get; }
-	[ObservableAsProperty] public Visibility DeveloperModeVisibility { get; }
-	[ObservableAsProperty] public Visibility ExtenderTabVisibility { get; }
-	[ObservableAsProperty] public Visibility ExtenderUpdaterVisibility { get; }
+	[ObservableAsProperty] public bool DeveloperModeVisibility { get; }
+	[ObservableAsProperty] public bool ExtenderTabVisibility { get; }
+	[ObservableAsProperty] public bool ExtenderUpdaterVisibility { get; }
 	[ObservableAsProperty] public string ResetSettingsCommandToolTip { get; }
 	[ObservableAsProperty] public string ExtenderSettingsFilePath { get; }
 	[ObservableAsProperty] public string ExtenderUpdaterSettingsFilePath { get; }
 
-	public ICommand SaveSettingsCommand { get; private set; }
-	public ICommand OpenSettingsFolderCommand { get; private set; }
-	public ICommand ExportExtenderSettingsCommand { get; private set; }
-	public ICommand ExportExtenderUpdaterSettingsCommand { get; private set; }
-	public ICommand ResetSettingsCommand { get; private set; }
-	public ICommand ClearCacheCommand { get; private set; }
-	public ICommand AddLaunchParamCommand { get; private set; }
-	public ICommand ClearLaunchParamsCommand { get; private set; }
-	public ICommand AssociateWithNXMCommand { get; private set; }
-
-	public ReactiveCommand<DependencyPropertyChangedEventArgs, Unit> OnWindowShownCommand { get; private set; }
+	public RxCommandUnit SaveSettingsCommand { get; }
+	public RxCommandUnit OpenSettingsFolderCommand { get; }
+	public RxCommandUnit ExportExtenderSettingsCommand { get; }
+	public RxCommandUnit ExportExtenderUpdaterSettingsCommand { get; }
+	public RxCommandUnit ResetSettingsCommand { get; }
+	public RxCommandUnit ClearCacheCommand { get; }
+	public ReactiveCommand<string, Unit> AddLaunchParamCommand { get; }
+	public RxCommandUnit ClearLaunchParamsCommand { get; }
+	public RxCommandUnit AssociateWithNXMCommand { get; }
 
 	private readonly ScriptExtenderUpdateVersion _emptyVersion = new();
 
@@ -168,11 +164,11 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 		}
 	}
 
-	private void OnWindowVisibilityChanged(DependencyPropertyChangedEventArgs e)
+	private void OnVisibilityChanged(bool b)
 	{
 		_manifestFetchingTask?.Dispose();
 
-		if ((bool)e.NewValue == true)
+		if (b)
 		{
 			_manifestFetchingTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromMilliseconds(100), async (sch, cts) => await GetExtenderUpdatesAsync(ExtenderUpdaterSettings.UpdateChannel));
 			//FetchLatestManifestData(ExtenderUpdaterSettings.UpdateChannel);
@@ -234,7 +230,7 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 			File.WriteAllText(outputFile, contents);
 			AppServices.Commands.ShowAlert($"Saved Script Extender Updater settings to '{outputFile}'", AlertType.Success, 20);
 
-			_main.UpdateExtender(true);
+			ViewModelLocator.Main.UpdateExtender(true);
 
 			return true;
 		}
@@ -255,11 +251,11 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 				var exeName = "";
 				if (!DivinityRegistryHelper.IsGOG)
 				{
-					exeName = Path.GetFileName(_main.AppSettings.DefaultPathways.Steam.ExePath);
+					exeName = Path.GetFileName(AppServices.Settings.AppSettings.DefaultPathways.Steam.ExePath);
 				}
 				else
 				{
-					exeName = Path.GetFileName(_main.AppSettings.DefaultPathways.GOG.ExePath);
+					exeName = Path.GetFileName(AppServices.Settings.AppSettings.DefaultPathways.GOG.ExePath);
 				}
 
 				var exe = Path.Join(Settings.GameExecutablePath, exeName);
@@ -270,8 +266,6 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 			}
 		}
 		catch (Exception) { }
-
-		_main.SaveSettings();
 
 		if (IsVisible)
 		{
@@ -290,7 +284,7 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 					ExportExtenderUpdaterSettings();
 					break;
 				case SettingsWindowTab.Keybindings:
-					var success = _main.Keys.SaveKeybindings(out var msg);
+					var success = ViewModelLocator.Main.Keys.SaveKeybindings(out var msg);
 					if (!success)
 					{
 						AppServices.Commands.ShowAlert(msg, AlertType.Danger);
@@ -302,10 +296,8 @@ public class SettingsWindowViewModel : BaseWindowViewModel
 					break;
 			}
 		}
-		else
-		{
-			_main.SaveSettings();
-		}
+
+		AppServices.Settings.TrySaveAll(out _);
 	}
 
 	private static readonly string _associateNXMMessage = @"This will allow updating mods via the ""Mod Manager Download"" button on the Nexus Mods website.
@@ -315,11 +307,11 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 
 	private void AssociateWithNXM()
 	{
-		DivinityInteractions.ShowMessageBox.Handle(new ShowMessageBoxData(_associateNXMMessage, "Associate BG3MM with nxm:// links?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No)).Subscribe(result =>
+		_interactions.ShowMessageBox.Handle(new(_associateNXMMessage, "Associate BG3MM with nxm:// links?", InteractionMessageBoxType.Confirmation)).Subscribe(result =>
 		{
-			if (result == MessageBoxResult.Yes)
+			if (result && DivinityApp.GetExePath() is string exePath)
 			{
-				if (DivinityRegistryHelper.AssociateWithNXMProtocol(DivinityApp.GetExePath()))
+				if (DivinityRegistryHelper.AssociateWithNXMProtocol(exePath))
 				{
 					UpdateSettings.IsAssociatedWithNXM = true;
 					AppServices.Commands.ShowAlert("nxm:// protocol assocation successfully set");
@@ -333,15 +325,22 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		});
 	}
 
-	public SettingsWindowViewModel(MainWindowViewModel main)
+	public SettingsWindowViewModel(IInteractionsService interactions, IScreen? host = null)
 	{
-		_main = main;
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
+		CloseCommand = this.CreateCloseCommand();
+
+		_interactions = interactions;
+
 		TargetVersion = _emptyVersion;
 
-		_main.WhenAnyValue(x => x.Settings).BindTo(this, x => x.Settings);
-		_main.WhenAnyValue(x => x.Settings.UpdateSettings).BindTo(this, x => x.UpdateSettings);
-		_main.WhenAnyValue(x => x.Settings.ExtenderSettings).BindTo(this, x => x.ExtenderSettings);
-		_main.WhenAnyValue(x => x.Settings.ExtenderUpdaterSettings).BindTo(this, x => x.ExtenderUpdaterSettings);
+		if(HostScreen is MainWindowViewModel main)
+		{
+			main.WhenAnyValue(x => x.Settings).BindTo(this, x => x.Settings);
+			main.WhenAnyValue(x => x.Settings.UpdateSettings).BindTo(this, x => x.UpdateSettings);
+			main.WhenAnyValue(x => x.Settings.ExtenderSettings).BindTo(this, x => x.ExtenderSettings);
+			main.WhenAnyValue(x => x.Settings.ExtenderUpdaterSettings).BindTo(this, x => x.ExtenderUpdaterSettings);
+		}
 
 		ScriptExtenderUpdates = [_emptyVersion];
 		LaunchParams =
@@ -373,7 +372,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		ExtenderSettings.WhenAnyValue(x => x.DeveloperMode).Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.DeveloperModeVisibility);
 
 		this.WhenAnyValue(x => x.ExtenderUpdaterSettings.UpdaterIsAvailable)
-			.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.ExtenderTabVisibility);
+			.ToUIProperty(this, x => x.ExtenderTabVisibility);
 
 		this.WhenAnyValue(x => x.ExtenderUpdaterSettings.UpdaterIsAvailable,
 			x => x.Settings.DebugModeEnabled,
@@ -418,13 +417,13 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		ResetSettingsCommand = ReactiveCommand.Create(() =>
 		{
 			var tabName = TabToName(SelectedTabIndex);
-			DivinityInteractions.ShowMessageBox.Handle(new ShowMessageBoxData(
+			_interactions.ShowMessageBox.Handle(new(
 				$"Reset {tabName} to Default?\nCurrent settings will be lost.",
 				$"Confirm {tabName} Reset",
-				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No))
+				InteractionMessageBoxType.Warning))
 			.Subscribe(result =>
 			{
-				if (result == MessageBoxResult.Yes)
+				if (result)
 				{
 					switch (SelectedTabIndex)
 					{
@@ -438,7 +437,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 							Settings.ExtenderUpdaterSettings.SetToDefault();
 							break;
 						case SettingsWindowTab.Keybindings:
-							_main.Keys.SetToDefault();
+							ViewModelLocator.Main.Keys.SetToDefault();
 							break;
 						case SettingsWindowTab.Advanced:
 							Settings.DebugModeEnabled = false;
@@ -452,13 +451,13 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 
 		ClearCacheCommand = ReactiveCommand.Create(() =>
 		{
-			DivinityInteractions.ShowMessageBox.Handle(new ShowMessageBoxData(
+			_interactions.ShowMessageBox.Handle(new(
 				$"Delete local mod cache?\nThis cannot be undone.",
 				"Confirm Delete Cache",
-				MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No))
+				InteractionMessageBoxType.Warning))
 			.Subscribe(result =>
 			{
-				if (result == MessageBoxResult.Yes)
+				if (result)
 				{
 					try
 					{
@@ -500,7 +499,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 			Settings.GameLaunchParams = "";
 		});
 
-		OnWindowShownCommand = ReactiveCommand.Create<DependencyPropertyChangedEventArgs>(OnWindowVisibilityChanged);
+		this.WhenAnyValue(x => x.IsVisible).Subscribe(OnVisibilityChanged);
 
 		AssociateWithNXMCommand = ReactiveCommand.Create(AssociateWithNXM);
 	}

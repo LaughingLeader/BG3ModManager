@@ -7,7 +7,7 @@ using Avalonia.ReactiveUI;
 using FluentAvalonia.Styling;
 using ModManager.Models.View;
 
-namespace ModManager;
+namespace ModManager.Views.StatsValidator;
 
 public partial class StatsValidatorFileEntryView : ReactiveUserControl<StatsValidatorFileResults>
 {

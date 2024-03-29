@@ -1,41 +1,43 @@
-﻿using DynamicData.Binding;
+﻿using Avalonia.Media.Imaging;
+
+using DynamicData.Binding;
 
 using ModManager.Models.NexusMods;
 using ModManager.Util;
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace ModManager.ViewModels;
 
-public class CollectionDownloadWindowViewModel : BaseWindowViewModel
+public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
 {
-	[Reactive] public NexusModsCollectionData Data { get; private set; }
+	#region IClosableViewModel/IRoutableViewModel
+	public string UrlPathSegment => "collectiondownload";
+	public IScreen HostScreen { get; }
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
+	[Reactive] public NexusModsCollectionData? Data { get; private set; }
 	[Reactive] public bool IsCardView { get; set; }
 
 	public ObservableCollectionExtended<NexusModsCollectionModData> Mods { get; }
 
 	[ObservableAsProperty] public string Title { get; }
-	[ObservableAsProperty] public Visibility AuthorAvatarVisibility { get; }
-	[ObservableAsProperty] public BitmapImage AuthorAvatar { get; }
-	[ObservableAsProperty] public Visibility GridViewVisibility { get; }
-	[ObservableAsProperty] public Visibility CardViewVisibility { get; }
+	[ObservableAsProperty] public Uri? AuthorAvatarUri { get; }
+	[ObservableAsProperty] public bool AuthorAvatarVisibility { get; }
+	[ObservableAsProperty] public bool GridViewVisibility { get; }
+	[ObservableAsProperty] public bool CardViewVisibility { get; }
 
-	public ICommand SelectAllCommand { get; }
-	public ICommand SetGridViewCommand { get; }
-	public ICommand SetCardViewCommand { get; }
-	public ICommand EnableAllCommand { get; }
-	public ICommand DisableAllCommand { get; }
-	public ICommand ConfirmCommand { get; set; }
-	public ICommand CancelCommand { get; set; }
+	public ReactiveCommand<bool, Unit> SelectAllCommand { get; }
+	public RxCommandUnit SetGridViewCommand { get; }
+	public RxCommandUnit SetCardViewCommand { get; }
+	public RxCommandUnit EnableAllCommand { get; }
+	public RxCommandUnit DisableAllCommand { get; }
+	public RxCommandUnit ConfirmCommand { get; set; }
+	public RxCommandUnit CancelCommand { get; set; }
 
 	public void Load(NexusGraphCollectionRevision collectionRevision)
 	{
@@ -51,10 +53,9 @@ public class CollectionDownloadWindowViewModel : BaseWindowViewModel
 		this.RaisePropertyChanged("Mods");
 	}
 
-	private static string ToTitleText(ValueTuple<string, string> x)
+	private static string ToTitleText(string? name, string? author)
 	{
-		var text = x.Item1;
-		var author = x.Item2;
+		var text = name ?? string.Empty;
 		if (!String.IsNullOrEmpty(author))
 		{
 			text += " by " + author;
@@ -70,29 +71,35 @@ public class CollectionDownloadWindowViewModel : BaseWindowViewModel
 		}
 	}
 
-	public CollectionDownloadWindowViewModel()
+	public CollectionDownloadWindowViewModel(IScreen? host = null)
 	{
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
+		CloseCommand = this.CreateCloseCommand();
+		Title = "Collection Downloader";
+
 		Mods = [];
 
-		this.WhenAnyValue(x => x.Data.Name, x => x.Data.Author).Select(ToTitleText).ToUIProperty(this, x => x.Title);
+		var whenData = this.WhenAnyValue(x => x.Data).WhereNotNull();
+		whenData.Select(x => ToTitleText(x.Name, x.Author)).ToUIProperty(this, x => x.Title);
+		whenData.Select(x => x.AuthorAvatarUrl).ToUIProperty(this, x => x.AuthorAvatarUri);
+		this.WhenAnyValue(x => x.AuthorAvatarUri).Select(x => x.IsValid()).ToUIProperty(this, x => x.AuthorAvatarVisibility);
 
-		var whenAvatar = this.WhenAnyValue(x => x.Data.AuthorAvatarUrl);
-		whenAvatar.Select(x => x != null ? Visibility.Visible : Visibility.Collapsed).ToUIProperty(this, x => x.AuthorAvatarVisibility);
-		whenAvatar.Select(PropertyHelpers.UriToImage).ToUIProperty(this, x => x.AuthorAvatar);
-
-		this.WhenAnyValue(x => x.IsCardView).Select(PropertyConverters.BoolToVisibilityReversed).ToUIProperty(this, x => x.GridViewVisibility, Visibility.Visible);
-		this.WhenAnyValue(x => x.IsCardView).Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.CardViewVisibility, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.IsCardView).Select(b => !b).ToUIProperty(this, x => x.GridViewVisibility, true);
+		this.WhenAnyValue(x => x.IsCardView).ToUIProperty(this, x => x.CardViewVisibility);
 
 		SelectAllCommand = ReactiveCommand.Create<bool>(b =>
 		{
-			foreach (var mod in Data.Mods.Items)
+			if(Data?.Mods != null)
 			{
-				mod.IsSelected = b;
+				foreach (var mod in Data.Mods.Items)
+				{
+					mod.IsSelected = b;
+				}
 			}
-		});
+		}, this.WhenAnyValue(x => x.Data).Select(x => x != null));
 
-		SetGridViewCommand = ReactiveCommand.Create(() => IsCardView = false);
-		SetCardViewCommand = ReactiveCommand.Create(() => IsCardView = true);
+		SetGridViewCommand = ReactiveCommand.Create(() => { IsCardView = false; });
+		SetCardViewCommand = ReactiveCommand.Create(() => { IsCardView = true; });
 		EnableAllCommand = ReactiveCommand.Create(() => SelectAll(true));
 		DisableAllCommand = ReactiveCommand.Create(() => SelectAll(false));
 	}

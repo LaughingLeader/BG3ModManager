@@ -1,5 +1,4 @@
-﻿using ModManager.Interfaces;
-using ModManager.Services;
+﻿using ModManager.Services;
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;

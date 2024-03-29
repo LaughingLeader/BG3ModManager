@@ -1,6 +1,5 @@
 ﻿using DynamicData;
 
-using ModManager.Interfaces;
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;

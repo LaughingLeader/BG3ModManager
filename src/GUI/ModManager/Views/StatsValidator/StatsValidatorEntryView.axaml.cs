@@ -6,7 +6,7 @@ using Avalonia.ReactiveUI;
 
 using ModManager.Models.View;
 
-namespace ModManager;
+namespace ModManager.Views.StatsValidator;
 
 public partial class StatsValidatorEntryView : ReactiveUserControl<StatsValidatorErrorEntry>
 {

@@ -1,5 +1,4 @@
-﻿using ModManager.Interfaces;
-using ModManager.Models.Mod;
+﻿using ModManager.Models.Mod;
 using ModManager.Util;
 
 using ReactiveUI;

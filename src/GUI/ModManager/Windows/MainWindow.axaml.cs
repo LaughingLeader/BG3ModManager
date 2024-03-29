@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 using ModManager.ViewModels.Main;
 
-namespace ModManager;
+namespace ModManager.Windows;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {

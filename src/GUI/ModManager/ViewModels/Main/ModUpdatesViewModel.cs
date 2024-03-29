@@ -3,8 +3,6 @@
 using ModManager.Models.Mod;
 using ModManager.Models.Updates;
 
-using Ookii.Dialogs.Wpf;
-
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -21,9 +19,9 @@ namespace ModManager.ViewModels.Main;
 
 public class CopyModUpdatesTask
 {
-	public List<DivinityModUpdateData> Updates { get; set; }
-	public string DocumentsFolder { get; set; }
-	public string ModPakFolder { get; set; }
+	public List<DivinityModUpdateData>? Updates { get; set; }
+	public string? DocumentsFolder { get; set; }
+	public string? ModPakFolder { get; set; }
 	public int TotalProcessed { get; set; }
 }
 
@@ -50,8 +48,8 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 	[ObservableAsProperty] public bool AllSelected { get; }
 	[ObservableAsProperty] public int TotalUpdates { get; }
 
-	public ICommand UpdateModsCommand { get; }
-	public ICommand ToggleSelectCommand { get; }
+	public RxCommandUnit UpdateModsCommand { get; }
+	public ReactiveCommand<bool, Unit> ToggleSelectCommand { get; }
 
 	public Action<bool> CloseView { get; set; }
 
@@ -73,23 +71,15 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 		}
 	}
 
-	public void UpdateSelectedMods()
+	public async void UpdateSelectedMods()
 	{
 		var documentsFolder = AppServices.Pathways.Data.AppDataGameFolder;
 		var modPakFolder = AppServices.Pathways.Data.AppDataModsPath;
 
-		using var dialog = new TaskDialog()
-		{
-			Buttons = {
-				new TaskDialogButton(ButtonType.Yes),
-				new TaskDialogButton(ButtonType.No)
-			},
-			WindowTitle = "Update Mods?",
-			Content = "Download / copy updates? Previous pak files will be moved to the Recycle Bin.",
-			MainIcon = TaskDialogIcon.Warning
-		};
-		var result = dialog.ShowDialog(App.WM.Main.Window);
-		if (result.ButtonType == ButtonType.Yes)
+		var result = await AppServices.Interactions.ShowMessageBox.Handle(new(
+			"Download / copy updates? Previous pak files will be moved to the Recycle Bin.",
+			"Update Mods?", InteractionMessageBoxType.Confirmation));
+		if (result)
 		{
 			var updates = Mods.Items.Where(x => x.IsSelected).ToList();
 

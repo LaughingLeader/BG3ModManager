@@ -1,5 +1,4 @@
-﻿using AdonisUI;
-
+﻿
 using ModManager.Windows;
 
 using ReactiveUI;

@@ -44,13 +44,13 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 
 	[ObservableAsProperty] public bool AnySelected { get; }
 	[ObservableAsProperty] public bool AllSelected { get; }
-	[ObservableAsProperty] public string SelectAllTooltip { get; }
-	[ObservableAsProperty] public string Title { get; }
-	[ObservableAsProperty] public Visibility RemoveFromLoadOrderVisibility { get; }
+	[ObservableAsProperty] public string? SelectAllTooltip { get; }
+	[ObservableAsProperty] public string? Title { get; }
+	[ObservableAsProperty] public bool RemoveFromLoadOrderVisibility { get; }
 
 	public RxCommandUnit SelectAllCommand { get; private set; }
 
-	public event EventHandler<FileDeletionCompleteEventArgs> FileDeletionComplete;
+	public event EventHandler<FileDeletionCompleteEventArgs>? FileDeletionComplete;
 
 	public override async Task<bool> Run(CancellationToken token)
 	{
@@ -58,7 +58,7 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 
 		await UpdateProgress($"Confirming deletion...", "", 0d);
 
-		var result = await DivinityInteractions.ConfirmModDeletion.Handle(new DeleteFilesViewConfirmationData { Total = targetFiles.Count, PermanentlyDelete = PermanentlyDelete, Token = token });
+		var result = await AppServices.Interactions.ConfirmModDeletion.Handle(new(targetFiles.Count, PermanentlyDelete, token));
 		if (result)
 		{
 			var eventArgs = new FileDeletionCompleteEventArgs()
@@ -100,7 +100,7 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 				await UpdateProgress("", "", ProgressValue + progressInc);
 			}
 			await UpdateProgress("", "", 1d);
-			await Task.Delay(500);
+			await Task.Delay(500, token);
 			RxApp.MainThreadScheduler.Schedule(() =>
 			{
 				FileDeletionComplete?.Invoke(this, eventArgs);
@@ -125,18 +125,14 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 		}
 	}
 
-	private bool IsClosingAllowed(bool isDeletingDupes, int totalFiles) => !isDeletingDupes || totalFiles <= 0;
-
-	public DeleteFilesViewModel(IScreen hostScreen)
+	public DeleteFilesViewModel(IScreen? host = null) : base()
 	{
-		HostScreen = hostScreen ?? Locator.Current.GetService<IScreen>();
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 
 		RemoveFromLoadOrder = true;
 		PermanentlyDelete = false;
 
-		//this.WhenAnyValue(x => x.IsDeletingDuplicates, x => x.Files.Count).Select(x => IsClosingAllowed(x.Item1, x.Item2)).BindTo(this, x => x.CanClose);
-
-		this.WhenAnyValue(x => x.IsDeletingDuplicates).Select(PropertyConverters.BoolToVisibilityReversed).ToUIProperty(this, x => x.RemoveFromLoadOrderVisibility);
+		this.WhenAnyValue(x => x.IsDeletingDuplicates).ToUIProperty(this, x => x.RemoveFromLoadOrderVisibility);
 		this.WhenAnyValue(x => x.IsDeletingDuplicates).Select(b => !b ? "Files to Delete" : "Duplicate Mods to Delete").ToUIProperty(this, x => x.Title);
 
 		var filesChanged = Files.ToObservableChangeSet().AutoRefresh(x => x.IsSelected).ToCollection().Throttle(TimeSpan.FromMilliseconds(50)).ObserveOn(RxApp.MainThreadScheduler);

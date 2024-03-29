@@ -5,7 +5,7 @@ using Avalonia.ReactiveUI;
 
 using ModManager.ViewModels.Main;
 
-namespace ModManager;
+namespace ModManager.Views.Main;
 
 public partial class DeleteFilesView : ReactiveUserControl<DeleteFilesViewModel>
 {

@@ -3,38 +3,38 @@
 using ModManager.Models.Mod;
 using ModManager.Util;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.ComponentModel;
-using System.IO;
-using System.Reactive.Linq;
-using System.Windows;
-using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public class ModPropertiesWindowViewModel : BaseWindowViewModel
+public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
 {
-	[Reactive] public string Title { get; set; }
+	#region IClosableViewModel/IRoutableViewModel
+	public string UrlPathSegment => "modproperties";
+	public IScreen HostScreen { get; }
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
+	[Reactive] public string? Title { get; set; }
 	[Reactive] public bool IsActive { get; set; }
 	[Reactive] public bool Locked { get; set; }
 	[Reactive] public bool HasChanges { get; private set; }
-	[Reactive] public DivinityModData Mod { get; set; }
-	[Reactive] public string Notes { get; set; }
-	[Reactive] public string GitHub { get; set; }
+	[Reactive] public DivinityModData? Mod { get; set; }
+	[Reactive] public string? Notes { get; set; }
+	[Reactive] public string? GitHub { get; set; }
 	[Reactive] public long NexusModsId { get; set; }
 	[Reactive] public long SteamWorkshopId { get; set; }
 
-	[ObservableAsProperty] public string ModType { get; }
-	[ObservableAsProperty] public string ModSizeText { get; }
-	[ObservableAsProperty] public string ModFilePath { get; }
+	[ObservableAsProperty] public string? ModType { get; }
+	[ObservableAsProperty] public string? ModSizeText { get; }
+	[ObservableAsProperty] public string? ModFilePath { get; }
 	[ObservableAsProperty] public bool IsEditorMod { get; }
-	[ObservableAsProperty] public Visibility GitHubPlaceholderLabelVisibility { get; }
+	[ObservableAsProperty] public bool GitHubPlaceholderLabelVisibility { get; }
 
-	public ICommand OKCommand { get; set; }
-	public ICommand CancelCommand { get; set; }
-	public ICommand ApplyCommand { get; }
+	public RxCommandUnit OKCommand { get; set; }
+	public RxCommandUnit CancelCommand { get; set; }
+	public RxCommandUnit ApplyCommand { get; }
 
 	public void SetMod(DivinityModData mod)
 	{
@@ -69,7 +69,7 @@ public class ModPropertiesWindowViewModel : BaseWindowViewModel
 
 	public void Apply()
 	{
-		if (Mod.ModManagerConfig == null) throw new NullReferenceException($"ModManagerConfig is null for mod ({Mod})");
+		if (Mod?.ModManagerConfig == null) throw new NullReferenceException($"ModManagerConfig is null for mod ({Mod})");
 		var modConfigService = AppServices.Get<ISettingsService>().ModConfig;
 
 		if (String.IsNullOrEmpty(Mod.ModManagerConfig.Id)) Mod.ModManagerConfig.Id = Mod.UUID;
@@ -123,8 +123,11 @@ public class ModPropertiesWindowViewModel : BaseWindowViewModel
 		return "0 bytes";
 	}
 
-	public ModPropertiesWindowViewModel()
+	public ModPropertiesWindowViewModel(IScreen? host = null)
 	{
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
+		CloseCommand = this.CreateCloseCommand();
+
 		Title = "Mod Properties";
 
 		var whenModSet = this.WhenAnyValue(x => x.Mod).WhereNotNull();
@@ -147,13 +150,14 @@ public class ModPropertiesWindowViewModel : BaseWindowViewModel
 			nameof(Notes),
 		};
 
-		whenConfig.Where(e => autoSaveProperties.Contains(e.EventArgs.PropertyName)).Subscribe(e =>
+		whenConfig.Where(e => e.EventArgs.PropertyName.IsValid() && autoSaveProperties.Contains(e.EventArgs.PropertyName))
+			.Subscribe(e =>
 		{
 			if (IsActive && !Locked) HasChanges = true;
 		});
 
-		this.WhenAnyValue(x => x.GitHub).Select(x => PropertyConverters.StringToVisibilityReversed(x, Visibility.Hidden))
-			.ToUIProperty(this, x => x.GitHubPlaceholderLabelVisibility, Visibility.Visible);
+		this.WhenAnyValue(x => x.GitHub).Select(x => !x.IsValid())
+			.ToUIProperty(this, x => x.GitHubPlaceholderLabelVisibility);
 
 		ApplyCommand = ReactiveCommand.Create(Apply, this.WhenAnyValue(x => x.HasChanges));
 		/*whenConfig.Where(e => autoSaveProperties.Contains(e.EventArgs.PropertyName))

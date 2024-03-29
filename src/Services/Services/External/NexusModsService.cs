@@ -1,7 +1,6 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using ModManager.Interfaces;
 using ModManager.Models.Mod;
 using ModManager.Models.NexusMods;
 using ModManager.Models.NexusMods.NXM;

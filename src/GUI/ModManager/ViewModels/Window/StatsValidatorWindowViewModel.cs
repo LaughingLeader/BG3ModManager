@@ -21,18 +21,28 @@ using System.Reactive.Linq;
 using System.Windows;
 
 namespace ModManager.ViewModels;
-public class StatsValidatorWindowViewModel : BaseWindowViewModel
+public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
 {
-	[Reactive] public DivinityModData Mod { get; set; }
-	[Reactive] public string OutputText { get; private set; }
+	#region IClosableViewModel/IRoutableViewModel
+	public string UrlPathSegment => "statsvalidator";
+	public IScreen HostScreen { get; }
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
+	private readonly IInteractionsService _interactions;
+	private readonly IStatsValidatorService _validator;
+
+	[Reactive] public DivinityModData? Mod { get; set; }
+	[Reactive] public string? OutputText { get; private set; }
 	[Reactive] public TimeSpan TimeTaken { get; private set; }
 
 	public ObservableCollectionExtended<StatsValidatorFileResults> Entries { get; }
 
-	[ObservableAsProperty] public string ModName { get; }
-	[ObservableAsProperty] public string TimeTakenText { get; }
-	[ObservableAsProperty] public Visibility HasTimeTakenText { get; }
-	[ObservableAsProperty] public Visibility LockScreenVisibility { get; }
+	[ObservableAsProperty] public string? ModName { get; }
+	[ObservableAsProperty] public string? TimeTakenText { get; }
+	[ObservableAsProperty] public bool HasTimeTakenText { get; }
+	[ObservableAsProperty] public bool LockScreenVisibility { get; }
 
 	public ReactiveCommand<DivinityModData, Unit> ValidateCommand { get; }
 	public RxCommandUnit CancelValidateCommand { get; }
@@ -128,16 +138,15 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 	private async Task StartValidationAsyncImpl(ValidateModStatsRequest data)
 	{
 		var gameDataPath = AppServices.Settings.ManagerSettings.GameDataPath;
-		var validator = AppServices.Get<IStatsValidatorService>();
 
 		DateTimeOffset startTime = DateTimeOffset.Now;
 
-		if (validator.GameDataPath != gameDataPath)
+		if (_validator.GameDataPath != gameDataPath)
 		{
 			await AppServices.Commands.ShowAlertAsync("Initializing base data...", AlertType.Info);
 			await Task.Run(() =>
 			{
-				validator.Initialize(gameDataPath);
+				_validator.Initialize(gameDataPath);
 			}, data.Token);
 		}
 		else
@@ -147,7 +156,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 
 		var results = await Observable.StartAsync(async () =>
 		{
-			return await validator.ValidateModsAsync(data.Mods, data.Token);
+			return await _validator.ValidateModsAsync(data.Mods, data.Token);
 			//eturn await ModUtils.ValidateStatsAsync(interaction.Input.Mods, AppServices.Settings.ManagerSettings.GameDataPath, interaction.Input.Token);
 		}, RxApp.TaskpoolScheduler);
 
@@ -157,7 +166,7 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 			AppServices.Commands.ShowAlert($"Validation complete for {string.Join(";", data.Mods.Select(x => x.DisplayName))}", AlertType.Success, 30);
 		}, RxApp.MainThreadScheduler);
 
-		await DivinityInteractions.OpenValidateStatsResults.Handle(results);
+		await _interactions.OpenValidateStatsResults.Handle(results);
 	}
 
 	private IObservable<Unit> StartValidationAsync(DivinityModData mod)
@@ -172,25 +181,31 @@ public class StatsValidatorWindowViewModel : BaseWindowViewModel
 		return time.Humanize(1, CultureInfo.CurrentCulture, TimeUnit.Second, TimeUnit.Second).ApplyCase(LetterCasing.Title);
 	}
 
-	public StatsValidatorWindowViewModel()
+	public StatsValidatorWindowViewModel(IInteractionsService interactions, IStatsValidatorService statsValidator, IScreen? host = null)
 	{
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
+		CloseCommand = this.CreateCloseCommand();
+
+		_interactions = interactions;
+		_validator = statsValidator;
+
 		Entries = [];
 
-		this.WhenAnyValue(x => x.Mod).WhereNotNull().Select(x => x.DisplayName).ToUIProperty(this, x => x.ModName);
+		this.WhenAnyValue(x => x.Mod).WhereNotNull().Select(x => x.DisplayName).ToUIProperty(this, x => x.ModName, "");
 		this.WhenAnyValue(x => x.TimeTaken).Select(TimeTakenToText).ToUIProperty(this, x => x.TimeTakenText, "");
-		this.WhenAnyValue(x => x.TimeTakenText).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.HasTimeTakenText, Visibility.Collapsed);
+		this.WhenAnyValue(x => x.TimeTakenText).Select(Validators.IsValid).ToUIProperty(this, x => x.HasTimeTakenText);
 
 		var canValidate = this.WhenAnyValue(x => x.Mod).Select(x => x != null);
 
 		ValidateCommand = ReactiveCommand.CreateFromObservable<DivinityModData, Unit>(StartValidationAsync, canValidate);
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
-		ValidateCommand.IsExecuting.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.LockScreenVisibility, Visibility.Collapsed);
-		
-		DivinityInteractions.RequestValidateModStats.RegisterHandler(async interaction =>
+		ValidateCommand.IsExecuting.ToUIProperty(this, x => x.LockScreenVisibility);
+
+		_interactions.ValidateModStats.RegisterHandler(async context =>
 		{
-			interaction.SetOutput(true);
-			await StartValidationAsyncImpl(interaction.Input);
+			context.SetOutput(true);
+			await StartValidationAsyncImpl(context.Input);
 		});
 	}
 }

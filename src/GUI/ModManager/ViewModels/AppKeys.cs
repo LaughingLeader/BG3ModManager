@@ -4,6 +4,7 @@ using DynamicData;
 
 using ModManager.Models.App;
 using ModManager.Util;
+using ModManager.ViewModels.Main;
 
 using Newtonsoft.Json;
 

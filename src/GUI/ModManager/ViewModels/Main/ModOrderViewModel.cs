@@ -2,8 +2,6 @@
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 
-using Microsoft.Win32;
-
 using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.Mod;
@@ -14,20 +12,10 @@ using ModManager.Views.Main;
 
 using Newtonsoft.Json;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ModManager.ViewModels.Main;
@@ -121,8 +109,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public bool UserChangedSelectedGMCampaign { get; set; }
 
 	[ObservableAsProperty] public DivinityGameMasterCampaign SelectedGameMasterCampaign { get; }
-	public ICommand OpenGameMasterCampaignInFileExplorerCommand { get; private set; }
-	public ICommand CopyGameMasterCampaignPathToClipboardCommand { get; private set; }
 
 	private readonly IFileWatcherWrapper _modSettingsWatcher;
 
@@ -240,8 +226,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	[ObservableAsProperty] public string SelectedModOrderName { get; }
 
-	[ObservableAsProperty] public Visibility AdventureModBoxVisibility { get; }
-	[ObservableAsProperty] public Visibility LogFolderShortcutButtonVisibility { get; }
+	[ObservableAsProperty] public bool AdventureModBoxVisibility { get; }
+	[ObservableAsProperty] public bool LogFolderShortcutButtonVisibility { get; }
+	[ObservableAsProperty] public bool OverrideModsVisibility { get; }
 
 	[ObservableAsProperty] public bool HasProfile { get; }
 	[ObservableAsProperty] public bool IsBaseLoadOrder { get; }
@@ -257,14 +244,15 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	[ObservableAsProperty] public int TotalActiveMods { get; }
 	[ObservableAsProperty] public int TotalInactiveMods { get; }
-	[ObservableAsProperty] public Visibility OverrideModsVisibility { get; }
 
 	public ReactiveCommand<DivinityLoadOrder, Unit> DeleteOrderCommand { get; }
 	public ReactiveCommand<object, Unit> ToggleOrderRenamingCommand { get; set; }
-	public ICommand FocusFilterCommand { get; set; }
-	public ICommand CopyOrderToClipboardCommand { get; }
-	public ICommand ExportOrderAsListCommand { get; }
+	public RxCommandUnit FocusFilterCommand { get; set; }
+	public RxCommandUnit CopyOrderToClipboardCommand { get; }
+	public RxCommandUnit ExportOrderAsListCommand { get; }
 	public ReactiveCommand<DivinityLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
+	public RxCommandUnit OpenGameMasterCampaignInFileExplorerCommand { get; private set; }
+	public RxCommandUnit CopyGameMasterCampaignPathToClipboardCommand { get; private set; }
 
 	private static IObservable<bool> AllTrue(IObservable<bool> first, IObservable<bool> second) => first.CombineLatest(second).Select(x => x.First && x.Second);
 

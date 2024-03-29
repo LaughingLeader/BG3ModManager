@@ -1,5 +1,4 @@
-﻿using ModManager.Interfaces;
-using ModManager.Services;
+﻿using ModManager.Services;
 
 using System.IO.Abstractions;
 using System.Net.Http;

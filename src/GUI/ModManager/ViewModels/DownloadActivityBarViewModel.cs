@@ -7,18 +7,21 @@ using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public class DownloadActivityBarViewModel : BaseWindowViewModel
+public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 {
+	#region IClosableViewModel
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
 	[Reactive] private double ProgressValue { get; set; }
-	[Reactive] private string ProgressText { get; set; }
+	[Reactive] private string? ProgressText { get; set; }
 	[Reactive] public bool IsActive { get; private set; }
-	[Reactive] public Action CancelAction { get; set; }
+	[Reactive] public Action? CancelAction { get; set; }
 
 	[ObservableAsProperty] public double CurrentValue { get; }
-	[ObservableAsProperty] public string CurrentText { get; }
+	[ObservableAsProperty] public string? CurrentText { get; }
 	[ObservableAsProperty] public bool IsAnimating { get; }
-
-	public ICommand CancelCommand { get; private set; }
 
 	public void UpdateProgress(double value, string text = "")
 	{
@@ -56,14 +59,12 @@ public class DownloadActivityBarViewModel : BaseWindowViewModel
 
 	public DownloadActivityBarViewModel()
 	{
+		CloseCommand = this.CreateCloseCommand(invokeAction:Cancel);
+
 		this.WhenAnyValue(x => x.ProgressValue).Select(Clamp).ToUIProperty(this, x => x.CurrentValue, 0d);
 		this.WhenAnyValue(x => x.ProgressText).ToUIProperty(this, x => x.CurrentText, "");
 		this.WhenAnyValue(x => x.CurrentValue, x => x < 100).ToUIProperty(this, x => x.IsAnimating, true);
 
-		this.WhenAnyValue(x => x.CurrentText, x => x.CurrentValue).Select(x => !String.IsNullOrEmpty(x.Item1) || x.Item2 > 0).BindTo(this, x => x.IsActive);
-
-		//this.WhenAnyValue(x => x.IsActive).Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.IsVisible, Visibility.Collapsed);
-
-		CancelCommand = ReactiveCommand.Create(Cancel);
+		this.WhenAnyValue(x => x.CurrentText, x => x.CurrentValue).Select(x => x.Item1.IsValid() || x.Item2 > 0).BindTo(this, x => x.IsActive);
 	}
 }

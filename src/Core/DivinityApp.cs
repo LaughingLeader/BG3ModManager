@@ -35,6 +35,10 @@ public static class DivinityApp
 
 	public const string HTTP_USER = "BG3ModManagerUser";
 
+	public const string GITHUB_USER = "LaughingLeader";
+	public const string GITHUB_REPO = "BG3ModManager";
+	public const string GITHUB_RELEASE_ASSET = "BG3ModManager_Latest.zip";
+
 	public const string URL_REPO = @"https://github.com/LaughingLeader/BG3ModManager";
 	public const string URL_CHANGELOG = @"https://github.com/LaughingLeader/BG3ModManager/wiki/Changelog";
 	public const string URL_CHANGELOG_RAW = @"https://raw.githubusercontent.com/wiki/LaughingLeader/BG3ModManager/Changelog.md";

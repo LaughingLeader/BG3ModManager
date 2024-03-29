@@ -6,13 +6,18 @@ using System.Reactive.Linq;
 
 namespace ModManager.ViewModels;
 
-public class BaseProgressViewModel : BaseWindowViewModel
+public class BaseProgressViewModel : ReactiveObject, IClosableViewModel
 {
+	#region IClosableViewModel
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
 	[Reactive] public bool CanRun { get; set; }
 	[Reactive] public bool CanClose { get; set; }
 	[Reactive] public bool IsProgressActive { get; set; }
-	[Reactive] public string ProgressTitle { get; set; }
-	[Reactive] public string ProgressWorkText { get; set; }
+	[Reactive] public string? ProgressTitle { get; set; }
+	[Reactive] public string? ProgressWorkText { get; set; }
 	[Reactive] public double ProgressValue { get; set; }
 
 	/// <summary>
@@ -20,9 +25,8 @@ public class BaseProgressViewModel : BaseWindowViewModel
 	/// </summary>
 	[ObservableAsProperty] public bool IsRunning { get; }
 
-	public ReactiveCommand<Unit, bool> RunCommand { get; private set; }
-	public RxCommandUnit CancelRunCommand { get; private set; }
-	public RxCommandUnit CloseCommand { get; private set; }
+	public ReactiveCommand<Unit, bool> RunCommand { get; }
+	public RxCommandUnit CancelRunCommand { get; }
 
 	internal async Task<Unit> UpdateProgress(string title = "", string workText = "", double value = -1)
 	{
@@ -59,11 +63,12 @@ public class BaseProgressViewModel : BaseWindowViewModel
 	public BaseProgressViewModel()
 	{
 		CanClose = true;
-		var canRun = this.WhenAnyValue(x => x.CanRun);
-		RunCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(cts => Run(cts)).TakeUntil(this.CancelRunCommand), canRun);
-		RunCommand.IsExecuting.ToUIProperty(this, x => x.IsRunning);
 
 		CancelRunCommand = ReactiveCommand.Create(() => { }, this.WhenAnyValue(x => x.IsRunning));
+
+		var canRun = this.WhenAnyValue(x => x.CanRun);
+		RunCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(cts => Run(cts)).TakeUntil(CancelRunCommand), canRun);
+		RunCommand.IsExecuting.ToUIProperty(this, x => x.IsRunning);
 
 		var canClose = this.WhenAnyValue(x => x.CanClose, x => x.IsRunning, (b1, b2) => b1 && !b2);
 		CloseCommand = ReactiveCommand.Create(Close, canClose);
