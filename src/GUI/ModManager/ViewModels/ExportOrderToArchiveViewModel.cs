@@ -37,7 +37,7 @@ public class ExportOrderFileEntry : ReactiveObject
 
 public class ExportOrderToArchiveViewModel : BaseProgressViewModel
 {
-	[Reactive] public string OutputPath { get; set; }
+	[Reactive] public string? OutputPath { get; set; }
 	[Reactive] public bool IncludeOverrides { get; set; }
 	[Reactive] public ExportOrderFileType SelectedOrderType { get; set; }
 
@@ -52,7 +52,7 @@ public class ExportOrderToArchiveViewModel : BaseProgressViewModel
 
 	[ObservableAsProperty] public bool AnySelected { get; }
 	[ObservableAsProperty] public bool AllSelected { get; }
-	[ObservableAsProperty] public string SelectAllTooltip { get; }
+	[ObservableAsProperty] public string? SelectAllTooltip { get; }
 
 	public RxCommandUnit SelectAllCommand { get; private set; }
 
@@ -102,7 +102,7 @@ public class ExportOrderToArchiveViewModel : BaseProgressViewModel
 		{
 			foreach (var entry in _entries)
 			{
-				if (entry.Mod.IsForceLoaded && !entry.Mod.IsForceLoadedMergedMod)
+				if (entry.Mod?.IsForceLoaded == true && !entry.Mod.IsForceLoadedMergedMod)
 				{
 					entry.IsVisible = b;
 				}
