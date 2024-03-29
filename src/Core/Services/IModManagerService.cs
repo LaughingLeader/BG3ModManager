@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 
 using ModManager.Models.Mod;
+using ModManager.Models.View;
 
 using ReactiveUI.Fody.Helpers;
 
@@ -32,4 +33,5 @@ public interface IModManagerService
 	void Refresh();
 	void ApplyUserModConfig();
 	void SetLoadedMods(IEnumerable<DivinityModData> loadedMods, bool nexusModsEnabled = false);
+	Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount);
 }
