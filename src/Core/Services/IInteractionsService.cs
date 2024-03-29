@@ -48,7 +48,7 @@ public interface IInteractionsService
 	/// <summary>
 	/// Request a folder browser dialog window.
 	/// </summary>
-	Interaction<OpenFolderBrowserDialogRequest, OpenFolderBrowserDialogResults> OpenFolderBrowserDialog { get; }
+	Interaction<OpenFolderBrowserDialogRequest, OpenFileBrowserDialogResults> OpenFolderBrowserDialog { get; }
 
 	/// <summary>
 	/// Show an alert in the main view.

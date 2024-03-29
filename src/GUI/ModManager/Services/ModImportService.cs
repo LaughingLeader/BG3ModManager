@@ -31,16 +31,28 @@ using Avalonia;
 
 namespace ModManager.Services;
 
-public class ModImportService()
+public class ModImportService(IDialogService _dialogService)
 {
 	private static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
 	private static DivinityPathwayData Pathways => AppServices.Pathways.Data;
 	private static MainWindowViewModel ViewModel => AppServices.Get<MainWindowViewModel>()!;
 
-	private static readonly List<string> _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
-	private static readonly List<string> _compressedFormats = [".bz2", ".xz", ".zst"];
+	private static readonly string[] _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
+	private static readonly string[] _compressedFormats = [".bz2", ".xz", ".zst"];
 	private static readonly string _archiveFormatsStr = String.Join(";", _archiveFormats.Select(x => "*" + x));
 	private static readonly string _compressedFormatsStr = String.Join(";", _compressedFormats.Select(x => "*" + x));
+
+	private static readonly FileTypeFilter _allType = new("All files (*.*)|*.*", ["*.*"]);
+	private static readonly FileTypeFilter _archiveFormatsType = new("Archive file (*.7z,*.rar;*.zip)", _archiveFormats);
+	private static readonly FileTypeFilter _compressedFormatsType = new("Compressed file (*.bz2,*.xz;*.zst)", _compressedFormats);
+	private static readonly FileTypeFilter _pakType = new("Mod package (*.pak)", ["*.pak"]);
+	private static readonly FileTypeFilter _allImportModType = new($"All formats (*.pak;{_archiveFormatsStr};{_compressedFormatsStr})", ["*.pak", .. _archiveFormats, .. _compressedFormats]);
+
+	private static readonly FileTypeFilter[] _archiveFileTypes = [new("Archive file (*.7z,*.rar;*.zip)", _archiveFormats), _allType];
+	private static readonly FileTypeFilter[] _compressedFileTypes = [new("Compressed file (*.bz2,*.xz;*.zst)", _compressedFormats), _allType];
+	private static readonly FileTypeFilter[] _importModFileTypes = [_allImportModType, _pakType, _archiveFormatsType, _compressedFormatsType, _allType];
+
+	//Filter = $"All formats (*.pak;{_archiveFormatsStr};{_compressedFormatsStr})|*.pak;{_archiveFormatsStr};{_compressedFormatsStr}|Mod package (*.pak)|*.pak|Archive file ({_archiveFormatsStr})|{_archiveFormatsStr}|Compressed file ({_compressedFormatsStr})|{_compressedFormatsStr}|All files (*.*)|*.*",
 
 	private static readonly ArchiveEncoding _archiveEncoding = new(Encoding.UTF8, Encoding.UTF8);
 	private static readonly ReaderOptions _importReaderOptions = new() { ArchiveEncoding = _archiveEncoding };
@@ -150,25 +162,20 @@ public class ModImportService()
 		return taskResult;
 	}
 
-	public void ImportOrderFromArchive()
+	public async Task ImportOrderFromArchive()
 	{
-		
-		var dialog = new OpenFileDialog
+		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
+			"Import Order & Mods from Archive...",
+			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
+			false,
+			"Import Order & Mods from Archive...",
+			_archiveFileTypes,
+			false
+		));
+		if (dialogResult.Success)
 		{
-			CheckFileExists = true,
-			CheckPathExists = true,
-			DefaultExt = ".zip",
-			Filter = $"Archive file (*.7z,*.rar;*.zip)|{_archiveFormatsStr}|All files (*.*)|*.*",
-			Title = "Import Order & Mods from Archive...",
-			ValidateNames = true,
-			ReadOnlyChecked = true,
-			Multiselect = false,
-			InitialDirectory = GetInitialStartingDirectory(Settings.LastImportDirectoryPath)
-		};
-
-		if (dialog.ShowDialog(App.WM.MainWindow) == true)
-		{
-			var savedDirectory = Path.GetDirectoryName(dialog.FileName);
+			var filePath = dialogResult.File!;
+			var savedDirectory = Path.GetDirectoryName(filePath)!;
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
@@ -180,7 +187,7 @@ public class ModImportService()
 			//	view.AlertBar.SetDangerAlert($"Currently only .zip format archives are supported.", -1);
 			//	return;
 			//}
-			ViewModel.MainProgressTitle = $"Importing mods from '{dialog.FileName}'.";
+			ViewModel.MainProgressTitle = $"Importing mods from '{filePath}'.";
 			ViewModel.MainProgressWorkText = "";
 			ViewModel.MainProgressValue = 0d;
 			ViewModel.MainProgressIsActive = true;
@@ -193,7 +200,7 @@ public class ModImportService()
 				var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
 				ViewModel.MainProgressToken = new CancellationTokenSource();
 
-				var importOptions = new ImportParameters(dialog.FileName, Pathways.AppDataModsPath, ViewModel.MainProgressToken.Token, result)
+				var importOptions = new ImportParameters(filePath, Pathways.AppDataModsPath, ViewModel.MainProgressToken.Token, result)
 				{
 					BuiltinMods = builtinMods,
 					OnlyMods = false,
@@ -228,7 +235,7 @@ public class ModImportService()
 						var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 						var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportOrderFromArchive_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
 						var logsDir = Path.GetDirectoryName(errorOutputPath);
-						if (!Directory.Exists(logsDir))
+						if (logsDir.IsValid() && !Directory.Exists(logsDir))
 						{
 							Directory.CreateDirectory(logsDir);
 						}
@@ -390,13 +397,14 @@ public class ModImportService()
 		return result;
 	}
 
-	private async Task<bool> FetchNexusModsIdFromFilesAsync(List<string> files, ImportOperationResults results, CancellationToken token)
+	private async Task<bool> FetchNexusModsIdFromFilesAsync(IEnumerable<string?> files, ImportOperationResults results, CancellationToken token)
 	{
 		foreach (var filePath in files)
 		{
 			try
 			{
 				if (token.IsCancellationRequested) break;
+				if (!filePath.IsValid()) continue;
 
 				var ext = Path.GetExtension(filePath).ToLower();
 
@@ -408,7 +416,7 @@ public class ModImportService()
 					var info = NexusModFileVersionData.FromFilePath(filePath);
 					if (info.Success)
 					{
-						ModuleInfo meta = null;
+						ModuleInfo? meta = null;
 						if (isArchive)
 						{
 							meta = await TryGetMetaFromZipAsync(filePath, token);
@@ -442,7 +450,7 @@ public class ModImportService()
 		return results.Success;
 	}
 
-	public void ImportMods(IEnumerable<string> files, bool toActiveList = false)
+	public void ImportMods(IEnumerable<string?> files, int total, bool toActiveList = false)
 	{
 		if (!ViewModel.MainProgressIsActive)
 		{
@@ -453,7 +461,7 @@ public class ModImportService()
 
 			var result = new ImportOperationResults()
 			{
-				TotalFiles = files.Count()
+				TotalFiles = total
 			};
 
 			RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
@@ -523,24 +531,20 @@ public class ModImportService()
 		}
 	}
 
-	public void OpenModImportDialog()
+	public async Task OpenModImportDialog()
 	{
-		var dialog = new OpenFileDialog
-		{
-			CheckFileExists = true,
-			CheckPathExists = true,
-			DefaultExt = ".zip",
-			Filter = $"All formats (*.pak;{_archiveFormatsStr};{_compressedFormatsStr})|*.pak;{_archiveFormatsStr};{_compressedFormatsStr}|Mod package (*.pak)|*.pak|Archive file ({_archiveFormatsStr})|{_archiveFormatsStr}|Compressed file ({_compressedFormatsStr})|{_compressedFormatsStr}|All files (*.*)|*.*",
-			Title = "Import Mods from Archive...",
-			ValidateNames = true,
-			ReadOnlyChecked = true,
-			Multiselect = true,
-			InitialDirectory = GetInitialStartingDirectory(Settings.LastImportDirectoryPath)
-		};
+		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
+			"Import Mods from Archive...",
+			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
+			true,
+			"Import Mods from Archive",
+			_importModFileTypes,
+			false
+		));
 
-		if (dialog.ShowDialog(App.WM.MainWindow) == true)
+		if (dialogResult.Success)
 		{
-			var savedDirectory = Path.GetDirectoryName(dialog.FileName);
+			var savedDirectory = Path.GetDirectoryName(dialogResult.File)!;
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
@@ -548,37 +552,30 @@ public class ModImportService()
 				Settings.Save(out _);
 			}
 
-			ImportMods(dialog.FileNames);
+			ImportMods(dialogResult.Files, dialogResult.Total);
 		}
 	}
 
-	public void OpenModIdsImportDialog()
+	public async Task OpenModIdsImportDialog()
 	{
-		//Filter = $"All formats (*.pak;{_archiveFormatsStr};{_compressedFormatsStr})|*.pak;{_archiveFormatsStr};{_compressedFormatsStr}|Mod package (*.pak)|*.pak|Archive file ({_archiveFormatsStr})|{_archiveFormatsStr}|Compressed file ({_compressedFormatsStr})|{_compressedFormatsStr}|All files (*.*)|*.*",
-		var dialog = new OpenFileDialog
-		{
-			CheckFileExists = true,
-			CheckPathExists = true,
-			DefaultExt = ".zip",
-			Filter = $"All formats ({_archiveFormatsStr};{_compressedFormatsStr})|{_archiveFormatsStr};{_compressedFormatsStr}|Archive file ({_archiveFormatsStr})|{_archiveFormatsStr}|Compressed file ({_compressedFormatsStr})|{_compressedFormatsStr}|All files (*.*)|*.*",
-			Title = "Import NexusMods ModId(s) from Archive(s)...",
-			ValidateNames = true,
-			ReadOnlyChecked = true,
-			Multiselect = true,
-			InitialDirectory = GetInitialStartingDirectory(Settings.LastImportDirectoryPath)
-		};
+		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
+			"Import NexusMods ModId(s) from Archive(s)",
+			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
+			true,
+			"Import NexusMods ModId(s) from Archive(s)...",
+			_importModFileTypes,
+			false
+		));
 
-		if (dialog.ShowDialog(App.WM.MainWindow) == true)
+		if (dialogResult.Success)
 		{
-			var savedDirectory = Path.GetDirectoryName(dialog.FileName);
+			var savedDirectory = Path.GetDirectoryName(dialogResult.File)!;
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
 				Pathways.LastSaveFilePath = savedDirectory;
 				Settings.Save(out _);
 			}
-
-			var files = dialog.FileNames.ToList();
 
 			if (!ViewModel.MainProgressIsActive)
 			{
@@ -588,14 +585,14 @@ public class ModImportService()
 				ViewModel.MainProgressIsActive = true;
 				var result = new ImportOperationResults()
 				{
-					TotalFiles = files.Count
+					TotalFiles = dialogResult.Total
 				};
 
 				RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
 				{
 					ViewModel.MainProgressToken = new CancellationTokenSource();
 
-					await FetchNexusModsIdFromFilesAsync(files, result, ViewModel.MainProgressToken.Token);
+					await FetchNexusModsIdFromFilesAsync(dialogResult.Files, result, ViewModel.MainProgressToken.Token);
 
 					RxApp.MainThreadScheduler.Schedule(_ =>
 					{

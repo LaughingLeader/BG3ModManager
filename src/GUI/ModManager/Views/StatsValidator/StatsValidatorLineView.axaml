@@ -1,5 +1,5 @@
 <UserControl
-	x:Class="ModManager.StatsValidatorLineView.Views.StatsValidator"
+	x:Class="ModManager.Views.StatsValidator.StatsValidatorLineView"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:controls="clr-namespace:ModManager.Controls"

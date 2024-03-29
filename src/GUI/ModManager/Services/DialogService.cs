@@ -1,13 +1,6 @@
-﻿using Avalonia.Controls;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModManager.Services;
 public class DialogService : IDialogService
@@ -38,7 +31,7 @@ public class DialogService : IDialogService
 		if(files != null && files.Count > 0)
 		{
 			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(string.IsNullOrEmpty).ToArray()!;
-			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths, files.Count == 1);
+			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths);
 		}
 		return new OpenFileBrowserDialogResults();
 	}
@@ -67,7 +60,7 @@ public class DialogService : IDialogService
 		if (file != null)
 		{
 			var filePath = file.TryGetLocalPath() ?? string.Empty;
-			return new OpenFileBrowserDialogResults(true, filePath, [filePath], true);
+			return new OpenFileBrowserDialogResults(true, filePath, [filePath]);
 		}
 		return new OpenFileBrowserDialogResults();
 	}
