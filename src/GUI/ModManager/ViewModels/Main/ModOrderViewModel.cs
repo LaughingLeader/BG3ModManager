@@ -1,4 +1,6 @@
-﻿using DynamicData;
+﻿using Avalonia.VisualTree;
+
+using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 
@@ -18,6 +20,8 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
+using TextCopy;
+
 namespace ModManager.ViewModels.Main;
 public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderViewModel
 {
@@ -26,6 +30,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private readonly ModImportService ModImporter;
 	private readonly IModManagerService ModManager;
+	private readonly IInteractionsService _interactions;
+	private readonly IGlobalCommandsService _globalCommands;
+	private readonly IDialogService _dialogs;
 
 	public DivinityPathwayData PathwayData => AppServices.Pathways.Data;
 	public ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
@@ -33,10 +40,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	public AppKeys Keys { get; }
 
-	public IModViewLayout Layout { get; set; }
+	//public IModViewLayout Layout { get; set; }
 
-	public ModListDropHandler DropHandler { get; }
-	public ModListDragHandler DragHandler { get; }
+	//public ModListDropHandler DropHandler { get; }
+	//public ModListDragHandler DragHandler { get; }
 
 	private readonly SourceCache<DivinityProfileData, string> profiles = new(x => x.FilePath);
 
@@ -63,6 +70,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[Reactive] public string InactiveModFilterText { get; set; }
 	[Reactive] public string OverrideModsFilterText { get; set; }
 
+	[ObservableAsProperty] public ObservableCollectionExtended<DivinityModData>? FocusedList { get; }
+
 	private static string HiddenToLabel(int totalHidden, int totalCount)
 	{
 		if (totalHidden > 0)
@@ -88,7 +97,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	#region DungeonMaster Support
 
 	//TODO - Waiting for DM mode to be released
-	[ObservableAsProperty] public Visibility GameMasterModeVisibility { get; }
+	[ObservableAsProperty] public bool GameMasterModeVisibility { get; }
 
 	protected SourceList<DivinityGameMasterCampaign> gameMasterCampaigns = new();
 
@@ -108,7 +117,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	}
 	public bool UserChangedSelectedGMCampaign { get; set; }
 
-	[ObservableAsProperty] public DivinityGameMasterCampaign SelectedGameMasterCampaign { get; }
+	[ObservableAsProperty] public DivinityGameMasterCampaign? SelectedGameMasterCampaign { get; }
 
 	private readonly IFileWatcherWrapper _modSettingsWatcher;
 
@@ -147,9 +156,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	public bool LoadGameMasterCampaignModOrder(DivinityGameMasterCampaign campaign)
+	public bool LoadGameMasterCampaignModOrder(DivinityGameMasterCampaign? campaign)
 	{
-		if (campaign.Dependencies == null) return false;
+		if (campaign == null || campaign.Dependencies == null) return false;
 
 		var currentOrder = ModOrderList.First();
 		currentOrder.Order.Clear();
@@ -284,39 +293,28 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var canExecuteSaveCommand = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.CanSaveOrder));
 		keys.Save.AddAction(() => SaveLoadOrder(), canExecuteSaveCommand);
 
-		keys.SaveAs.AddAction(SaveLoadOrderAs, canExecuteSaveCommand);
-		keys.ImportMod.AddAction(modImporter.OpenModImportDialog, canExecuteCommands);
-		keys.ImportNexusModsIds.AddAction(modImporter.OpenModIdsImportDialog, canExecuteCommands);
+		keys.SaveAs.AddAsyncAction(SaveLoadOrderAs, canExecuteSaveCommand);
+		keys.ImportMod.AddAsyncAction(modImporter.OpenModImportDialog, canExecuteCommands);
+		keys.ImportNexusModsIds.AddAsyncAction(modImporter.OpenModIdsImportDialog, canExecuteCommands);
 		keys.NewOrder.AddAction(() => AddNewModOrder(), canExecuteCommands);
 
 		var anyActiveObservable = ActiveMods.WhenAnyValue(x => x.Count).Select(x => x > 0);
 		//var anyActiveObservable = this.WhenAnyValue(x => x.ActiveMods.Count, (c) => c > 0);
-		keys.ExportOrderToList.AddAction(ExportLoadOrderToTextFileAs, anyActiveObservable);
+		keys.ExportOrderToList.AddAsyncAction(ExportLoadOrderToTextFileAs, anyActiveObservable);
 
-		keys.ImportOrderFromSave.AddAction(ImportOrderFromSaveToCurrent, canExecuteCommands);
-		keys.ImportOrderFromSaveAsNew.AddAction(ImportOrderFromSaveAsNew, canExecuteCommands);
-		keys.ImportOrderFromFile.AddAction(ImportOrderFromFile, canExecuteCommands);
-		keys.ImportOrderFromZipFile.AddAction(modImporter.ImportOrderFromArchive, canExecuteCommands);
+		keys.ImportOrderFromSave.AddAsyncAction(ImportOrderFromSaveToCurrent, canExecuteCommands);
+		keys.ImportOrderFromSaveAsNew.AddAsyncAction(ImportOrderFromSaveAsNew, canExecuteCommands);
+		keys.ImportOrderFromFile.AddAsyncAction(ImportOrderFromFile, canExecuteCommands);
+		keys.ImportOrderFromZipFile.AddAsyncAction(modImporter.ImportOrderFromArchive, canExecuteCommands);
 
 		keys.ExportOrderToGame.AddAction(ExportLoadOrder, AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedProfile).Select(x => x != null)));
 
 		keys.DeleteSelectedMods.AddAction(() =>
 		{
-			IEnumerable<DivinityModData> targetList = null;
+			IEnumerable<DivinityModData>? targetList = null;
 			if (DivinityApp.IsKeyboardNavigating)
 			{
-				var modLayout = AppServices.Get<ModOrderView>()?.ModLayout;
-				if (modLayout != null)
-				{
-					if (modLayout.ActiveModsListView.IsKeyboardFocusWithin)
-					{
-						targetList = ActiveMods;
-					}
-					else
-					{
-						targetList = InactiveMods;
-					}
-				}
+				targetList = FocusedList;
 			}
 			else
 			{
@@ -330,7 +328,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 				if (selectedEligableMods.Count > 0)
 				{
-					DivinityInteractions.DeleteMods.Handle(new DeleteModsRequestData(selectedEligableMods, false, ModManager.AllMods)).Subscribe();
+					_interactions.DeleteMods.Handle(new(selectedEligableMods, false, ModManager.AllMods)).Subscribe();
 				}
 
 				if (selectedMods.Any(x => x.IsEditorMod))
@@ -342,7 +340,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		keys.SpeakActiveModOrder.AddAction(() =>
 		{
-			if (ActiveMods.Count > 0)
+			//TODO Update since ScreenReaderHelper used native dlls like Tolk
+			/*if (ActiveMods.Count > 0)
 			{
 				var text = String.Join(", ", ActiveMods.Select(x => x.DisplayName));
 				ScreenReaderHelper.Speak($"{ActiveMods.Count} mods in the active order, including:", true);
@@ -353,21 +352,24 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				//ShowAlert($"No mods in active order.", AlertType.Warning, 10);
 				ScreenReaderHelper.Speak($"The active mods order is empty.");
-			}
+			}*/
 		}, canExecuteCommands);
 	}
 
 	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
 
 	public ModOrderViewModel(MainWindowViewModel host,
-		ModListDropHandler dropHandler,
-		ModListDragHandler dragHandler,
 		IModManagerService modManagerService,
-		IFileWatcherService fileWatcherService)
+		IFileWatcherService fileWatcherService,
+		IInteractionsService interactionsService,
+		IGlobalCommandsService globalCommands,
+		IDialogService dialogService
+		)
 	{
-		DivinityApp.Commands.SetViewModel(this);
-
 		ModManager = modManagerService;
+		_interactions = interactionsService;
+		_globalCommands = globalCommands;
+		_dialogs = dialogService;
 
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;
@@ -376,9 +378,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		InactiveMods = [];
 		ModOrderList = [];
 		ExternalModOrders = [];
-
-		DropHandler = dropHandler;
-		DragHandler = dragHandler;
 
 		CanSaveOrder = true;
 
@@ -409,7 +408,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
 		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);
 		modManagerService.ForceLoadedMods.ToObservableChangeSet().Bind(out _forceLoadedMods).Subscribe();
-		ForceLoadedMods.ToObservableChangeSet().CountChanged().Select(_ => PropertyConverters.IntToVisibility(ForceLoadedMods.Count)).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility, Visibility.Collapsed);
+		ForceLoadedMods.ToObservableChangeSet().CountChanged().Select(_ => ForceLoadedMods.Count > 0).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility);
 
 		host.Settings.WhenAnyValue(
 			x => x.ExtenderSettings.LogCompile,
@@ -423,7 +422,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		whenGameExeProperties.Select(GetLaunchGameTooltip).ToUIProperty(this, x => x.OpenGameButtonToolTip, "Launch Game");
 
 		var canRenameOrder = this.WhenAnyValue(x => x.SelectedModOrderIndex, (i) => i > 0);
-		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object, Unit>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
+		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
 
 		var canDeleteOrder = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => x > 0));
 		DeleteOrderCommand = ReactiveCommand.CreateFromTask<DivinityLoadOrder>(DeleteOrder, canDeleteOrder);
@@ -441,7 +440,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						text += $"{mod.Index}. {mod.DisplayName}";
 						if (i < ActiveMods.Count - 1) text += Environment.NewLine;
 					}
-					Clipboard.SetText(text);
+					ClipboardService.SetText(text);
 					AppServices.Commands.ShowAlert("Copied mod order to clipboard", AlertType.Info, 10);
 				}
 				else
@@ -455,7 +454,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		}, RxApp.MainThreadScheduler));
 
-		ExportOrderAsListCommand = ReactiveCommand.Create(ExportLoadOrderToTextFileAs, this.WhenAnyValue(x => x.TotalActiveMods, x => x > 0));
+		ExportOrderAsListCommand = ReactiveCommand.CreateFromTask(ExportLoadOrderToTextFileAs, this.WhenAnyValue(x => x.TotalActiveMods, x => x > 0));
 
 		whenProfile.Subscribe(profile =>
 		{
@@ -554,11 +553,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		});
 
 
-		#region DungeonMaster Support
+		#region GM Support
 
 		var gmModeChanged = Settings.WhenAnyValue(x => x.GameMasterModeEnabled);
-		gmModeChanged.Select(PropertyConverters.BoolToVisibilityReversed).ToUIProperty(this, x => x.AdventureModBoxVisibility, Visibility.Visible);
-		gmModeChanged.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.GameMasterModeVisibility, Visibility.Collapsed);
+		gmModeChanged.Select(b => !b).ToUIProperty(this, x => x.AdventureModBoxVisibility, true);
+		gmModeChanged.ToUIProperty(this, x => x.GameMasterModeVisibility);
 
 		gameMasterCampaigns.Connect().Bind(out gameMasterCampaignsData).Subscribe();
 
@@ -611,11 +610,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
 						RxApp.MainThreadScheduler.Schedule(() =>
 						{
-							//Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Indeterminate;
-							host.Window.FlashTaskbar();
 							var title = "Mod Order Reset";
 							var message = "The active load order (modsettings.lsx) has been reset externally, which has deactivated your mods.\nOne or more mods may be invalid in your current load order.";
-							DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
+							_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
 						});
 					}
 				});
@@ -683,7 +680,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			DivinityApp.Log("Loading mods...");
 			await main.SetMainProgressTextAsync("Loading mods...");
-			var loadedMods = await ModManagerService.LoadModsAsync(PathwayData.AppDataModsPath, new(main.SetMainProgressTextAsync, main.IncreaseMainProgressValueAsync), taskStepAmount);
+			var loadedMods = await ModManager.LoadModsAsync(PathwayData.AppDataModsPath, new(main.SetMainProgressTextAsync, main.IncreaseMainProgressValueAsync), taskStepAmount);
 			await main.IncreaseMainProgressValueAsync(taskStepAmount);
 
 			DivinityApp.Log("Loading profiles...");
@@ -732,8 +729,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				if (loadedMods.Count > 0) ModManager.SetLoadedMods(loadedMods, main.NexusModsSupportEnabled);
 				//SetLoadedGMCampaigns(loadedGMCampaigns);
-
-				profiles.AddOrUpdate(loadedProfiles);
+				if (loadedProfiles != null) profiles.AddOrUpdate(loadedProfiles);
 				ExternalModOrders.AddRange(savedModOrderList);
 			}, RxApp.MainThreadScheduler);
 
@@ -797,8 +793,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			DivinityApp.Log($"Finalizing refresh operation.");
 
-			AppServices.Get<ModOrderView>()?.ModLayout?.RestoreLayout();
-
 			IsLoadingOrder = false;
 
 			ModManager.ApplyUserModConfig();
@@ -806,7 +800,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			if (profiles.Count > 0)
 			{
-				App.WM.Main.Window.Dispatcher.BeginInvoke(() =>
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					var publicProfile = Profiles.FirstOrDefault(p => p.FolderName == "Public");
 					var defaultIndex = 0;
@@ -817,7 +811,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					}
 					else
 					{
-						var index = Profiles.IndexOf(Profiles.FirstOrDefault(p => p.UUID == selectedProfileUUID));
+						var element = Profiles.FirstOrDefault(p => p.UUID == selectedProfileUUID);
+						var index = element != null ? Profiles.IndexOf(element) : defaultIndex;
 						if (index > -1)
 						{
 							SelectedProfileIndex = index;
@@ -833,7 +828,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						SelectedModOrder?.SetOrder(lastActiveOrder);
 					}
-				}, System.Windows.Threading.DispatcherPriority.Background);
+				});
 			}
 		}, RxApp.MainThreadScheduler);
 	}
@@ -900,7 +895,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				var message = String.Join("\n", missingMods.OrderBy(x => x.Index));
 				var title = "Missing Mods in Load Order";
-				DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
 			}
 			else
 			{
@@ -962,7 +957,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				DivinityApp.Log("Displaying mods that require the extender.");
 				var message = "Functionality may be limited without the Script Extender.\n" + String.Join("\n", extenderRequiredMods.OrderBy(x => x.Index));
 				var title = "Mods Require the Script Extender";
-				DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
 			}
 		}
 	}
@@ -1060,7 +1055,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return result;
 	}
 
-	private void SaveLoadOrderAs()
+	private async Task SaveLoadOrderAs()
 	{
 		var ordersDir = Settings.LoadOrderPath;
 		//Relative path
@@ -1070,14 +1065,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
 		}
 		var startDirectory = ModImportService.GetInitialStartingDirectory(ordersDir);
-
-		var dialog = new SaveFileDialog
-		{
-			AddExtension = true,
-			DefaultExt = ".json",
-			Filter = "JSON file (*.json)|*.json",
-			InitialDirectory = startDirectory
-		};
 
 		var outputPath = Path.Join(SelectedModOrder.Name + ".json");
 		if (SelectedModOrder.IsModSettings)
@@ -1089,18 +1076,20 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		outputPath = DivinityModDataLoader.MakeSafeFilename(outputPath, '_');
 		var modOrderName = Path.GetFileNameWithoutExtension(outputPath);
 
-		//dialog.RestoreDirectory = true;
-		dialog.FileName = outputPath;
-		dialog.CheckFileExists = false;
-		dialog.CheckPathExists = false;
-		dialog.OverwritePrompt = true;
-		dialog.Title = "Save Load Order As...";
+		var result = await _dialogs.SaveFileAsync(new(
+			"Save Load Order As...",
+			Path.Join(startDirectory, outputPath),
+			false,
+			"Save Load Order As...",
+			[CommonFileTypes.Json],
+			true
+		));
 
-		if (dialog.ShowDialog(App.Current.MainWindow) == true)
+		if (result.Success)
 		{
 			var modManager = ModManager;
-			outputPath = dialog.FileName;
-			modOrderName = Path.GetFileNameWithoutExtension(outputPath);
+			outputPath = result.File!;
+			modOrderName = Path.GetFileNameWithoutExtension(outputPath)!;
 			// Save mods that aren't missing
 			var tempOrder = new DivinityLoadOrder { Name = modOrderName };
 			tempOrder.Order.AddRange(SelectedModOrder.Order.Where(x => modManager.ModExists(x.UUID)));
@@ -1208,7 +1197,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					var message = $"Problem exporting load order to '{outputPath}'. Is the file locked?";
 					var title = "Mod Order Export Failed";
 					AppServices.Commands.ShowAlert(message, AlertType.Danger);
-					await DivinityInteractions.ShowMessageBox.Handle(new(message, title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK));
+					await _interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error));
 				}
 			}
 			else
@@ -1266,7 +1255,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						var message = $"Problem exporting load order to '{SelectedGameMasterCampaign.FilePath}'";
 						AppServices.Commands.ShowAlert(message, AlertType.Danger);
-						DivinityInteractions.ShowMessageBox.Handle(new(message, "Mod Order Export Failed", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK)).Subscribe();
+						_interactions.ShowMessageBox.Handle(new(message, "Mod Order Export Failed", InteractionMessageBoxType.Error)).Subscribe();
 					}
 				}
 			}
@@ -1373,9 +1362,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private async Task DeleteOrder(DivinityLoadOrder order)
 	{
-		var data = new ShowMessageBoxData($"Delete load order '{order.Name}'? This cannot be undone.", "Confirm Order Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
-		var result = await DivinityInteractions.ShowMessageBox.Handle(data);
-		if (result == MessageBoxResult.Yes)
+		var data = new ShowMessageBoxRequest($"Delete load order '{order.Name}'? This cannot be undone.", "Confirm Order Deletion", InteractionMessageBoxType.Warning | InteractionMessageBoxType.Confirmation);
+		var result = await _interactions.ShowMessageBox.Handle(data);
+		if (result)
 		{
 			SelectedModOrderIndex = 0;
 			ModOrderList.Remove(order);
@@ -1470,7 +1459,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	{
 		if (mod.CanDelete)
 		{
-			DivinityInteractions.DeleteMods.Handle(new([mod], false)).Subscribe();
+			_interactions.DeleteMods.Handle(new([mod], false)).Subscribe();
 		}
 		else
 		{
@@ -1486,7 +1475,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		if (!contextMenuMod.IsSelected && contextMenuMod.CanDelete) targetMods.Add(contextMenuMod);
 		if (targetMods.Count > 0)
 		{
-			DivinityInteractions.DeleteMods.Handle(new(targetMods, false)).Subscribe();
+			_interactions.DeleteMods.Handle(new(targetMods, false)).Subscribe();
 		}
 		else
 		{
@@ -1513,7 +1502,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private async Task<Unit> ToggleRenamingLoadOrder(object control)
+	private async Task ToggleRenamingLoadOrder(object control)
 	{
 		IsRenamingOrder = !IsRenamingOrder;
 
@@ -1527,7 +1516,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			if (control is ComboBox comboBox)
 			{
-				var tb = comboBox.FindVisualChildren<TextBox>().FirstOrDefault();
+				var tb = comboBox.GetVisualChildren().OfType<TextBox>().FirstOrDefault();
 				if (tb != null)
 				{
 					tb.Focus();
@@ -1537,7 +1526,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					}
 					else
 					{
-						tb.Select(0, 0);
+						tb.ClearSelection();
 					}
 				}
 			}
@@ -1550,11 +1539,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				else
 				{
-					tb.Select(0, 0);
+					tb.ClearSelection();
 				}
 			}
 		});
-		return Unit.Default;
 	}
 
 	private int SortModOrder(DivinityLoadOrderEntry a, DivinityLoadOrderEntry b)
@@ -1589,7 +1577,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return 0;
 	}
 
-	public void AddNewModOrder(DivinityLoadOrder newOrder = null)
+	public void AddNewModOrder(DivinityLoadOrder? newOrder = null)
 	{
 		if (newOrder == null)
 		{
@@ -1707,7 +1695,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				DivinityInteractions.ShowMessageBox.Handle(new(String.Join("\n", orderedMissingMods), "Missing Mods in Load Order", MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new(String.Join("\n", orderedMissingMods), "Missing Mods in Load Order", InteractionMessageBoxType.Warning)).Subscribe();
 			}
 		}
 
@@ -1729,19 +1717,19 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			foreach (var m in modDataList)
 			{
-				m.Visibility = Visibility.Visible;
+				m.IsVisible = true;
 			}
 		}
 		else
 		{
-			if (searchText.IndexOf("@") > -1)
+			if (searchText.IndexOf('@') > -1)
 			{
 				var remainingSearch = searchText;
 				List<DivinityModFilterData> searchProps = [];
 
 				MatchCollection matches;
 
-				if (searchText.IndexOf("\"") > -1)
+				if (searchText.IndexOf('\"') > -1)
 				{
 					matches = filterPropertyPatternWithQuotes.Matches(searchText);
 				}
@@ -1752,7 +1740,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 				if (matches.Count > 0)
 				{
-					foreach (Match match in matches)
+					foreach (var match in matches.Cast<Match>())
 					{
 						if (match.Success)
 						{
@@ -1799,11 +1787,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					}
 					if (totalMatches >= searchProps.Count)
 					{
-						mod.Visibility = Visibility.Visible;
+						mod.IsVisible = true;
 					}
 					else
 					{
-						mod.Visibility = Visibility.Collapsed;
+						mod.IsVisible = false;
 						mod.IsSelected = false;
 						totalHidden += 1;
 					}
@@ -1815,11 +1803,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					if (CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.Name, searchText, CompareOptions.IgnoreCase) >= 0)
 					{
-						m.Visibility = Visibility.Visible;
+						m.IsVisible = true;
 					}
 					else
 					{
-						m.Visibility = Visibility.Collapsed;
+						m.IsVisible = false;
 						m.IsSelected = false;
 						totalHidden += 1;
 					}
@@ -1841,18 +1829,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private void ExportLoadOrderToTextFileAs()
+	private async Task ExportLoadOrderToTextFileAs()
 	{
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
-			var dialog = new SaveFileDialog
-			{
-				AddExtension = true,
-				DefaultExt = ".tsv",
-				Filter = "Spreadsheet file (*.tsv)|*.tsv|Plain text file (*.txt)|*.txt|JSON file (*.json)|*.json",
-				InitialDirectory = ModImportService.GetInitialStartingDirectory()
-			};
-
 			var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 			var baseOrderName = SelectedModOrder.Name;
 			if (SelectedModOrder.IsModSettings)
@@ -1861,19 +1841,22 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			var outputName = $"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.tsv";
 
-			//dialog.RestoreDirectory = true;
-			dialog.FileName = DivinityModDataLoader.MakeSafeFilename(outputName, '_');
-			dialog.CheckFileExists = false;
-			dialog.CheckPathExists = false;
-			dialog.OverwritePrompt = true;
-			dialog.Title = "Export Load Order As Text File...";
+			var result = await _dialogs.SaveFileAsync(new(
+				"Export Load Order As Text File...",
+				Path.Join(ModImportService.GetInitialStartingDirectory(), DivinityModDataLoader.MakeSafeFilename(outputName, '_')),
+				false,
+				"",
+				CommonFileTypes.ModOrderFileTypes,
+				true
+			));
 
-			if (dialog.ShowDialog(App.Current.MainWindow) == true)
+			if (result.Success)
 			{
+				string filePath = result.File!;
 				var exportMods = new List<IModEntry>(ActiveMods);
 				exportMods.AddRange(ModManager.ForceLoadedMods.ToList().OrderBy(x => x.Name));
 
-				var fileType = Path.GetExtension(dialog.FileName);
+				var fileType = Path.GetExtension(filePath)!;
 				var outputText = "";
 				if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 				{
@@ -1895,12 +1878,12 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				try
 				{
-					File.WriteAllText(dialog.FileName, outputText);
-					AppServices.Commands.ShowAlert($"Exported order to '{dialog.FileName}'", AlertType.Success, 20);
+					File.WriteAllText(filePath, outputText);
+					AppServices.Commands.ShowAlert($"Exported order to '{filePath}'", AlertType.Success, 20);
 				}
 				catch (Exception ex)
 				{
-					AppServices.Commands.ShowAlert($"Error exporting mod order to '{dialog.FileName}':\n{ex}", AlertType.Danger);
+					AppServices.Commands.ShowAlert($"Error exporting mod order to '{filePath}':\n{ex}", AlertType.Danger);
 				}
 			}
 		}
@@ -1911,17 +1894,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private DivinityLoadOrder ImportOrderFromSave()
+	private async Task<DivinityLoadOrder?> ImportOrderFromSave()
 	{
-		var dialog = new OpenFileDialog
-		{
-			CheckFileExists = true,
-			CheckPathExists = true,
-			DefaultExt = ".lsv",
-			Filter = "Larian Save file (*.lsv)|*.lsv",
-			Title = "Load Mod Order From Save..."
-		};
-
 		var startPath = "";
 		if (SelectedProfile != null)
 		{
@@ -1937,13 +1911,19 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		}
 
-		dialog.InitialDirectory = ModImportService.GetInitialStartingDirectory(startPath);
+		var result = await _dialogs.OpenFileAsync(new(
+			"Load Mod Order From Save...",
+			ModImportService.GetInitialStartingDirectory(startPath),
+			false,
+			"",
+			[CommonFileTypes.LarianSaveFile, CommonFileTypes.All]
+		));
 
-		if (dialog.ShowDialog(App.Current.MainWindow) == true)
+		if (result.Success)
 		{
-			PathwayData.LastSaveFilePath = Path.GetDirectoryName(dialog.FileName);
-			DivinityApp.Log($"Loading order from '{dialog.FileName}'.");
-			var newOrder = DivinityModDataLoader.GetLoadOrderFromSave(dialog.FileName, Settings.LoadOrderPath);
+			PathwayData.LastSaveFilePath = Path.GetDirectoryName(result.File);
+			DivinityApp.Log($"Loading order from '{result.File}'.");
+			var newOrder = DivinityModDataLoader.GetLoadOrderFromSave(result.File, Settings.LoadOrderPath);
 			if (newOrder != null)
 			{
 				DivinityApp.Log($"Imported mod order: {String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
@@ -1951,25 +1931,26 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				DivinityApp.Log($"Failed to load order from '{dialog.FileName}'.");
-				AppServices.Commands.ShowAlert($"No mod order found in save \"{Path.GetFileNameWithoutExtension(dialog.FileName)}\"", AlertType.Danger, 30);
+				DivinityApp.Log($"Failed to load order from '{result.File}'.");
+				AppServices.Commands.ShowAlert($"No mod order found in save \"{Path.GetFileNameWithoutExtension(result.File)}\"", AlertType.Danger, 30);
 			}
 		}
+
 		return null;
 	}
 
-	private void ImportOrderFromSaveAsNew()
+	private async Task ImportOrderFromSaveAsNew()
 	{
-		var order = ImportOrderFromSave();
+		var order = await ImportOrderFromSave();
 		if (order != null)
 		{
 			AddNewModOrder(order);
 		}
 	}
 
-	private void ImportOrderFromSaveToCurrent()
+	private async Task ImportOrderFromSaveToCurrent()
 	{
-		var order = ImportOrderFromSave();
+		var order = await ImportOrderFromSave();
 		if (order != null)
 		{
 			if (SelectedModOrder != null)
@@ -1992,24 +1973,24 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private void ImportOrderFromFile()
-	{
-		var dialog = new OpenFileDialog
-		{
-			CheckFileExists = true,
-			CheckPathExists = true,
-			DefaultExt = ".json",
-			Filter = "All formats (*.json;*.txt;*.tsv)|*.json;*.txt;*.tsv|JSON file (*.json)|*.json|Text file (*.txt)|*.txt|TSV file (*.tsv)|*.tsv",
-			Title = "Load Mod Order From File...",
-			InitialDirectory = ModImportService.GetInitialStartingDirectory(Settings.LastLoadedOrderFilePath)
-		};
+	
 
-		if (dialog.ShowDialog(App.Current.MainWindow) == true)
+	private async Task ImportOrderFromFile()
+	{
+		var result = await _dialogs.OpenFileAsync(new(
+			"Load Mod Order From File...",
+			ModImportService.GetInitialStartingDirectory(Settings.LastLoadedOrderFilePath),
+			false,
+			"",
+			CommonFileTypes.ModOrderFileTypes
+		));
+
+		if (result.Success)
 		{
-			Settings.LastLoadedOrderFilePath = Path.GetDirectoryName(dialog.FileName);
+			Settings.LastLoadedOrderFilePath = Path.GetDirectoryName(result.File)!;
 			Settings.Save(out _);
-			DivinityApp.Log($"Loading order from '{dialog.FileName}'.");
-			var newOrder = DivinityModDataLoader.LoadOrderFromFile(dialog.FileName, ModManager.AllMods);
+			DivinityApp.Log($"Loading order from '{result.File}'.");
+			var newOrder = DivinityModDataLoader.LoadOrderFromFile(result.File, ModManager.AllMods);
 			if (newOrder != null)
 			{
 				DivinityApp.Log($"Imported mod order:\n{String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
@@ -2024,7 +2005,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						}
 						else
 						{
-							AppServices.Commands.ShowAlert($"Failed to reset order to '{dialog.FileName}'", AlertType.Danger, 60);
+							AppServices.Commands.ShowAlert($"Failed to reset order to '{result.File}'", AlertType.Danger, 60);
 						}
 					}
 					else
@@ -2043,7 +2024,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				AppServices.Commands.ShowAlert($"Failed to import order from '{dialog.FileName}'", AlertType.Danger, 60);
+				AppServices.Commands.ShowAlert($"Failed to import order from '{result.File}'", AlertType.Danger, 60);
 			}
 		}
 	}
