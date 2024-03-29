@@ -16,6 +16,7 @@
 	</Application.Resources>
 
 	<Application.Styles>
+		<StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
 		<ui:FluentAvaloniaTheme CustomAccentColor="Coral" PreferSystemTheme="False" />
 	</Application.Styles>
 </Application>
