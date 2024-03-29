@@ -1,3 +1,6 @@
+* text=auto
+*.sln text eol=crlf
+
 .gitignore merge=ours
 AppFeatures.json merge=ours
 AssemblyInfo.cs merge=ours
