@@ -1,11 +1,7 @@
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-using ModManager.ViewModels;
-using ModManager.Views;
-
-using Splat;
+using ModManager.Windows;
 
 namespace ModManager;
 public partial class App : Application
@@ -29,9 +25,8 @@ public partial class App : Application
 		{
 			desktop.MainWindow = new MainWindow
 			{
-				DataContext = new MainWindowViewModel(),
+				DataContext = ViewModelLocator.Main,
 			};
-
 
 			Locator.CurrentMutable.InitializeSplat();
 
