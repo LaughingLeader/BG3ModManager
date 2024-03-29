@@ -1,7 +1,5 @@
 ﻿using ModManager.ViewModels;
 
-using ReactiveUI;
-
 namespace ModManager.Windows;
 
 public class NxmDownloadWindowBase : HideWindowBase<NxmDownloadWindowViewModel> { }

@@ -4,10 +4,7 @@ using ModManager.Util.ScreenReader;
 using ModManager.ViewModels;
 using ModManager.Windows;
 
-using ReactiveUI;
-
 using System.Data;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;

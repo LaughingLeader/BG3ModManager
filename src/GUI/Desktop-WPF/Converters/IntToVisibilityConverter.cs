@@ -8,7 +8,7 @@ public class IntToVisibilityConverter : IValueConverter
 {
 	public static Visibility FromInt(int v) => v > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is int intVal)
 		{
@@ -17,7 +17,7 @@ public class IntToVisibilityConverter : IValueConverter
 		return Visibility.Visible;
 	}
 
-	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		return null;
 	}

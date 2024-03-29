@@ -1,17 +1,10 @@
 ﻿using ModManager.Services;
-using ModManager.Util;
-using ModManager.ViewModels;
-using ModManager.ViewModels.Main;
 using ModManager.Windows;
-
-using ReactiveUI;
 
 using Splat;
 
 using System.Globalization;
-using System.IO;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;

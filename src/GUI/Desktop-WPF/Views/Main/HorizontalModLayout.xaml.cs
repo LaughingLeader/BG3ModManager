@@ -8,12 +8,8 @@ using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
 
-using ReactiveUI;
-
 using System.ComponentModel;
 using System.IO.Packaging;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;

@@ -1,7 +1,5 @@
 ﻿using ModManager.Models.View;
 
-using ReactiveUI;
-
 using System.Windows.Media;
 
 namespace ModManager.Views.StatsValidator;

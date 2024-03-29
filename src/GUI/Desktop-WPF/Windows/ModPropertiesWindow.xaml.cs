@@ -2,8 +2,6 @@
 
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
 namespace ModManager.Windows;
 
 public class ModPropertiesWindowBase : HideWindowBase<ModPropertiesWindowViewModel> { }

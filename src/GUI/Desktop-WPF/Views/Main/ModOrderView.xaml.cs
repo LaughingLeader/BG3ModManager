@@ -1,13 +1,7 @@
-﻿using ModManager.Services;
-using ModManager.Util;
+﻿using ModManager.Util;
 using ModManager.ViewModels.Main;
 
-using ReactiveUI;
-
 using System.Data;
-using System.IO;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

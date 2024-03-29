@@ -2,10 +2,7 @@
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
-using ReactiveUI;
-
 using System.ComponentModel;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Controls;

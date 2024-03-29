@@ -5,8 +5,6 @@ using Microsoft.Windows.Themes;
 using ModManager.Models.Updates;
 using ModManager.ViewModels.Main;
 
-using ReactiveUI;
-
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;

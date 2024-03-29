@@ -1,8 +1,6 @@
 ﻿using ModManager.Controls;
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
 using System.Windows.Documents;
 
 namespace ModManager.Windows;

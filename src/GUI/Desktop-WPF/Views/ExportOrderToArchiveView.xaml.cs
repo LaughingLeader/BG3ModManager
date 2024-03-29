@@ -1,8 +1,6 @@
 ﻿using ModManager.Converters;
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
 namespace ModManager.Views;
 
 public class ExportOrderToArchiveViewViewBase : ReactiveUserControl<ExportOrderToArchiveViewModel> { }

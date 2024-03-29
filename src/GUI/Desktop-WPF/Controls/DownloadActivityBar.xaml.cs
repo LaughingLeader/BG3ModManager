@@ -2,8 +2,6 @@
 
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
 using System.Windows.Data;
 
 namespace ModManager.Controls;

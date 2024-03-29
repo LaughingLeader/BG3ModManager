@@ -1,10 +1,5 @@
 ﻿using ModManager.ViewModels;
 
-using ReactiveUI;
-
-using System.Reactive;
-using System.Reactive.Linq;
-
 namespace ModManager.Windows;
 
 public class StatsValidatorWindowBase : HideWindowBase<StatsValidatorWindowViewModel> { }

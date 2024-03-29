@@ -8,7 +8,7 @@ public class BoolToVisibilityConverter : IValueConverter
 {
 	public static Visibility FromBool(bool b) => b ? Visibility.Visible : Visibility.Collapsed;
 
-	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		var reverse = false;
 		if (parameter != null)
@@ -38,7 +38,7 @@ public class BoolToVisibilityConverter : IValueConverter
 		return Visibility.Visible;
 	}
 
-	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is Visibility visbility)
 		{
@@ -53,7 +53,7 @@ public class BoolToVisibilityConverter : IValueConverter
 
 public class BoolToVisibilityConverterReversed : IValueConverter
 {
-	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is bool b)
 		{
@@ -62,7 +62,7 @@ public class BoolToVisibilityConverterReversed : IValueConverter
 		return Visibility.Collapsed;
 	}
 
-	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is Visibility visbility)
 		{

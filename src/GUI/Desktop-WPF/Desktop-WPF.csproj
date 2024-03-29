@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<UseWPF>true</UseWPF>
+		<Nullable>disable</Nullable>
 		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
 		
 		<StartupObject>ModManager.Program</StartupObject>
@@ -74,6 +75,7 @@
 	<ItemGroup>
 		<PackageReference Include="AdonisUI" Version="1.17.1" TreatAsUsed="true" />
 		<PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
+		<PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.0" />
 		<PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" />
 		<PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />

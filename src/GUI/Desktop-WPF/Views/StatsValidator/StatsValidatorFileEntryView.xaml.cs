@@ -1,7 +1,5 @@
 ﻿using ModManager.Models.View;
 
-using ReactiveUI;
-
 using System.Windows;
 using System.Windows.Media;
 

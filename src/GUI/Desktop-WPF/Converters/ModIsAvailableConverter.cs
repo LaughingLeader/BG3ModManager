@@ -7,7 +7,7 @@ namespace ModManager.Converters;
 
 public class ModIsAvailableConverter : IValueConverter
 {
-	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is IDivinityModData data)
 		{
@@ -17,5 +17,8 @@ public class ModIsAvailableConverter : IValueConverter
 		return false;
 	}
 
-	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => null;
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	{
+		return null;
+	}
 }

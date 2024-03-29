@@ -2,9 +2,6 @@
 using ModManager.Util;
 using ModManager.ViewModels.Main;
 
-using ReactiveUI;
-
-using System.Reactive.Linq;
 using System.Windows;
 
 namespace ModManager.Views.Main;

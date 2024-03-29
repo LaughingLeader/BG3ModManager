@@ -6,7 +6,7 @@ namespace ModManager.Converters;
 
 public class StringNotEmptyToVisibilityConverter : IValueConverter
 {
-	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		var reverse = false;
 		if (parameter != null)
@@ -35,7 +35,7 @@ public class StringNotEmptyToVisibilityConverter : IValueConverter
 		return Visibility.Visible;
 	}
 
-	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		return null;
 	}

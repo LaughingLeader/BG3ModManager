@@ -1,20 +1,13 @@
-﻿using AutoUpdaterDotNET;
-
-using DynamicData;
+﻿using DynamicData;
 
 using ModManager.Controls;
 using ModManager.Util;
 using ModManager.Util.ScreenReader;
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;

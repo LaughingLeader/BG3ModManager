@@ -6,9 +6,6 @@ using ModManager.Models.View;
 using ModManager.Util;
 using ModManager.ViewModels;
 
-using ReactiveUI;
-
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;

@@ -7,7 +7,7 @@ namespace ModManager.Converters;
 
 public class StringToMarkdownConverter : IValueConverter
 {
-	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is string str && !String.IsNullOrEmpty(str) && parameter is Markdown markdown)
 		{
@@ -16,5 +16,5 @@ public class StringToMarkdownConverter : IValueConverter
 		return null;
 	}
 
-	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => null;
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
 }

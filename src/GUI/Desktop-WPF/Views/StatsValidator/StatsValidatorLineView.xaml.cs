@@ -1,7 +1,5 @@
 ﻿using ModManager.Models.View;
 
-using ReactiveUI;
-
 namespace ModManager.Views.StatsValidator;
 
 public class StatsValidatorLineViewBase : ReactiveUserControl<StatsValidatorLineText> { }
