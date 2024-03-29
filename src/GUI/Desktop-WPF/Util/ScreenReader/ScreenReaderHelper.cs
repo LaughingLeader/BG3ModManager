@@ -3,8 +3,6 @@ using ModManager.Util.ScreenReader;
 
 namespace ModManager;
 
-
-
 public static class ScreenReaderHelper
 {
 	private static bool isLoaded = false;
