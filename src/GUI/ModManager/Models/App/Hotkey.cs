@@ -1,5 +1,7 @@
 ﻿using Avalonia.Input;
 
+using DynamicData;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -86,6 +88,25 @@ public class Hotkey : ReactiveObject, IHotkey
 	public void AddAction(Action action, IObservable<bool> actionCanExecute = null)
 	{
 		_actions.Add(action);
+
+		if (actionCanExecute != null)
+		{
+			AddCanExecuteCondition(actionCanExecute);
+		}
+	}
+
+	private static void RunActionAsync(IScheduler scheduler, Func<Task> action)
+	{
+		scheduler.ScheduleAsync(async (sch, token) =>
+		{
+			await action.Invoke();
+		});
+	}
+
+	public void AddAsyncAction(Func<Task> action, IObservable<bool>? actionCanExecute = null, IScheduler? scheduler = null)
+	{
+		scheduler ??= RxApp.MainThreadScheduler;
+		_actions.Add(() => RunActionAsync(scheduler, action));
 
 		if (actionCanExecute != null)
 		{
