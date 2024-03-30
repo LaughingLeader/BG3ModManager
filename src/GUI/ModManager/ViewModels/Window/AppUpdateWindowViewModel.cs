@@ -13,8 +13,15 @@ using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
-public partial class AppUpdateWindowViewModel : BaseWindowViewModel
+public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
 {
+	#region IClosableViewModel/IRoutableViewModel
+	public string UrlPathSegment => "appupdate";
+	public IScreen HostScreen { get; }
+	[Reactive] public bool IsVisible { get; set; }
+	public RxCommandUnit CloseCommand { get; }
+	#endregion
+
 	public CheckForUpdatesResult? UpdateArgs { get; set; }
 
 	[Reactive] public bool CanConfirm { get; set; }
@@ -80,7 +87,7 @@ public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 	{
 		if(UpdateArgs?.LastVersion != null)
 		{
-			await _updateManager.PrepareUpdateAsync(UpdateArgs.LastVersion);
+			await _updateManager.PrepareUpdateAsync(UpdateArgs.LastVersion, null, token);
 			_updateManager.LaunchUpdater(UpdateArgs.LastVersion);
 			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 			{
@@ -89,8 +96,11 @@ public partial class AppUpdateWindowViewModel : BaseWindowViewModel
 		}
 	}
 
-	public AppUpdateWindowViewModel()
+	public AppUpdateWindowViewModel(IScreen? host = null)
 	{
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
+		CloseCommand = this.CreateCloseCommand();
+
 		CanSkip = true;
 		SkipButtonText = "Close";
 
