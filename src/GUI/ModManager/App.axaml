@@ -10,7 +10,7 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceInclude Source="avares://BG3ModManager/Styling/Resources.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>

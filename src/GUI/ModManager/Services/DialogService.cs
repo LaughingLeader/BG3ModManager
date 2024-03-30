@@ -1,4 +1,7 @@
-﻿using Avalonia.Platform.Storage;
+﻿using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
+
+using FluentAvalonia.UI.Controls;
 
 using System.Collections.Immutable;
 
@@ -7,6 +10,29 @@ public class DialogService : IDialogService
 {
 	private readonly Window _window;
 	private readonly IInteractionsService _interactions;
+
+	public async Task<OpenFileBrowserDialogResults> OpenFolderAsync(OpenFolderBrowserDialogRequest context)
+	{
+		var provider = _window.StorageProvider;
+
+		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
+
+		var opts = new FolderPickerOpenOptions()
+		{
+			Title = context.Title,
+			SuggestedStartLocation = startingFolder,
+			AllowMultiple = context.MultiSelect
+		};
+
+		var files = await _window.StorageProvider.OpenFolderPickerAsync(opts);
+
+		if (files != null && files.Count > 0)
+		{
+			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(string.IsNullOrEmpty).ToArray()!;
+			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths);
+		}
+		return new OpenFileBrowserDialogResults();
+	}
 
 	public async Task<OpenFileBrowserDialogResults> OpenFileAsync(OpenFileBrowserDialogRequest context)
 	{
@@ -18,8 +44,8 @@ public class DialogService : IDialogService
 		{
 			Title = context.Title,
 			SuggestedStartLocation = startingFolder,
-			AllowMultiple = context.MultiSelect,
-		};
+			AllowMultiple = context.MultiSelect
+		};		
 
 		if (context.FileTypes != null)
 		{
@@ -76,6 +102,65 @@ public class DialogService : IDialogService
 			{
 				return await OpenFileAsync(context.Input);
 			}, RxApp.MainThreadScheduler);
+		});
+
+		_interactions.OpenFolderBrowserDialog.RegisterHandler(context =>
+		{
+			return Observable.StartAsync(async () =>
+			{
+				return await OpenFolderAsync(context.Input);
+			}, RxApp.MainThreadScheduler);
+		});
+
+		_interactions.ShowMessageBox.RegisterHandler(async context =>
+		{
+			var data = context.Input;
+			var td = new TaskDialog
+			{
+				Content = data.Message,
+				SubHeader = data.Title,
+			};
+
+			if(data.MessageBoxType.HasFlag(InteractionMessageBoxType.Confirmation))
+			{
+				td.Buttons = [TaskDialogButton.YesButton, TaskDialogButton.CancelButton];
+			}
+			else
+			{
+				td.Buttons = [TaskDialogButton.OKButton];
+			}
+
+			if(data.MessageBoxType.HasFlag(InteractionMessageBoxType.Error))
+			{
+				td.IconSource = new SymbolIconSource { Symbol = Symbol.StopFilled };
+			}
+
+			var app = App.Current.ApplicationLifetime;
+
+			if (app is IClassicDesktopStyleApplicationLifetime desktop)
+			{
+				td.XamlRoot = desktop.MainWindow;
+			}
+			else if (app is ISingleViewApplicationLifetime single)
+			{
+				td.XamlRoot = TopLevel.GetTopLevel(single.MainView);
+			}
+
+			var result = await td.ShowAsync(true);
+
+			if(result is TaskDialogStandardResult taskResult)
+			{
+				switch(taskResult)
+				{
+					case TaskDialogStandardResult.OK:
+					case TaskDialogStandardResult.Yes:
+						context.SetOutput(true);
+						return;
+					default:
+						context.SetOutput(false);
+						break;
+				}
+			}
 		});
 	}
 }

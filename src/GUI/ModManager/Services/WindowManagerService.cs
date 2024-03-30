@@ -1,11 +1,7 @@
 ﻿
 using ModManager.Windows;
 
-using ReactiveUI;
-
-using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
-using System.Windows;
 
 namespace ModManager.Services;
 
@@ -26,8 +22,14 @@ public class WindowWrapper<T> where T : Window
 
 			if (setVisible)
 			{
-				Window.Show();
-				if (Window != _owner) Window.Owner = _owner;
+				if (Window != _owner)
+				{
+					Window.Show(_owner);
+				}
+				else
+				{
+					Window.Show();
+				}
 			}
 			else
 			{
@@ -48,15 +50,15 @@ public class WindowWrapper<T> where T : Window
 public class WindowManagerService
 {
 	public WindowWrapper<MainWindow> Main { get; }
-	public WindowWrapper<AboutWindow> About { get; }
-	public WindowWrapper<AppUpdateWindow> AppUpdate { get; }
-	public WindowWrapper<CollectionDownloadWindow> CollectionDownload { get; }
-	public WindowWrapper<HelpWindow> Help { get; }
-	public WindowWrapper<ModPropertiesWindow> ModProperties { get; }
-	public WindowWrapper<NxmDownloadWindow> NxmDownload { get; }
-	public WindowWrapper<SettingsWindow> Settings { get; }
-	public WindowWrapper<VersionGeneratorWindow> VersionGenerator { get; }
-	public WindowWrapper<StatsValidatorWindow> StatsValidator { get; }
+	//public WindowWrapper<AboutWindow> About { get; }
+	//public WindowWrapper<AppUpdateWindow> AppUpdate { get; }
+	//public WindowWrapper<CollectionDownloadWindow> CollectionDownload { get; }
+	//public WindowWrapper<HelpWindow> Help { get; }
+	//public WindowWrapper<ModPropertiesWindow> ModProperties { get; }
+	//public WindowWrapper<NxmDownloadWindow> NxmDownload { get; }
+	//public WindowWrapper<SettingsWindow> Settings { get; }
+	//public WindowWrapper<VersionGeneratorWindow> VersionGenerator { get; }
+	//public WindowWrapper<StatsValidatorWindow> StatsValidator { get; }
 
 	public MainWindow MainWindow { get; }
 
@@ -66,7 +68,7 @@ public class WindowManagerService
 	{
 		foreach (var window in _windows)
 		{
-			ResourceLocator.SetColorScheme(window.Resources, theme);
+			//ResourceLocator.SetColorScheme(window.Resources, theme);
 		}
 	}
 
@@ -75,43 +77,43 @@ public class WindowManagerService
 		MainWindow = main;
 
 		Main = new(main);
-		About = new(main);
-		AppUpdate = new(main);
-		CollectionDownload = new(main);
-		Help = new(main);
-		ModProperties = new(main);
-		NxmDownload = new(main);
-		Settings = new(main);
-		VersionGenerator = new(main);
-		StatsValidator = new(main);
+		//About = new(main);
+		//AppUpdate = new(main);
+		//CollectionDownload = new(main);
+		//Help = new(main);
+		//ModProperties = new(main);
+		//NxmDownload = new(main);
+		//Settings = new(main);
+		//VersionGenerator = new(main);
+		//StatsValidator = new(main);
 
 		_windows.Add(Main.Window);
-		_windows.Add(About.Window);
-		_windows.Add(AppUpdate.Window);
-		_windows.Add(CollectionDownload.Window);
-		_windows.Add(Help.Window);
-		_windows.Add(ModProperties.Window);
-		_windows.Add(NxmDownload.Window);
-		_windows.Add(Settings.Window);
-		_windows.Add(VersionGenerator.Window);
-		_windows.Add(StatsValidator.Window);
+		//_windows.Add(About.Window);
+		//_windows.Add(AppUpdate.Window);
+		//_windows.Add(CollectionDownload.Window);
+		//_windows.Add(Help.Window);
+		//_windows.Add(ModProperties.Window);
+		//_windows.Add(NxmDownload.Window);
+		//_windows.Add(Settings.Window);
+		//_windows.Add(VersionGenerator.Window);
+		//_windows.Add(StatsValidator.Window);
 
-		Settings.OnToggle.Subscribe(b =>
-		{
-			if (b)
-			{
-				if (Settings.Window.ViewModel == null)
-				{
-					Settings.Window.Init(Main.Window.ViewModel);
-				}
-			}
-			Main.Window.ViewModel.Settings.SettingsWindowIsOpen = b;
-		});
+		//Settings.OnToggle.Subscribe(b =>
+		//{
+		//	if (b)
+		//	{
+		//		if (Settings.Window.ViewModel == null)
+		//		{
+		//			Settings.Window.Init(Main.Window.ViewModel);
+		//		}
+		//	}
+		//	Main.Window.ViewModel.Settings.SettingsWindowIsOpen = b;
+		//});
 
-		AppServices.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
-		{
-			var theme = !darkMode ? App.LightTheme : App.DarkTheme;
-			UpdateColorScheme(theme);
-		});
+		//AppServices.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
+		//{
+		//	var theme = !darkMode ? App.LightTheme : App.DarkTheme;
+		//	UpdateColorScheme(theme);
+		//});
 	}
 }

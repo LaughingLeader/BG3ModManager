@@ -135,7 +135,7 @@ public class ModImportService(IDialogService _dialogService)
 				OnlyMods = true,
 				Extension = ext,
 				ReportProgress = amount => ViewModel.IncreaseMainProgressValue(amount),
-				ShowAlert = ViewModel.ShowAlert
+				ShowAlert = AppServices.Commands.ShowAlert
 			};
 
 			if (_archiveFormats.Contains(ext, StringComparer.OrdinalIgnoreCase))
@@ -167,10 +167,7 @@ public class ModImportService(IDialogService _dialogService)
 		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 			"Import Order & Mods from Archive...",
 			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
-			false,
-			"Import Order & Mods from Archive...",
-			_archiveFileTypes,
-			false
+			_archiveFileTypes
 		));
 		if (dialogResult.Success)
 		{
@@ -205,7 +202,7 @@ public class ModImportService(IDialogService _dialogService)
 					BuiltinMods = builtinMods,
 					OnlyMods = false,
 					ReportProgress = amount => ViewModel.IncreaseMainProgressValue(amount),
-					ShowAlert = ViewModel.ShowAlert
+					ShowAlert = AppServices.Commands.ShowAlert
 				};
 
 				await ImportUtils.ImportArchiveAsync(importOptions);
@@ -536,10 +533,8 @@ public class ModImportService(IDialogService _dialogService)
 		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 			"Import Mods from Archive...",
 			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
-			true,
-			"Import Mods from Archive",
 			_importModFileTypes,
-			false
+			true
 		));
 
 		if (dialogResult.Success)
@@ -561,10 +556,8 @@ public class ModImportService(IDialogService _dialogService)
 		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 			"Import NexusMods ModId(s) from Archive(s)",
 			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
-			true,
-			"Import NexusMods ModId(s) from Archive(s)...",
 			_importModFileTypes,
-			false
+			true
 		));
 
 		if (dialogResult.Success)

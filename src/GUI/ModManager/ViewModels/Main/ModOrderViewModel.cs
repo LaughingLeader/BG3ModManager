@@ -1079,10 +1079,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var result = await _dialogs.SaveFileAsync(new(
 			"Save Load Order As...",
 			Path.Join(startDirectory, outputPath),
-			false,
-			"Save Load Order As...",
-			[CommonFileTypes.Json],
-			true
+			[CommonFileTypes.Json]
 		));
 
 		if (result.Success)
@@ -1844,10 +1841,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var result = await _dialogs.SaveFileAsync(new(
 				"Export Load Order As Text File...",
 				Path.Join(ModImportService.GetInitialStartingDirectory(), DivinityModDataLoader.MakeSafeFilename(outputName, '_')),
-				false,
-				"",
-				CommonFileTypes.ModOrderFileTypes,
-				true
+				CommonFileTypes.ModOrderFileTypes
 			));
 
 			if (result.Success)
@@ -1914,8 +1908,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var result = await _dialogs.OpenFileAsync(new(
 			"Load Mod Order From Save...",
 			ModImportService.GetInitialStartingDirectory(startPath),
-			false,
-			"",
 			[CommonFileTypes.LarianSaveFile, CommonFileTypes.All]
 		));
 
@@ -1980,8 +1972,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var result = await _dialogs.OpenFileAsync(new(
 			"Load Mod Order From File...",
 			ModImportService.GetInitialStartingDirectory(Settings.LastLoadedOrderFilePath),
-			false,
-			"",
 			CommonFileTypes.ModOrderFileTypes
 		));
 

@@ -241,7 +241,7 @@ public class AppKeys : ReactiveObject
 		}
 		catch (Exception ex)
 		{
-			vm.ShowAlert($"Error loading keybindings at '{filePath}': {ex}", AlertType.Danger);
+			AppServices.Commands.ShowAlert($"Error loading keybindings at '{filePath}': {ex}", AlertType.Danger);
 		}
 		return false;
 	}

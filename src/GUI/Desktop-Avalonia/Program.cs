@@ -1,4 +1,9 @@
-﻿namespace ModManager;
+﻿using Avalonia;
+using Avalonia.ReactiveUI;
+
+using System;
+
+namespace ModManager;
 
 internal class Program
 {

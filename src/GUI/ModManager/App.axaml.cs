@@ -10,6 +10,13 @@ public partial class App : Application
 
 	public IClassicDesktopStyleApplicationLifetime? DesktopLifetime => ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
 
+	public void Shutdown(int errorCode = 0)
+	{
+		DesktopLifetime?.Shutdown(errorCode);
+	}
+
+	public static new App Current => (App)Application.Current!;
+
 	public override void OnFrameworkInitializationCompleted()
 	{
 #if DEBUG

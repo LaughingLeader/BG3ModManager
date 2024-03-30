@@ -34,7 +34,7 @@ public class MainWindowExceptionHandler : IObserver<Exception>
 			{
 				_viewModel.MainProgressIsActive = false;
 			}
-			_viewModel.View.AlertBar.SetDangerAlert(error.Message);
+			AppServices.Commands.ShowAlert(error.Message, AlertType.Danger, 30);
 			//throw error;
 		});
 	}
