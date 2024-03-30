@@ -26,7 +26,7 @@ public class InteractionsService : IInteractionsService
 	/// <inheritdoc/>
 	public Interaction<OpenFileBrowserDialogRequest, OpenFileBrowserDialogResults> OpenFileBrowserDialog { get; }
 	/// <inheritdoc/>
-	public Interaction<OpenFolderBrowserDialogRequest, OpenFolderBrowserDialogResults> OpenFolderBrowserDialog { get; }
+	public Interaction<OpenFolderBrowserDialogRequest, OpenFileBrowserDialogResults> OpenFolderBrowserDialog { get; }
 	/// <inheritdoc/>
 	public Interaction<ShowAlertRequest, bool> ShowAlert { get; }
 	/// <inheritdoc/>
