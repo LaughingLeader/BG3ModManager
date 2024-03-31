@@ -1,10 +1,5 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
 
-using FluentAvalonia.Styling;
 using ModManager.Models.View;
 
 namespace ModManager.Views.StatsValidator;
@@ -15,8 +10,8 @@ public partial class StatsValidatorFileEntryView : ReactiveUserControl<StatsVali
 	{
 		if (!isError)
 		{
-			if(Application.Current != null 
-				&& Application.Current.TryFindResource("TextFillColorSecondaryBrush", out var value) 
+			if (Application.Current != null
+				&& Application.Current.TryFindResource("TextFillColorSecondaryBrush", out var value)
 				&& value is IBrush brush)
 			{
 				return brush;
@@ -27,9 +22,9 @@ public partial class StatsValidatorFileEntryView : ReactiveUserControl<StatsVali
 	}
 
 	public StatsValidatorFileEntryView()
-    {
-        InitializeComponent();
+	{
+		InitializeComponent();
 
 		this.OneWayBind(ViewModel, vm => vm.HasErrors, x => x.TextControl.Foreground, ErrorToForeground);
-    }
+	}
 }

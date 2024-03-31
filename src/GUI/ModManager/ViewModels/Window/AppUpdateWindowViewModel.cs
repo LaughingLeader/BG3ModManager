@@ -1,5 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia.Controls.ApplicationLifetimes;
 
 using ModManager.Util;
 
@@ -9,7 +8,6 @@ using Onova.Services;
 
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
@@ -85,7 +83,7 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 
 	private async Task RunUpdateAsync(CancellationToken token)
 	{
-		if(UpdateArgs?.LastVersion != null)
+		if (UpdateArgs?.LastVersion != null)
 		{
 			await _updateManager.PrepareUpdateAsync(UpdateArgs.LastVersion, null, token);
 			_updateManager.LaunchUpdater(UpdateArgs.LastVersion);
@@ -113,7 +111,8 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 		ConfirmCommand = ReactiveCommand.CreateFromTask(RunUpdateAsync, canConfirm, RxApp.MainThreadScheduler);
 
 		var canSkip = this.WhenAnyValue(x => x.CanSkip);
-		SkipCommand = ReactiveCommand.Create(() => {
+		SkipCommand = ReactiveCommand.Create(() =>
+		{
 			IsVisible = false;
 		}, canSkip);
 	}

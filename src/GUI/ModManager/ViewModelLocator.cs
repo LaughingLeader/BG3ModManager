@@ -9,6 +9,7 @@ public static class ViewModelLocator
 	public static DeleteFilesViewModel DeleteFiles => AppServices.Get<DeleteFilesViewModel>()!;
 	public static ModOrderViewModel ModOrder => AppServices.Get<ModOrderViewModel>()!;
 	public static ModUpdatesViewModel ModUpdates => AppServices.Get<ModUpdatesViewModel>()!;
+	public static MainCommandBarViewModel CommandBar => AppServices.Get<MainCommandBarViewModel>()!;
 
 	public static SettingsWindowViewModel Settings => AppServices.Get<SettingsWindowViewModel>()!;
 

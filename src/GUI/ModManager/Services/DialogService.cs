@@ -30,7 +30,7 @@ public class DialogService : IDialogService
 
 		if (files != null && files.Count > 0)
 		{
-			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(Validators.IsValid).ToArray()!;
+			var filePaths = files.Select(x => x.TryGetLocalPath()).Where(Validators.IsValid).ToArray()!;
 			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths);
 		}
 		return new OpenFileBrowserDialogResults();
@@ -47,18 +47,18 @@ public class DialogService : IDialogService
 			Title = context.Title,
 			SuggestedStartLocation = startingFolder,
 			AllowMultiple = context.MultiSelect
-		};		
+		};
 
 		if (context.FileTypes != null)
 		{
-			opts.FileTypeFilter = context.FileTypes.Select(x =>x.ToFilePickerType()).ToImmutableList();
+			opts.FileTypeFilter = context.FileTypes.Select(x => x.ToFilePickerType()).ToImmutableList();
 		}
 
 		var files = await _window.StorageProvider.OpenFilePickerAsync(opts);
 
-		if(files != null && files.Count > 0)
+		if (files != null && files.Count > 0)
 		{
-			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(Validators.IsValid).ToArray()!;
+			var filePaths = files.Select(x => x.TryGetLocalPath()).Where(Validators.IsValid).ToArray()!;
 			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths);
 		}
 		return new OpenFileBrowserDialogResults();
@@ -122,7 +122,7 @@ public class DialogService : IDialogService
 				SubHeader = data.Title,
 			};
 
-			if(data.MessageBoxType.HasFlag(InteractionMessageBoxType.Confirmation))
+			if (data.MessageBoxType.HasFlag(InteractionMessageBoxType.Confirmation))
 			{
 				td.Buttons = [TaskDialogButton.YesButton, TaskDialogButton.CancelButton];
 			}
@@ -131,7 +131,7 @@ public class DialogService : IDialogService
 				td.Buttons = [TaskDialogButton.OKButton];
 			}
 
-			if(data.MessageBoxType.HasFlag(InteractionMessageBoxType.Error))
+			if (data.MessageBoxType.HasFlag(InteractionMessageBoxType.Error))
 			{
 				td.IconSource = new SymbolIconSource { Symbol = Symbol.StopFilled };
 			}
@@ -149,9 +149,9 @@ public class DialogService : IDialogService
 
 			var result = await td.ShowAsync(true);
 
-			if(result is TaskDialogStandardResult taskResult)
+			if (result is TaskDialogStandardResult taskResult)
 			{
-				switch(taskResult)
+				switch (taskResult)
 				{
 					case TaskDialogStandardResult.OK:
 					case TaskDialogStandardResult.Yes:

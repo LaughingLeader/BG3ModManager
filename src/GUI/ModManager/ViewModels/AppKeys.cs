@@ -8,12 +8,8 @@ using ModManager.ViewModels.Main;
 
 using Newtonsoft.Json;
 
-using ReactiveUI;
-
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Reflection;
-using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 

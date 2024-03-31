@@ -1,7 +1,6 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-using ModManager.Services;
 using ModManager.Windows;
 
 namespace ModManager;

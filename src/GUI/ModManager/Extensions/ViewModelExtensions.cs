@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ModManager.ViewModels;
+﻿namespace ModManager.ViewModels;
 public static class ViewModelExtensions
 {
 	public static RxCommandUnit CreateCloseCommand(this IClosableViewModel viewModel, IObservable<bool>? canExecute = null, Action? invokeAction = null)

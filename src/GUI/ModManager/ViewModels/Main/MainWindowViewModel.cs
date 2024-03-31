@@ -11,7 +11,6 @@ using ModManager.Models.Updates;
 using ModManager.ModUpdater.Cache;
 using ModManager.Services;
 using ModManager.Util;
-using ModManager.Views.Main;
 using ModManager.Windows;
 
 using Newtonsoft.Json.Linq;
@@ -366,7 +365,7 @@ Directory the zip will be extracted to:
 
 				_interactions.ShowMessageBox.Handle(new(messageText, "Download & Install the Script Extender?", InteractionMessageBoxType.Confirmation)).Subscribe(result =>
 				{
-					if(result)
+					if (result)
 					{
 						DownloadScriptExtender(exeDir);
 					}
@@ -925,7 +924,7 @@ Directory the zip will be extracted to:
 			}
 			else
 			{
-				var result = await _dialogs.OpenFolderAsync(new("Set Game Installation Folder", 
+				var result = await _dialogs.OpenFolderAsync(new("Set Game Installation Folder",
 					Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
 					"Set the path to the Baldur's Gate 3 root installation folder"));
 
@@ -1313,7 +1312,7 @@ Directory the zip will be extracted to:
 		}
 
 		var entry = mod.ToModInterface();
-		if(mod.IsActive)
+		if (mod.IsActive)
 		{
 			var existingInterface = ViewModelLocator.ModOrder.ActiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
 			if (existingInterface != null)
@@ -1329,7 +1328,7 @@ Directory the zip will be extracted to:
 		else
 		{
 			var existingInterface = ViewModelLocator.ModOrder.InactiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
-			if(existingInterface != null)
+			if (existingInterface != null)
 			{
 				ViewModelLocator.ModOrder.InactiveMods.Replace(existingInterface, entry);
 			}
@@ -1372,7 +1371,7 @@ Directory the zip will be extracted to:
 			{
 				baseOrderName = $"{profile.Name}_{order.Name}";
 			}
-			
+
 			var outputName = DivinityModDataLoader.MakeSafeFilename($"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.zip", '_');
 
 			var result = await _dialogs.SaveFileAsync(new(
@@ -1430,10 +1429,10 @@ Directory the zip will be extracted to:
 			var initialFilePath = Path.Join(rootFolder, rootFileName + "_1.lsv");
 			var renameFile = await _dialogs.SaveFileAsync(new(
 				"Rename Save As...",
-				initialFilePath, 
+				initialFilePath,
 				[CommonFileTypes.LarianSaveFile], true));
 
-			if(renameFile.Success)
+			if (renameFile.Success)
 			{
 				AppServices.Get<IFileSystemService>()!.EnsureDirectoryExists(rootFolder);
 
@@ -1640,10 +1639,10 @@ Directory the zip will be extracted to:
 			var targetUUIDs = targetMods.Select(x => x.UUID).ToHashSet();
 
 			List<ModFileDeletionData> deleteFilesData = [];
-			foreach(var entry in targetMods)
+			foreach (var entry in targetMods)
 			{
 				var data = ModFileDeletionData.FromModEntry(entry, false, isDeletingDuplicates, AppServices.Mods.AllMods);
-				if(data != null)
+				if (data != null)
 				{
 					deleteFilesData.Add(data);
 				}
@@ -1675,7 +1674,7 @@ Directory the zip will be extracted to:
 
 			var targetMods = _manager.SelectedPakMods.ToImmutableList();
 
-			int totalWork = targetMods.Count;
+			var totalWork = targetMods.Count;
 			var taskStepAmount = 1.0 / totalWork;
 			MainProgressTitle = $"Extracting {totalWork} mods...";
 			MainProgressValue = 0d;
@@ -1692,7 +1691,7 @@ Directory the zip will be extracted to:
 				try
 				{
 					//Put each pak into its own folder
-					string pakName = Path.GetFileNameWithoutExtension(path);
+					var pakName = Path.GetFileNameWithoutExtension(path);
 					RxApp.MainThreadScheduler.Schedule(_ => MainProgressWorkText = $"Extracting {pakName}...");
 					var destination = Path.Join(outputDirectory, pakName);
 

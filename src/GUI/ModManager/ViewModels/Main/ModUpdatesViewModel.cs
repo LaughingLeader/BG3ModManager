@@ -3,17 +3,8 @@
 using ModManager.Models.Mod;
 using ModManager.Models.Updates;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using Splat;
-
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Windows.Input;
 
 namespace ModManager.ViewModels.Main;
 

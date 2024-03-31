@@ -1,14 +1,7 @@
 ﻿using ModManager.Services;
-using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
 using ModManager.Views.Main;
-
-using ReactiveUI;
-
-using Splat;
-
-using System.Reflection;
 
 namespace ModManager;
 
@@ -42,6 +35,7 @@ public static class AppServices
 
 		resolver.RegisterLazySingleton<IScreen>(() => ViewModelLocator.Main);
 
+		SplatRegistrations.RegisterLazySingleton<MainCommandBarViewModel>();
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();
@@ -57,6 +51,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ExportOrderToArchiveViewModel>();
 
+		SplatRegistrations.RegisterLazySingleton<MainCommandBar>();
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesView>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();

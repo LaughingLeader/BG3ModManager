@@ -334,7 +334,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 
 		TargetVersion = _emptyVersion;
 
-		if(HostScreen is MainWindowViewModel main)
+		if (HostScreen is MainWindowViewModel main)
 		{
 			main.WhenAnyValue(x => x.Settings).BindTo(this, x => x.Settings);
 			main.WhenAnyValue(x => x.Settings.UpdateSettings).BindTo(this, x => x.UpdateSettings);

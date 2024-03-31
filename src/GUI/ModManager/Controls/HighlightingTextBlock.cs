@@ -1,10 +1,6 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Documents;
+﻿using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.LogicalTree;
 using Avalonia.Media;
 
 namespace ModManager.Controls;
@@ -114,7 +110,7 @@ public class HighlightingTextBlock : TemplatedControl
 			this.ObservableForProperty(x => x.HighlightForeground).BindTo(textRun, x => x.Foreground),
 			this.ObservableForProperty(x => x.HighlightBackground).BindTo(textRun, x => x.Background));
 
-			textRun.DetachedFromLogicalTree += (o,e) =>
+			textRun.DetachedFromLogicalTree += (o, e) =>
 			{
 				disposables?.Dispose();
 			};
@@ -127,7 +123,7 @@ public class HighlightingTextBlock : TemplatedControl
 		base.OnApplyTemplate(e);
 
 		highlightTextBlock = e.NameScope.Find<TextBlock>(HighlightTextBlockName);
-		if(highlightTextBlock != null)
+		if (highlightTextBlock != null)
 		{
 			ProcessTextChanged(Text, HighlightStart, HighlightEnd);
 		}
@@ -139,7 +135,7 @@ public class HighlightingTextBlock : TemplatedControl
 		{
 			foreach (var run in highlightTextBlock.Inlines)
 			{
-				if(run != null)
+				if (run != null)
 				{
 					run.Foreground = foreground;
 					run.Background = background;

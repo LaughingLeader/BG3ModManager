@@ -1,9 +1,4 @@
-﻿using FluentAvalonia.UI;
-
-using DynamicData;
-using DynamicData.Aggregation;
-
-using ModManager.Extensions;
+﻿using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
@@ -27,7 +22,6 @@ using System.Globalization;
 using System.Text;
 
 using ZstdSharp;
-using Avalonia;
 
 namespace ModManager.Services;
 

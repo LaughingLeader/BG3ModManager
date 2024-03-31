@@ -5,7 +5,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:rxui="http://reactiveui.net"
-	xmlns:ui="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+	xmlns:ui="using:FluentAvalonia.UI.Controls"
 	xmlns:vm="using:ModManager.ViewModels.Main"
 	Title="{Binding Title}"
 	d:DesignHeight="450"

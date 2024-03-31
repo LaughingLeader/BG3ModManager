@@ -8,17 +8,8 @@ using LSLib.LS.Story.GoalParser;
 
 using ModManager.Models.Mod;
 using ModManager.Models.View;
-using ModManager.Util;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 using System.Globalization;
-using System.IO;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Windows;
 
 namespace ModManager.ViewModels;
 public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
@@ -95,7 +86,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 				}
 				return String.Join(Environment.NewLine, lineText);
 			}
-			else if(lines != null && startLine < lines.Length)
+			else if (lines != null && startLine < lines.Length)
 			{
 				return lines[startLine].Trim();
 			}
@@ -139,7 +130,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 	{
 		var gameDataPath = AppServices.Settings.ManagerSettings.GameDataPath;
 
-		DateTimeOffset startTime = DateTimeOffset.Now;
+		var startTime = DateTimeOffset.Now;
 
 		if (_validator.GameDataPath != gameDataPath)
 		{

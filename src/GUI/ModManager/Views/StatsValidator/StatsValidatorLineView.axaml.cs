@@ -4,8 +4,8 @@ namespace ModManager.Views.StatsValidator;
 
 public partial class StatsValidatorLineView : ReactiveUserControl<StatsValidatorLineText>
 {
-    public StatsValidatorLineView()
-    {
-        InitializeComponent();
-    }
+	public StatsValidatorLineView()
+	{
+		InitializeComponent();
+	}
 }

@@ -5,7 +5,7 @@
 	xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
 	xmlns:local="using:ModManager"
 	xmlns:ui="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
-	RequestedThemeVariant="Default">
+	RequestedThemeVariant="Dark">
 	<!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
 	<Application.Resources>

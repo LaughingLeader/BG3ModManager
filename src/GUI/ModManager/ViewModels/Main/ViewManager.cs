@@ -1,11 +1,4 @@
-﻿using ModManager.Views.Main;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using Splat;
-
-namespace ModManager.ViewModels.Main;
+﻿namespace ModManager.ViewModels.Main;
 
 public class ViewManager : ReactiveObject
 {

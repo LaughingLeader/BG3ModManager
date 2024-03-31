@@ -1,13 +1,8 @@
-﻿using Avalonia.Media.Imaging;
-
-using DynamicData.Binding;
+﻿using DynamicData.Binding;
 
 using ModManager.Models.NexusMods;
-using ModManager.Util;
 
 using NexusModsNET.DataModels.GraphQL.Types;
-
-using System.Windows.Input;
 
 namespace ModManager.ViewModels;
 
@@ -89,7 +84,7 @@ public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewMo
 
 		SelectAllCommand = ReactiveCommand.Create<bool>(b =>
 		{
-			if(Data?.Mods != null)
+			if (Data?.Mods != null)
 			{
 				foreach (var mod in Data.Mods.Items)
 				{

@@ -1,10 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive;
-using System.Reactive.Linq;
-
-namespace ModManager.ViewModels;
+﻿namespace ModManager.ViewModels;
 
 public class BaseProgressViewModel : ReactiveObject, IClosableViewModel
 {

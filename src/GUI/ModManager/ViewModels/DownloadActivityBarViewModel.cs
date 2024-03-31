@@ -1,11 +1,4 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Windows.Input;
-
-namespace ModManager.ViewModels;
+﻿namespace ModManager.ViewModels;
 
 public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 {
@@ -59,7 +52,7 @@ public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 
 	public DownloadActivityBarViewModel()
 	{
-		CloseCommand = this.CreateCloseCommand(invokeAction:Cancel);
+		CloseCommand = this.CreateCloseCommand(invokeAction: Cancel);
 
 		this.WhenAnyValue(x => x.ProgressValue).Select(Clamp).ToUIProperty(this, x => x.CurrentValue, 0d);
 		this.WhenAnyValue(x => x.ProgressText).ToUIProperty(this, x => x.CurrentText, "");

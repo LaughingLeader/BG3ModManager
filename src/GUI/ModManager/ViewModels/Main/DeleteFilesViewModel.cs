@@ -2,18 +2,6 @@
 using DynamicData.Binding;
 
 using ModManager.Models;
-using ModManager.Util;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-using Splat;
-
-using System.IO;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Windows;
 
 namespace ModManager.ViewModels.Main;
 

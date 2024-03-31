@@ -3,12 +3,7 @@ using DynamicData.Binding;
 
 using ModManager.Models.Mod;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Linq;
 
 namespace ModManager.ViewModels;
 

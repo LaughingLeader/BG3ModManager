@@ -1,6 +1,4 @@
-﻿using Splat;
-
-namespace ModManager;
+﻿namespace ModManager;
 public static class SplatExtensions
 {
 	public static void RegisterSingletonView<TViewModel, TView>(this IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>

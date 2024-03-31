@@ -1,9 +1,4 @@
-﻿
-
-using Avalonia.Controls;
-
-using ModManager.Models.View;
-using ModManager.ViewModels;
+﻿using ModManager.Models.View;
 using ModManager.ViewModels.Main;
 using ModManager.Views.Main;
 using ModManager.Views.StatsValidator;
@@ -21,7 +16,7 @@ public class ViewLocator : IViewLocator
 
 	public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
 	{
-		if(viewModel != null)
+		if (viewModel != null)
 		{
 			try
 			{
@@ -54,6 +49,7 @@ public class ViewLocator : IViewLocator
 	{
 		var resolver = Locator.CurrentMutable;
 
+		RegisterConstant<MainCommandBarViewModel, MainCommandBar>(resolver);
 		RegisterConstant<DeleteFilesViewModel, DeleteFilesView>(resolver);
 		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
 		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);

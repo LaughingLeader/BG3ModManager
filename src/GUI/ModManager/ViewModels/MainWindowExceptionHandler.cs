@@ -1,9 +1,6 @@
 ﻿using ModManager.ViewModels.Main;
 
-using ReactiveUI;
-
 using System.Diagnostics;
-using System.Reactive.Concurrency;
 
 namespace ModManager.ViewModels;
 
