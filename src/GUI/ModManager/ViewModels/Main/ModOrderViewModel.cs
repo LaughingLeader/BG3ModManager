@@ -11,7 +11,6 @@ using ModManager.Models.Mod;
 using ModManager.Models.Settings;
 using ModManager.Services;
 using ModManager.Util;
-using ModManager.Views.Main;
 
 using Newtonsoft.Json;
 
@@ -19,7 +18,6 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 
 using TextCopy;
 
@@ -34,6 +32,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private readonly IInteractionsService _interactions;
 	private readonly IGlobalCommandsService _globalCommands;
 	private readonly IDialogService _dialogs;
+
+	public MainCommandBarViewModel CommandBar => ViewModelLocator.CommandBar;
 
 	public DivinityPathwayData PathwayData => AppServices.Pathways.Data;
 	public ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
@@ -1589,7 +1589,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			if (result.Success)
 			{
-				string filePath = result.File!;
+				var filePath = result.File!;
 				var exportMods = new List<IModEntry>(ActiveMods);
 				exportMods.AddRange(ModManager.ForceLoadedMods.ToList().OrderBy(x => x.Name).ToModInterface());
 
@@ -1981,9 +1981,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			SelectedModOrder?.Sort(SortModOrder);
 		});
 
-		modManagerService.AdventureMods.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
-			.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex)).Select(x => x.Second)
-			.Select(x => modManagerService.AdventureMods.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
+		modManagerService.AdventureMods.ToObservableChangeSet().CountChanged()
+		.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex))
+		//.ThrottleFirst(TimeSpan.FromMilliseconds(50))
+		.ObserveOn(RxApp.MainThreadScheduler)
+		.Select(x => x.First.ElementAtOrDefault(x.Second)?.Item.Current)
+		.WhereNotNull()
+		.ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
 
 		this.WhenAnyValue(x => x.SelectedAdventureModIndex).Throttle(TimeSpan.FromMilliseconds(50)).Subscribe((i) =>
 		{
@@ -1996,7 +2000,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 			}
 		});
-
 
 		#region GM Support
 
