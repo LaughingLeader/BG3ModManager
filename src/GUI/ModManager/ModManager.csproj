@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<AssemblyName>ModManager</AssemblyName>
 		<AssemblyTitle>BG3ModManager</AssemblyTitle>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,15 +14,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
 		<PackageReference Include="Avalonia" Version="11.0.10" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
 		<PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
 		<PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.16" />
-		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.10.1" />
-		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.10.1" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
+		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.10.2" />
+		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.10.2" />
+		<PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
 		<PackageReference Include="FluentAvaloniaUI" Version="2.0.5" />
+		<PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
 		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="DynamicData" Version="8.4.1" />
 		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
@@ -37,5 +39,18 @@
 	<ItemGroup>
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Resources\*.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<Resource Include="Resources\Icons\*.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\Icons\*.svg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\BG3MMSplashScreen.png" />
 	</ItemGroup>
 </Project>

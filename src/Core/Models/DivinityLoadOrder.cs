@@ -42,7 +42,7 @@ public class DivinityLoadOrder : ReactiveObject
 	[DataMember]
 	public List<DivinityLoadOrderEntry> Order { get; set; } = [];
 
-	public void Add(DivinityModData mod, bool force = false)
+	public void Add(IModEntry mod, bool force = false)
 	{
 		try
 		{
@@ -50,7 +50,11 @@ public class DivinityLoadOrder : ReactiveObject
 			{
 				if (force)
 				{
-					Order.Add(mod.ToOrderEntry());
+					Order.Add(new()
+					{
+						Name = mod.DisplayName,
+						UUID = mod.UUID
+					});
 				}
 				else
 				{
@@ -67,12 +71,20 @@ public class DivinityLoadOrder : ReactiveObject
 						}
 						if (!alreadyInOrder)
 						{
-							Order.Add(mod.ToOrderEntry());
+							Order.Add(new()
+							{
+								Name = mod.DisplayName,
+								UUID = mod.UUID
+							});
 						}
 					}
 					else
 					{
-						Order.Add(mod.ToOrderEntry());
+						Order.Add(new()
+						{
+							Name = mod.DisplayName,
+							UUID = mod.UUID
+						});
 					}
 				}
 			}
@@ -136,7 +148,7 @@ public class DivinityLoadOrder : ReactiveObject
 		}
 	}
 
-	public void AddRange(IEnumerable<DivinityModData> mods, bool replace = false)
+	public void AddRange(IEnumerable<IModEntry> mods, bool replace = false)
 	{
 		foreach (var mod in mods)
 		{
@@ -144,15 +156,7 @@ public class DivinityLoadOrder : ReactiveObject
 		}
 	}
 
-	public void AddRange(IEnumerable<IDivinityModData> mods, bool replace = false)
-	{
-		foreach (var mod in mods)
-		{
-			Add(mod, replace);
-		}
-	}
-
-	public void Remove(DivinityModData mod)
+	public void Remove(IModEntry mod)
 	{
 		try
 		{
@@ -176,7 +180,7 @@ public class DivinityLoadOrder : ReactiveObject
 		}
 	}
 
-	public void RemoveRange(IEnumerable<DivinityModData> mods)
+	public void RemoveRange(IEnumerable<IModEntry> mods)
 	{
 		if (Order.Count > 0 && mods != null)
 		{

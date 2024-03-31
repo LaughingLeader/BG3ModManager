@@ -3,12 +3,14 @@ using Avalonia.Platform.Storage;
 
 using FluentAvalonia.UI.Controls;
 
+using ModManager.Windows;
+
 using System.Collections.Immutable;
 
 namespace ModManager.Services;
 public class DialogService : IDialogService
 {
-	private readonly Window _window;
+	private static Window _window => Locator.Current.GetService<MainWindow>()!;
 	private readonly IInteractionsService _interactions;
 
 	public async Task<OpenFileBrowserDialogResults> OpenFolderAsync(OpenFolderBrowserDialogRequest context)
@@ -28,7 +30,7 @@ public class DialogService : IDialogService
 
 		if (files != null && files.Count > 0)
 		{
-			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(string.IsNullOrEmpty).ToArray()!;
+			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(Validators.IsValid).ToArray()!;
 			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths);
 		}
 		return new OpenFileBrowserDialogResults();
@@ -56,7 +58,7 @@ public class DialogService : IDialogService
 
 		if(files != null && files.Count > 0)
 		{
-			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(string.IsNullOrEmpty).ToArray()!;
+			string[] filePaths = files.Select(x => x.TryGetLocalPath()).Where(Validators.IsValid).ToArray()!;
 			return new OpenFileBrowserDialogResults(true, filePaths.FirstOrDefault(), filePaths);
 		}
 		return new OpenFileBrowserDialogResults();
@@ -91,10 +93,9 @@ public class DialogService : IDialogService
 		return new OpenFileBrowserDialogResults();
 	}
 
-	public DialogService(Window targetWindow)
+	public DialogService(IInteractionsService interactionsService)
 	{
-		_window = targetWindow;
-		_interactions = Locator.Current.GetService<IInteractionsService>()!;
+		_interactions = interactionsService;
 
 		_interactions.OpenFileBrowserDialog.RegisterHandler(context =>
 		{

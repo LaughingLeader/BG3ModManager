@@ -2,6 +2,7 @@
 	x:Class="ModManager.App"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
 	xmlns:local="using:ModManager"
 	xmlns:ui="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
 	RequestedThemeVariant="Default">
@@ -12,11 +13,47 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
 			</ResourceDictionary.MergedDictionaries>
+
+			<!--  TreeDataGrid Resources  -->
+			<Color x:Key="SystemBaseMediumLowColor">Transparent</Color>
+			<Color x:Key="SystemBaseHighColor">WhiteSmoke</Color>
+			<Color x:Key="SystemListLowColor">DimGray</Color>
+			<ControlTheme x:Key="FluentTreeViewExpandCollapseChevron" TargetType="ToggleButton">
+				<Setter Property="Margin" Value="0" />
+				<Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
+				<Setter Property="Height" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
+				<Setter Property="Template">
+					<ControlTemplate>
+						<Border
+							Width="{TemplateBinding Width}"
+							Height="{TemplateBinding Height}"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							Background="Transparent">
+							<controls:SymbolIcon
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Symbol="ChevronRight" />
+						</Border>
+					</ControlTemplate>
+				</Setter>
+
+				<Style Selector="^:checked /template/ Path#ChevronPath">
+					<Setter Property="Data">
+						<Template>
+							<controls:SymbolIcon Symbol="ChevronLeft" />
+						</Template>
+					</Setter>
+				</Style>
+			</ControlTheme>
 		</ResourceDictionary>
 	</Application.Resources>
 
 	<Application.Styles>
+		<ui:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />
+
 		<StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
-		<ui:FluentAvaloniaTheme CustomAccentColor="Coral" PreferSystemTheme="False" />
+
+		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
 	</Application.Styles>
 </Application>

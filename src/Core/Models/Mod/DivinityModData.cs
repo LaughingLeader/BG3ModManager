@@ -18,10 +18,8 @@ namespace ModManager.Models.Mod;
 
 [DataContract]
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
-public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISelectable
+public class DivinityModData : ReactiveObject, IDivinityModData
 {
-	public ModEntryType EntryType => ModEntryType.Mod;
-
 	[Reactive] public string FilePath { get; set; }
 
 	#region meta.lsx Properties
@@ -115,18 +113,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData, IModEntry, ISel
 	[Reactive] public bool IsEditorMod { get; set; }
 
 	[Reactive] public bool IsActive { get; set; }
-
-	private bool isSelected = false;
-
-	public bool IsSelected
-	{
-		get => isSelected;
-		set
-		{
-			if (!IsVisible) value = false;
-			this.RaiseAndSetIfChanged(ref isSelected, value);
-		}
-	}
+	[Reactive] public bool IsSelected { get; set; }
+	[Reactive] public bool IsExpanded { get; set; }
+	[Reactive] public bool IsDraggable { get; set; }
 
 	//These properties may be accessed from code, so they need BindTo in order to be updated as soon as possible.
 	[Reactive] public string FileName { get; private set; }

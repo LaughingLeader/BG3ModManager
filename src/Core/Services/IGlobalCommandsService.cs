@@ -12,7 +12,7 @@ public interface IGlobalCommandsService
 	ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> ToggleNameDisplayCommand { get; }
 	ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> DeleteModCommand { get; }
+	ReactiveCommand<IModEntry?, Unit> DeleteModCommand { get; }
 	RxCommandUnit DeleteSelectedModsCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }

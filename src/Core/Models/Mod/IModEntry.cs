@@ -1,15 +1,23 @@
-﻿namespace ModManager.Models.Mod;
+﻿using DynamicData.Binding;
 
-public interface IModEntry
+namespace ModManager.Models.Mod;
+
+public interface IModEntry : ISelectable
 {
 	ModEntryType EntryType { get; }
 
-	string UUID { get; }
-	string DisplayName { get; }
+	string? UUID { get; }
+	string? DisplayName { get; }
+	string? Version { get; }
+	string? Author { get; }
+	string? LastUpdated { get; }
 
 	int Index { get; set; }
 	bool IsActive { get; set; }
-	bool IsVisible { get; set; }
+	bool IsExpanded { get; set; }
+	bool CanDelete { get; }
 
-	string Export(ModExportType exportType);
+	IReadOnlyCollection<IModEntry>? Children { get; }
+
+	string? Export(ModExportType exportType);
 }

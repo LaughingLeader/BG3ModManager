@@ -1,10 +1,8 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using ModManager.Models.View;
 
 namespace ModManager.Views.StatsValidator;
 
-public partial class StatsValidatorLineView : UserControl
+public partial class StatsValidatorLineView : ReactiveUserControl<StatsValidatorLineText>
 {
     public StatsValidatorLineView()
     {

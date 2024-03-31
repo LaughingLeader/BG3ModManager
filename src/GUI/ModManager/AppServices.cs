@@ -2,6 +2,8 @@
 using ModManager.Util;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.Views.Main;
+
 using ReactiveUI;
 
 using Splat;
@@ -30,7 +32,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterConstant<IBackgroundCommandService>(new BackgroundCommandService(DivinityApp.PIPE_ID));
 		SplatRegistrations.RegisterLazySingleton<ModImportService>();
-
+		SplatRegistrations.RegisterLazySingleton<IDialogService, DialogService>();
 		resolver.RegisterConstant<IViewLocator>(new ViewLocator());
 
 		//SplatRegistrations.Register<ModListDropHandler>();
@@ -55,6 +57,10 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ExportOrderToArchiveViewModel>();
 
+		SplatRegistrations.RegisterLazySingleton<DeleteFilesView>();
+		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
+		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();
+
 		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
 		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
@@ -66,7 +72,6 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesConfirmationView>();
-		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesLayout>();*/
 
 		//SplatRegistrations.RegisterLazySingleton<MainWindow>();
@@ -76,17 +81,17 @@ public static class AppServices
 		SplatRegistrations.SetupIOC();
 	}
 
-	public static T Get<T>(string contract = null)
+	public static T Get<T>(string? contract = null)
 	{
-		return Locator.Current.GetService<T>(contract);
+		return Locator.Current.GetService<T>(contract)!;
 	}
 
-	public static void Register<T>(Func<object> constructorCallback, string contract = null)
+	public static void Register<T>(Func<object> constructorCallback, string? contract = null)
 	{
 		Locator.CurrentMutable.Register(constructorCallback, typeof(T), contract);
 	}
 
-	public static void RegisterSingleton<T>(T instance, string contract = null)
+	public static void RegisterSingleton<T>(T instance, string? contract = null)
 	{
 		Locator.CurrentMutable.RegisterConstant(instance, typeof(T), contract);
 	}

@@ -2,5 +2,4 @@
 
 namespace ModManager;
 
-public record DeleteModsRequest(List<DivinityModData> TargetMods, 
-	bool IsDeletingDuplicates = false, IEnumerable<DivinityModData>? LoadedMods = null);
+public record DeleteModsRequest(IEnumerable<IModEntry> TargetMods, bool IsDeletingDuplicates = false);

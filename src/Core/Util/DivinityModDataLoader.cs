@@ -1336,7 +1336,18 @@ public static partial class DivinityModDataLoader
 						{
 							IsDecipheredOrder = true
 						};
-						order.AddRange(exportedOrder);
+						foreach(var entry in exportedOrder)
+						{
+							var data = allMods.FirstOrDefault(x => x.UUID == entry.UUID);
+							if(data != null)
+							{
+								order.Add(new ModEntry(data));
+							}
+							else
+							{
+								//TODO Missing mod data
+							}
+						}
 						DivinityApp.Log(String.Join("\n", order.Order.Select(x => x.UUID)));
 						var modGUIDs = allMods.Select(x => x.UUID).ToHashSet();
 						foreach (var entry in order.Order)
@@ -1439,7 +1450,7 @@ public static partial class DivinityModDataLoader
 		return order;
 	}
 
-	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<IModEntry> order)
+	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<DivinityModData> order)
 	{
 		if (Directory.Exists(folder))
 		{
@@ -1575,7 +1586,7 @@ public static partial class DivinityModDataLoader
 		return orderList;
 	}
 
-	public static string GenerateModSettingsFile(IEnumerable<IModEntry> orderList)
+	public static string GenerateModSettingsFile(IEnumerable<DivinityModData> orderList)
 	{
 		/* Active mods are contained within the "ModOrder" node.*/
 		var modulesText = "";

@@ -1298,49 +1298,47 @@ Directory the zip will be extracted to:
 		mod.SteamWorkshopEnabled = SteamWorkshopSupportEnabled;
 		mod.NexusModsEnabled = NexusModsSupportEnabled;
 
+		if (_manager.TryGetMod(mod.UUID, out var existingMod) && existingMod.IsActive)
+		{
+			mod.Index = existingMod.Index;
+		}
+
+		_manager.Add(mod);
+		UpdateModExtenderStatus(mod);
+
 		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
 		{
-			_manager.Add(mod);
 			DivinityApp.Log($"Imported Override Mod: {mod}");
 			return;
 		}
 
-		if (_manager.TryGetMod(mod.UUID, out var existingMod))
+		var entry = mod.ToModInterface();
+		if(mod.IsActive)
 		{
-			mod.IsSelected = existingMod.IsSelected;
-			if (existingMod.IsActive)
+			var existingInterface = ViewModelLocator.ModOrder.ActiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
+			if (existingInterface != null)
 			{
-				mod.Index = existingMod.Index;
-				ViewModelLocator.ModOrder.ActiveMods.ReplaceOrAdd(existingMod, mod);
+				ViewModelLocator.ModOrder.ActiveMods.Replace(existingInterface, entry);
 			}
 			else
 			{
-				if (toActiveList)
-				{
-					ViewModelLocator.ModOrder.InactiveMods.Remove(existingMod);
-					mod.Index = ViewModelLocator.ModOrder.ActiveMods.Count;
-					ViewModelLocator.ModOrder.ActiveMods.Add(mod);
-				}
-				else
-				{
-					ViewModelLocator.ModOrder.InactiveMods.ReplaceOrAdd(existingMod, mod);
-				}
+				ViewModelLocator.ModOrder.ActiveMods.Add(entry);
+				mod.Index = ViewModelLocator.ModOrder.ActiveMods.Count - 1;
 			}
 		}
 		else
 		{
-			if (toActiveList)
+			var existingInterface = ViewModelLocator.ModOrder.InactiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
+			if(existingInterface != null)
 			{
-				mod.Index = ViewModelLocator.ModOrder.ActiveMods.Count;
-				ViewModelLocator.ModOrder.ActiveMods.Add(mod);
+				ViewModelLocator.ModOrder.InactiveMods.Replace(existingInterface, entry);
 			}
 			else
 			{
-				ViewModelLocator.ModOrder.InactiveMods.Add(mod);
+				ViewModelLocator.ModOrder.InactiveMods.Add(entry);
 			}
 		}
-		_manager.Add(mod);
-		UpdateModExtenderStatus(mod);
+
 		DivinityApp.Log($"Imported Mod: {mod}");
 	}
 
@@ -1557,7 +1555,7 @@ Directory the zip will be extracted to:
 		_userInvokedUpdate = false;
 	}*/
 
-	public void OnViewActivated(MainWindow window)
+	public async Task OnViewActivated(MainWindow window)
 	{
 		Window = window;
 
@@ -1590,7 +1588,7 @@ Directory the zip will be extracted to:
 			});
 		}
 
-		LoadSettings();
+		await LoadSettings();
 		Keys.LoadKeybindings(this);
 		//if (Settings.CheckForUpdates) CheckForUpdates();
 		SaveSettings();
@@ -1619,6 +1617,8 @@ Directory the zip will be extracted to:
 				Window.WindowState = WindowState.Maximized;
 			}
 		}*/
+
+		LoadInitial();
 	}
 
 	public void LoadInitial()
@@ -1633,13 +1633,21 @@ Directory the zip will be extracted to:
 
 	private readonly MainWindowExceptionHandler exceptionHandler;
 
-	private void DeleteMods(List<DivinityModData> targetMods, bool isDeletingDuplicates = false, IEnumerable<DivinityModData> loadedMods = null)
+	private void DeleteMods(IEnumerable<IModEntry> targetMods, bool isDeletingDuplicates = false)
 	{
 		if (!IsDeletingFiles)
 		{
 			var targetUUIDs = targetMods.Select(x => x.UUID).ToHashSet();
 
-			var deleteFilesData = targetMods.Select(x => ModFileDeletionData.FromMod(x, false, isDeletingDuplicates, loadedMods));
+			List<ModFileDeletionData> deleteFilesData = [];
+			foreach(var entry in targetMods)
+			{
+				var data = ModFileDeletionData.FromModEntry(entry, false, isDeletingDuplicates, AppServices.Mods.AllMods);
+				if(data != null)
+				{
+					deleteFilesData.Add(data);
+				}
+			}
 			ViewModelLocator.DeleteFiles.IsDeletingDuplicates = isDeletingDuplicates;
 			ViewModelLocator.DeleteFiles.Files.AddRange(deleteFilesData);
 
@@ -1840,7 +1848,8 @@ Directory the zip will be extracted to:
 		INexusModsService nexusModsService,
 		IInteractionsService interactionsService,
 		IEnvironmentService environmentService,
-		IGlobalCommandsService globalCommands
+		IGlobalCommandsService globalCommands,
+		IDialogService dialogsService
 		)
 	{
 		_importer = modImportService;
@@ -1851,6 +1860,7 @@ Directory the zip will be extracted to:
 		_nexusMods = nexusModsService;
 		_interactions = interactionsService;
 		_environment = environmentService;
+		_dialogs = dialogsService;
 		_globalCommands = globalCommands;
 
 		RefreshCommand = ReactiveCommand.Create(RefreshStart, this.WhenAnyValue(x => x.IsLocked, b => !b));
@@ -1891,7 +1901,7 @@ Directory the zip will be extracted to:
 			return Observable.Start(() =>
 			{
 				var data = input.Input;
-				DeleteMods(data.TargetMods, data.IsDeletingDuplicates, data.LoadedMods);
+				DeleteMods(data.TargetMods, data.IsDeletingDuplicates);
 				input.SetOutput(true);
 			}, RxApp.MainThreadScheduler);
 		});
@@ -2151,5 +2161,10 @@ Directory the zip will be extracted to:
 		});
 
 		Views = new ViewManager(Router);
+
+		Views.WhenAnyValue(x => x.CurrentView).Subscribe(vm =>
+		{
+			DivinityApp.Log($"VM: {vm} | {Router}");
+		});
 	}
 }

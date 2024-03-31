@@ -1,6 +1,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
+using ModManager.Services;
 using ModManager.Windows;
 
 namespace ModManager;
@@ -30,13 +31,12 @@ public partial class App : Application
 		var desktop = DesktopLifetime;
 		if (desktop != null)
 		{
-			desktop.MainWindow = new MainWindow
-			{
-				DataContext = ViewModelLocator.Main,
-			};
+			var mainWindow = new MainWindow();
+			desktop.MainWindow = mainWindow;
+			Locator.CurrentMutable.RegisterConstant(mainWindow);
+			mainWindow.DataContext = ViewModelLocator.Main;
 
 			Locator.CurrentMutable.InitializeSplat();
-
 			Locator.CurrentMutable.InitializeReactiveUI();
 
 			RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;

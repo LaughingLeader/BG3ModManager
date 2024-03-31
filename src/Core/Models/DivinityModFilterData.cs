@@ -31,99 +31,104 @@ public struct DivinityModFilterData
 		return CultureInfo.CurrentCulture.CompareInfo.IndexOf(FilterProperty, val, CompareOptions.IgnoreCase) >= 0;
 	}
 
-	public bool Match(DivinityModData mod)
+	public bool Match(IModEntry entry)
 	{
 		if (String.IsNullOrWhiteSpace(FilterValue)) return true;
 
-		if (PropertyContains("Author"))
+		if (PropertyContains("Author") && entry.Author.IsValid())
 		{
-			if (ValueContains(mod.AuthorDisplayName)) return true;
+			if (ValueContains(entry.Author)) return true;
 		}
 
-		if (PropertyContains("Version"))
+		if (PropertyContains("Version") && entry.Version.IsValid())
 		{
-			if (ValueContains(mod.Version.Version)) return true;
+			if (ValueContains(entry.Version)) return true;
 		}
 
-		if (PropertyContains("Mode"))
-		{
-			foreach (var mode in mod.Modes)
-			{
-				if (ValueContains(mode))
-				{
-					return true;
-				}
-			}
-		}
-
-		if (PropertyContains("Depend"))
-		{
-			foreach (var dependency in mod.Dependencies.Items)
-			{
-				if (ValueContains(dependency.Name) || FilterValue == dependency.UUID || ValueContains(dependency.Folder))
-				{
-					return true;
-				}
-			}
-		}
-
-		if (PropertyContains("Name"))
+		if (PropertyContains("Name") && entry.DisplayName.IsValid())
 		{
 			//DivinityApp.LogMessage($"Searching for '{FilterValue}' in '{mod.Name}' | {mod.Name.IndexOf(FilterValue)}");
-			if (ValueContains(mod.Name)) return true;
+			if (ValueContains(entry.DisplayName)) return true;
 		}
 
-		if (PropertyContains("File"))
+		if (PropertyContains("UUID") && entry.UUID.IsValid())
 		{
-			if (ValueContains(mod.FileName)) return true;
+			if (ValueContains(entry.UUID)) return true;
 		}
 
-		if (PropertyContains("Desc"))
+		if (PropertyContains("Selected") && entry.IsSelected)
 		{
-			if (ValueContains(mod.Description)) return true;
+			return true;
 		}
 
-		if (PropertyContains("Type"))
+		if (entry is ModEntry mentry && mentry.Data != null)
 		{
-			if (ValueContains(mod.ModType)) return true;
-		}
+			var mod = mentry.Data;
 
-		if (PropertyContains("UUID"))
-		{
-			if (ValueContains(mod.UUID)) return true;
-		}
-
-		if (PropertyContains("Selected"))
-		{
-			if (mod.IsSelected) return true;
-		}
-
-		if (PropertyContains("Editor"))
-		{
-			if (mod.IsEditorMod) return true;
-		}
-
-		if (PropertyContains("Modified") || PropertyContains("Updated"))
-		{
-			var date = DateTimeOffset.Now;
-			if (DateTimeOffset.TryParse(FilterValue, out date))
+			if (PropertyContains("Mode"))
 			{
-				if (mod.LastModified >= date) return true;
-			}
-		}
-
-		if (PropertyContains("Tag"))
-		{
-			if (mod.Tags != null && mod.Tags.Count > 0)
-			{
-				var f = this;
-				if (mod.Tags.Any(x => f.ValueContains(x))) return true;
-				// GM, Story, Arena are technically tags as well
 				foreach (var mode in mod.Modes)
 				{
 					if (ValueContains(mode))
 					{
 						return true;
+					}
+				}
+			}
+
+			if (PropertyContains("Depend"))
+			{
+				foreach (var dependency in mod.Dependencies.Items)
+				{
+					if (ValueContains(dependency.Name) || FilterValue == dependency.UUID || ValueContains(dependency.Folder))
+					{
+						return true;
+					}
+				}
+			}
+
+			if (PropertyContains("File"))
+			{
+				if (ValueContains(mod.FileName)) return true;
+			}
+
+			if (PropertyContains("Desc"))
+			{
+				if (ValueContains(mod.Description)) return true;
+			}
+
+			if (PropertyContains("Type"))
+			{
+				if (ValueContains(mod.ModType)) return true;
+			}
+
+			if (PropertyContains("Editor"))
+			{
+				if (mod.IsEditorMod) return true;
+			}
+
+			if (PropertyContains("Modified") || PropertyContains("Updated"))
+			{
+				var date = DateTimeOffset.Now;
+				if (DateTimeOffset.TryParse(FilterValue, out date))
+				{
+					if (mod.LastModified >= date) return true;
+				}
+			}
+
+			if (PropertyContains("Tag"))
+			{
+				if (mod.Tags != null && mod.Tags.Count > 0)
+				{
+					var f = this;
+					if (mod.Tags.Any(x => f.ValueContains(x))) return true;
+					// GM, Story, Arena are technically tags as well
+					foreach (var mode in mod.Modes)
+					{
+						if (ValueContains(mode))
+						{
+							return true;
+						}
 					}
 				}
 			}

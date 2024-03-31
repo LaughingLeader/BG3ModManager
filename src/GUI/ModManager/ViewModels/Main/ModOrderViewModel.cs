@@ -1,4 +1,5 @@
-﻿using Avalonia.VisualTree;
+﻿using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.VisualTree;
 
 using DynamicData;
 using DynamicData.Aggregation;
@@ -50,11 +51,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private readonly ReadOnlyObservableCollection<DivinityProfileData> _uiprofiles;
 	public ReadOnlyObservableCollection<DivinityProfileData> Profiles => _uiprofiles;
 
-	public ObservableCollectionExtended<DivinityModData> ActiveMods { get; }
-	public ObservableCollectionExtended<DivinityModData> InactiveMods { get; }
+	public ObservableCollectionExtended<IModEntry> ActiveMods { get; }
+	public ObservableCollectionExtended<IModEntry> InactiveMods { get; }
 
 	private readonly ReadOnlyObservableCollection<DivinityModData> _forceLoadedMods;
 	public ReadOnlyObservableCollection<DivinityModData> ForceLoadedMods => _forceLoadedMods;
+
+
+	public HierarchicalTreeDataGridSource<IModEntry> ActiveModsSource { get; }
+	public HierarchicalTreeDataGridSource<IModEntry> InactiveModsSource { get; }
+
 
 	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
 	public List<DivinityLoadOrder> ExternalModOrders { get; }
@@ -70,7 +76,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[Reactive] public string InactiveModFilterText { get; set; }
 	[Reactive] public string OverrideModsFilterText { get; set; }
 
-	[ObservableAsProperty] public ObservableCollectionExtended<DivinityModData>? FocusedList { get; }
+	[ObservableAsProperty] public ObservableCollectionExtended<IModEntry>? FocusedList { get; }
 
 	private static string HiddenToLabel(int totalHidden, int totalCount)
 	{
@@ -311,14 +317,15 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		keys.DeleteSelectedMods.AddAction(() =>
 		{
-			IEnumerable<DivinityModData>? targetList = null;
+			var allMods = ModManager.GetAllModsAsInterface();
+			IEnumerable<IModEntry>? targetList = null;
 			if (DivinityApp.IsKeyboardNavigating)
 			{
 				targetList = FocusedList;
 			}
 			else
 			{
-				targetList = ModManager.AllMods;
+				targetList = allMods;
 			}
 
 			if (targetList != null)
@@ -328,10 +335,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 				if (selectedEligableMods.Count > 0)
 				{
-					_interactions.DeleteMods.Handle(new(selectedEligableMods, false, ModManager.AllMods)).Subscribe();
+					_interactions.DeleteMods.Handle(new(selectedEligableMods, false)).Subscribe();
 				}
 
-				if (selectedMods.Any(x => x.IsEditorMod))
+				if (selectedMods.Any(x => x.EntryType == ModEntryType.Mod && ((ModEntry)x)?.Data?.IsEditorMod == true))
 				{
 					AppServices.Commands.ShowAlert("Editor mods cannot be deleted with the Mod Manager", AlertType.Warning, 60);
 				}
@@ -357,270 +364,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	}
 
 	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
-
-	public ModOrderViewModel(MainWindowViewModel host,
-		IModManagerService modManagerService,
-		IFileWatcherService fileWatcherService,
-		IInteractionsService interactionsService,
-		IGlobalCommandsService globalCommands,
-		IDialogService dialogService
-		)
-	{
-		ModManager = modManagerService;
-		_interactions = interactionsService;
-		_globalCommands = globalCommands;
-		_dialogs = dialogService;
-
-		HostScreen = host;
-		SelectedAdventureModIndex = 0;
-
-		ActiveMods = [];
-		InactiveMods = [];
-		ModOrderList = [];
-		ExternalModOrders = [];
-
-		CanSaveOrder = true;
-
-		Keys = host.Keys;
-
-		var isRefreshing = host.WhenAnyValue(x => x.IsRefreshing);
-
-		host.WhenAnyValue(x => x.IsLocked).BindTo(this, x => x.IsLocked);
-
-		var isActive = HostScreen.Router.CurrentViewModel.Select(x => x == this);
-		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
-		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
-
-		profiles.Connect().Sort(_profileSort).Bind(out _uiprofiles).DisposeMany().Subscribe();
-
-		modManagerService.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
-		modManagerService.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
-		modManagerService.WhenAnyValue(x => x.OverrideModsSelected).CombineLatest(this.WhenAnyValue(x => x.TotalOverrideModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.OverrideModsSelectedText);
-		//TODO Change .Count to CollectionChanged?
-		this.WhenAnyValue(x => x.TotalActiveModsHidden).Select(x => HiddenToLabel(x, ActiveMods.Count)).ToUIProperty(this, x => x.ActiveModsFilterResultText);
-		this.WhenAnyValue(x => x.TotalInactiveModsHidden).Select(x => HiddenToLabel(x, InactiveMods.Count)).ToUIProperty(this, x => x.InactiveModsFilterResultText);
-		this.WhenAnyValue(x => x.TotalOverrideModsHidden).Select(x => HiddenToLabel(x, modManagerService.ForceLoadedMods.Count)).ToUIProperty(this, x => x.OverrideModsFilterResultText);
-
-		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
-		var hasNonNullProfile = whenProfile.Select(x => x != null);
-		hasNonNullProfile.ToUIProperty(this, x => x.HasProfile);
-
-		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
-		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);
-		modManagerService.ForceLoadedMods.ToObservableChangeSet().Bind(out _forceLoadedMods).Subscribe();
-		ForceLoadedMods.ToObservableChangeSet().CountChanged().Select(_ => ForceLoadedMods.Count > 0).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility);
-
-		host.Settings.WhenAnyValue(
-			x => x.ExtenderSettings.LogCompile,
-			x => x.ExtenderSettings.LogRuntime,
-			x => x.ExtenderSettings.EnableLogging,
-			x => x.ExtenderSettings.DeveloperMode,
-			x => x.DebugModeEnabled)
-		.Select(PropertyConverters.BoolTupleToVisibility).ToUIProperty(this, x => x.LogFolderShortcutButtonVisibility);
-
-		var whenGameExeProperties = host.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
-		whenGameExeProperties.Select(GetLaunchGameTooltip).ToUIProperty(this, x => x.OpenGameButtonToolTip, "Launch Game");
-
-		var canRenameOrder = this.WhenAnyValue(x => x.SelectedModOrderIndex, (i) => i > 0);
-		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
-
-		var canDeleteOrder = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => x > 0));
-		DeleteOrderCommand = ReactiveCommand.CreateFromTask<DivinityLoadOrder>(DeleteOrder, canDeleteOrder);
-
-		CopyOrderToClipboardCommand = ReactiveCommand.CreateFromObservable(() => Observable.Start(() =>
-		{
-			try
-			{
-				if (ActiveMods.Count > 0)
-				{
-					var text = "";
-					for (var i = 0; i < ActiveMods.Count; i++)
-					{
-						var mod = ActiveMods[i];
-						text += $"{mod.Index}. {mod.DisplayName}";
-						if (i < ActiveMods.Count - 1) text += Environment.NewLine;
-					}
-					ClipboardService.SetText(text);
-					AppServices.Commands.ShowAlert("Copied mod order to clipboard", AlertType.Info, 10);
-				}
-				else
-				{
-					AppServices.Commands.ShowAlert("Current order is empty", AlertType.Warning, 10);
-				}
-			}
-			catch (Exception ex)
-			{
-				AppServices.Commands.ShowAlert($"Error copying order to clipboard: {ex}", AlertType.Danger, 15);
-			}
-		}, RxApp.MainThreadScheduler));
-
-		ExportOrderAsListCommand = ReactiveCommand.CreateFromTask(ExportLoadOrderToTextFileAs, this.WhenAnyValue(x => x.TotalActiveMods, x => x > 0));
-
-		whenProfile.Subscribe(profile =>
-		{
-			if (profile != null && profile.ActiveMods != null && profile.ActiveMods.Count > 0)
-			{
-				var adventureModData = modManagerService.AdventureMods.FirstOrDefault(x => profile.ActiveMods.Any(y => y.UUID == x.UUID));
-				//Migrate old profiles from Gustav to GustavDev
-				if (adventureModData != null && adventureModData.UUID == "991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1")
-				{
-					if (modManagerService.TryGetMod(DivinityApp.MAIN_CAMPAIGN_UUID, out var main))
-					{
-						adventureModData = main;
-					}
-				}
-				if (adventureModData != null)
-				{
-					var nextAdventure = modManagerService.AdventureMods.IndexOf(adventureModData);
-					DivinityApp.Log($"Found adventure mod in profile: {adventureModData.Name} | {nextAdventure}");
-					if (nextAdventure > -1)
-					{
-						SelectedAdventureModIndex = nextAdventure;
-					}
-				}
-			}
-		});
-
-		OrderJustLoadedCommand = ReactiveCommand.Create<DivinityLoadOrder>(order => { });
-
-		var profileChanged = Profiles.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
-			.CombineLatest(this.WhenAnyValue(x => x.SelectedProfileIndex)).Select(x => x.Second);
-		profileChanged.Select(x => Profiles.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedProfile);
-
-		this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => ModOrderList.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedModOrder);
-
-		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
-		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
-
-		this.WhenAnyValue(x => x.SelectedModOrder).Buffer(2, 1).Subscribe(changes =>
-		{
-			if (changes[0] is { } previous && previous != null)
-			{
-				previous.IsLoaded = false;
-			}
-		});
-
-		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(profile =>
-		{
-			BuildModOrderList(profile, Math.Max(0, SelectedModOrderIndex));
-		});
-
-		this.WhenAnyValue(x => x.SelectedModOrder).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(order =>
-		{
-			if (!order.IsLoaded)
-			{
-				if (LoadModOrder(order))
-				{
-					DivinityApp.Log($"Successfully loaded order {order.Name}.");
-				}
-				else
-				{
-					DivinityApp.Log($"Failed to load order {order.Name}.");
-				}
-			}
-		});
-
-		//Throttle filters so they only happen when typing stops for 500ms
-
-		this.WhenAnyValue(x => x.ActiveModFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
-			Subscribe((s) => { OnFilterTextChanged(s, ActiveMods); });
-
-		this.WhenAnyValue(x => x.InactiveModFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
-			Subscribe((s) => { OnFilterTextChanged(s, InactiveMods); });
-
-		this.WhenAnyValue(x => x.OverrideModsFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
-			Subscribe((s) => { OnFilterTextChanged(s, modManagerService.ForceLoadedMods); });
-
-		ActiveMods.WhenAnyPropertyChanged(nameof(DivinityModData.Index)).Throttle(TimeSpan.FromMilliseconds(25)).Subscribe(_ =>
-		{
-			SelectedModOrder?.Sort(SortModOrder);
-		});
-
-		modManagerService.AdventureMods.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
-			.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex)).Select(x => x.Second)
-			.Select(x => modManagerService.AdventureMods.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
-
-		this.WhenAnyValue(x => x.SelectedAdventureModIndex).Throttle(TimeSpan.FromMilliseconds(50)).Subscribe((i) =>
-		{
-			if (modManagerService.AdventureMods != null && SelectedAdventureMod != null && SelectedProfile != null && SelectedProfile.ActiveMods != null)
-			{
-				if (!SelectedProfile.ActiveMods.Any(m => m.UUID == SelectedAdventureMod.UUID))
-				{
-					SelectedProfile.ActiveMods.RemoveAll(r => modManagerService.AdventureMods.Any(y => y.UUID == r.UUID));
-					SelectedProfile.ActiveMods.Insert(0, SelectedAdventureMod.ToProfileModData());
-				}
-			}
-		});
-
-
-		#region GM Support
-
-		var gmModeChanged = Settings.WhenAnyValue(x => x.GameMasterModeEnabled);
-		gmModeChanged.Select(b => !b).ToUIProperty(this, x => x.AdventureModBoxVisibility, true);
-		gmModeChanged.ToUIProperty(this, x => x.GameMasterModeVisibility);
-
-		gameMasterCampaigns.Connect().Bind(out gameMasterCampaignsData).Subscribe();
-
-		var justSelectedGameMasterCampaign = this.WhenAnyValue(x => x.SelectedGameMasterCampaignIndex, x => x.GameMasterCampaigns.Count);
-		justSelectedGameMasterCampaign.Select(x => GameMasterCampaigns.ElementAtOrDefault(x.Item1)).ToUIProperty(this, x => x.SelectedGameMasterCampaign);
-
-		host.Keys.ImportOrderFromSelectedGMCampaign.AddAction(() => LoadGameMasterCampaignModOrder(SelectedGameMasterCampaign), gmModeChanged);
-
-		justSelectedGameMasterCampaign.ObserveOn(RxApp.MainThreadScheduler).Subscribe((d) =>
-		{
-			if (!host.IsRefreshing && host.IsInitialized && Settings.AutomaticallyLoadGMCampaignMods && d.Item1 > -1)
-			{
-				var selectedCampaign = GameMasterCampaigns.ElementAtOrDefault(d.Item1);
-				if (selectedCampaign != null && !IsLoadingOrder)
-				{
-					if (LoadGameMasterCampaignModOrder(selectedCampaign))
-					{
-						DivinityApp.Log($"Successfully loaded GM campaign order {selectedCampaign.Name}.");
-					}
-					else
-					{
-						DivinityApp.Log($"Failed to load GM campaign order {selectedCampaign.Name}.");
-					}
-				}
-			}
-		});
-		#endregion
-
-		_modSettingsWatcher = fileWatcherService.WatchDirectory("", "*modsettings.lsx");
-		//modSettingsWatcher.PauseWatcher(true);
-		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().Select(x => x.FilePath).Subscribe(path =>
-		{
-			_modSettingsWatcher.SetDirectory(path);
-		});
-
-		IDisposable checkModSettingsTask = null;
-
-		_modSettingsWatcher.FileChanged.Subscribe(e =>
-		{
-			if (SelectedModOrder != null)
-			{
-				//var exeName = !Settings.LaunchDX11 ? "bg3" : "bg3_dx11";
-				//var isGameRunning = Process.GetProcessesByName(exeName).Length > 0;
-				checkModSettingsTask?.Dispose();
-				checkModSettingsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromSeconds(2), async (sch, cts) =>
-				{
-					var modSettingsData = await DivinityModDataLoader.LoadModSettingsFileAsync(e.FullPath);
-					if (ActiveMods.Count > 0 && modSettingsData.ActiveMods.Count <= 1)
-					{
-						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
-						RxApp.MainThreadScheduler.Schedule(() =>
-						{
-							var title = "Mod Order Reset";
-							var message = "The active load order (modsettings.lsx) has been reset externally, which has deactivated your mods.\nOne or more mods may be invalid in your current load order.";
-							_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
-						});
-					}
-				});
-			}
-		});
-
-		SetupKeys(host.Keys, host, canExecuteCommands);
-	}
 
 	private async static Task<TResult> RunTask<TResult>(Task<TResult> task, TResult defaultValue)
 	{
@@ -915,8 +658,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			for (var i = 0; i < order.Order.Count; i++)
 			{
 				var entry = order.Order[i];
-				var mod = ActiveMods.FirstOrDefault(m => m.UUID == entry.UUID);
-				if (mod != null)
+				if (ModManager.TryGetMod(entry.UUID, out var mod))
 				{
 					if (mod.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING)
 					{
@@ -1396,7 +1138,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	#endregion
 
-	public void AddActiveMod(DivinityModData mod)
+	public void AddActiveMod(IModEntry mod)
 	{
 		if (!ActiveMods.Any(x => x.UUID == mod.UUID))
 		{
@@ -1407,11 +1149,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		InactiveMods.Remove(mod);
 	}
 
-	public void RemoveActiveMod(DivinityModData mod)
+	public void RemoveActiveMod(IModEntry mod)
 	{
 		SelectedModOrder.Remove(mod);
 		ActiveMods.Remove(mod);
-		if (mod.IsForceLoadedMergedMod || !mod.IsForceLoaded)
+		if (mod.EntryType == ModEntryType.Mod && mod is ModEntry modEntry && (modEntry.Data.IsForceLoadedMergedMod || !modEntry.Data.IsForceLoaded))
 		{
 			if (!InactiveMods.Any(x => x.UUID == mod.UUID))
 			{
@@ -1452,7 +1194,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		ActiveMods.RemoveMany(ActiveMods.Where(x => deletedMods.Contains(x.UUID)));
 	}
 
-	public void DeleteMod(DivinityModData mod)
+	public void DeleteMod(IModEntry mod)
 	{
 		if (mod.CanDelete)
 		{
@@ -1464,10 +1206,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	public void DeleteSelectedMods(DivinityModData contextMenuMod)
+	public void DeleteSelectedMods(IModEntry contextMenuMod)
 	{
 		var list = contextMenuMod.IsActive ? ActiveMods : InactiveMods;
-		var targetMods = new List<DivinityModData>();
+		var targetMods = new List<IModEntry>();
 		targetMods.AddRange(list.Where(x => x.CanDelete && x.IsSelected));
 		if (!contextMenuMod.IsSelected && contextMenuMod.CanDelete) targetMods.Add(contextMenuMod);
 		if (targetMods.Count > 0)
@@ -1581,7 +1323,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			newOrder = new DivinityLoadOrder()
 			{
 				Name = $"New{ExternalModOrders.Count + 1}",
-				Order = ActiveMods.Select(m => m.ToOrderEntry()).ToList()
+				Order = ActiveMods.Where(x => x.EntryType == ModEntryType.Mod).Cast<ModEntry>().Select(m => m.Data.ToOrderEntry()).ToList()
 			};
 			newOrder.FilePath = Path.Join(Settings.LoadOrderPath, DivinityModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
 		}
@@ -1591,7 +1333,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	public bool LoadModOrder() => LoadModOrder(SelectedModOrder);
 
-	public bool LoadModOrder(DivinityLoadOrder order, List<DivinityMissingModData> missingModsFromProfileOrder = null)
+	public bool LoadModOrder(DivinityLoadOrder order, List<DivinityMissingModData>? missingModsFromProfileOrder = null)
 	{
 		if (order == null) return false;
 
@@ -1673,13 +1415,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 
 		ActiveMods.Clear();
-		ActiveMods.AddRange(modManager.AddonMods.Where(x => x.CanAddToLoadOrder && x.IsActive).OrderBy(x => x.Index));
+		var activeMods = modManager.AddonMods.Where(x => x.CanAddToLoadOrder && x.IsActive).OrderBy(x => x.Index).ToModInterface();
+		ActiveMods.AddRange(activeMods);
 		InactiveMods.Clear();
-		InactiveMods.AddRange(modManager.AddonMods.Where(x => x.CanAddToLoadOrder && !x.IsActive));
+		InactiveMods.AddRange(modManager.AddonMods.Where(x => x.CanAddToLoadOrder && !x.IsActive).ToModInterface());
 
 		OnFilterTextChanged(ActiveModFilterText, ActiveMods);
 		OnFilterTextChanged(InactiveModFilterText, InactiveMods);
-		OnFilterTextChanged(OverrideModsFilterText, modManager.ForceLoadedMods);
+		OnFilterTextChanged(OverrideModsFilterText, modManager.ForceLoadedMods.ToModInterface());
 
 		if (missingMods.Count > 0)
 		{
@@ -1706,7 +1449,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return true;
 	}
 
-	public void OnFilterTextChanged(string searchText, IEnumerable<DivinityModData> modDataList)
+	public void OnFilterTextChanged(string searchText, IEnumerable<IModEntry> modDataList)
 	{
 		var totalHidden = 0;
 		//DivinityApp.LogMessage("Filtering mod list with search term " + searchText);
@@ -1798,7 +1541,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				foreach (var m in modDataList)
 				{
-					if (CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.Name, searchText, CompareOptions.IgnoreCase) >= 0)
+					if (m.DisplayName.IsValid() && CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.DisplayName, searchText, CompareOptions.IgnoreCase) >= 0)
 					{
 						m.IsVisible = true;
 					}
@@ -1848,7 +1591,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				string filePath = result.File!;
 				var exportMods = new List<IModEntry>(ActiveMods);
-				exportMods.AddRange(ModManager.ForceLoadedMods.ToList().OrderBy(x => x.Name));
+				exportMods.AddRange(ModManager.ForceLoadedMods.ToList().OrderBy(x => x.Name).ToModInterface());
 
 				var fileType = Path.GetExtension(filePath)!;
 				var outputText = "";
@@ -1965,8 +1708,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	
-
 	private async Task ImportOrderFromFile()
 	{
 		var result = await _dialogs.OpenFileAsync(new(
@@ -2017,5 +1758,312 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				AppServices.Commands.ShowAlert($"Failed to import order from '{result.File}'", AlertType.Danger, 60);
 			}
 		}
+	}
+
+
+	public ModOrderViewModel(MainWindowViewModel host,
+		IModManagerService modManagerService,
+		IFileWatcherService fileWatcherService,
+		IInteractionsService interactionsService,
+		IGlobalCommandsService globalCommands,
+		IDialogService dialogService,
+		ModImportService modImportService
+		)
+	{
+		ModManager = modManagerService;
+		ModImporter = modImportService;
+		_interactions = interactionsService;
+		_globalCommands = globalCommands;
+		_dialogs = dialogService;
+
+		HostScreen = host;
+		SelectedAdventureModIndex = 0;
+
+		ActiveMods = [];
+		InactiveMods = [];
+		ModOrderList = [];
+		ExternalModOrders = [];
+
+		ActiveModsSource = new HierarchicalTreeDataGridSource<IModEntry>(ActiveMods)
+		{
+			Columns =
+			{
+				//Avalonia.Controls.Models.TreeDataGrid.
+				new TextColumn<IModEntry, int>("Index", x => x.Index),
+				new HierarchicalExpanderColumn<IModEntry>(
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName),
+					x => x.Children),
+				new TextColumn<IModEntry, string>("Version", x => x.Version),
+				new TextColumn<IModEntry, string>("Author", x => x.Author),
+				new TextColumn<IModEntry, string>("Last Updated", x => x.Author),
+			},
+		};
+
+		InactiveModsSource = new HierarchicalTreeDataGridSource<IModEntry>(InactiveMods)
+		{
+			Columns =
+			{
+				//Avalonia.Controls.Models.TreeDataGrid.
+				new HierarchicalExpanderColumn<IModEntry>(
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName),
+					x => x.Children),
+				new TextColumn<IModEntry, string>("Version", x => x.Version),
+				new TextColumn<IModEntry, string>("Author", x => x.Author),
+				new TextColumn<IModEntry, string>("Last Updated", x => x.Author),
+			},
+		};
+
+
+		CanSaveOrder = true;
+
+		Keys = host.Keys;
+
+		var isRefreshing = host.WhenAnyValue(x => x.IsRefreshing);
+
+		host.WhenAnyValue(x => x.IsLocked).BindTo(this, x => x.IsLocked);
+
+		var isActive = HostScreen.Router.CurrentViewModel.Select(x => x == this);
+		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
+		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
+
+		profiles.Connect().Sort(_profileSort).Bind(out _uiprofiles).DisposeMany().Subscribe();
+
+		modManagerService.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
+		modManagerService.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
+		modManagerService.WhenAnyValue(x => x.OverrideModsSelected).CombineLatest(this.WhenAnyValue(x => x.TotalOverrideModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.OverrideModsSelectedText);
+		//TODO Change .Count to CollectionChanged?
+		this.WhenAnyValue(x => x.TotalActiveModsHidden).Select(x => HiddenToLabel(x, ActiveMods.Count)).ToUIProperty(this, x => x.ActiveModsFilterResultText);
+		this.WhenAnyValue(x => x.TotalInactiveModsHidden).Select(x => HiddenToLabel(x, InactiveMods.Count)).ToUIProperty(this, x => x.InactiveModsFilterResultText);
+		this.WhenAnyValue(x => x.TotalOverrideModsHidden).Select(x => HiddenToLabel(x, modManagerService.ForceLoadedMods.Count)).ToUIProperty(this, x => x.OverrideModsFilterResultText);
+
+		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
+		var hasNonNullProfile = whenProfile.Select(x => x != null);
+		hasNonNullProfile.ToUIProperty(this, x => x.HasProfile);
+
+		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
+		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);
+		modManagerService.ForceLoadedMods.ToObservableChangeSet().Bind(out _forceLoadedMods).Subscribe();
+		ForceLoadedMods.ToObservableChangeSet().CountChanged().Select(_ => ForceLoadedMods.Count > 0).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility);
+
+		host.Settings.WhenAnyValue(
+			x => x.ExtenderSettings.LogCompile,
+			x => x.ExtenderSettings.LogRuntime,
+			x => x.ExtenderSettings.EnableLogging,
+			x => x.ExtenderSettings.DeveloperMode,
+			x => x.DebugModeEnabled)
+		.Select(PropertyConverters.BoolTupleToVisibility).ToUIProperty(this, x => x.LogFolderShortcutButtonVisibility);
+
+		var whenGameExeProperties = host.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
+		whenGameExeProperties.Select(GetLaunchGameTooltip).ToUIProperty(this, x => x.OpenGameButtonToolTip, "Launch Game");
+
+		var canRenameOrder = this.WhenAnyValue(x => x.SelectedModOrderIndex, (i) => i > 0);
+		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
+
+		var canDeleteOrder = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => x > 0));
+		DeleteOrderCommand = ReactiveCommand.CreateFromTask<DivinityLoadOrder>(DeleteOrder, canDeleteOrder);
+
+		CopyOrderToClipboardCommand = ReactiveCommand.CreateFromObservable(() => Observable.Start(() =>
+		{
+			try
+			{
+				if (ActiveMods.Count > 0)
+				{
+					var text = "";
+					for (var i = 0; i < ActiveMods.Count; i++)
+					{
+						var mod = ActiveMods[i];
+						text += $"{mod.Index}. {mod.DisplayName}";
+						if (i < ActiveMods.Count - 1) text += Environment.NewLine;
+					}
+					ClipboardService.SetText(text);
+					AppServices.Commands.ShowAlert("Copied mod order to clipboard", AlertType.Info, 10);
+				}
+				else
+				{
+					AppServices.Commands.ShowAlert("Current order is empty", AlertType.Warning, 10);
+				}
+			}
+			catch (Exception ex)
+			{
+				AppServices.Commands.ShowAlert($"Error copying order to clipboard: {ex}", AlertType.Danger, 15);
+			}
+		}, RxApp.MainThreadScheduler));
+
+		ExportOrderAsListCommand = ReactiveCommand.CreateFromTask(ExportLoadOrderToTextFileAs, this.WhenAnyValue(x => x.TotalActiveMods, x => x > 0));
+
+		whenProfile.Subscribe(profile =>
+		{
+			if (profile != null && profile.ActiveMods != null && profile.ActiveMods.Count > 0)
+			{
+				var adventureModData = modManagerService.AdventureMods.FirstOrDefault(x => profile.ActiveMods.Any(y => y.UUID == x.UUID));
+				//Migrate old profiles from Gustav to GustavDev
+				if (adventureModData != null && adventureModData.UUID == "991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1")
+				{
+					if (modManagerService.TryGetMod(DivinityApp.MAIN_CAMPAIGN_UUID, out var main))
+					{
+						adventureModData = main;
+					}
+				}
+				if (adventureModData != null)
+				{
+					var nextAdventure = modManagerService.AdventureMods.IndexOf(adventureModData);
+					DivinityApp.Log($"Found adventure mod in profile: {adventureModData.Name} | {nextAdventure}");
+					if (nextAdventure > -1)
+					{
+						SelectedAdventureModIndex = nextAdventure;
+					}
+				}
+			}
+		});
+
+		OrderJustLoadedCommand = ReactiveCommand.Create<DivinityLoadOrder>(order => { });
+
+		Profiles.ToObservableChangeSet().CountChanged()
+			.CombineLatest(this.WhenAnyValue(x => x.SelectedProfileIndex))
+			//.ThrottleFirst(TimeSpan.FromMilliseconds(10))
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.Select(x => x.First.ElementAtOrDefault(x.Second)?.Item.Current)
+			.WhereNotNull()
+			.ToUIPropertyImmediate(this, x => x.SelectedProfile);
+
+		ModOrderList.ToObservableChangeSet().CountChanged()
+			.CombineLatest(this.WhenAnyValue(x => x.SelectedModOrderIndex))
+			//.ThrottleFirst(TimeSpan.FromMilliseconds(10))
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.Select(x => x.First.ElementAtOrDefault(x.Second)?.Item.Current)
+			.WhereNotNull()
+			.ToUIPropertyImmediate(this, x => x.SelectedModOrder);
+
+		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
+		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
+
+		this.WhenAnyValue(x => x.SelectedModOrder).Buffer(2, 1).Subscribe(changes =>
+		{
+			if (changes[0] is { } previous && previous != null)
+			{
+				previous.IsLoaded = false;
+			}
+		});
+
+		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(profile =>
+		{
+			BuildModOrderList(profile, Math.Max(0, SelectedModOrderIndex));
+		});
+
+		this.WhenAnyValue(x => x.SelectedModOrder).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(order =>
+		{
+			if (!order.IsLoaded)
+			{
+				if (LoadModOrder(order))
+				{
+					DivinityApp.Log($"Successfully loaded order {order.Name}.");
+				}
+				else
+				{
+					DivinityApp.Log($"Failed to load order {order.Name}.");
+				}
+			}
+		});
+
+		//Throttle filters so they only happen when typing stops for 500ms
+
+		this.WhenAnyValue(x => x.ActiveModFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
+			Subscribe((s) => { OnFilterTextChanged(s, ActiveMods); });
+
+		this.WhenAnyValue(x => x.InactiveModFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
+			Subscribe((s) => { OnFilterTextChanged(s, InactiveMods); });
+
+		//this.WhenAnyValue(x => x.OverrideModsFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
+		//	Subscribe((s) => { OnFilterTextChanged(s, modManagerService.ForceLoadedMods); });
+
+		ActiveMods.WhenAnyPropertyChanged(nameof(DivinityModData.Index)).Throttle(TimeSpan.FromMilliseconds(25)).Subscribe(_ =>
+		{
+			SelectedModOrder?.Sort(SortModOrder);
+		});
+
+		modManagerService.AdventureMods.ToObservableChangeSet().CountChanged().ThrottleFirst(TimeSpan.FromMilliseconds(50))
+			.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex)).Select(x => x.Second)
+			.Select(x => modManagerService.AdventureMods.ElementAtOrDefault(x)).ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
+
+		this.WhenAnyValue(x => x.SelectedAdventureModIndex).Throttle(TimeSpan.FromMilliseconds(50)).Subscribe((i) =>
+		{
+			if (modManagerService.AdventureMods != null && SelectedAdventureMod != null && SelectedProfile != null && SelectedProfile.ActiveMods != null)
+			{
+				if (!SelectedProfile.ActiveMods.Any(m => m.UUID == SelectedAdventureMod.UUID))
+				{
+					SelectedProfile.ActiveMods.RemoveAll(r => modManagerService.AdventureMods.Any(y => y.UUID == r.UUID));
+					SelectedProfile.ActiveMods.Insert(0, SelectedAdventureMod.ToProfileModData());
+				}
+			}
+		});
+
+
+		#region GM Support
+
+		var gmModeChanged = Settings.WhenAnyValue(x => x.GameMasterModeEnabled);
+		gmModeChanged.Select(b => !b).ToUIProperty(this, x => x.AdventureModBoxVisibility, true);
+		gmModeChanged.ToUIProperty(this, x => x.GameMasterModeVisibility);
+
+		gameMasterCampaigns.Connect().Bind(out gameMasterCampaignsData).Subscribe();
+
+		var justSelectedGameMasterCampaign = this.WhenAnyValue(x => x.SelectedGameMasterCampaignIndex, x => x.GameMasterCampaigns.Count);
+		justSelectedGameMasterCampaign.Select(x => GameMasterCampaigns.ElementAtOrDefault(x.Item1)).ToUIProperty(this, x => x.SelectedGameMasterCampaign);
+
+		host.Keys.ImportOrderFromSelectedGMCampaign.AddAction(() => LoadGameMasterCampaignModOrder(SelectedGameMasterCampaign), gmModeChanged);
+
+		justSelectedGameMasterCampaign.ObserveOn(RxApp.MainThreadScheduler).Subscribe((d) =>
+		{
+			if (!host.IsRefreshing && host.IsInitialized && Settings.AutomaticallyLoadGMCampaignMods && d.Item1 > -1)
+			{
+				var selectedCampaign = GameMasterCampaigns.ElementAtOrDefault(d.Item1);
+				if (selectedCampaign != null && !IsLoadingOrder)
+				{
+					if (LoadGameMasterCampaignModOrder(selectedCampaign))
+					{
+						DivinityApp.Log($"Successfully loaded GM campaign order {selectedCampaign.Name}.");
+					}
+					else
+					{
+						DivinityApp.Log($"Failed to load GM campaign order {selectedCampaign.Name}.");
+					}
+				}
+			}
+		});
+		#endregion
+
+		_modSettingsWatcher = fileWatcherService.WatchDirectory("", "*modsettings.lsx");
+		//modSettingsWatcher.PauseWatcher(true);
+		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().Select(x => x.FilePath).Subscribe(path =>
+		{
+			_modSettingsWatcher.SetDirectory(path);
+		});
+
+		IDisposable checkModSettingsTask = null;
+
+		_modSettingsWatcher.FileChanged.Subscribe(e =>
+		{
+			if (SelectedModOrder != null)
+			{
+				//var exeName = !Settings.LaunchDX11 ? "bg3" : "bg3_dx11";
+				//var isGameRunning = Process.GetProcessesByName(exeName).Length > 0;
+				checkModSettingsTask?.Dispose();
+				checkModSettingsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromSeconds(2), async (sch, cts) =>
+				{
+					var modSettingsData = await DivinityModDataLoader.LoadModSettingsFileAsync(e.FullPath);
+					if (ActiveMods.Count > 0 && modSettingsData.ActiveMods.Count <= 1)
+					{
+						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
+						RxApp.MainThreadScheduler.Schedule(() =>
+						{
+							var title = "Mod Order Reset";
+							var message = "The active load order (modsettings.lsx) has been reset externally, which has deactivated your mods.\nOne or more mods may be invalid in your current load order.";
+							_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
+						});
+					}
+				});
+			}
+		});
+
+		SetupKeys(host.Keys, host, canExecuteCommands);
 	}
 }

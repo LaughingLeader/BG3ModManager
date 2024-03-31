@@ -2,6 +2,12 @@
 
 using Avalonia.Controls;
 
+using ModManager.Models.View;
+using ModManager.ViewModels;
+using ModManager.ViewModels.Main;
+using ModManager.Views.Main;
+using ModManager.Views.StatsValidator;
+
 namespace ModManager;
 
 public class ViewLocatorErrorView : TextBlock, IViewFor
@@ -32,5 +38,29 @@ public class ViewLocator : IViewLocator
 			}
 		}
 		return new ViewLocatorErrorView() { Text = $"Failed to find view for {viewModel}" };
+	}
+
+	private static void RegisterConstant<TViewModel, TView>(IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>
+	{
+		resolver.RegisterLazySingleton<IViewFor<TViewModel>>(() => AppServices.Get<TView>());
+	}
+
+	private static void Register<TViewModel, TView>(IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>, new()
+	{
+		resolver.Register(() => new TView());
+	}
+
+	static ViewLocator()
+	{
+		var resolver = Locator.CurrentMutable;
+
+		RegisterConstant<DeleteFilesViewModel, DeleteFilesView>(resolver);
+		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
+		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);
+
+		//Register<DownloadActivityBarViewModel, DownloadActivityBar>(resolver);
+		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>(resolver);
+		Register<StatsValidatorErrorEntry, StatsValidatorEntryView>(resolver);
+		Register<StatsValidatorLineText, StatsValidatorLineView>(resolver);
 	}
 }

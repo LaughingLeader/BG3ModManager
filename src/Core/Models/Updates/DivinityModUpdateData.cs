@@ -12,6 +12,7 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
 	[Reactive] public bool IsVisible { get; set; }
+	public bool IsDraggable => false;
 
 	[ObservableAsProperty] public ModSourceType Source { get; }
 	[ObservableAsProperty] public bool IsEditorMod { get; }

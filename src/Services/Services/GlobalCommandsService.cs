@@ -23,7 +23,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	public ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> ToggleNameDisplayCommand { get; }
 	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> DeleteModCommand { get; }
+	public ReactiveCommand<IModEntry?, Unit> DeleteModCommand { get; }
 	public RxCommandUnit DeleteSelectedModsCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
@@ -179,7 +179,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		_interactions.ToggleModFileNameDisplay.Handle(b).Subscribe();
 	}
 
-	private void DeleteMod(DivinityModData? mod)
+	private void DeleteMod(IModEntry? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		_interactions.DeleteMods.Handle(new([mod])).Subscribe();
@@ -214,7 +214,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 		CopyToClipboardCommand = ReactiveCommand.Create<string?>(CopyToClipboard, canExecuteCommands);
 
-		DeleteModCommand = ReactiveCommand.Create<DivinityModData?>(DeleteMod, canExecuteCommands);
+		DeleteModCommand = ReactiveCommand.Create<IModEntry?>(DeleteMod, canExecuteCommands);
 
 		DeleteSelectedModsCommand = ReactiveCommand.Create(DeleteSelectedMods, canExecuteCommands);
 

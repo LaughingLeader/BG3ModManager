@@ -21,9 +21,4 @@ public static class ViewModelLocator
 	public static StatsValidatorWindowViewModel StatsValidator => AppServices.Get<StatsValidatorWindowViewModel>()!;
 	public static VersionGeneratorViewModel VersionGenerator => AppServices.Get<VersionGeneratorViewModel>()!;
 	public static ExportOrderToArchiveViewModel ExportOrderToArchive => AppServices.Get<ExportOrderToArchiveViewModel>()!;
-
-	static ViewModelLocator()
-	{
-
-	}
 }

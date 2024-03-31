@@ -1,0 +1,153 @@
+﻿{
+  "IgnoreDependencies": [
+	"e842840a-2449-588c-b0c4-22122cfce31b",
+	"b176a0ac-d79f-ed9d-5a87-5c2c80874e10",
+	"e0a4d990-7b9b-8fa9-d7c6-04017c6cf5b1",
+	"77a2155f-4b35-4f0c-e7ff-4338f91426a4",
+	"ed539163-bb70-431b-96a7-f5b2eda5376b",
+	"3d0c5ff8-c95d-c907-ff3e-34b204f1c630",
+	"991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1",
+	"e5c9077e-1fca-4f24-b55d-464f512c98a8",
+	"9dff4c3b-fda7-43de-a763-ce1383039999",
+	"ee4989eb-aab8-968f-8674-812ea2f4bfd7",
+	"b77b6210-ac50-4cb1-a3d5-5702fb9c744c"
+  ],
+  "IgnoreBuiltinPath": [
+	"Game/GUI/Assets",
+	"Game/GUI/AssetsLowRes"
+  ],
+  "Mods": [
+	{
+	  "Name": "Gustav",
+	  "UUID": "991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1",
+	  "Folder": "Gustav",
+	  "Version": 36029301681017806,
+	  "Type": "Adventure",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": "The main story campaign dependency.",
+	  "Tags": "Campaign"
+	},
+	{
+	  "Name": "GustavDev",
+	  "UUID": "28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8",
+	  "Folder": "GustavDev",
+	  "Version": 144537830041394818,
+	  "Type": "Adventure",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": "The main story campaign.",
+	  "Tags": "Campaign"
+	},
+	{
+	  "Name": "Shared",
+	  "UUID": "ed539163-bb70-431b-96a7-f5b2eda5376b",
+	  "Folder": "Shared",
+	  "Version": 36029297386049870,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "SharedDev",
+	  "UUID": "3d0c5ff8-c95d-c907-ff3e-34b204f1c630",
+	  "Folder": "SharedDev",
+	  "Version": 36028797022707112,
+	  "Type": "Adventure",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "FW3",
+	  "UUID": "e5c9077e-1fca-4f24-b55d-464f512c98a8",
+	  "Folder": "FW3",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": "Shared project"
+	},
+	{
+	  "Name": "Engine",
+	  "UUID": "9dff4c3b-fda7-43de-a763-ce1383039999",
+	  "Folder": "Engine",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "Game",
+	  "UUID": "Game",
+	  "Folder": "Game",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": "Not an actual mod. This is the Public/Game folder."
+	},
+	{
+	  "Name": "DiceSet_01",
+	  "UUID": "e842840a-2449-588c-b0c4-22122cfce31b",
+	  "Folder": "DiceSet_01",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "DiceSet_02",
+	  "UUID": "b176a0ac-d79f-ed9d-5a87-5c2c80874e10",
+	  "Folder": "DiceSet_02",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "DiceSet_03",
+	  "UUID": "e0a4d990-7b9b-8fa9-d7c6-04017c6cf5b1",
+	  "Folder": "DiceSet_03",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "DiceSet_04",
+	  "UUID": "77a2155f-4b35-4f0c-e7ff-4338f91426a4",
+	  "Folder": "DiceSet_04",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "DiceSet_06",
+	  "UUID": "ee4989eb-aab8-968f-8674-812ea2f4bfd7",
+	  "Folder": "DiceSet_06",
+	  "Version": 36028797018963968,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": ""
+	},
+	{
+	  "Name": "Honour",
+	  "UUID": "b77b6210-ac50-4cb1-a3d5-5702fb9c744c",
+	  "Folder": "Honour",
+	  "Version": 36028797023014258,
+	  "Type": "Add-on",
+	  "Targets": "Story",
+	  "Author": "Larian Studios",
+	  "Description": "Honour difficulty mode."
+	}
+  ]
+}

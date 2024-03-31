@@ -4,6 +4,17 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:ModManager.ViewModels.Main"
 	d:DesignHeight="450"
 	d:DesignWidth="800"
-	mc:Ignorable="d" />
+	x:DataType="vm:ModOrderViewModel"
+	mc:Ignorable="d">
+	<Grid RowDefinitions="auto,*">
+		<TextBlock
+			HorizontalAlignment="Center"
+			FontSize="24"
+			Foreground="Turquoise"
+			Text="Mods" />
+		<TreeDataGrid Grid.Row="1" Source="{Binding ActiveModsSource}" />
+	</Grid>
+</UserControl>

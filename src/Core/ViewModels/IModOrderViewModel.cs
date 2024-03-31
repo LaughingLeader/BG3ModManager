@@ -9,8 +9,8 @@ namespace ModManager.ViewModels;
 
 public interface IModOrderViewModel
 {
-	ObservableCollectionExtended<DivinityModData> ActiveMods { get; }
-	ObservableCollectionExtended<DivinityModData> InactiveMods { get; }
+	ObservableCollectionExtended<IModEntry> ActiveMods { get; }
+	ObservableCollectionExtended<IModEntry> InactiveMods { get; }
 	ReadOnlyObservableCollection<DivinityProfileData> Profiles { get; }
 	//ReadOnlyObservableCollection<DivinityModData> Mods { get; }
 	//ReadOnlyObservableCollection<DivinityModData> WorkshopMods { get; }
@@ -23,9 +23,9 @@ public interface IModOrderViewModel
 	//int InactiveSelected { get; }
 
 	//void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0);
-	void DeleteMod(DivinityModData mod);
-	void DeleteSelectedMods(DivinityModData contextMenuMod);
+	void DeleteMod(IModEntry mod);
+	void DeleteSelectedMods(IModEntry contextMenuMod);
 	void ClearMissingMods();
-	void AddActiveMod(DivinityModData mod);
-	void RemoveActiveMod(DivinityModData mod);
+	void AddActiveMod(IModEntry mod);
+	void RemoveActiveMod(IModEntry mod);
 }

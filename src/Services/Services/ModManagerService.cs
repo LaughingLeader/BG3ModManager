@@ -137,6 +137,8 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		}
 	}
 
+	public IEnumerable<IModEntry> GetAllModsAsInterface() => mods.Items.Select(x => new ModEntry(x));
+
 	#region Mod Loading
 
 	private static CancellationTokenSource GetCancellationToken(int delay, CancellationTokenSource last = null)
@@ -265,7 +267,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 				DivinityApp.Log($"{String.Join(Environment.NewLine, modLoadingResults.Duplicates.Select(x => x.ToString()))}");
 				DivinityApp.Log("=======");
 				_commands.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
-				await _interactions.DeleteMods.Handle(new DeleteModsRequest(modLoadingResults.Duplicates, true, modLoadingResults.Mods));
+				await _interactions.DeleteMods.Handle(new DeleteModsRequest(modLoadingResults.Duplicates.ToModInterface(), true));
 			}
 		}
 		//if (projects != null) MergeModLists(ref finalMods, projects, true);

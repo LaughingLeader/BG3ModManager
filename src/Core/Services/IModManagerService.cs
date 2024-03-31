@@ -34,4 +34,5 @@ public interface IModManagerService
 	void ApplyUserModConfig();
 	void SetLoadedMods(IEnumerable<DivinityModData> loadedMods, bool nexusModsEnabled = false);
 	Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount);
+	IEnumerable<IModEntry> GetAllModsAsInterface();
 }

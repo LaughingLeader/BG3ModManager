@@ -1,0 +1,19 @@
+{
+	"Steam": {
+		"AppID": "1086940",
+		"Registry_32": "SOFTWARE\\Valve\\Steam\\Apps\\1086940",
+		"Registry_64": "SOFTWARE\\Wow6432Node\\Valve\\Steam\\Apps\\1086940",
+		"RootFolderName": "Baldurs Gate 3",
+		"ExePath": "bin\\bg3.exe"
+	},
+	"GOG": {
+		"AppID": "360014030297",
+		"Registry_32": "SOFTWARE\\GOG.com\\Games\\360014030297",
+		"Registry_64": "SOFTWARE\\Wow6432Node\\GOG.com\\Games\\360014030297",
+		"RootFolderName": "Baldurs Gate 3",
+		"ExePath": "bin\\bg3.exe"
+	},
+	"DocumentsGameFolder": "Larian Studios\\Baldur's Gate 3",
+	"AppDataGameFolder": "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3",
+	"GameDataFolder": "Data"
+}
