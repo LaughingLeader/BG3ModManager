@@ -610,9 +610,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 		this.WhenAnyValue(x => x.Name, x => x.FilePath, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName)
 			.Select(GetDisplayName).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.DisplayName);
-		this.WhenAnyValue(x => x.Description).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.DescriptionVisibility);
+		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.DescriptionVisibility);
 
-		this.WhenAnyValue(x => x.AuthorDisplayName).Select(PropertyConverters.StringToVisibility).ToUIPropertyImmediate(this, x => x.AuthorVisibility);
+		this.WhenAnyValue(x => x.AuthorDisplayName).Select(Validators.IsValid).ToUIPropertyImmediate(this, x => x.AuthorVisibility);
 
 		this.WhenAnyValue(x => x.ModType, x => x.IsHidden, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod, x => x.ForceAllowInLoadOrder)
 			.Select(CanAddToLoadOrderCheck).ToUIPropertyImmediate(this, x => x.CanAddToLoadOrder, true);
@@ -666,6 +666,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		this.WhenAnyValue(x => x.ListColor, x => x.SelectedColor)
 			.Select(x => !string.IsNullOrEmpty(x.Item1) || !string.IsNullOrEmpty(x.Item2))
 			.BindTo(this, x => x.HasColorOverride);
+
 		this.WhenAnyValue(x => x.IsForceLoadedMergedMod, x => x.IsEditorMod, x => x.IsForceLoaded, x => x.ForceAllowInLoadOrder, x => x.IsActive)
 			.ObserveOn(RxApp.MainThreadScheduler).Subscribe(UpdateColors);
 
@@ -686,13 +687,13 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		whenOsirisStatusChanges.Select(x => x != DivinityOsirisModStatus.NONE).ToUIProperty(this, x => x.OsirisStatusVisibility);
 		whenOsirisStatusChanges.Select(OsirisStatusToTooltipText).ToUIProperty(this, x => x.OsirisStatusToolTipText);
 
-		this.WhenAnyValue(x => x.Notes).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.NotesVisibility);
+		this.WhenAnyValue(x => x.Notes).Select(Validators.IsValid).ToUIProperty(this, x => x.NotesVisibility);
 
 		this.WhenAnyValue(x => x.LastUpdated).SkipWhile(x => !x.HasValue)
-			.Select(x => $"Last Modified on {x.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture)}")
+			.Select(x => x.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture))
 			.ToUIProperty(this, x => x.LastModifiedDateText, "");
 
-		this.WhenAnyValue(x => x.FilePath).Select(PropertyConverters.StringToVisibility).ToUIProperty(this, x => x.HasFilePathVisibility);
+		this.WhenAnyValue(x => x.FilePath).Select(Validators.IsValid).ToUIProperty(this, x => x.HasFilePathVisibility);
 		this.WhenAnyValue(x => x.Version.Version).ToUIProperty(this, x => x.DisplayVersion, "0.0.0.0");
 
 		SetIsBaseGameMod(false);

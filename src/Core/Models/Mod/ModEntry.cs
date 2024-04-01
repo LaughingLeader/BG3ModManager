@@ -12,7 +12,7 @@ public class ModEntry : ReactiveObject, IModEntry
 	[Reactive] public int Index { get; set; }
 
 	[Reactive] public bool IsActive { get; set; }
-	[Reactive] public bool IsVisible { get; set; }
+	[Reactive] public bool IsHidden { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
@@ -43,6 +43,11 @@ public class ModEntry : ReactiveObject, IModEntry
 		whenMod.Select(x => x.LastModifiedDateText).ToUIProperty(this, x => x.LastUpdated);
 
 		whenMod.Select(x => x.CanDelete).ToUIProperty(this, x => x.CanDelete);
+
+		this.WhenAnyValue(x => x.IsHidden).Subscribe(b =>
+		{
+			if (!b) IsSelected = false;
+		});
 	}
 
 	public ModEntry(DivinityModData modData) : this()

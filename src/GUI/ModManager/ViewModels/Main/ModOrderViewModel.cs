@@ -11,6 +11,7 @@ using ModManager.Models.Mod;
 using ModManager.Models.Settings;
 using ModManager.Services;
 using ModManager.Util;
+using ModManager.ViewModels.Mods;
 
 using Newtonsoft.Json;
 
@@ -54,51 +55,18 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public ObservableCollectionExtended<IModEntry> ActiveMods { get; }
 	public ObservableCollectionExtended<IModEntry> InactiveMods { get; }
 
-	private readonly ReadOnlyObservableCollection<DivinityModData> _forceLoadedMods;
-	public ReadOnlyObservableCollection<DivinityModData> ForceLoadedMods => _forceLoadedMods;
+	private readonly ReadOnlyObservableCollection<IModEntry> _overrideMods;
+	public ReadOnlyObservableCollection<IModEntry> OverrideMods => _overrideMods;
 
-
-	public HierarchicalTreeDataGridSource<IModEntry> ActiveModsSource { get; }
-	public HierarchicalTreeDataGridSource<IModEntry> InactiveModsSource { get; }
+	public ModListViewModel ActiveModsView { get; }
+	public ModListViewModel OverrideModsView { get; }
+	public ModListViewModel InactiveModsView { get; }
 
 
 	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
 	public List<DivinityLoadOrder> ExternalModOrders { get; }
 
-	private readonly Regex filterPropertyPattern = new("@([^\\s]+?)([\\s]+)([^@\\s]*)");
-	private readonly Regex filterPropertyPatternWithQuotes = new("@([^\\s]+?)([\\s\"]+)([^@\"]*)");
-
-	[Reactive] public int TotalActiveModsHidden { get; set; }
-	[Reactive] public int TotalInactiveModsHidden { get; set; }
-	[Reactive] public int TotalOverrideModsHidden { get; set; }
-
-	[Reactive] public string ActiveModFilterText { get; set; }
-	[Reactive] public string InactiveModFilterText { get; set; }
-	[Reactive] public string OverrideModsFilterText { get; set; }
-
 	[ObservableAsProperty] public ObservableCollectionExtended<IModEntry>? FocusedList { get; }
-
-	private static string HiddenToLabel(int totalHidden, int totalCount)
-	{
-		if (totalHidden > 0)
-		{
-			return $"{totalCount - totalHidden} Matched, {totalHidden} Hidden";
-		}
-		else
-		{
-			return $"0 Matched";
-		}
-	}
-
-	private static string SelectedToLabel(int total, int totalHidden)
-	{
-		if (totalHidden > 0)
-		{
-			return $", {total} Selected";
-		}
-		return $"{total} Selected";
-	}
-
 
 	#region DungeonMaster Support
 
@@ -1420,10 +1388,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		InactiveMods.Clear();
 		InactiveMods.AddRange(modManager.AddonMods.Where(x => x.CanAddToLoadOrder && !x.IsActive).ToModInterface());
 
-		OnFilterTextChanged(ActiveModFilterText, ActiveMods);
-		OnFilterTextChanged(InactiveModFilterText, InactiveMods);
-		OnFilterTextChanged(OverrideModsFilterText, modManager.ForceLoadedMods.ToModInterface());
-
 		if (missingMods.Count > 0)
 		{
 			var orderedMissingMods = missingMods.Values.OrderBy(x => x.Index).ToList();
@@ -1447,126 +1411,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		Settings.LastOrder = order.Name;
 
 		return true;
-	}
-
-	public void OnFilterTextChanged(string searchText, IEnumerable<IModEntry> modDataList)
-	{
-		var totalHidden = 0;
-		//DivinityApp.LogMessage("Filtering mod list with search term " + searchText);
-		if (String.IsNullOrWhiteSpace(searchText))
-		{
-			foreach (var m in modDataList)
-			{
-				m.IsVisible = true;
-			}
-		}
-		else
-		{
-			if (searchText.IndexOf('@') > -1)
-			{
-				var remainingSearch = searchText;
-				List<DivinityModFilterData> searchProps = [];
-
-				MatchCollection matches;
-
-				if (searchText.IndexOf('\"') > -1)
-				{
-					matches = filterPropertyPatternWithQuotes.Matches(searchText);
-				}
-				else
-				{
-					matches = filterPropertyPattern.Matches(searchText);
-				}
-
-				if (matches.Count > 0)
-				{
-					foreach (var match in matches.Cast<Match>())
-					{
-						if (match.Success)
-						{
-							var prop = match.Groups[1]?.Value;
-							var value = match.Groups[3]?.Value;
-							if (String.IsNullOrEmpty(value)) value = "";
-							if (!String.IsNullOrWhiteSpace(prop))
-							{
-								searchProps.Add(new DivinityModFilterData()
-								{
-									FilterProperty = prop,
-									FilterValue = value
-								});
-
-								remainingSearch = remainingSearch.Replace(match.Value, "");
-							}
-						}
-					}
-				}
-
-				remainingSearch = remainingSearch.Replace("\"", "");
-
-				//If no Name property is specified, use the remaining unmatched text for that
-				if (!String.IsNullOrWhiteSpace(remainingSearch) && !searchProps.Any(f => f.PropertyContains("Name")))
-				{
-					remainingSearch = remainingSearch.Trim();
-					searchProps.Add(new DivinityModFilterData()
-					{
-						FilterProperty = "Name",
-						FilterValue = remainingSearch
-					});
-				}
-
-				foreach (var mod in modDataList)
-				{
-					//@Mode GM @Author Leader
-					var totalMatches = 0;
-					foreach (var f in searchProps)
-					{
-						if (f.Match(mod))
-						{
-							totalMatches += 1;
-						}
-					}
-					if (totalMatches >= searchProps.Count)
-					{
-						mod.IsVisible = true;
-					}
-					else
-					{
-						mod.IsVisible = false;
-						mod.IsSelected = false;
-						totalHidden += 1;
-					}
-				}
-			}
-			else
-			{
-				foreach (var m in modDataList)
-				{
-					if (m.DisplayName.IsValid() && CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.DisplayName, searchText, CompareOptions.IgnoreCase) >= 0)
-					{
-						m.IsVisible = true;
-					}
-					else
-					{
-						m.IsVisible = false;
-						m.IsSelected = false;
-						totalHidden += 1;
-					}
-				}
-			}
-		}
-
-		if (modDataList == ActiveMods)
-		{
-			TotalActiveModsHidden = totalHidden;
-		}
-		else if (modDataList == ModManager.ForceLoadedMods)
-		{
-			TotalOverrideModsHidden = totalHidden;
-		}
-		else if (modDataList == InactiveMods)
-		{
-			TotalInactiveModsHidden = totalHidden;
-		}
 	}
 
 	private async Task ExportLoadOrderToTextFileAs()
@@ -1760,7 +1604,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-
 	public ModOrderViewModel(MainWindowViewModel host,
 		IModManagerService modManagerService,
 		IFileWatcherService fileWatcherService,
@@ -1784,35 +1627,71 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		ModOrderList = [];
 		ExternalModOrders = [];
 
-		ActiveModsSource = new HierarchicalTreeDataGridSource<IModEntry>(ActiveMods)
+		modManagerService.ForceLoadedMods.ToObservableChangeSet().Transform(x => x.ToModInterface()).Bind(out _overrideMods).Subscribe();
+
+		ReadOnlyObservableCollection<IModEntry> readonlyActiveMods;
+		ActiveMods.ToObservableChangeSet()
+			.AutoRefresh(x => x.IsHidden)
+			.Filter(x => !x.IsHidden)
+			.ObserveOn(RxApp.MainThreadScheduler).Bind(out readonlyActiveMods).Subscribe();
+
+		ReadOnlyObservableCollection<IModEntry> readonlyOverrideMods;
+		OverrideMods.ToObservableChangeSet()
+			.AutoRefresh(x => x.IsHidden)
+			.Filter(x => !x.IsHidden)
+			.ObserveOn(RxApp.MainThreadScheduler).Bind(out readonlyOverrideMods).Subscribe();
+
+		ReadOnlyObservableCollection<IModEntry> readonlyInactiveMods;
+		InactiveMods.ToObservableChangeSet()
+			.AutoRefresh(x => x.IsHidden)
+			.Filter(x => !x.IsHidden)
+			.ObserveOn(RxApp.MainThreadScheduler).Bind(out readonlyInactiveMods).Subscribe();
+
+		//Pass the connection to the original collections, so the view can observe the total count
+		var activeModsConnection = ActiveMods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler);
+		var overrideModsConnection = OverrideMods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler);
+		var inactiveModsConnection = InactiveMods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler);
+
+		ActiveModsView = new(new HierarchicalTreeDataGridSource<IModEntry>(readonlyActiveMods)
 		{
 			Columns =
 			{
 				//Avalonia.Controls.Models.TreeDataGrid.
-				new TextColumn<IModEntry, int>("Index", x => x.Index),
+				new TextColumn<IModEntry, int>("Index", x => x.Index, GridLength.Auto),
 				new HierarchicalExpanderColumn<IModEntry>(
-					new TextColumn<IModEntry, string>("Name", x => x.DisplayName),
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
 					x => x.Children),
-				new TextColumn<IModEntry, string>("Version", x => x.Version),
-				new TextColumn<IModEntry, string>("Author", x => x.Author),
-				new TextColumn<IModEntry, string>("Last Updated", x => x.Author),
-			},
-		};
+				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
+			}
+		}, ActiveMods, readonlyActiveMods, activeModsConnection, "Active Mods");
 
-		InactiveModsSource = new HierarchicalTreeDataGridSource<IModEntry>(InactiveMods)
+		OverrideModsView = new(new HierarchicalTreeDataGridSource<IModEntry>(readonlyOverrideMods)
 		{
 			Columns =
 			{
-				//Avalonia.Controls.Models.TreeDataGrid.
 				new HierarchicalExpanderColumn<IModEntry>(
-					new TextColumn<IModEntry, string>("Name", x => x.DisplayName),
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
 					x => x.Children),
-				new TextColumn<IModEntry, string>("Version", x => x.Version),
-				new TextColumn<IModEntry, string>("Author", x => x.Author),
-				new TextColumn<IModEntry, string>("Last Updated", x => x.Author),
-			},
-		};
+				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
+			}
+		}, OverrideMods, readonlyOverrideMods, overrideModsConnection, "Override Mods");
 
+		InactiveModsView = new(new HierarchicalTreeDataGridSource<IModEntry>(readonlyInactiveMods)
+		{
+			Columns =
+			{
+				new HierarchicalExpanderColumn<IModEntry>(
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
+					x => x.Children),
+				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
+			}
+		}, InactiveMods, readonlyInactiveMods, inactiveModsConnection, "Inactive Mods");
 
 		CanSaveOrder = true;
 
@@ -1828,22 +1707,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		profiles.Connect().Sort(_profileSort).Bind(out _uiprofiles).DisposeMany().Subscribe();
 
-		modManagerService.WhenAnyValue(x => x.ActiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalActiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.ActiveSelectedText);
-		modManagerService.WhenAnyValue(x => x.InactiveSelected).CombineLatest(this.WhenAnyValue(x => x.TotalInactiveModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.InactiveSelectedText);
-		modManagerService.WhenAnyValue(x => x.OverrideModsSelected).CombineLatest(this.WhenAnyValue(x => x.TotalOverrideModsHidden)).Select(x => SelectedToLabel(x.First, x.Second)).ToUIProperty(this, x => x.OverrideModsSelectedText);
-		//TODO Change .Count to CollectionChanged?
-		this.WhenAnyValue(x => x.TotalActiveModsHidden).Select(x => HiddenToLabel(x, ActiveMods.Count)).ToUIProperty(this, x => x.ActiveModsFilterResultText);
-		this.WhenAnyValue(x => x.TotalInactiveModsHidden).Select(x => HiddenToLabel(x, InactiveMods.Count)).ToUIProperty(this, x => x.InactiveModsFilterResultText);
-		this.WhenAnyValue(x => x.TotalOverrideModsHidden).Select(x => HiddenToLabel(x, modManagerService.ForceLoadedMods.Count)).ToUIProperty(this, x => x.OverrideModsFilterResultText);
-
 		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
 		var hasNonNullProfile = whenProfile.Select(x => x != null);
 		hasNonNullProfile.ToUIProperty(this, x => x.HasProfile);
 
 		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
 		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);
-		modManagerService.ForceLoadedMods.ToObservableChangeSet().Bind(out _forceLoadedMods).Subscribe();
-		ForceLoadedMods.ToObservableChangeSet().CountChanged().Select(_ => ForceLoadedMods.Count > 0).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility);
+		OverrideMods.ToObservableChangeSet().CountChanged().Select(_ => OverrideMods.Count > 0).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility);
 
 		host.Settings.WhenAnyValue(
 			x => x.ExtenderSettings.LogCompile,
@@ -1964,14 +1834,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 			}
 		});
-
-		//Throttle filters so they only happen when typing stops for 500ms
-
-		this.WhenAnyValue(x => x.ActiveModFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
-			Subscribe((s) => { OnFilterTextChanged(s, ActiveMods); });
-
-		this.WhenAnyValue(x => x.InactiveModFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
-			Subscribe((s) => { OnFilterTextChanged(s, InactiveMods); });
 
 		//this.WhenAnyValue(x => x.OverrideModsFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
 		//	Subscribe((s) => { OnFilterTextChanged(s, modManagerService.ForceLoadedMods); });

@@ -11,6 +11,7 @@
 	d:DesignHeight="450"
 	d:DesignWidth="800"
 	x:DataType="vm:MainWindowViewModel"
+	Focusable="True"
 	mc:Ignorable="d">
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<rxui:RoutedViewHost

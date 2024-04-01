@@ -4,18 +4,34 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mv="using:ModManager.Views.Mods"
 	xmlns:rxui="http://reactiveui.net"
+	xmlns:views="using:ModManager.Views"
 	xmlns:vm="using:ModManager.ViewModels.Main"
 	x:DataType="vm:ModOrderViewModel"
+	Focusable="True"
 	mc:Ignorable="d">
-	<Grid RowDefinitions="auto,auto,*">
-		<rxui:ViewModelViewHost ViewModel="{Binding CommandBar}" />
-		<TextBlock
-			Grid.Row="1"
-			HorizontalAlignment="Center"
-			FontSize="24"
-			Foreground="Turquoise"
-			Text="Mods" />
-		<TreeDataGrid Grid.Row="2" Source="{Binding ActiveModsSource}" />
+	<Grid RowDefinitions="auto,*,20">
+		<rxui:ViewModelViewHost x:Name="CommandBarViewHost" ViewModel="{Binding CommandBar}" />
+		<Grid Grid.Row="1" ColumnDefinitions="*,auto,*">
+			<Grid x:Name="ActiveModsGrid" RowDefinitions="3*,auto,1*">
+				<mv:ModListView
+					x:Name="ActiveModsList"
+					Grid.Row="0"
+					VerticalAlignment="Stretch"
+					DataContext="{Binding ActiveModsView}" />
+				<GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+				<mv:ModListView
+					x:Name="OverrideModsList"
+					Grid.Row="2"
+					VerticalAlignment="Stretch"
+					DataContext="{Binding OverrideModsView}" />
+			</Grid>
+			<GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+			<mv:ModListView
+				x:Name="InactiveModsList"
+				Grid.Column="2"
+				DataContext="{Binding InactiveModsView}" />
+		</Grid>
 	</Grid>
 </UserControl>

@@ -9,7 +9,7 @@ public class ModCategory : ReactiveObject, IModEntry
 	[Reactive] public string? DisplayName { get; set; }
 	[Reactive] public int Index { get; set; }
 	[Reactive] public bool IsActive { get; set; }
-	[Reactive] public bool IsVisible { get; set; }
+	[Reactive] public bool IsHidden { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
@@ -26,9 +26,9 @@ public class ModCategory : ReactiveObject, IModEntry
 
 	public ModCategory()
 	{
-		this.WhenAnyValue(x => x.IsVisible, b => !b).Subscribe(_ =>
+		this.WhenAnyValue(x => x.IsHidden).Subscribe(b =>
 		{
-			IsSelected = false;
+			if(!b) IsSelected = false;
 		});
 	}
 }

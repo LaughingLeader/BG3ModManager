@@ -2026,11 +2026,11 @@ Directory the zip will be extracted to:
 		});
 
 		var whenRefreshing = _updater.WhenAnyValue(x => x.IsRefreshing);
-		whenRefreshing.Select(PropertyConverters.BoolToVisibility).ToUIProperty(this, x => x.UpdatingBusyIndicatorVisibility);
-		whenRefreshing.Select(PropertyConverters.BoolToVisibilityReversed).ToUIProperty(this, x => x.UpdateCountVisibility);
+		whenRefreshing.ToUIProperty(this, x => x.UpdatingBusyIndicatorVisibility);
+		whenRefreshing.Select(b => !b).ToUIProperty(this, x => x.UpdateCountVisibility);
 
 		this.WhenAnyValue(x => x.Settings.DebugModeEnabled, x => x.Settings.ExtenderSettings.DeveloperMode)
-		.Select(x => PropertyConverters.BoolToVisibility(x.Item1 || x.Item2)).ToUIProperty(this, x => x.DeveloperModeVisibility);
+		.Select(x => x.Item1 || x.Item2).ToUIProperty(this, x => x.DeveloperModeVisibility);
 
 		#region Keys Setup
 

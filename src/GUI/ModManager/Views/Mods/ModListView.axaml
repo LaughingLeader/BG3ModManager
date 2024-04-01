@@ -1,0 +1,49 @@
+<rxui:ReactiveUserControl
+	x:Class="ModManager.Views.Mods.ModListView"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:rxui="http://reactiveui.net"
+	xmlns:vm="using:ModManager.ViewModels.Mods"
+	d:DesignHeight="200"
+	d:DesignWidth="400"
+	x:DataType="vm:ModListViewModel"
+	x:TypeArguments="vm:ModListViewModel"
+	mc:Ignorable="d">
+	<UserControl.Styles>
+		<Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+			<Setter Property="Opacity" Value="0.3" />
+		</Style>
+	</UserControl.Styles>
+	<Grid RowDefinitions="auto,*">
+		<Grid ColumnDefinitions="auto,auto,auto,*">
+			<TextBlock Padding="4" Text="{Binding Title}" />
+			<TextBox
+				x:Name="FilterTextBox"
+				Grid.Column="1"
+				Width="200"
+				Padding="4,0"
+				VerticalContentAlignment="Center"
+				AcceptsReturn="False"
+				AcceptsTab="False"
+				MaxLines="1"
+				Text="{Binding FilterInputText}"
+				TextAlignment="Left"
+				UseFloatingWatermark="False"
+				Watermark="{Binding FilterPlaceholderText}" />
+			<TextBlock
+				Grid.Column="2"
+				Margin="4,0,0,0"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Center"
+				Text="{Binding FilterResultText}" />
+		</Grid>
+		<TreeDataGrid
+			x:Name="ModsTreeDataGrid"
+			Grid.Row="1"
+			Focusable="True"
+			Source="{Binding Mods}" />
+	</Grid>
+</rxui:ReactiveUserControl>
