@@ -17,7 +17,7 @@ public interface IModEntry : ISelectable
 	bool IsExpanded { get; set; }
 	bool CanDelete { get; }
 
-	IReadOnlyCollection<IModEntry>? Children { get; }
+	IObservableCollection<IModEntry>? Children { get; }
 
 	string? Export(ModExportType exportType);
 }

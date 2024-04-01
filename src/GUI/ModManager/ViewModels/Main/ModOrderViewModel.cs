@@ -1629,23 +1629,23 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		modManagerService.ForceLoadedMods.ToObservableChangeSet().Transform(x => x.ToModInterface()).Bind(out _overrideMods).Subscribe();
 
-		ReadOnlyObservableCollection<IModEntry> readonlyActiveMods;
+		ObservableCollectionExtended<IModEntry> readonlyActiveMods = [];
 		ActiveMods.ToObservableChangeSet()
 			.AutoRefresh(x => x.IsHidden)
 			.Filter(x => !x.IsHidden)
-			.ObserveOn(RxApp.MainThreadScheduler).Bind(out readonlyActiveMods).Subscribe();
+			.ObserveOn(RxApp.MainThreadScheduler).Bind(readonlyActiveMods).Subscribe();
 
-		ReadOnlyObservableCollection<IModEntry> readonlyOverrideMods;
+		ObservableCollectionExtended<IModEntry> readonlyOverrideMods = [];
 		OverrideMods.ToObservableChangeSet()
 			.AutoRefresh(x => x.IsHidden)
 			.Filter(x => !x.IsHidden)
-			.ObserveOn(RxApp.MainThreadScheduler).Bind(out readonlyOverrideMods).Subscribe();
+			.ObserveOn(RxApp.MainThreadScheduler).Bind(readonlyOverrideMods).Subscribe();
 
-		ReadOnlyObservableCollection<IModEntry> readonlyInactiveMods;
+		ObservableCollectionExtended<IModEntry> readonlyInactiveMods = [];
 		InactiveMods.ToObservableChangeSet()
 			.AutoRefresh(x => x.IsHidden)
 			.Filter(x => !x.IsHidden)
-			.ObserveOn(RxApp.MainThreadScheduler).Bind(out readonlyInactiveMods).Subscribe();
+			.ObserveOn(RxApp.MainThreadScheduler).Bind(readonlyInactiveMods).Subscribe();
 
 		//Pass the connection to the original collections, so the view can observe the total count
 		var activeModsConnection = ActiveMods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler);
@@ -1660,7 +1660,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				new TextColumn<IModEntry, int>("Index", x => x.Index, GridLength.Auto),
 				new HierarchicalExpanderColumn<IModEntry>(
 					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
-					x => x.Children),
+					x => x.Children, x => x.Children != null && x.Children.Count > 0, x => x.IsExpanded),
 				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
 				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
 				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),

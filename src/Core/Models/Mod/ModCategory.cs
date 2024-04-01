@@ -19,8 +19,8 @@ public class ModCategory : ReactiveObject, IModEntry
 	public string? LastUpdated => string.Empty;
 	public bool CanDelete => true;
 
-	public ObservableCollection<IModEntry> Mods { get; } = [];
-	public IReadOnlyCollection<IModEntry>? Children => Mods;
+	public ObservableCollectionExtended<IModEntry> Mods { get; } = [];
+	public IObservableCollection<IModEntry>? Children => Mods;
 
 	public string? Export(ModExportType exportType) => string.Empty;
 

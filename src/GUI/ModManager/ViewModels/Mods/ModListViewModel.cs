@@ -163,6 +163,16 @@ public partial class ModListViewModel : ReactiveObject
 		TotalModsSelected = totalSelected;
 	}
 
+	public void UpdateIndexes()
+	{
+		var index = 0;
+		foreach(var mod in Mods.Items)
+		{
+			mod.Index = index;
+			index++;
+		}
+	}
+
 	public ModListViewModel(HierarchicalTreeDataGridSource<IModEntry> treeGridSource,
 		ICollection<IModEntry> collection,
 		INotifyCollectionChanged observedCollection,
@@ -172,6 +182,7 @@ public partial class ModListViewModel : ReactiveObject
 		_mods = collection;
 		Mods = treeGridSource;
 		treeGridSource.RowSelection!.SingleSelect = false;
+
 		Title = title;
 
 		Observable.FromEvent<NotifyCollectionChangedEventHandler?, NotifyCollectionChangedEventArgs>(

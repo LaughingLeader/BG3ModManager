@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DynamicData.Binding;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +26,7 @@ public class ModEntry : ReactiveObject, IModEntry
 	[ObservableAsProperty] public string? LastUpdated { get; }
 	[ObservableAsProperty] public bool CanDelete { get; }
 
-	public IReadOnlyCollection<IModEntry>? Children => null;
+	public IObservableCollection<IModEntry>? Children => new ObservableCollectionExtended<IModEntry>();
 
 	public string? Export(ModExportType exportType) => string.Empty;
 
