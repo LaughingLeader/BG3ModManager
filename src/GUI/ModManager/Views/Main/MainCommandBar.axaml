@@ -2,6 +2,7 @@
 	x:Class="ModManager.Views.Main.MainCommandBar"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:ModManager.Controls"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ui="using:FluentAvalonia.UI.Controls"
@@ -28,9 +29,11 @@
 		</Style>
 		<Style Selector="ComboBox">
 			<Setter Property="Margin" Value="2" />
+			<Setter Property="AutoScrollToSelectedItem" Value="False" />
 		</Style>
 		<Style Selector="ui|FAComboBox">
 			<Setter Property="Margin" Value="2" />
+			<Setter Property="AutoScrollToSelectedItem" Value="False" />
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,1,*">
@@ -74,20 +77,20 @@
 							Margin="4,0,4,0"
 							VerticalAlignment="Center"
 							Text="Order" />
-						<ui:FAComboBox
-							x:Name="OrdersComboBox"
-							AutoScrollToSelectedItem="False"
-							IsEditable="False"
-							IsTextSearchEnabled="True"
-							SelectedIndex="0">
-							<ui:FAComboBox.Items>
-								<ui:FAComboBoxItem Content="Current" />
-								<ui:FAComboBoxItem Content="Item 2" />
-								<ui:FAComboBoxItem Content="Different Name" />
-								<ui:FAComboBoxItem Content="ComboBoxItem4" />
-								<ui:FAComboBoxItem Content="Item 5" />
-							</ui:FAComboBox.Items>
-						</ui:FAComboBox>
+						<controls:ComboBoxWithRightClick x:Name="OrdersComboBox" SelectedIndex="0">
+							<FlyoutBase.AttachedFlyout>
+								<ui:FAMenuFlyout Placement="Pointer" ShowMode="Transient">
+									<ui:MenuFlyoutItem IconSource="Rename" Text="Rename" />
+								</ui:FAMenuFlyout>
+							</FlyoutBase.AttachedFlyout>
+							<controls:ComboBoxWithRightClick.Items>
+								<ComboBoxItem Content="Current" />
+								<ComboBoxItem Content="Item 2" />
+								<ComboBoxItem Content="Different Name" />
+								<ComboBoxItem Content="ComboBoxItem4" />
+								<ComboBoxItem Content="Item 5" />
+							</controls:ComboBoxWithRightClick.Items>
+						</controls:ComboBoxWithRightClick>
 					</StackPanel>
 				</ui:CommandBarElementContainer>
 				<ui:CommandBarElementContainer>
