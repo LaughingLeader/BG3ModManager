@@ -8,9 +8,30 @@
 	xmlns:rxui="http://reactiveui.net"
 	xmlns:views="using:ModManager.Views"
 	xmlns:vm="using:ModManager.ViewModels.Main"
+	d:DesignHeight="1080"
+	d:DesignWidth="1920"
 	x:DataType="vm:ModOrderViewModel"
 	Focusable="True"
 	mc:Ignorable="d">
+	<UserControl.Styles>
+		<Style Selector="mv|ModListView">
+			<Setter Property="Margin" Value="8,0,8,0" />
+		</Style>
+		<Style Selector="GridSplitter:pointerover">
+			<Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorQuarternary}" />
+		</Style>
+		<Style Selector="GridSplitter">
+			<Setter Property="Background" Value="{DynamicResource SystemFillColorSolidNeutralBackground}" />
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition
+						Easing="QuadraticEaseInOut"
+						Property="Background"
+						Duration="0:0:0.25" />
+				</Transitions>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*,20">
 		<rxui:ViewModelViewHost x:Name="CommandBarViewHost" ViewModel="{Binding CommandBar}" />
 		<Grid Grid.Row="1" ColumnDefinitions="*,auto,*">

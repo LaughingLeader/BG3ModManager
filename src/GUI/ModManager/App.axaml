@@ -50,10 +50,15 @@
 	</Application.Resources>
 
 	<Application.Styles>
-		<ui:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />
+		<ui:FluentAvaloniaTheme PreferUserAccentColor="True">
+			<ui:FluentAvaloniaTheme.MergedDictionaries>
+				<ResourceInclude Source="/Styling/ColorThemes/Dracula.axaml" />
+			</ui:FluentAvaloniaTheme.MergedDictionaries>
+		</ui:FluentAvaloniaTheme>
 
 		<StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
-
 		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
+
+		<!--<StyleInclude Source="avares://ModManager/Styling/Themes.axaml" />-->
 	</Application.Styles>
 </Application>
