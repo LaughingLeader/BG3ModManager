@@ -3,6 +3,7 @@
 		<AssemblyName>ModManager.Services</AssemblyName>
 		<RootNamespace>ModManager</RootNamespace>
 		<Nullable>enable</Nullable>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>

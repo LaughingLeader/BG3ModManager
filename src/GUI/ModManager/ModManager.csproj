@@ -3,6 +3,7 @@
 		<AssemblyName>ModManager</AssemblyName>
 		<AssemblyTitle>BG3ModManager</AssemblyTitle>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>

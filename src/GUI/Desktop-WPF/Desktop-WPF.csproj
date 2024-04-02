@@ -27,6 +27,7 @@
 		
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">

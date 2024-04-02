@@ -9,6 +9,7 @@
 
 		<Optimize>False</Optimize>
 		<DebugType>full</DebugType>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 	
 	<ItemGroup>

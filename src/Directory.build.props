@@ -3,7 +3,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<RootNamespace>ModManager</RootNamespace>
-		<Platforms>AnyCPU</Platforms>
+		<Platforms>AnyCPU;x64</Platforms>
 		<PlatformTarget>x64</PlatformTarget>
 		<Configurations>Debug;Release;Publish;PublishTest</Configurations>
 		<NeutralLanguage>en</NeutralLanguage>
