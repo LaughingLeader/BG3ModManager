@@ -1,209 +1,143 @@
-<UserControl
-	x:Class="ModManager.Views.Main.MainCommandBar"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:controls="using:ModManager.Controls"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:ui="using:FluentAvalonia.UI.Controls"
-	xmlns:vm="using:ModManager.ViewModels.Main"
-	d:DesignHeight="240"
-	d:DesignWidth="1600"
-	x:DataType="vm:MainCommandBarViewModel"
-	mc:Ignorable="d">
-	<UserControl.Resources>
-		<ui:CommandBarFlyout
-			x:Key="RenamingCommandBarFlyout"
-			Placement="Right"
-			ShowMode="Standard">
-			<ui:CommandBarButton
-				IconSource="Rename"
-				Label="Renaming"
-				ToolTip.Tip="Toggle Renaming" />
-		</ui:CommandBarFlyout>
-	</UserControl.Resources>
+<UserControl x:Class="ModManager.Views.Main.MainCommandBar"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ModManager.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ModManager.ViewModels.Main"
+             d:DesignHeight="240"
+             d:DesignWidth="1600"
+             x:DataType="vm:MainCommandBarViewModel"
+             mc:Ignorable="d">
+	<UserControl.Resources />
 	<UserControl.Styles>
 		<Style Selector="Button">
-			<Setter Property="Padding" Value="4" />
+			<Setter Property="Padding" Value="0" />
 			<Setter Property="Margin" Value="2" />
+			<Setter Property="Width" Value="24" />
+			<Setter Property="Height" Value="24" />
 		</Style>
 		<Style Selector="ComboBox">
-			<Setter Property="Margin" Value="2" />
-			<Setter Property="AutoScrollToSelectedItem" Value="False" />
-		</Style>
-		<Style Selector="ui|FAComboBox">
 			<Setter Property="Margin" Value="2" />
 			<Setter Property="AutoScrollToSelectedItem" Value="False" />
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,1,*">
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="_File" />
-			<MenuItem Header="_Edit" />
-			<MenuItem Header="_Settings" />
-			<MenuItem Header="_View" />
-			<MenuItem Header="_Go" />
-			<MenuItem Header="_Download" />
-			<MenuItem Header="_Tools" />
-			<MenuItem Header="_Help" />
+			<MenuItem Header="File" />
+			<MenuItem Header="Edit" />
+			<MenuItem Header="Settings" />
+			<MenuItem Header="View" />
+			<MenuItem Header="Go" />
+			<MenuItem Header="Download" />
+			<MenuItem Header="Tools" />
+			<MenuItem Header="Help" />
 		</Menu>
-		<Separator
-			Grid.Row="1"
-			VerticalAlignment="Stretch"
-			Background="LightGray" />
-		<ui:CommandBar
-			Grid.Row="2"
-			VerticalAlignment="Top"
-			DefaultLabelPosition="Right">
-			<ui:CommandBar.PrimaryCommands>
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="0,0,4,0"
-							VerticalAlignment="Center"
-							Text="Profile" />
-						<ComboBox AutoScrollToSelectedItem="False" SelectedIndex="0">
-							<ComboBox.Items>
-								<ComboBoxItem Content="Public" />
-								<ComboBoxItem Content="Debug Client Profile 1" />
-							</ComboBox.Items>
-						</ComboBox>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Order" />
-						<controls:ComboBoxWithRightClick x:Name="OrdersComboBox" SelectedIndex="0">
-							<FlyoutBase.AttachedFlyout>
-								<ui:FAMenuFlyout Placement="Pointer" ShowMode="Transient">
-									<ui:MenuFlyoutItem IconSource="Rename" Text="Rename" />
-								</ui:FAMenuFlyout>
-							</FlyoutBase.AttachedFlyout>
-							<controls:ComboBoxWithRightClick.Items>
-								<ComboBoxItem Content="Current" />
-								<ComboBoxItem Content="Item 2" />
-								<ComboBoxItem Content="Different Name" />
-								<ComboBoxItem Content="ComboBoxItem4" />
-								<ComboBoxItem Content="Item 5" />
-							</controls:ComboBoxWithRightClick.Items>
-						</controls:ComboBoxWithRightClick>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<Button ToolTip.Tip="Save Order">
-							<ui:SymbolIcon Foreground="LightGreen" Symbol="Save" />
-						</Button>
-						<Button ToolTip.Tip="Save Order As...">
-							<ui:SymbolIcon Symbol="SaveAs" />
-						</Button>
-						<Button ToolTip.Tip="Add New Order">
-							<ui:SymbolIcon Foreground="OrangeRed" Symbol="Add" />
-						</Button>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Export" />
-						<Button ToolTip.Tip="Export Order to Game">
-							<ui:SymbolIcon Foreground="RoyalBlue" Symbol="ShareFilled" />
-						</Button>
-						<Button ToolTip.Tip="Export Active Mods to Zip">
-							<ui:SymbolIcon Symbol="ZipFolder" />
-						</Button>
-						<Button ToolTip.Tip="Export Active Mods to Zip As...">
-							<ui:SymbolIcon Symbol="ZipFolderFilled" />
-						</Button>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Refresh" />
-						<Button ToolTip.Tip="Refresh Mods">
-							<ui:SymbolIcon Foreground="Red" Symbol="Refresh" />
-						</Button>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Campaign" />
-						<ComboBox SelectedIndex="0">
-							<ComboBoxItem Content="Main" />
-						</ComboBox>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Shortcuts" />
-						<Button ToolTip.Tip="Open Mods Folder...">
-							<ui:SymbolIcon Foreground="RoyalBlue" Symbol="OpenFolderFilled" />
-						</Button>
-						<Button Foreground="Red" ToolTip.Tip="Launch Game...">
-							<ui:SymbolIcon Symbol="PlayFilled" />
-						</Button>
-						<ComboBox
-							AutoScrollToSelectedItem="False"
-							SelectedIndex="0"
-							ToolTip.Tip="When launching the game, performed this action on this window">
-							<ComboBoxItem Content="None" />
-							<ComboBoxItem Content="Minimize" />
-							<ComboBoxItem Content="Close" />
-						</ComboBox>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Links" />
-						<Button ToolTip.Tip="Open Game Hub in Steam...">
-							<ui:SymbolIcon Symbol="Switch" />
-						</Button>
-						<Button ToolTip.Tip="Open Nexus Mods...">
-							<ui:SymbolIcon Symbol="PreviewLinkFilled" />
-						</Button>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-				<ui:CommandBarSeparator />
-				<ui:CommandBarElementContainer>
-					<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-						<TextBlock
-							Margin="4,0,4,0"
-							VerticalAlignment="Center"
-							Text="Support" />
-						<Button ToolTip.Tip="Donate a Coffee">
-							<ui:SymbolIcon Symbol="Go" />
-						</Button>
-						<Button ToolTip.Tip="Open Program Site (GitHub)...">
-							<ui:SymbolIcon Symbol="PageFilled" />
-						</Button>
-					</StackPanel>
-				</ui:CommandBarElementContainer>
-			</ui:CommandBar.PrimaryCommands>
-			<ui:CommandBar.SecondaryCommands />
-		</ui:CommandBar>
+		<Separator Grid.Row="1"
+		           Margin="0"
+		           HorizontalAlignment="Stretch"
+		           VerticalAlignment="Stretch"
+		           Background="LightGray" />
+		<WrapPanel Grid.Row="2" Margin="12,0" VerticalAlignment="Top">
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
+				<ComboBox AutoScrollToSelectedItem="False" SelectedIndex="0">
+					<ComboBox.Items>
+						<ComboBoxItem Content="Public" />
+						<ComboBoxItem Content="Debug Client Profile 1" />
+					</ComboBox.Items>
+				</ComboBox>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
+				<controls:ComboBoxWithRightClick x:Name="OrdersComboBox" SelectedIndex="0">
+					<FlyoutBase.AttachedFlyout>
+						<Flyout Placement="Pointer" ShowMode="Transient">
+							<MenuItem Header="Rename" ToolTip.Tip="Toggle Renaming">
+								<MenuItem.Icon>
+									<materialIcons:MaterialIcon Kind="Rename" />
+								</MenuItem.Icon>
+							</MenuItem>
+						</Flyout>
+					</FlyoutBase.AttachedFlyout>
+					<controls:ComboBoxWithRightClick.Items>
+						<ComboBoxItem Content="Current" />
+						<ComboBoxItem Content="Item 2" />
+						<ComboBoxItem Content="Different Name" />
+						<ComboBoxItem Content="ComboBoxItem4" />
+						<ComboBoxItem Content="Item 5" />
+					</controls:ComboBoxWithRightClick.Items>
+				</controls:ComboBoxWithRightClick>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<Button ToolTip.Tip="Save Order">
+					<materialIcons:MaterialIcon Foreground="LightGreen" Kind="ContentSave" />
+				</Button>
+				<Button ToolTip.Tip="Save Order As...">
+					<materialIcons:MaterialIcon Kind="ContentSaveEdit" />
+				</Button>
+				<Button ToolTip.Tip="Add New Order">
+					<materialIcons:MaterialIcon Foreground="OrangeRed" Kind="Add" />
+				</Button>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Export" />
+				<Button ToolTip.Tip="Export Order to Game">
+					<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="Export" />
+				</Button>
+				<Button ToolTip.Tip="Export Active Mods to Zip">
+					<materialIcons:MaterialIcon Kind="FolderZip" />
+				</Button>
+				<Button ToolTip.Tip="Export Active Mods to Zip As...">
+					<materialIcons:MaterialIcon Kind="ArchiveEdit" />
+				</Button>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Refresh" />
+				<Button ToolTip.Tip="Refresh Mods">
+					<materialIcons:MaterialIcon Foreground="Red" Kind="Refresh" />
+				</Button>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Campaign" />
+				<ComboBox SelectedIndex="0">
+					<ComboBoxItem Content="Main" />
+				</ComboBox>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Shortcuts" />
+				<Button ToolTip.Tip="Open Mods Folder...">
+					<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="FolderOpen" />
+				</Button>
+				<Button ToolTip.Tip="Launch Game...">
+					<materialIcons:MaterialIcon Foreground="Red" Kind="Launch" />
+				</Button>
+				<ComboBox AutoScrollToSelectedItem="False" SelectedIndex="0" ToolTip.Tip="When launching the game, performed this action on this window">
+					<ComboBoxItem Content="None" />
+					<ComboBoxItem Content="Minimize" />
+					<ComboBoxItem Content="Close" />
+				</ComboBox>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Links" />
+				<Button ToolTip.Tip="Open Game Hub in Steam...">
+					<materialIcons:MaterialIcon Kind="Switch" />
+				</Button>
+				<Button ToolTip.Tip="Open Nexus Mods...">
+					<materialIcons:MaterialIcon Kind="OpenInBrowser" />
+				</Button>
+			</StackPanel>
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Support" />
+				<Button ToolTip.Tip="Donate a Coffee">
+					<materialIcons:MaterialIcon Kind="Donate" />
+				</Button>
+				<Button ToolTip.Tip="Open Program Site (GitHub)...">
+					<materialIcons:MaterialIcon Kind="Github" />
+				</Button>
+			</StackPanel>
+		</WrapPanel>
 	</Grid>
 
 </UserControl>

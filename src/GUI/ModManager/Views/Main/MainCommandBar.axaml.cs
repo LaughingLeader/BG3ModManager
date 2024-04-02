@@ -1,7 +1,5 @@
 using Avalonia.Input;
 
-using FluentAvalonia.UI.Controls;
-
 using ModManager.ViewModels.Main;
 
 namespace ModManager.Views.Main;

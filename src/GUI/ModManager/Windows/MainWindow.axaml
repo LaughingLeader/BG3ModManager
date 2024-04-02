@@ -1,23 +1,34 @@
-<Window
-	x:Class="ModManager.Windows.MainWindow"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:rxui="http://reactiveui.net"
-	xmlns:ui="using:FluentAvalonia.UI.Controls"
-	xmlns:vm="using:ModManager.ViewModels.Main"
-	Title="{Binding Title}"
-	d:DesignHeight="450"
-	d:DesignWidth="800"
-	x:DataType="vm:MainWindowViewModel"
-	Focusable="True"
-	mc:Ignorable="d">
+<suki:SukiWindow x:Class="ModManager.Windows.MainWindow"
+                 xmlns="https://github.com/avaloniaui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:rxui="http://reactiveui.net"
+                 xmlns:suki="using:SukiUI.Controls"
+                 xmlns:vm="using:ModManager.ViewModels.Main"
+                 Title="{Binding Title}"
+                 d:DesignHeight="450"
+                 d:DesignWidth="800"
+                 x:DataType="vm:MainWindowViewModel"
+                 Focusable="True"
+                 mc:Ignorable="d">
+	<!--<suki:SukiWindow.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Styling/ColorThemes/Dracula.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</suki:SukiWindow.Resources>-->
+	<suki:SukiWindow.Styles>
+		<!--  Title Bar recoloring  -->
+		<Style Selector="suki|SukiWindow /template/ LayoutTransformControl#PART_LayoutTransform > Panel">
+			<Setter Property="Background" Value="#4e38c9" />
+		</Style>
+	</suki:SukiWindow.Styles>
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<rxui:RoutedViewHost
-			x:Name="ViewHost"
-			HorizontalContentAlignment="Stretch"
-			VerticalContentAlignment="Stretch"
-			Router="{Binding Router}" />
+		<rxui:RoutedViewHost x:Name="ViewHost"
+		                     HorizontalContentAlignment="Stretch"
+		                     VerticalContentAlignment="Stretch"
+		                     Router="{Binding Router}" />
 	</Grid>
-</Window>
+</suki:SukiWindow>

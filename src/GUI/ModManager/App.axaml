@@ -1,18 +1,45 @@
-<Application
-	x:Class="ModManager.App"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-	xmlns:local="using:ModManager"
-	xmlns:ui="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
-	RequestedThemeVariant="Dark">
+<Application x:Class="ModManager.App"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:ModManager"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
+             RequestedThemeVariant="Dark">
 	<!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/FilterButtonExpander.axaml" />
 			</ResourceDictionary.MergedDictionaries>
+
+			<ResourceDictionary.ThemeDictionaries>
+				<!--
+					Makes TreeDataGrid work without a fluent theme
+					https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/246#issuecomment-1874873016
+				-->
+				<ResourceDictionary x:Key="Default">
+					<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Opacity="0.1" Color="Black" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Opacity="0.1" Color="Black" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Opacity="0.6" Color="Black" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="Black" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="Black" />
+					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Opacity="0.4" Color="Black" />
+				</ResourceDictionary>
+				<ResourceDictionary x:Key="Dark">
+					<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Opacity="0.1" Color="White" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Opacity="0.1" Color="White" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Opacity="0.6" Color="White" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="White" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
+					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Opacity="0.4" Color="White" />
+				</ResourceDictionary>
+			</ResourceDictionary.ThemeDictionaries>
 
 			<!--  TreeDataGrid Resources  -->
 			<Color x:Key="SystemBaseMediumLowColor">Transparent</Color>
@@ -24,16 +51,12 @@
 				<Setter Property="Height" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
 				<Setter Property="Template">
 					<ControlTemplate>
-						<Border
-							Width="{TemplateBinding Width}"
-							Height="{TemplateBinding Height}"
-							HorizontalAlignment="Center"
-							VerticalAlignment="Center"
-							Background="Transparent">
-							<controls:SymbolIcon
-								HorizontalAlignment="Center"
-								VerticalAlignment="Center"
-								Symbol="ChevronRight" />
+						<Border Width="{TemplateBinding Width}"
+						        Height="{TemplateBinding Height}"
+						        HorizontalAlignment="Center"
+						        VerticalAlignment="Center"
+						        Background="Transparent">
+							<materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center" Kind="ChevronRight" />
 						</Border>
 					</ControlTemplate>
 				</Setter>
@@ -41,7 +64,7 @@
 				<Style Selector="^:checked /template/ Path#ChevronPath">
 					<Setter Property="Data">
 						<Template>
-							<controls:SymbolIcon Symbol="ChevronLeft" />
+							<materialIcons:MaterialIcon Kind="ChevronLeft" />
 						</Template>
 					</Setter>
 				</Style>
@@ -50,15 +73,9 @@
 	</Application.Resources>
 
 	<Application.Styles>
-		<ui:FluentAvaloniaTheme PreferUserAccentColor="True">
-			<ui:FluentAvaloniaTheme.MergedDictionaries>
-				<ResourceInclude Source="/Styling/ColorThemes/Dracula.axaml" />
-			</ui:FluentAvaloniaTheme.MergedDictionaries>
-		</ui:FluentAvaloniaTheme>
-
+		<suki:SukiTheme ThemeColor="Blue" />
+		<materialIcons:MaterialIconStyles />
 		<StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
 		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
-
-		<!--<StyleInclude Source="avares://ModManager/Styling/Themes.axaml" />-->
 	</Application.Styles>
 </Application>

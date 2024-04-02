@@ -1,7 +1,5 @@
 ﻿using Avalonia.Platform.Storage;
 
-using FluentAvalonia.Core;
-
 namespace ModManager;
 public static class AvaloniaTypeExtensions
 {

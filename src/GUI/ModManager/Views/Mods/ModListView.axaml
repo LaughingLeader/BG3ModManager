@@ -1,75 +1,64 @@
-<rxui:ReactiveUserControl
-	x:Class="ModManager.Views.Mods.ModListView"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-	xmlns:m="using:ModManager.Models.Mod"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:rxui="http://reactiveui.net"
-	xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-	xmlns:vm="using:ModManager.ViewModels.Mods"
-	d:DesignHeight="200"
-	d:DesignWidth="400"
-	x:DataType="vm:ModListViewModel"
-	x:TypeArguments="vm:ModListViewModel"
-	mc:Ignorable="d">
+<rxui:ReactiveUserControl x:Class="ModManager.Views.Mods.ModListView"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+                          xmlns:m="using:ModManager.Models.Mod"
+                          xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:vm="using:ModManager.ViewModels.Mods"
+                          d:DesignHeight="200"
+                          d:DesignWidth="400"
+                          x:DataType="vm:ModListViewModel"
+                          x:TypeArguments="vm:ModListViewModel"
+                          Background="Transparent"
+                          mc:Ignorable="d">
 	<UserControl.Styles>
 		<Style Selector="TextBox /template/ TextBlock#PART_Watermark">
 			<Setter Property="Opacity" Value="0.3" />
 		</Style>
 		<Style x:DataType="m:IModEntry" Selector="TreeDataGridRow">
 			<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWayToSource}" />
-			<!--<Setter Property="RowIndex" Value="{Binding Index}" />-->
-			<!--<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />-->
-			<!--<Setter Property="ContextFlyout">
-				<Setter.Value>
-					<ui:FAMenuFlyout>
-						<ui:MenuFlyoutItem
-							Command="{ReflectionBinding $parent[UserControl].DataContext.OpenInFileExplorerCommand}"
-							CommandParameter="{Binding FilePath}"
-							IconSource="OpenFile"
-							Text="Open in File Explorer..." />
-
-						<ui:MenuFlyoutItem
-							Command="{ReflectionBinding $parent[UserControl].DataContext.OpenInDirectoryOpusCommand}"
-							CommandParameter="{Binding FilePath}"
-							IconSource="{StaticResource DopusIcon}"
-							IsVisible="{ReflectionBinding $parent[UserControl].DataContext.DirectoryOpusIsRunning}"
-							Text="Open in Directory Opus..." />
-					</ui:FAMenuFlyout>
-				</Setter.Value>
-			</Setter>-->
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*">
 		<Grid ColumnDefinitions="auto,auto,auto,*">
-			<TextBlock Padding="4" Text="{Binding Title}" />
-			<TextBox
-				x:Name="FilterTextBox"
-				Grid.Column="1"
-				Width="200"
-				Padding="4,0"
-				VerticalContentAlignment="Center"
-				AcceptsReturn="False"
-				AcceptsTab="False"
-				MaxLines="1"
-				Text="{Binding FilterInputText}"
-				TextAlignment="Left"
-				UseFloatingWatermark="False"
-				Watermark="{Binding FilterPlaceholderText}" />
-			<TextBlock
-				Grid.Column="2"
-				Margin="4,0,0,0"
-				HorizontalAlignment="Left"
-				VerticalAlignment="Center"
-				Text="{Binding FilterResultText}" />
+			<TextBlock Padding="4"
+			           VerticalAlignment="Center"
+			           Text="{Binding Title}"
+			           TextAlignment="Left" />
+			<Expander Grid.Column="1"
+			          Margin="0"
+			          VerticalAlignment="Center"
+			          ExpandDirection="Right"
+			          Theme="{StaticResource FilterButtonExpander}"
+			          ToolTip.Tip="Toggle Filter">
+				<TextBox x:Name="FilterTextBox"
+				         Width="200"
+				         Margin="0"
+				         Padding="0"
+				         VerticalContentAlignment="Center"
+				         AcceptsReturn="False"
+				         AcceptsTab="False"
+				         MaxLines="1"
+				         Text="{Binding FilterInputText}"
+				         TextAlignment="Left"
+				         UseFloatingWatermark="False"
+				         Watermark="{Binding FilterPlaceholderText}" />
+			</Expander>
+
+			<TextBlock Grid.Column="2"
+			           Margin="4,0,0,0"
+			           HorizontalAlignment="Left"
+			           VerticalAlignment="Center"
+			           Text="{Binding FilterResultText}" />
 		</Grid>
-		<TreeDataGrid
-			x:Name="ModsTreeDataGrid"
-			Grid.Row="1"
-			AutoDragDropRows="True"
-			Focusable="True"
-			Source="{Binding Mods}" />
+		<TreeDataGrid x:Name="ModsTreeDataGrid"
+		              Grid.Row="1"
+		              AutoDragDropRows="True"
+		              Background="Transparent"
+		              Focusable="True"
+		              Source="{Binding Mods}" />
 	</Grid>
 </rxui:ReactiveUserControl>

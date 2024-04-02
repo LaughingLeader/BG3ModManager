@@ -15,7 +15,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="11.0.10" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
 		<PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
 		<PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
@@ -23,7 +29,8 @@
 		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.10.2" />
 		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.10.2" />
 		<PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
-		<PackageReference Include="FluentAvaloniaUI" Version="2.0.5" />
+		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
+		<PackageReference Include="SukiUI" Version="6.0.0-beta4" />
 		<PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
 		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="DynamicData" Version="8.4.1" />
@@ -35,11 +42,6 @@
 		<PackageReference Include="SharpCompress" Version="0.36.0" />
 		<PackageReference Include="Splat" Version="14.8.12" />
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>

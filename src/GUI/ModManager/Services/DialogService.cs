@@ -1,8 +1,6 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 
-using FluentAvalonia.UI.Controls;
-
 using ModManager.Windows;
 
 using System.Collections.Immutable;
@@ -116,6 +114,10 @@ public class DialogService : IDialogService
 		_interactions.ShowMessageBox.RegisterHandler(async context =>
 		{
 			var data = context.Input;
+		});
+	}
+}
+/* // Fluent Avalonia
 			var td = new TaskDialog
 			{
 				Content = data.Message,
@@ -161,7 +163,5 @@ public class DialogService : IDialogService
 						context.SetOutput(false);
 						break;
 				}
-			}
-		});
-	}
-}
+			} 
+*/

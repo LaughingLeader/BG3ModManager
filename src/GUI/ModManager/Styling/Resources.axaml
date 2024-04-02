@@ -1,8 +1,7 @@
 <ResourceDictionary
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:controls="using:ModManager.Controls"
-	xmlns:ui="using:FluentAvalonia.UI.Controls">
+	xmlns:controls="using:ModManager.Controls">
 	<!--<ControlTheme
 		x:Key="{x:Type controls:ComboBoxWithRightClick}"
 		BasedOn="{StaticResource {x:Type ComboBox}}"

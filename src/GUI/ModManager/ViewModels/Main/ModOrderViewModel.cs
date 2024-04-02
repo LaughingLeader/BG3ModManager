@@ -1665,7 +1665,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
 				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
 			}
-		}, ActiveMods, readonlyActiveMods, activeModsConnection, "Active Mods");
+		}, ActiveMods, readonlyActiveMods, activeModsConnection, "Active");
 
 		OverrideModsView = new(new HierarchicalTreeDataGridSource<IModEntry>(readonlyOverrideMods)
 		{
@@ -1678,20 +1678,20 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
 				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
 			}
-		}, OverrideMods, readonlyOverrideMods, overrideModsConnection, "Override Mods");
+		}, OverrideMods, readonlyOverrideMods, overrideModsConnection, "Overrides");
 
 		InactiveModsView = new(new HierarchicalTreeDataGridSource<IModEntry>(readonlyInactiveMods)
 		{
 			Columns =
 			{
 				new HierarchicalExpanderColumn<IModEntry>(
-					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, new GridLength(3d, GridUnitType.Star)),
 					x => x.Children),
-				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
-				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
-				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
+				new TextColumn<IModEntry, string>("Version", x => x.Version, new GridLength(80d)),
+				new TextColumn<IModEntry, string>("Author", x => x.Author, new GridLength(100d)),
+				new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, new GridLength(200d)),
 			}
-		}, InactiveMods, readonlyInactiveMods, inactiveModsConnection, "Inactive Mods");
+		}, InactiveMods, readonlyInactiveMods, inactiveModsConnection, "Inactive");
 
 		CanSaveOrder = true;
 
