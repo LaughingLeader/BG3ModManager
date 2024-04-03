@@ -95,7 +95,7 @@
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Refresh" />
-				<Button ToolTip.Tip="Refresh Mods">
+				<Button Command="{Binding RefreshCommand}" ToolTip.Tip="Refresh Mods">
 					<materialIcons:MaterialIcon Foreground="Red" Kind="Refresh" />
 				</Button>
 			</StackPanel>

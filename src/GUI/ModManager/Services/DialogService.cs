@@ -3,6 +3,8 @@ using Avalonia.Platform.Storage;
 
 using ModManager.Windows;
 
+using SukiUI.Controls;
+
 using System.Collections.Immutable;
 
 namespace ModManager.Services;
@@ -109,11 +111,6 @@ public class DialogService : IDialogService
 			{
 				return await OpenFolderAsync(context.Input);
 			}, RxApp.MainThreadScheduler);
-		});
-
-		_interactions.ShowMessageBox.RegisterHandler(async context =>
-		{
-			var data = context.Input;
 		});
 	}
 }

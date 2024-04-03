@@ -68,8 +68,9 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 		var modPakFolder = AppServices.Pathways.Data.AppDataModsPath;
 
 		var result = await AppServices.Interactions.ShowMessageBox.Handle(new(
+			"Update Mods?",
 			"Download / copy updates? Previous pak files will be moved to the Recycle Bin.",
-			"Update Mods?", InteractionMessageBoxType.Confirmation));
+			InteractionMessageBoxType.YesNo));
 		if (result)
 		{
 			var updates = Mods.Items.Where(x => x.IsSelected).ToList();

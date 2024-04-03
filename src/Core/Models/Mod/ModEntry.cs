@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public class ModEntry : ReactiveObject, IModEntry
 		whenMod.Select(x => x.DisplayName).ToUIProperty(this, x => x.DisplayName);
 		whenMod.Select(x => x.Version.Version).ToUIProperty(this, x => x.Version);
 		whenMod.Select(x => x.Author).ToUIProperty(this, x => x.Author);
-		whenMod.Select(x => x.LastModifiedDateText).ToUIProperty(this, x => x.LastUpdated);
+		whenMod.Select(x => x.LastModified?.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture)).ToUIProperty(this, x => x.LastUpdated);
 
 		whenMod.Select(x => x.CanDelete).ToUIProperty(this, x => x.CanDelete);
 

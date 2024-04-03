@@ -307,7 +307,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 
 	private void AssociateWithNXM()
 	{
-		_interactions.ShowMessageBox.Handle(new(_associateNXMMessage, "Associate BG3MM with nxm:// links?", InteractionMessageBoxType.Confirmation)).Subscribe(result =>
+		_interactions.ShowMessageBox.Handle(new("Associate BG3MM with nxm:// links?", _associateNXMMessage, InteractionMessageBoxType.YesNo)).Subscribe(result =>
 		{
 			if (result && DivinityApp.GetExePath() is string exePath)
 			{
@@ -418,9 +418,9 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		{
 			var tabName = TabToName(SelectedTabIndex);
 			_interactions.ShowMessageBox.Handle(new(
-				$"Reset {tabName} to Default?\nCurrent settings will be lost.",
 				$"Confirm {tabName} Reset",
-				InteractionMessageBoxType.Warning))
+				$"Reset {tabName} to Default?\nCurrent settings will be lost.",
+				InteractionMessageBoxType.Warning | InteractionMessageBoxType.YesNo))
 			.Subscribe(result =>
 			{
 				if (result)
@@ -452,9 +452,9 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		ClearCacheCommand = ReactiveCommand.Create(() =>
 		{
 			_interactions.ShowMessageBox.Handle(new(
-				$"Delete local mod cache?\nThis cannot be undone.",
 				"Confirm Delete Cache",
-				InteractionMessageBoxType.Warning))
+				$"Delete local mod cache?\nThis cannot be undone.",
+				InteractionMessageBoxType.Warning | InteractionMessageBoxType.YesNo))
 			.Subscribe(result =>
 			{
 				if (result)

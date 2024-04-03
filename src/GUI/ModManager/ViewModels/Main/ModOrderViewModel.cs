@@ -606,7 +606,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				var message = String.Join("\n", missingMods.OrderBy(x => x.Index));
 				var title = "Missing Mods in Load Order";
-				_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new(title, message, InteractionMessageBoxType.Error)).Subscribe();
 			}
 			else
 			{
@@ -667,7 +667,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				DivinityApp.Log("Displaying mods that require the extender.");
 				var message = "Functionality may be limited without the Script Extender.\n" + String.Join("\n", extenderRequiredMods.OrderBy(x => x.Index));
 				var title = "Mods Require the Script Extender";
-				_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new(title, message, InteractionMessageBoxType.Error)).Subscribe();
 			}
 		}
 	}
@@ -904,7 +904,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					var message = $"Problem exporting load order to '{outputPath}'. Is the file locked?";
 					var title = "Mod Order Export Failed";
 					AppServices.Commands.ShowAlert(message, AlertType.Danger);
-					await _interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error));
+					await _interactions.ShowMessageBox.Handle(new(title, message, InteractionMessageBoxType.Error));
 				}
 			}
 			else
@@ -962,7 +962,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						var message = $"Problem exporting load order to '{SelectedGameMasterCampaign.FilePath}'";
 						AppServices.Commands.ShowAlert(message, AlertType.Danger);
-						_interactions.ShowMessageBox.Handle(new(message, "Mod Order Export Failed", InteractionMessageBoxType.Error)).Subscribe();
+						_interactions.ShowMessageBox.Handle(new("Mod Order Export Failed", message, InteractionMessageBoxType.Error)).Subscribe();
 					}
 				}
 			}
@@ -1069,7 +1069,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private async Task DeleteOrder(DivinityLoadOrder order)
 	{
-		var data = new ShowMessageBoxRequest($"Delete load order '{order.Name}'? This cannot be undone.", "Confirm Order Deletion", InteractionMessageBoxType.Warning | InteractionMessageBoxType.Confirmation);
+		var data = new ShowMessageBoxRequest("Confirm Order Deletion", 
+			$"Delete load order '{order.Name}'? This cannot be undone.",
+			InteractionMessageBoxType.Warning | InteractionMessageBoxType.YesNo);
 		var result = await _interactions.ShowMessageBox.Handle(data);
 		if (result)
 		{
@@ -1399,7 +1401,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				_interactions.ShowMessageBox.Handle(new(String.Join("\n", orderedMissingMods), "Missing Mods in Load Order", InteractionMessageBoxType.Warning)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new("Missing Mods in Load Order", string.Join("\n", orderedMissingMods), InteractionMessageBoxType.Warning)).Subscribe();
 			}
 		}
 
@@ -1922,7 +1924,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						{
 							var title = "Mod Order Reset";
 							var message = "The active load order (modsettings.lsx) has been reset externally, which has deactivated your mods.\nOne or more mods may be invalid in your current load order.";
-							_interactions.ShowMessageBox.Handle(new(message, title, InteractionMessageBoxType.Error)).Subscribe();
+							_interactions.ShowMessageBox.Handle(new(title, message, InteractionMessageBoxType.Error)).Subscribe();
 						});
 					}
 				});

@@ -17,4 +17,9 @@ public static class EnumExtensions
 		}
 		return "";
 	}
+
+	public static bool IsConfirmation(this InteractionMessageBoxType messageBoxType)
+	{
+		return messageBoxType.HasFlag(InteractionMessageBoxType.YesNo);
+	}
 }

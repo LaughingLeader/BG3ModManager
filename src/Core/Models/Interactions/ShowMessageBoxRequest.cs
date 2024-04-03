@@ -1,3 +1,3 @@
 ﻿namespace ModManager;
 
-public record struct ShowMessageBoxRequest(string Message, string Title, InteractionMessageBoxType MessageBoxType);
+public record struct ShowMessageBoxRequest(string Title, string Message, InteractionMessageBoxType MessageBoxType);

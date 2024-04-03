@@ -1,6 +1,7 @@
 ﻿using ModManager.Services;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.Views;
 using ModManager.Views.Main;
 
 namespace ModManager;
@@ -16,6 +17,7 @@ public static class AppServices
 
 	public static IGlobalCommandsService Commands => Get<IGlobalCommandsService>()!;
 	public static IInteractionsService Interactions => Get<IInteractionsService>()!;
+	public static IDialogService Dialog => Get<IDialogService>()!;
 
 	static AppServices()
 	{
@@ -51,10 +53,14 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ExportOrderToArchiveViewModel>();
 
+		SplatRegistrations.RegisterLazySingleton<MessageBoxViewModel>();
+
 		SplatRegistrations.RegisterLazySingleton<MainCommandBar>();
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesView>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();
+
+		SplatRegistrations.RegisterLazySingleton<MessageBoxView>();
 
 		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();

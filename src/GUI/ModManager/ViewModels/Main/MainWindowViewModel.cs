@@ -363,7 +363,9 @@ Download url:
 Directory the zip will be extracted to:
 {1}", PathwayData.ScriptExtenderLatestReleaseUrl, exeDir);
 
-				_interactions.ShowMessageBox.Handle(new(messageText, "Download & Install the Script Extender?", InteractionMessageBoxType.Confirmation)).Subscribe(result =>
+				_interactions.ShowMessageBox.Handle(new("Download & Install the Script Extender?",
+					messageText,
+					InteractionMessageBoxType.YesNo)).Subscribe(result =>
 				{
 					if (result)
 					{
@@ -920,7 +922,7 @@ Directory the zip will be extracted to:
 			if (!FileUtils.HasDirectoryReadPermission(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
 			{
 				var message = $"BG3MM lacks permission to read one or both of the following paths:\nGame Data Path: ({Settings.GameDataPath})\nGame Executable Path: ({Settings.GameExecutablePath})";
-				await _interactions.ShowMessageBox.Handle(new(message, "File Permission Issue", InteractionMessageBoxType.Error));
+				await _interactions.ShowMessageBox.Handle(new("File Permission Issue", message, InteractionMessageBoxType.Error));
 			}
 			else
 			{
@@ -1346,9 +1348,9 @@ Directory the zip will be extracted to:
 		//view.MainWindowMessageBox.Text = "Add active mods to a zip file?";
 		//view.MainWindowMessageBox.Caption = "Depending on the number of mods, this may take some time.";
 		var result = await _interactions.ShowMessageBox.Handle(new(
+			"Confirm Archive Creation", 
 			$"Save active mods to a zip file?{Environment.NewLine}Depending on the number of mods, this may take some time.",
-			"Confirm Archive Creation",
-			InteractionMessageBoxType.Confirmation));
+			InteractionMessageBoxType.YesNo));
 		if (result)
 		{
 			await StartMainProgressAsync("Adding active mods to zip...");
@@ -1745,7 +1747,7 @@ Directory the zip will be extracted to:
 		else
 		{
 			var msg = $"Extract the following mods?\n'{String.Join("\n", _manager.SelectedPakMods.Select(x => $"{x.DisplayName}"))}";
-			var result = await _interactions.ShowMessageBox.Handle(new(msg, "Extract Mods?", InteractionMessageBoxType.Confirmation));
+			var result = await _interactions.ShowMessageBox.Handle(new("Extract Mods?", msg, InteractionMessageBoxType.YesNo));
 			if (result)
 			{
 				await ExtractSelectedMods_ChooseFolder();
@@ -2155,7 +2157,7 @@ Directory the zip will be extracted to:
 			var sentenceStart = interaction.Input.PermanentlyDelete ? "Permanently delete" : "Delete";
 			var msg = $"{sentenceStart} {interaction.Input.Total} mod file(s)?";
 
-			var result = await _interactions.ShowMessageBox.Handle(new(msg, "Confirm Mod Deletion", InteractionMessageBoxType.Confirmation));
+			var result = await _interactions.ShowMessageBox.Handle(new("Confirm Mod Deletion", msg, InteractionMessageBoxType.YesNo));
 			interaction.SetOutput(result);
 		});
 

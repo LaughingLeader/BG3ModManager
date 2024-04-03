@@ -1,5 +1,7 @@
 ﻿using ModManager.Models.View;
+using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.Views;
 using ModManager.Views.Main;
 using ModManager.Views.StatsValidator;
 
@@ -53,6 +55,7 @@ public class ViewLocator : IViewLocator
 		RegisterConstant<DeleteFilesViewModel, DeleteFilesView>(resolver);
 		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
 		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);
+		RegisterConstant<MessageBoxViewModel, MessageBoxView>(resolver);
 
 		//Register<DownloadActivityBarViewModel, DownloadActivityBar>(resolver);
 		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>(resolver);
