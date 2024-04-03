@@ -1866,7 +1866,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModData> LoadModFromModInfo(VFS vfs, ModInfo modInfo, CancellationToken token)
+	private static async Task<DivinityModData?> LoadModFromModInfo(string gameDataPath, VFS vfs, ModInfo modInfo, CancellationToken token)
 	{
 		if (vfs.TryOpen(modInfo.Meta, out var stream))
 		{
@@ -1901,8 +1901,8 @@ public static partial class DivinityModDataLoader
 
 					if (Path.Equals(filePath, modInfo.ModsPath))
 					{
+						fileTimeFile = Path.GetFullPath(modInfo.Meta, gameDataPath);
 						modData.IsEditorMod = true;
-						fileTimeFile = modInfo.Meta;
 					}
 
 					try
@@ -1968,7 +1968,7 @@ public static partial class DivinityModDataLoader
 				var count = modResources.Mods.Values.Count;
 				foreach (var modInfo in modResources.Mods.Values)
 				{
-					var modData = await LoadModFromModInfo(vfs, modInfo, token);
+					var modData = await LoadModFromModInfo(gameDataPath, vfs, modInfo, token);
 					if (modData != null)
 					{
 						if (modInfo.PackagePath?.EndsWith(".pak") == true)
