@@ -1,8 +1,6 @@
 ﻿using ModManager.Models.Mod;
 using ModManager.Util;
 
-using Splat;
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;

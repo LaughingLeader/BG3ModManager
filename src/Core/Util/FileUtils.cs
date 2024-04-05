@@ -9,8 +9,27 @@ namespace ModManager.Util;
 
 public static class FileUtils
 {
-	public static readonly EnumerationOptions RecursiveOptions = new() { RecurseSubdirectories = true };
-	public static readonly EnumerationOptions FlatSearchOptions = new() { RecurseSubdirectories = false };
+	public static readonly EnumerationOptions RecursiveOptions = new()
+	{
+		RecurseSubdirectories = true,
+		IgnoreInaccessible = true,
+		MatchCasing = MatchCasing.CaseInsensitive
+	};
+
+	public static readonly EnumerationOptions GameDataOptions = new()
+	{
+		RecurseSubdirectories = true,
+		IgnoreInaccessible = true,
+		MaxRecursionDepth = 1,
+		MatchCasing = MatchCasing.CaseInsensitive
+	};
+
+	public static readonly EnumerationOptions FlatSearchOptions = new()
+	{
+		RecurseSubdirectories = false,
+		IgnoreInaccessible = true,
+		MatchCasing = MatchCasing.CaseInsensitive
+	};
 
 	/// <summary>
 	/// Gets the drive type of the given path.

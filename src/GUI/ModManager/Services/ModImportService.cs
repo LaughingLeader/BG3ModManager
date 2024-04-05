@@ -100,14 +100,17 @@ public class ModImportService(IDialogService _dialogService)
 
 				if (File.Exists(outputFilePath))
 				{
-					var mod = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, builtinMods, token);
-					if (mod != null)
+					var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, builtinMods, token);
+					if (parsed != null)
 					{
-						taskResult.Mods.Add(mod);
-						await Observable.Start(() =>
+						foreach(var mod in parsed)
 						{
-							ViewModel.AddImportedMod(mod, toActiveList);
-						}, RxApp.MainThreadScheduler);
+							taskResult.Mods.Add(mod);
+							await Observable.Start(() =>
+							{
+								ViewModel.AddImportedMod(mod, toActiveList);
+							}, RxApp.MainThreadScheduler);
+						}
 					}
 				}
 			}

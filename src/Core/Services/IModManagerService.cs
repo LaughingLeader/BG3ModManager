@@ -33,6 +33,6 @@ public interface IModManagerService
 	void Refresh();
 	void ApplyUserModConfig();
 	void SetLoadedMods(IEnumerable<DivinityModData> loadedMods, bool nexusModsEnabled = false);
-	Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount);
+	Task<List<DivinityModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token);
 	IEnumerable<IModEntry> GetAllModsAsInterface();
 }

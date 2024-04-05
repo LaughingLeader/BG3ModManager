@@ -7,6 +7,7 @@ using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
+using ModManager.Util.Pak;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -298,19 +299,6 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	//BOM
-	private static readonly string _byteOrderMarkUtf8 = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
-
-	private static System.IO.FileStream GetAsyncStream(string filePath)
-	{
-		return new System.IO.FileStream(filePath,
-				FileMode.Open,
-				FileAccess.Read,
-				FileShare.Read,
-				2048,
-				FileOptions.Asynchronous);
-	}
-
 	private static async Task TryLoadConfigFiles(VFS vfs, DivinityModData modData, string modsFolder, CancellationToken token)
 	{
 		Stream extenderConfigStream = null;
@@ -376,11 +364,34 @@ public static partial class DivinityModDataLoader
 		return false;
 	}
 
-	private static async Task<DivinityModData> InternalLoadModDataFromPakAsync(Package pak, string pakPath, Dictionary<string, DivinityModData> builtinMods, CancellationToken token)
+	public static async Task<DivinityModData> GetModDataFromMeta(PackagedFileInfo file)
 	{
-		DivinityModData modData = null;
+		using var stream = file.CreateContentReader();
+		using var sr = new StreamReader(stream);
+		var text = await sr.ReadToEndAsync();
+		return ParseMetaFile(text);
+	}
 
+	public static async Task<DivinityModData?> GetModDataFromMeta(string filePath, CancellationToken token)
+	{
+		var fileBytes = await FileUtils.LoadFileAsBytesAsync(filePath, token);
+		if (fileBytes != null)
+		{
+			var contents = Encoding.UTF8.GetString(fileBytes);
+			if (contents.IsValid())
+			{
+				return ParseMetaFile(contents);
+			}
+		}
+		return null;
+	}
+
+	private static async Task<List<DivinityModData>> InternalLoadModDataFromPakAsync(Package pak, string pakPath, 
+		Dictionary<string, DivinityModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
+	{
 		var pakName = Path.GetFileNameWithoutExtension(pakPath);
+
+		builtinMods ??= [];
 
 		var metaFiles = new List<PackagedFileInfo>();
 		var hasBuiltinDirectory = false;
@@ -391,93 +402,100 @@ public static partial class DivinityModDataLoader
 		var files = new HashSet<string>();
 		var baseGameFiles = new HashSet<string>();
 
-		PackagedFileInfo extenderConfigPath = null;
-		PackagedFileInfo modManagerConfigPath = null;
+		PackagedFileInfo? extenderConfigPath = null;
+		PackagedFileInfo? modManagerConfigPath = null;
 
 		if (pak != null && pak.Files != null)
 		{
-			for (var i = 0; i < pak.Files.Count; i++)
+			if (skipFileParsing)
 			{
-				if (token.IsCancellationRequested) break;
-				var f = pak.Files[i];
-				files.Add(f.Name);
+				metaFiles = pak.Files.Where(x => x.Name.EndsWith("meta.lsx")).ToList();
+			}
+			else
+			{
+				for (var i = 0; i < pak.Files.Count; i++)
+				{
+					if (token.IsCancellationRequested) break;
+					var f = pak.Files[i];
+					files.Add(f.Name);
 
-				//var entryFile = f.Name.Replace(@"\", "/");
-				var entryFile = f.Name;
+					//var entryFile = f.Name.Replace(@"\", "/");
+					var entryFile = f.Name;
 
-				if (entryFile.EndsWith(DivinityApp.EXTENDER_MOD_CONFIG, StringComparison.OrdinalIgnoreCase))
-				{
-					extenderConfigPath = f;
-				}
-				else if (entryFile.EndsWith(ModConfig.FileName, StringComparison.OrdinalIgnoreCase) && Path.GetDirectoryName(entryFile) == "Mods")
-				{
-					modManagerConfigPath = f;
-				}
-				else if (IsModMetaFile(f))
-				{
-					metaFiles.Add(f);
-				}
-				else
-				{
-					var modFolderMatch = _ModFolderPattern.Match(entryFile);
-					if (modFolderMatch.Success)
+					if (entryFile.EndsWith(DivinityApp.EXTENDER_MOD_CONFIG, StringComparison.OrdinalIgnoreCase))
 					{
-						var modFolder = Path.GetFileName(modFolderMatch.Groups[2].Value.TrimEnd(Path.DirectorySeparatorChar));
-						if (entryFile.EndsWith($"Mods/{modFolder}/{ModConfig.FileName}", StringComparison.OrdinalIgnoreCase))
+						extenderConfigPath = f;
+					}
+					else if (entryFile.EndsWith(ModConfig.FileName, StringComparison.OrdinalIgnoreCase) && Path.GetDirectoryName(entryFile) == "Mods")
+					{
+						modManagerConfigPath = f;
+					}
+					else if (IsModMetaFile(f))
+					{
+						metaFiles.Add(f);
+					}
+					else
+					{
+						var modFolderMatch = _ModFolderPattern.Match(entryFile);
+						if (modFolderMatch.Success)
 						{
-							modManagerConfigPath = f;
-						}
-						else if (entryFile.Contains($"Mods/{modFolder}/Story/RawFiles/Goals", StringComparison.OrdinalIgnoreCase))
-						{
-							if (hasOsirisScripts == DivinityOsirisModStatus.NONE)
+							var modFolder = Path.GetFileName(modFolderMatch.Groups[2].Value.TrimEnd(Path.DirectorySeparatorChar));
+							if (entryFile.EndsWith($"Mods/{modFolder}/{ModConfig.FileName}", StringComparison.OrdinalIgnoreCase))
 							{
-								hasOsirisScripts = DivinityOsirisModStatus.SCRIPTS;
+								modManagerConfigPath = f;
 							}
-							if (entryFile.EndsWith("ForceRecompile.txt", StringComparison.OrdinalIgnoreCase))
+							else if (entryFile.Contains($"Mods/{modFolder}/Story/RawFiles/Goals", StringComparison.OrdinalIgnoreCase))
 							{
-								hasOsirisScripts = DivinityOsirisModStatus.MODFIXER;
-							}
-							else
-							{
-								using var stream = f.CreateContentReader();
-								using var sr = new StreamReader(stream);
-								var text = await sr.ReadToEndAsync();
-								if (text.Contains("NRD_KillStory") || text.Contains("NRD_BadCall"))
+								if (hasOsirisScripts == DivinityOsirisModStatus.NONE)
+								{
+									hasOsirisScripts = DivinityOsirisModStatus.SCRIPTS;
+								}
+								if (entryFile.EndsWith("ForceRecompile.txt", StringComparison.OrdinalIgnoreCase))
 								{
 									hasOsirisScripts = DivinityOsirisModStatus.MODFIXER;
 								}
+								else
+								{
+									using var stream = f.CreateContentReader();
+									using var sr = new StreamReader(stream);
+									var text = await sr.ReadToEndAsync();
+									if (text.Contains("NRD_KillStory") || text.Contains("NRD_BadCall"))
+									{
+										hasOsirisScripts = DivinityOsirisModStatus.MODFIXER;
+									}
+								}
 							}
-						}
 
-						if (builtinMods.TryGetValue(modFolder, out var builtinMod))
-						{
-							hasBuiltinDirectory = true;
-							if (!IgnoreBuiltinPath.Any(x => f.Name.Contains(x)))
+							if (builtinMods.TryGetValue(modFolder, out var builtinMod))
 							{
-								isOverridingBuiltinDirectory = true;
-
-								if (f.Size() > 0)
+								hasBuiltinDirectory = true;
+								if (!IgnoreBuiltinPath.Any(x => f.Name.Contains(x)))
 								{
-									if (modFolder == "Game" && f.Name.Contains("GUI"))
-									{
-										if (f.Name.EndsWith(".xaml")) baseGameFiles.Add(f.Name);
-									}
-									else
-									{
-										baseGameFiles.Add(f.Name);
-									}
-								}
+									isOverridingBuiltinDirectory = true;
 
-								if (!builtinModOverrides.ContainsKey(modFolder))
-								{
-									builtinModOverrides[builtinMod.Folder] = builtinMod;
-									DivinityApp.Log($"Found a mod with a builtin directory. Pak({pakName}) Folder({modFolder}) File({f.Name})");
+									if (f.Size() > 0)
+									{
+										if (modFolder == "Game" && f.Name.Contains("GUI"))
+										{
+											if (f.Name.EndsWith(".xaml")) baseGameFiles.Add(f.Name);
+										}
+										else
+										{
+											baseGameFiles.Add(f.Name);
+										}
+									}
+
+									if (!builtinModOverrides.ContainsKey(modFolder))
+									{
+										builtinModOverrides[builtinMod.Folder] = builtinMod;
+										DivinityApp.Log($"Found a mod with a builtin directory. Pak({pakName}) Folder({modFolder}) File({f.Name})");
+									}
 								}
 							}
-						}
-						else
-						{
-							hasModFolderData = true;
+							else
+							{
+								hasModFolderData = true;
+							}
 						}
 					}
 				}
@@ -485,141 +503,112 @@ public static partial class DivinityModDataLoader
 		}
 
 		var metaCount = metaFiles.Count;
-		PackagedFileInfo metaFile = null;
+		var loadedData = new List<DivinityModData>();
 
 		if (metaCount == 0)
 		{
 			// Assume it's an override mod since it doesn't have a meta file.
-			isOverridingBuiltinDirectory = hasBuiltinDirectory;
+			isOverridingBuiltinDirectory = hasBuiltinDirectory || hasOsirisScripts != DivinityOsirisModStatus.NONE;
 		}
 		else
 		{
 			for (var i = 0; i < metaCount; i++)
 			{
 				var f = metaFiles[i];
-				if (metaFile == null)
+				if (f != null)
 				{
-					metaFile = f;
-				}
-				else
-				{
-					var parentDir = Directory.GetParent(f.Name);
-					// A pak may have multiple meta.lsx files for overriding NumPlayers or something. Match against the pak name in that case.
-					if (pakName.Contains(parentDir.Name))
+					var modData = await GetModDataFromMeta(f);
+					if(modData != null)
 					{
-						metaFile = f;
-						break;
+						if (DivinityApp.IgnoredMods.Any(x => x.UUID == modData.UUID))
+						{
+							modData.IsLarianMod = true;
+							modData.SetIsBaseGameMod(true);
+						}
+						else
+						{
+							modData.IsUserMod = true;
+						}
+
+						modData.OsirisModStatus = hasOsirisScripts;
+						modData.Files = files;
+						if (isOverridingBuiltinDirectory)
+						{
+							modData.IsForceLoadedMergedMod = hasModFolderData;
+							if (baseGameFiles.Count > 0 && baseGameFiles.Count < DivinityApp.MAX_FILE_OVERRIDE_DISPLAY)
+							{
+								modData.BuiltinOverrideModsText = String.Join(Environment.NewLine, baseGameFiles.OrderBy(x => x));
+							}
+							else
+							{
+								modData.BuiltinOverrideModsText = String.Join(Environment.NewLine, builtinModOverrides.Values.OrderBy(x => x.Name).Select(x => $"{x.Folder} ({x.Name})"));
+							}
+							modData.IsForceLoaded = true;
+						}
+						modData.FilePath = pakPath;
+						if (File.Exists(pakPath))
+						{
+							try
+							{
+								modData.LastModified = File.GetLastWriteTime(pakPath);
+								modData.LastUpdated = modData.LastModified;
+							}
+							catch (PlatformNotSupportedException ex)
+							{
+								DivinityApp.Log($"Error getting pak last modified date for '{pakPath}': {ex}");
+							}
+						}
+
+						if (extenderConfigPath != null)
+						{
+							var extenderConfig = await LoadScriptExtenderConfigAsync(extenderConfigPath);
+							if (extenderConfig != null)
+							{
+								modData.ScriptExtenderData = extenderConfig;
+								if (modData.ScriptExtenderData.RequiredVersion > -1) modData.HasScriptExtenderSettings = true;
+							}
+							else
+							{
+								DivinityApp.Log($"Failed to parse {extenderConfigPath} for '{pakPath}'.");
+							}
+						}
+
+						if (modManagerConfigPath != null)
+						{
+							var modManagerConfig = await DivinityJsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigPath, token);
+							if (modManagerConfig != null)
+							{
+								modData.ApplyModConfig(modManagerConfig);
+							}
+						}
+
+						loadedData.Add(modData);
 					}
 				}
 			}
 		}
 
-		if (metaFile != null)
+		if (loadedData.Count == 0)
 		{
-			//DivinityApp.LogMessage($"Parsing meta.lsx for mod pak '{pakPath}'.");
-			using var stream = metaFile.CreateContentReader();
-			using var sr = new System.IO.StreamReader(stream);
-			var text = await sr.ReadToEndAsync();
-			modData = ParseMetaFile(text);
-			if (modData != null && isOverridingBuiltinDirectory)
+			if(isOverridingBuiltinDirectory)
 			{
-				modData.IsForceLoadedMergedMod = hasModFolderData;
-			}
-		}
-		else if (isOverridingBuiltinDirectory)
-		{
-			//var pakData = new DivinityPakFile()
-			//{
-			//	FilePath = pakPath,
-			//	BuiltinOverrideModsText = String.Join(Environment.NewLine, builtinModOverrides.Values.OrderBy(x => x.Name).Select(x => $"{x.Folder} ({x.Name})"))
-			//};
-			//overridePaks.Add(pakData);
-			modData = new DivinityModData()
-			{
-				UUID = pakName,
-				FilePath = pakPath,
-				Name = pakName,
-				Folder = builtinModOverrides.FirstOrDefault().Key,
-				Description = "This file overrides base game data.",
-				ModType = "File Override",
-			};
-			DivinityApp.Log($"Adding a file override mod pak '{modData.Name}'.");
-		}
-
-		if (modData != null)
-		{
-			modData.OsirisModStatus = hasOsirisScripts;
-			modData.Files = files;
-			if (isOverridingBuiltinDirectory)
-			{
-				if (baseGameFiles.Count > 0 && baseGameFiles.Count < DivinityApp.MAX_FILE_OVERRIDE_DISPLAY)
+				loadedData.Add(new DivinityModData()
 				{
-					modData.BuiltinOverrideModsText = String.Join(Environment.NewLine, baseGameFiles.OrderBy(x => x));
-				}
-				else
-				{
-					modData.BuiltinOverrideModsText = String.Join(Environment.NewLine, builtinModOverrides.Values.OrderBy(x => x.Name).Select(x => $"{x.Folder} ({x.Name})"));
-				}
-				modData.IsForceLoaded = true;
-			}
-			modData.FilePath = pakPath;
-			if (File.Exists(pakPath))
-			{
-				try
-				{
-					modData.LastModified = File.GetLastWriteTime(pakPath);
-					modData.LastUpdated = modData.LastModified;
-				}
-				catch (PlatformNotSupportedException ex)
-				{
-					DivinityApp.Log($"Error getting pak last modified date for '{pakPath}': {ex}");
-				}
-			}
-
-			modData.IsUserMod = true;
-
-			if (extenderConfigPath != null)
-			{
-				var extenderConfig = await LoadScriptExtenderConfigAsync(extenderConfigPath);
-				if (extenderConfig != null)
-				{
-					modData.ScriptExtenderData = extenderConfig;
-					if (modData.ScriptExtenderData.RequiredVersion > -1) modData.HasScriptExtenderSettings = true;
-				}
-				else
-				{
-					DivinityApp.Log($"Failed to parse {extenderConfigPath} for '{pakPath}'.");
-				}
-			}
-
-			if (modManagerConfigPath != null)
-			{
-				var modManagerConfig = await DivinityJsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigPath, token);
-				if (modManagerConfig != null)
-				{
-					modData.ApplyModConfig(modManagerConfig);
-				}
-			}
-
-			//DivinityApp.Log($"Loaded mod '{modData.Name}'.");
-			return modData;
-		}
-		else
-		{
-			if (metaFile == null)
-			{
-				DivinityApp.Log($"No meta.lsx for mod pak '{pakPath}'.");
-			}
-			else
-			{
-				DivinityApp.Log($"Error: Failed to parse meta.lsx for mod pak '{pakPath}'.");
+					UUID = pakName,
+					FilePath = pakPath,
+					Name = pakName,
+					Folder = builtinModOverrides.FirstOrDefault().Key,
+					Description = "This file overrides base game data.",
+					ModType = "File Override",
+					IsForceLoaded = true,
+				});
 			}
 		}
 
-		return null;
+		return loadedData;
 	}
 
-	public static async Task<DivinityModData> LoadModDataFromPakAsync(string pakPath, Dictionary<string, DivinityModData> builtinMods, CancellationToken token)
+	public static async Task<List<DivinityModData>?> LoadModDataFromPakAsync(string pakPath, Dictionary<string, DivinityModData>? builtinMods, CancellationToken token)
 	{
 		try
 		{
@@ -637,7 +626,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static async Task<DivinityModData> LoadModDataFromPakAsync(FileStream stream, string pakPath, Dictionary<string, DivinityModData> builtinMods, CancellationToken token)
+	public static async Task<List<DivinityModData>?> LoadModDataFromPakAsync(FileStream stream, string pakPath, Dictionary<string, DivinityModData>? builtinMods, CancellationToken token)
 	{
 		try
 		{
@@ -656,75 +645,17 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static async Task<ModLoadingResults> LoadModPackageDataAsync(string modsFolderPath, CancellationToken token)
+	public static async Task<List<DivinityModData>?> LoadModDataFromPakAsync(Package package, Dictionary<string, DivinityModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
 	{
-		var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
-
-		var results = new ModLoadingResults()
-		{
-			DirectoryPath = modsFolderPath
-		};
-
-		var modPaks = new List<string>();
 		try
 		{
-			var allPaks = FileUtils.EnumerateFiles(modsFolderPath, FileUtils.FlatSearchOptions, f => f.EndsWith(".pak", SCOMP));
-			_allPaksNames.UnionWith(allPaks.Select(p => Path.GetFileNameWithoutExtension(p)));
-			modPaks.AddRange(allPaks.Where(PakIsNotPartial));
+			return await InternalLoadModDataFromPakAsync(package, package.PackagePath, builtinMods, token, skipFileParsing);
 		}
 		catch (Exception ex)
 		{
-			DivinityApp.Log($"Error enumerating pak folder '{modsFolderPath}': {ex}");
+			DivinityApp.Log($"Error loading mod pak from stream:\n{ex}");
 		}
-
-		DivinityApp.Log($"Mod Packages: {modPaks.Count}");
-
-		var loadedMods = new ConcurrentBag<DivinityModData>();
-
-		async Task AwaitPartition(IEnumerator<string> partition)
-		{
-			using (partition)
-			{
-				while (partition.MoveNext())
-				{
-					if (token.IsCancellationRequested) return;
-					await Task.Yield(); // prevents a sync/hot thread hangup
-					var modData = await LoadModDataFromPakAsync(partition.Current, builtinMods, token);
-					if (modData != null)
-					{
-						loadedMods.Add(modData);
-					}
-				}
-			}
-		}
-
-		var partitionAmount = Environment.ProcessorCount;
-		var currentTime = DateTime.Now;
-		DivinityApp.Log($"Split mod loading into {partitionAmount} partitions.");
-		await Task.WhenAll(Partitioner.Create(modPaks).GetPartitions(partitionAmount).AsParallel().Select(p => AwaitPartition(p)));
-
-		DivinityApp.Log($"Took {DateTime.Now - currentTime:s\\.ff} second(s) to load mod paks.");
-		var mods = loadedMods.ToList();
-		var dupes = mods.GroupBy(x => x.UUID).Where(g => g.Count() > 1).SelectMany(x => x);
-		var lastestDuplicates = new Dictionary<string, DivinityModData>();
-		foreach (var m in dupes)
-		{
-			if (!lastestDuplicates.ContainsKey(m.UUID))
-			{
-				lastestDuplicates[m.UUID] = m;
-			}
-			else
-			{
-				var existing = lastestDuplicates[m.UUID];
-				if (m.Version.VersionInt > existing.Version.VersionInt)
-				{
-					lastestDuplicates[m.UUID] = m;
-				}
-			}
-		}
-		results.Duplicates.AddRange(dupes.Where(x => !lastestDuplicates.Values.Contains(x)));
-		results.Mods.AddRange(mods.Where(x => !dupes.Contains(x)).Concat(lastestDuplicates.Values).OrderBy(x => x.Name));
-		return results;
+		return null;
 	}
 
 	private static string GetNodeAttribute(Node node, string key, string defaultValue)
@@ -1866,18 +1797,17 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModData?> LoadModFromModInfo(string gameDataPath, VFS vfs, ModInfo modInfo, CancellationToken token)
+	private static async Task<DivinityModData?> LoadModFromModInfo(string directoryPath, VFS vfs, ModInfo modInfo, bool isGameDirectory, CancellationToken token)
 	{
 		if (vfs.TryOpen(modInfo.Meta, out var stream))
 		{
-			using var sr = new System.IO.StreamReader(stream);
-			if (token.IsCancellationRequested) return null;
-			var text = await sr.ReadToEndAsync();
+			using var sr = new StreamReader(stream);
+			var text = await sr.ReadToEndAsync(token);
 			var modData = ParseMetaFile(text);
 			if (modData != null)
 			{
 				var filePath = modInfo.PackagePath;
-				if (String.IsNullOrEmpty(filePath))
+				if (string.IsNullOrEmpty(filePath))
 				{
 					filePath = modInfo.ModsPath;
 				}
@@ -1901,7 +1831,7 @@ public static partial class DivinityModDataLoader
 
 					if (Path.Equals(filePath, modInfo.ModsPath))
 					{
-						fileTimeFile = Path.GetFullPath(modInfo.Meta, gameDataPath);
+						fileTimeFile = Path.GetFullPath(modInfo.Meta, directoryPath);
 						modData.IsEditorMod = true;
 					}
 
@@ -1915,18 +1845,16 @@ public static partial class DivinityModDataLoader
 						DivinityApp.Log($"Error getting last modified date for '{modData.FilePath}': {ex}");
 					}
 				}
+
 				modData.IsLarianMod = modData.Author.Contains("Larian") || String.IsNullOrEmpty(modData.Author);
 				var isBaseMod = DivinityApp.IgnoredMods.Any(x => x.UUID == modData.UUID) || modData.IsLarianMod;
 				if (isBaseMod)
 				{
 					modData.SetIsBaseGameMod(true);
-					DivinityApp.Log($"Added base mod: Name({modData.Name}) UUID({modData.UUID}) Author({modData.Author}) Version({modData.Version.VersionInt})");
-					DivinityApp.Log($"CanAddToLoadOrder({modData.CanAddToLoadOrder}) IsHidden({modData.IsHidden})");
 				}
 				else
 				{
 					modData.IsUserMod = true;
-					DivinityApp.Log($"Added mod from data folder: Name({modData.Name}) UUID({modData.UUID}) Author({modData.Author}) Version({modData.Version.VersionInt})");
 				}
 
 				if (vfs.DirectoryExists(modInfo.ModsPath))
@@ -1940,56 +1868,34 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static async Task<List<DivinityModData>> LoadBuiltinModsAsync(string gameDataPath, CancellationToken token)
+	public static async Task<ModsLoadingResults> LoadModsAsync(string gameDataPath, string userModsPath, CancellationToken token)
 	{
-		List<DivinityModData> baseMods = [];
+		var time = DateTimeOffset.Now;
 
-		try
+		using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
+		var baseMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
+
+		foreach(var mod in DivinityApp.IgnoredMods)
 		{
-			var vfs = new VFS();
-			vfs.AttachGameDirectory(gameDataPath, true);
-			vfs.FinishBuild();
-
-			var modResources = new ModResources();
-			var modHelper = new ModPathVisitor(modResources, vfs)
+			if(!baseMods.Mods.ContainsKey(mod.UUID))
 			{
-				Game = DivinityApp.GAME_COMPILER,
-				CollectGlobals = false,
-				CollectLevels = false,
-				CollectStoryGoals = false,
-				CollectStats = false
-			};
-
-			modHelper.Discover();
-
-			if (modResources.Mods != null && modResources.Mods.Values != null)
-			{
-				var currentTime = DateTime.Now;
-				var count = modResources.Mods.Values.Count;
-				foreach (var modInfo in modResources.Mods.Values)
-				{
-					var modData = await LoadModFromModInfo(gameDataPath, vfs, modInfo, token);
-					if (modData != null)
-					{
-						if (modInfo.PackagePath?.EndsWith(".pak") == true)
-						{
-
-						}
-						baseMods.Add(modData);
-					}
-				}
-				DivinityApp.Log($"Took {DateTime.Now - currentTime:s\\.ff} seconds(s) to load ({count}) builtin mods.");
+				baseMods.Mods[mod.UUID] = mod;
 			}
 		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log("Error parsing base game mods:\n" + ex.ToString());
-		}
 
-		return baseMods;
+		DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{gameDataPath}'");
+
+		time = DateTimeOffset.Now;
+
+		using var userPakParser = new DirectoryPakParser(userModsPath, FileUtils.FlatSearchOptions, baseMods.Mods, []);
+		var userMods = await userPakParser.ProcessAsync(detectDuplicates: true, parseLooseMetaFiles: false, token);
+
+		DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{userModsPath}'");
+
+		return new ModsLoadingResults(baseMods, userMods);
 	}
 
-	public static ModuleInfo TryGetMetaFromPakFileStream(FileStream stream, string filePath, CancellationToken token)
+	public static ModuleInfo? TryGetMetaFromPakFileStream(FileStream stream, string filePath, CancellationToken token)
 	{
 		stream.Position = 0;
 		var pr = new PackageReader();

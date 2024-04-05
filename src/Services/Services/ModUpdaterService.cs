@@ -236,7 +236,8 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 				}, RxApp.MainThreadScheduler);
 			}
 			if (!SteamWorkshop.IsEnabled) return results;
-			var workshopMods = await DivinityModDataLoader.LoadModPackageDataAsync(settings.WorkshopPath, token);
+			//TODO Update
+			/*var workshopMods = await DivinityModDataLoader.LoadModPackageDataAsync(settings.WorkshopPath, token);
 			foreach (var mod in workshopMods.Mods)
 			{
 				var idStr = Directory.GetParent(mod.FilePath)?.Name;
@@ -245,7 +246,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 					mod.WorkshopData.ModId = id;
 				}
 				results.Add(mod.UUID, mod);
-			}
+			}*/
 		}
 		catch (Exception ex)
 		{

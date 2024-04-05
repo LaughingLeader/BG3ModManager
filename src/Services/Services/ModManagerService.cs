@@ -173,7 +173,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		return defaultValue;
 	}
 
-	private static void MergeModLists(ref List<DivinityModData> finalMods, List<DivinityModData> newMods, bool preferNew = false)
+	private static void MergeModLists(ref List<DivinityModData> finalMods, IEnumerable<DivinityModData> newMods, bool preferNew = false)
 	{
 		foreach (var mod in newMods)
 		{
@@ -192,87 +192,50 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		}
 	}
 
-	public async Task<List<DivinityModData>> LoadModsAsync(string userModsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
+	public async Task<List<DivinityModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token)
 	{
-		var settings = Locator.Current.GetService<ISettingsService>().ManagerSettings;
+		var mods = await DivinityModDataLoader.LoadModsAsync(gameDataPath, userModsDirectoryPath, token);
+		
+		var baseMods = mods.DataDirectoryMods.Mods;
+		var userMods = mods.UserDirectoryMods.Mods;
 
-		List<DivinityModData> finalMods = [];
-		ModLoadingResults modLoadingResults = null;
-		//List<DivinityModData> projects = null;
-		List<DivinityModData> baseMods = null;
+		var allMods = new List<DivinityModData>();
 
-		var cancelTokenSource = GetCancellationToken(int.MaxValue);
-
-		var hasGameDirectory = !String.IsNullOrWhiteSpace(settings.GameDataPath) && Directory.Exists(settings.GameDataPath);
-
-		if (hasGameDirectory)
-		{
-			DivinityApp.Log($"Loading base game mods from data folder...");
-			await progress.UpdateProgressText("Loading base game mods from data folder...");
-			DivinityApp.Log($"GameDataPath is '{settings.GameDataPath}'.");
-			cancelTokenSource = GetCancellationToken(30000);
-			baseMods = await RunTask(DivinityModDataLoader.LoadBuiltinModsAsync(settings.GameDataPath, cancelTokenSource.Token), null);
-			cancelTokenSource = GetCancellationToken(int.MaxValue);
-			await progress.IncreaseAmount(taskStepAmount);
-
-			// No longer necessary since LSLib's VFS changes will pick up loose mods via LoadBuiltinModsAsync
-			/*string modsDirectory = Path.Join(Settings.GameDataPath, "Mods");
-			if (Directory.Exists(modsDirectory))
-			{
-				DivinityApp.Log($"Loading mod projects from '{modsDirectory}'.");
-				await SetMainProgressTextAsync("Loading editor project mods...");
-				cancelTokenSource = GetCancellationToken(30000);
-				projects = await RunTask(DivinityModDataLoader.LoadEditorProjectsAsync(modsDirectory, cancelTokenSource.Token), null);
-				cancelTokenSource = GetCancellationToken(int.MaxValue);
-				await IncreaseMainProgressValueAsync(taskStepAmount);
-			}*/
-		}
-
-		baseMods ??= [];
-
-		if (!hasGameDirectory || baseMods.Count < DivinityApp.IgnoredMods.Count)
+		if (baseMods.Count < DivinityApp.IgnoredMods.Count)
 		{
 			if (baseMods.Count == 0)
 			{
-				baseMods.AddRange(DivinityApp.IgnoredMods);
+				foreach(var mod in DivinityApp.IgnoredMods)
+				{
+					baseMods[mod.UUID] = mod;
+				}
 			}
 			else
 			{
 				foreach (var mod in DivinityApp.IgnoredMods)
 				{
-					if (!baseMods.Any(x => x.UUID == mod.UUID)) baseMods.Add(mod);
+					if (!baseMods.ContainsKey(mod.UUID)) baseMods[mod.UUID] = mod;
 				}
 			}
 		}
 
-		if (Directory.Exists(userModsDirectoryPath))
+		MergeModLists(ref allMods, baseMods.Values);
+		MergeModLists(ref allMods, userMods.Values);
+
+		var dupes = mods.UserDirectoryMods.Duplicates;
+
+		var dupeCount = dupes.Count;
+		if (dupeCount > 0)
 		{
-			DivinityApp.Log($"Loading mods from '{userModsDirectoryPath}'.");
-			await progress.UpdateProgressText("Loading mods from documents folder...");
-			cancelTokenSource.CancelAfter(TimeSpan.FromMinutes(10));
-			modLoadingResults = await RunTask(DivinityModDataLoader.LoadModPackageDataAsync(userModsDirectoryPath, cancelTokenSource.Token), null);
-			cancelTokenSource = GetCancellationToken(int.MaxValue);
-			await progress.IncreaseAmount(taskStepAmount);
+			DivinityApp.Log($"{dupeCount} duplicate(s) found:");
+			DivinityApp.Log("=======");
+			DivinityApp.Log($"{String.Join(Environment.NewLine, dupes.Select(x => x.ToString()))}");
+			DivinityApp.Log("=======");
+			_commands.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
+			await _interactions.DeleteMods.Handle(new DeleteModsRequest(dupes.ToModInterface(), true));
 		}
 
-		if (baseMods != null) MergeModLists(ref finalMods, baseMods);
-		if (modLoadingResults != null)
-		{
-			MergeModLists(ref finalMods, modLoadingResults.Mods);
-			var dupeCount = modLoadingResults.Duplicates.Count;
-			if (dupeCount > 0)
-			{
-				DivinityApp.Log($"{dupeCount} duplicate(s) found:");
-				DivinityApp.Log("=======");
-				DivinityApp.Log($"{String.Join(Environment.NewLine, modLoadingResults.Duplicates.Select(x => x.ToString()))}");
-				DivinityApp.Log("=======");
-				_commands.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
-				await _interactions.DeleteMods.Handle(new DeleteModsRequest(modLoadingResults.Duplicates.ToModInterface(), true));
-			}
-		}
-		//if (projects != null) MergeModLists(ref finalMods, projects, true);
-
-		finalMods = [.. finalMods.OrderBy(m => m.Name)];
+		var finalMods = allMods.OrderBy(m => m.Name).ToList();
 		DivinityApp.Log($"Loaded '{finalMods.Count}' mods.");
 		return finalMods;
 	}

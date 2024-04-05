@@ -111,11 +111,14 @@ public static class ImportUtils
 
 							if (success)
 							{
-								var mod = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
-								if (mod != null)
+								var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
+								if (parsed?.Count > 0)
 								{
-									options.Result.Mods.Add(mod);
-									mod.NexusModsData.SetModVersion(info);
+									foreach(var mod in parsed)
+									{
+										options.Result.Mods.Add(mod);
+										mod.NexusModsData.SetModVersion(info);
+									}
 								}
 							}
 						}
@@ -214,44 +217,47 @@ public static class ImportUtils
 
 						try
 						{
-							var mod = await DivinityModDataLoader.LoadModDataFromPakAsync(tempFile.Stream, outputFilePath, options.BuiltinMods, options.Token);
-							if (mod != null)
+							var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(tempFile.Stream, outputFilePath, options.BuiltinMods, options.Token);
+							if (parsed?.Count > 0)
 							{
-								try
-								{
-									mod.LastModified = File.GetLastWriteTime(options.FilePath);
-									mod.LastUpdated = mod.LastModified;
-								}
-								catch (Exception ex)
-								{
-									DivinityApp.Log($"Error getting pak last modified date for '{ex}': {ex}");
-								}
-
-								if (!outputName.Contains(mod.Name))
-								{
-									var nameFromMeta = $"{mod.Folder}.pak";
-									outputFilePath = Path.Join(options.OutputDirectory, nameFromMeta);
-									mod.FilePath = outputFilePath;
-								}
-								using (var fs = File.Create(outputFilePath, ARCHIVE_BUFFER, FileOptions.Asynchronous))
+								foreach (var mod in parsed)
 								{
 									try
 									{
-										await tempFile.Stream.CopyToAsync(fs, ARCHIVE_BUFFER, options.Token);
-										success = true;
+										mod.LastModified = File.GetLastWriteTime(options.FilePath);
+										mod.LastUpdated = mod.LastModified;
 									}
 									catch (Exception ex)
 									{
-										options.Result.AddError(outputFilePath, ex);
-										DivinityApp.Log($"Error copying file '{outputName}' from archive to '{outputFilePath}':\n{ex}");
+										DivinityApp.Log($"Error getting pak last modified date for '{ex}': {ex}");
 									}
-								}
 
-								if (success)
-								{
-									options.Result.TotalPaks++;
-									options.Result.Mods.Add(mod);
-									mod.NexusModsData.SetModVersion(info);
+									if (!outputName.Contains(mod.Name))
+									{
+										var nameFromMeta = $"{mod.Folder}.pak";
+										outputFilePath = Path.Join(options.OutputDirectory, nameFromMeta);
+										mod.FilePath = outputFilePath;
+									}
+									using (var fs = File.Create(outputFilePath, ARCHIVE_BUFFER, FileOptions.Asynchronous))
+									{
+										try
+										{
+											await tempFile.Stream.CopyToAsync(fs, ARCHIVE_BUFFER, options.Token);
+											success = true;
+										}
+										catch (Exception ex)
+										{
+											options.Result.AddError(outputFilePath, ex);
+											DivinityApp.Log($"Error copying file '{outputName}' from archive to '{outputFilePath}':\n{ex}");
+										}
+									}
+
+									if (success)
+									{
+										options.Result.TotalPaks++;
+										options.Result.Mods.Add(mod);
+										mod.NexusModsData.SetModVersion(info);
+									}
 								}
 							}
 						}
@@ -315,10 +321,10 @@ public static class ImportUtils
 
 			if (File.Exists(outputFilePath))
 			{
-				var mod = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
-				if (mod != null)
+				var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
+				if (parsed?.Count > 0)
 				{
-					options.Result.Mods.Add(mod);
+					options.Result.Mods.AddRange(parsed);
 					return true;
 				}
 			}
