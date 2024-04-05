@@ -12,49 +12,52 @@
 	<Design.DataContext>
 		<vm:DesignProgressBarViewModel />
 	</Design.DataContext>
-	<suki:GlassCard Margin="24">
-		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="*,auto,*,auto">
-			<TextBlock x:Name="TitleTextControl"
-			           VerticalAlignment="Bottom"
-			           FontSize="24"
-			           FontWeight="Bold"
-			           Text="Loading..."
-			           TextAlignment="Center"
-			           TextWrapping="Wrap">
-				<TextBlock.Effect>
-					<DropShadowDirectionEffect BlurRadius="4"
-					                           Direction="60"
-					                           Opacity="0.40"
-					                           ShadowDepth="4"
-					                           Color="Black" />
-				</TextBlock.Effect>
-			</TextBlock>
-			<Panel Grid.Row="1"
-			       Margin="16,0"
-			       HorizontalAlignment="Stretch"
-			       VerticalAlignment="Center">
-				<ProgressBar x:Name="ProgressBarControl"
-				             Maximum="100"
-				             Minimum="0"
-				             ShowProgressText="True"
-				             Value="75" />
-				<!--<suki:WaveProgress IsTextVisible="True" Value="{Binding UIValue}" />-->
-			</Panel>
+	<Grid Margin="24"
+	      HorizontalAlignment="Stretch"
+	      VerticalAlignment="Stretch"
+	      RowDefinitions="*,auto,*,auto">
+		<TextBlock x:Name="TitleTextControl"
+		           Margin="12"
+		           VerticalAlignment="Bottom"
+		           FontSize="24"
+		           FontWeight="Bold"
+		           Text="Loading..."
+		           TextAlignment="Center"
+		           TextWrapping="Wrap">
+			<TextBlock.Effect>
+				<DropShadowDirectionEffect BlurRadius="4"
+				                           Direction="60"
+				                           Opacity="0.40"
+				                           ShadowDepth="4"
+				                           Color="Black" />
+			</TextBlock.Effect>
+		</TextBlock>
+		<Panel Grid.Row="1"
+		       Margin="16,0"
+		       HorizontalAlignment="Stretch"
+		       VerticalAlignment="Center">
+			<ProgressBar x:Name="ProgressBarControl"
+			             Maximum="100"
+			             Minimum="0"
+			             ShowProgressText="True"
+			             Value="75" />
+			<!--<suki:WaveProgress IsTextVisible="True" Value="{Binding UIValue}" />-->
+		</Panel>
 
-			<TextBlock x:Name="WorkTextControl"
-			           Grid.Row="2"
-			           VerticalAlignment="Top"
-			           FontSize="12"
-			           Text="Processing mod paks..."
-			           TextAlignment="Center"
-			           TextWrapping="Wrap" />
-			<Button x:Name="CancelButton"
-			        Grid.Row="3"
-			        HorizontalAlignment="Center"
-			        Classes="Flat Large"
-			        Command="{Binding CancelCommand}"
-			        Content="Cancel"
-			        IsVisible="{Binding CanCancel}" />
-		</Grid>
-	</suki:GlassCard>
+		<TextBlock x:Name="WorkTextControl"
+		           Grid.Row="2"
+		           Margin="12"
+		           VerticalAlignment="Top"
+		           FontSize="12"
+		           Text="Processing mod paks..."
+		           TextAlignment="Center"
+		           TextWrapping="Wrap" />
+		<Button x:Name="CancelButton"
+		        Grid.Row="3"
+		        HorizontalAlignment="Center"
+		        Classes="Flat Large"
+		        Command="{Binding CancelCommand}"
+		        Content="Cancel"
+		        IsVisible="{Binding CanCancel}" />
+	</Grid>
 </UserControl>
