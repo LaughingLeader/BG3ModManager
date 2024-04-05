@@ -1922,4 +1922,20 @@ public static partial class DivinityModDataLoader
 		}
 		return null;
 	}
+
+	public static async Task ExtractStoryOsiAsync(string pakPath, string outputPath, CancellationToken token)
+	{
+		var pr = new PackageReader();
+		using var pak = pr.Read(pakPath);
+		if(pak != null && pak.Files?.Count > 0)
+		{
+			var osiFile = pak.Files.FirstOrDefault(x => x.Name.EndsWith("story.div.osi")); //Or GustavDev/Story/story.div.osi
+			if (osiFile != null)
+			{
+				using var fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read, 32000, true);
+				using var osiStream = osiFile.CreateContentReader();
+				await osiStream.CopyToAsync(fs, 32000, token);
+			}
+		}
+	}
 }

@@ -43,6 +43,7 @@ public static class DivinityApp
 	public const string URL_UPDATE = @"https://raw.githubusercontent.com/LaughingLeader/BG3ModManager/master/Update.xml";
 	public const string URL_ISSUES = @"https://github.com/LaughingLeader/BG3ModManager/issues";
 	public const string URL_LICENSE = @"https://github.com/LaughingLeader/BG3ModManager/blob/master/LICENSE";
+	public const string URL_STEAM = @"https://steamcommunity.com/app/1086940";
 
 	public const string XML_MOD_ORDER_MODULE = @"<node id=""Module""><attribute id=""UUID"" value=""{0}"" type=""FixedString""/></node>";
 	public const string XML_MODULE_SHORT_DESC = @"<node id=""ModuleShortDesc""><attribute id=""Folder"" value=""{0}"" type=""LSString""/><attribute id=""MD5"" value=""{1}"" type=""LSString""/><attribute id=""Name"" value=""{2}"" type=""LSString""/><attribute id=""UUID"" value=""{3}"" type=""FixedString"" /><attribute id=""Version64"" value=""{4}"" type=""int64""/></node>";
@@ -56,6 +57,8 @@ public static class DivinityApp
 	public const long NEXUSMODS_GAME_ID = 3474;
 	public const string NEXUSMODS_MOD_URL = "https://www.nexusmods.com/baldursgate3/mods/{0}";
 	public const long NEXUSMODS_MOD_ID_START = 1;
+
+	public const string URL_NEXUSMODS = $"https://www.nexusmods.com/{NEXUSMODS_GAME_DOMAIN}";
 
 	public const long WORKSHOP_MOD_ID_START = 4; // id 5 and up seems to work, while 0-3 are disabled / hidden
 

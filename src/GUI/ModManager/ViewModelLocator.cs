@@ -23,4 +23,5 @@ public static class ViewModelLocator
 	public static VersionGeneratorViewModel VersionGenerator => AppServices.Get<VersionGeneratorViewModel>()!;
 	public static ExportOrderToArchiveViewModel ExportOrderToArchive => AppServices.Get<ExportOrderToArchiveViewModel>()!;
 	public static MessageBoxViewModel MessageBox => AppServices.Get<MessageBoxViewModel>()!;
+	public static IProgressBarViewModel Progress => AppServices.Get<IProgressBarViewModel>()!;
 }

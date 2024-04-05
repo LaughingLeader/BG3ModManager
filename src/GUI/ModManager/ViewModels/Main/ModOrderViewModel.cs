@@ -265,7 +265,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var modImporter = AppServices.Get<ModImportService>();
 
 		var canExecuteSaveCommand = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.CanSaveOrder));
-		keys.Save.AddAction(() => SaveLoadOrder(), canExecuteSaveCommand);
+		keys.Save.AddAsyncAction(SaveLoadOrderAsync, canExecuteSaveCommand);
 
 		keys.SaveAs.AddAsyncAction(SaveLoadOrderAs, canExecuteSaveCommand);
 		keys.ImportMod.AddAsyncAction(modImporter.OpenModImportDialog, canExecuteCommands);
@@ -281,7 +281,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		keys.ImportOrderFromFile.AddAsyncAction(ImportOrderFromFile, canExecuteCommands);
 		keys.ImportOrderFromZipFile.AddAsyncAction(modImporter.ImportOrderFromArchive, canExecuteCommands);
 
-		keys.ExportOrderToGame.AddAction(ExportLoadOrder, AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedProfile).Select(x => x != null)));
+		keys.ExportOrderToGame.AddAsyncAction(ExportLoadOrderAsync, AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedProfile).Select(x => x != null)));
 
 		keys.DeleteSelectedMods.AddAction(() =>
 		{
@@ -366,7 +366,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IsRefreshing = true;
 		DivinityApp.Log($"Refreshing data asynchronously...");
 
-		var taskStepAmount = 1.0 / 6;
+		var taskStepAmount = 100 / 6;
 
 		var modManager = ModManager;
 
@@ -390,21 +390,21 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		if (Directory.Exists(PathwayData.AppDataGameFolder))
 		{
 			DivinityApp.Log("Loading mods...");
-			await main.SetMainProgressTextAsync("Loading mods...");
+			main.Progress.WorkText = "Loading mods...";
 			var loadedMods = await ModManager.LoadModsAsync(Settings.GameDataPath, PathwayData.AppDataModsPath, token);
-			await main.IncreaseMainProgressValueAsync(taskStepAmount);
+			main.Progress.IncreaseValue(taskStepAmount);
 
 			DivinityApp.Log("Loading profiles...");
-			await main.SetMainProgressTextAsync("Loading profiles...");
+			main.Progress.WorkText = "Loading profiles...";
 			var loadedProfiles = await LoadProfilesAsync();
-			await main.IncreaseMainProgressValueAsync(taskStepAmount);
+			main.Progress.IncreaseValue(taskStepAmount);
 
 			if (String.IsNullOrEmpty(selectedProfileUUID) && (loadedProfiles != null && loadedProfiles.Count > 0))
 			{
 				DivinityApp.Log("Loading current profile...");
-				await main.SetMainProgressTextAsync("Loading current profile...");
+				main.Progress.WorkText = "Loading current profile...";
 				selectedProfileUUID = await DivinityModDataLoader.GetSelectedProfileUUIDAsync(PathwayData.AppDataProfilesPath);
-				await main.IncreaseMainProgressValueAsync(taskStepAmount);
+				main.Progress.IncreaseValue(taskStepAmount);
 			}
 			else
 			{
@@ -412,7 +412,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					DivinityApp.Log("No profiles found?");
 				}
-				await main.IncreaseMainProgressValueAsync(taskStepAmount);
+				main.Progress.IncreaseValue(taskStepAmount);
 			}
 
 			//await SetMainProgressTextAsync("Loading GM Campaigns...");
@@ -420,9 +420,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			//await IncreaseMainProgressValueAsync(taskStepAmount);
 
 			DivinityApp.Log("Loading external load orders...");
-			await main.SetMainProgressTextAsync("Loading external load orders...");
+			main.Progress.WorkText = "Loading external load orders...";
 			var savedModOrderList = await RunTask(LoadExternalLoadOrdersAsync(), []);
-			await main.IncreaseMainProgressValueAsync(taskStepAmount);
+			main.Progress.IncreaseValue(taskStepAmount);
 
 			if (savedModOrderList.Count > 0)
 			{
@@ -434,7 +434,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 
 			DivinityApp.Log("Setting up mod lists...");
-			await main.SetMainProgressTextAsync("Setting up profiles & orders...");
+			main.Progress.WorkText = "Setting up profiles & orders...";
 
 			await Observable.Start(() =>
 			{
@@ -444,8 +444,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				ExternalModOrders.AddRange(savedModOrderList);
 			}, RxApp.MainThreadScheduler);
 
-			await main.IncreaseMainProgressValueAsync(taskStepAmount);
-			await main.SetMainProgressTextAsync("Finishing up...");
+			main.Progress.IncreaseValue(taskStepAmount);
+			main.Progress.WorkText = "Finishing up...";
 		}
 		else
 		{
@@ -698,12 +698,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private void SaveLoadOrder(bool skipSaveConfirmation = false)
-	{
-		RxApp.MainThreadScheduler.ScheduleAsync(async (sch, cts) => await SaveLoadOrderAsync(skipSaveConfirmation));
-	}
+	public async Task<bool> SaveLoadOrderAsync() => await SaveLoadOrderAsync(false);
 
-	private async Task<bool> SaveLoadOrderAsync(bool skipSaveConfirmation = false)
+	public async Task<bool> SaveLoadOrderAsync(bool skipSaveConfirmation = false)
 	{
 		var result = false;
 		if (SelectedProfile != null && SelectedModOrder != null)
@@ -765,7 +762,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return result;
 	}
 
-	private async Task SaveLoadOrderAs()
+	public async Task<bool> SaveLoadOrderAs()
 	{
 		var ordersDir = Settings.LoadOrderPath;
 		//Relative path
@@ -825,24 +822,17 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					SelectedModOrderIndex = updatedOrderIndex;
 					LoadModOrder(tempOrder);
 				}
+				return true;
 			}
 			else
 			{
 				AppServices.Commands.ShowAlert($"Failed to save mod load order to '{outputPath}'", AlertType.Danger);
 			}
 		}
+		return false;
 	}
 
-	private void ExportLoadOrder()
-	{
-		RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
-		{
-			await ExportLoadOrderAsync();
-			return Disposable.Empty;
-		});
-	}
-
-	private async Task<bool> ExportLoadOrderAsync()
+	public async Task<bool> ExportLoadOrderAsync()
 	{
 		var settings = Settings;
 		if (!settings.GameMasterModeEnabled)

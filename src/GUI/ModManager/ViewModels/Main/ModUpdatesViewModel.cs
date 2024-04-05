@@ -77,7 +77,7 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 
 			Unlocked = false;
 
-			StartUpdating(new CopyModUpdatesTask()
+			ProcessUpdates(new CopyModUpdatesTask()
 			{
 				DocumentsFolder = documentsFolder,
 				ModPakFolder = modPakFolder,
@@ -87,7 +87,8 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 		}
 	}
 
-	private async Task<UpdateTaskResult> AwaitDownloadPartition(IEnumerator<DivinityModUpdateData> partition, int progressIncrement, string outputFolder, CancellationToken token)
+	private async Task<UpdateTaskResult> AwaitDownloadPartition(IEnumerator<DivinityModUpdateData> partition, double progressIncrement, 
+		string outputFolder, CancellationToken token)
 	{
 		var result = new UpdateTaskResult();
 		using (partition)
@@ -99,27 +100,25 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 				await Task.Yield(); // prevents a sync/hot thread hangup
 				var downloadResult = await partition.Current.DownloadData.DownloadAsync(partition.Current.LocalFilePath, outputFolder, token);
 				result.Success = downloadResult.Success;
-				await ViewModelLocator.Main.IncreaseMainProgressValueAsync(progressIncrement);
+				ViewModelLocator.Progress.IncreaseValue(progressIncrement);
 			}
 		}
 		return result;
 	}
 
-	private async Task<Unit> ProcessUpdatesAsync(CopyModUpdatesTask taskData, IScheduler sch, CancellationToken token)
+	private void ProcessUpdates(CopyModUpdatesTask taskData)
 	{
-		await ViewModelLocator.Main.StartMainProgressAsync("Processing updates...");
-		var currentTime = DateTime.Now;
-		var partitionAmount = Environment.ProcessorCount;
-		var progressIncrement = (int)Math.Ceiling(100d / taskData.Updates.Count);
-		var results = await Task.WhenAll(Partitioner.Create(taskData.Updates).GetPartitions(partitionAmount).AsParallel().Select(p => AwaitDownloadPartition(p, progressIncrement, taskData.ModPakFolder, token)));
-		UpdateLastUpdated(results);
-		await Observable.Start(FinishUpdating, RxApp.MainThreadScheduler);
-		return Unit.Default;
-	}
-
-	private void StartUpdating(CopyModUpdatesTask taskData)
-	{
-		RxApp.MainThreadScheduler.ScheduleAsync(async (sch, token) => await ProcessUpdatesAsync(taskData, sch, token));
+		var progress = ViewModelLocator.Progress;
+		progress.Title = "Processing updates...";
+		progress.Start(async token =>
+		{
+			var currentTime = DateTime.Now;
+			var partitionAmount = Environment.ProcessorCount;
+			var progressIncrement = Math.Ceiling(100d / taskData.Updates.Count);
+			var results = await Task.WhenAll(Partitioner.Create(taskData.Updates).GetPartitions(partitionAmount).AsParallel().Select(p => AwaitDownloadPartition(p, progressIncrement, taskData.ModPakFolder, token)));
+			UpdateLastUpdated(results);
+			await Observable.Start(FinishUpdating, RxApp.MainThreadScheduler);
+		}, true);
 	}
 
 	private void UpdateLastUpdated(UpdateTaskResult[] results)

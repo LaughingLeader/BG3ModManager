@@ -41,6 +41,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();
+		SplatRegistrations.RegisterLazySingleton<IProgressBarViewModel, ProgressBarViewModel>();
 
 		SplatRegistrations.RegisterLazySingleton<SettingsWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<AboutWindowViewModel>();
@@ -61,6 +62,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();
 
 		SplatRegistrations.RegisterLazySingleton<MessageBoxView>();
+		SplatRegistrations.RegisterLazySingleton<ProgressBarView>();
 
 		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();

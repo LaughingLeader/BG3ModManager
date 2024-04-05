@@ -27,10 +27,6 @@ public class MainWindowExceptionHandler : IObserver<Exception>
 
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
-			if (_viewModel.MainProgressIsActive)
-			{
-				_viewModel.MainProgressIsActive = false;
-			}
 			AppServices.Commands.ShowAlert(error.Message, AlertType.Danger, 30);
 			//throw error;
 		});

@@ -1,4 +1,6 @@
-﻿using DynamicData;
+﻿using Avalonia.Threading;
+
+using DynamicData;
 using DynamicData.Binding;
 
 using ModManager.Extensions;
@@ -30,7 +32,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	public ViewManager Views { get; }
 
 	private readonly IPathwaysService _pathways;
-	private DivinityPathwayData PathwayData => _pathways.Data;
+	public DivinityPathwayData PathwayData => _pathways.Data;
 	private readonly ModImportService _importer;
 	private readonly IModManagerService _manager;
 	private readonly IModUpdaterService _updater;
@@ -43,6 +45,8 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 	[Reactive] public MainWindow Window { get; private set; }
 	public DownloadActivityBarViewModel DownloadBar { get; private set; }
+
+	public IProgressBarViewModel Progress => ViewModelLocator.Progress;
 
 	[Reactive] public string Title { get; set; }
 	[Reactive] public string Version { get; set; }
@@ -76,63 +80,6 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	[ObservableAsProperty] public bool CanLaunchGame { get; }
 	[ObservableAsProperty] public bool IsDeletingFiles { get; }
 
-	#region Progress
-	[Reactive] public string MainProgressTitle { get; set; }
-	[Reactive] public string MainProgressWorkText { get; set; }
-	[Reactive] public bool MainProgressIsActive { get; set; }
-	[Reactive] public double MainProgressValue { get; set; }
-
-	public void IncreaseMainProgressValue(double val, string message = "")
-	{
-		RxApp.MainThreadScheduler.Schedule(_ =>
-		{
-			MainProgressValue += val;
-			if (!String.IsNullOrEmpty(message)) MainProgressWorkText = message;
-		});
-	}
-
-	public async Task<Unit> IncreaseMainProgressValueAsync(double val, string message = "")
-	{
-		return await Observable.Start(() =>
-		{
-			MainProgressValue += val;
-			if (!String.IsNullOrEmpty(message)) MainProgressWorkText = message;
-			return Unit.Default;
-		}, RxApp.MainThreadScheduler);
-	}
-
-	public async Task<Unit> SetMainProgressTextAsync(string text)
-	{
-		return await Observable.Start(() =>
-		{
-			MainProgressWorkText = text;
-			return Unit.Default;
-		}, RxApp.MainThreadScheduler);
-	}
-
-	public void StartMainProgress(string title)
-	{
-		MainProgressToken?.Dispose();
-		MainProgressToken = new CancellationTokenSource();
-		MainProgressTitle = title;
-		MainProgressWorkText = "";
-		MainProgressValue = 0d;
-		MainProgressIsActive = true;
-	}
-
-	public async Task StartMainProgressAsync(string title)
-	{
-		if (MainProgressIsActive) DivinityApp.Log("[Warning] Main progress is already active?");
-		await Observable.Start(() =>
-		{
-			StartMainProgress(title);
-		}, RxApp.MainThreadScheduler);
-	}
-
-	[Reactive] public CancellationTokenSource MainProgressToken { get; set; }
-	[Reactive] public bool CanCancelProgress { get; set; }
-
-	#endregion
 	[ObservableAsProperty] public bool UpdatesViewIsVisible { get; }
 
 	[Reactive] public bool StatusBarBusyIndicatorVisibility { get; set; }
@@ -146,25 +93,22 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	[ObservableAsProperty] public bool UpdateCountVisibility { get; }
 	[ObservableAsProperty] public bool DeveloperModeVisibility { get; }
 
-	public RxCommandUnit RefreshCommand { get; }
 	public RxCommandUnit CancelMainProgressCommand { get; }
-	public RxCommandUnit ToggleUpdatesViewCommand { get; }
-	public RxCommandUnit CheckForAppUpdatesCommand { get; set; }
-	public RxCommandUnit RenameSaveCommand { get; }
-	public RxCommandUnit SaveSettingsSilentlyCommand { get; }
-	public RxCommandUnit RefreshModUpdatesCommand { get; }
-	public RxCommandUnit CheckForGitHubModUpdatesCommand { get; }
-	public RxCommandUnit CheckForNexusModsUpdatesCommand { get; }
-	public RxCommandUnit CheckForSteamWorkshopUpdatesCommand { get; }
 	public EventHandler OnRefreshed { get; set; }
 
 	public bool DebugMode { get; set; }
 
-	private void RefreshStart()
+	public void RefreshModUpdates()
 	{
-		StartMainProgress(!IsInitialized ? "Loading..." : "Refreshing...");
+		ViewModelLocator.ModUpdates?.Clear();
+		ModUpdatesAvailable = false;
+		RefreshAllModUpdatesBackground();
+	}
+
+	public void RefreshStart()
+	{
+		Progress.Title = !IsInitialized ? "Loading..." : "Refreshing...";
 		IsRefreshing = true;
-		CanCancelProgress = false;
 		_manager.Refresh();
 		ViewModelLocator.ModUpdates.Clear();
 		ViewModelLocator.ModOrder.Clear();
@@ -172,13 +116,12 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 		//Window.TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
 		//Window.TaskbarItemInfo.ProgressValue = 0;
 		LoadAppConfig();
-		RxApp.TaskpoolScheduler.ScheduleAsync(async (_, _) => await RefreshAsync());
+		Progress.Start(RefreshAsync, false, ViewModelLocator.ModOrder);
 	}
 
-	private async Task RefreshAsync()
+	private async Task RefreshAsync(CancellationToken token)
 	{
 		DivinityApp.Log("Refreshing...");
-		var token = MainProgressToken.Token;
 
 		//Wait for UI to update
 		//await View.Dispatcher.InvokeAsync(() => {}, System.Windows.Threading.DispatcherPriority.Background);
@@ -189,8 +132,6 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 		await Observable.Start(() =>
 		{
-			OnMainProgressComplete();
-
 			if (AppSettings.Features.ScriptExtender)
 			{
 				LoadExtenderSettingsBackground();
@@ -204,90 +145,83 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 			IsRefreshing = false;
 
-			RefreshModUpdatesCommand.Execute().Subscribe();
+			RefreshModUpdates();
 
 			IsInitialized = true;
 		}, RxApp.MainThreadScheduler);
 	}
 
-	private void DownloadScriptExtender(string exeDir)
+	private async Task DownloadScriptExtenderAsync(CancellationToken token)
 	{
-		//var isLoggingEnabled = Window.DebugLogListener != null;
-		//if (!isLoggingEnabled) Window.ToggleLogging(true);
+		Progress.Title = "Setting up the Script Extender...";
 
-		var taskStepAmount = 1.0 / 3;
-		StartMainProgress("Setting up the Script Extender...");
-		CanCancelProgress = true;
-
+		var exeDir = Path.GetDirectoryName(Settings.GameExecutablePath);
 		var dllDestination = Path.Join(exeDir, DivinityApp.EXTENDER_UPDATER_FILE);
 
-		RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
+		var successes = 0;
+		Stream? webStream = null;
+		Stream? unzippedEntryStream = null;
+		try
 		{
-			var successes = 0;
-			Stream? webStream = null;
-			Stream? unzippedEntryStream = null;
-			try
+			Progress.WorkText = $"Downloading {PathwayData.ScriptExtenderLatestReleaseUrl}";
+			webStream = await WebHelper.DownloadFileAsStreamAsync(PathwayData.ScriptExtenderLatestReleaseUrl, token);
+			if (webStream != null)
 			{
-				await SetMainProgressTextAsync($"Downloading {PathwayData.ScriptExtenderLatestReleaseUrl}");
-				webStream = await WebHelper.DownloadFileAsStreamAsync(PathwayData.ScriptExtenderLatestReleaseUrl, MainProgressToken.Token);
-				if (webStream != null)
-				{
-					successes += 1;
-					await IncreaseMainProgressValueAsync(taskStepAmount, $"Extracting zip to {exeDir}...");
-					using var archive = new ZipArchive(webStream);
-					foreach (var entry in archive.Entries)
-					{
-						if (MainProgressToken.IsCancellationRequested) break;
-						if (entry.Name.Equals(DivinityApp.EXTENDER_UPDATER_FILE, StringComparison.OrdinalIgnoreCase))
-						{
-							unzippedEntryStream = entry.Open(); // .Open will return a stream
-							using var fs = File.Create(dllDestination, ARCHIVE_BUFFER, System.IO.FileOptions.Asynchronous);
-							await unzippedEntryStream.CopyToAsync(fs, ARCHIVE_BUFFER, MainProgressToken.Token);
-							successes += 1;
-							break;
-						}
-					}
-					await IncreaseMainProgressValueAsync(taskStepAmount);
-				}
-			}
-			catch (Exception ex)
-			{
-				DivinityApp.Log($"Error downloading the script extender: {ex}");
-			}
-			finally
-			{
-				await SetMainProgressTextAsync("Cleaning up...");
-				webStream?.Dispose();
-				unzippedEntryStream?.Dispose();
 				successes += 1;
-				await IncreaseMainProgressValueAsync(taskStepAmount);
-			}
-
-			await Observable.Start(() =>
-			{
-				OnMainProgressComplete();
-				if (successes >= 3)
+				Progress.IncreaseValue(25, $"Extracting zip to {exeDir}...");
+				using var archive = new ZipArchive(webStream);
+				foreach (var entry in archive.Entries)
 				{
-					_globalCommands.ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
-					HighlightExtenderDownload = false;
-					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+					if (token.IsCancellationRequested) break;
+					if (entry.Name.Equals(DivinityApp.EXTENDER_UPDATER_FILE, StringComparison.OrdinalIgnoreCase))
+					{
+						unzippedEntryStream = entry.Open(); // .Open will return a stream
+						using var fs = File.Create(dllDestination, ARCHIVE_BUFFER, FileOptions.Asynchronous);
+						await unzippedEntryStream.CopyToAsync(fs, ARCHIVE_BUFFER, token);
+						successes += 1;
+						break;
+					}
 				}
-				else
-				{
-					_globalCommands.ShowAlert($"Error occurred when installing the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} - Check the log", AlertType.Danger, 30);
-				}
-			}, RxApp.MainThreadScheduler);
-
-			if (Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
-			{
-				await LoadExtenderSettingsAsync(t);
-				await Observable.Start(() => UpdateExtender(true), RxApp.TaskpoolScheduler);
+				Progress.IncreaseValue(50);
 			}
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error downloading the script extender: {ex}");
+		}
+		finally
+		{
+			Progress.IncreaseValue(25, "Cleaning up...");
+			webStream?.Dispose();
+			unzippedEntryStream?.Dispose();
+			successes += 1;
+		}
 
-			//if (!isLoggingEnabled) await Observable.Start(() => Window.ToggleLogging(false), RxApp.MainThreadScheduler);
+		await Observable.Start(() =>
+		{
+			if (successes >= 3)
+			{
+				_globalCommands.ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
+				HighlightExtenderDownload = false;
+				Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+			}
+			else
+			{
+				_globalCommands.ShowAlert($"Error occurred when installing the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} - Check the log", AlertType.Danger, 30);
+			}
+		}, RxApp.MainThreadScheduler);
 
-			return Disposable.Empty;
-		});
+		if (Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
+		{
+			await LoadExtenderSettingsAsync(token);
+			await Observable.Start(() => UpdateExtender(true), RxApp.TaskpoolScheduler);
+		}
+	}
+
+	private void DownloadScriptExtender()
+	{
+		ViewModelLocator.Progress.Title = "Setting up the Script Extender...";
+		ViewModelLocator.Progress.Start(DownloadScriptExtenderAsync, true);
 	}
 
 	private void OnToolboxOutput(object sender, DataReceivedEventArgs e)
@@ -369,7 +303,7 @@ Directory the zip will be extracted to:
 				{
 					if (result)
 					{
-						DownloadScriptExtender(exeDir);
+						DownloadScriptExtender();
 					}
 				});
 			}
@@ -634,7 +568,7 @@ Directory the zip will be extracted to:
 		//if (!isLoggingEnabled) Window.ToggleLogging(false);
 	}
 
-	private void LaunchGame()
+	public void LaunchGame()
 	{
 		if (Settings.DisableLauncherTelemetry || Settings.DisableLauncherModWarnings)
 		{
@@ -1155,7 +1089,7 @@ Directory the zip will be extracted to:
 		return Unit.Default;
 	}
 
-	private void RefreshGitHubModsUpdatesBackground()
+	public void RefreshGitHubModsUpdatesBackground()
 	{
 		_refreshGitHubModsUpdatesBackgroundTask?.Dispose();
 		_refreshGitHubModsUpdatesBackgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(RefreshGitHubModsUpdatesBackgroundAsync);
@@ -1205,7 +1139,7 @@ Directory the zip will be extracted to:
 		return Unit.Default;
 	}
 
-	private void RefreshNexusModsUpdatesBackground()
+	public void RefreshNexusModsUpdatesBackground()
 	{
 		_updater.NexusMods.APIKey = Settings.UpdateSettings.NexusModsAPIKey;
 		_updater.NexusMods.AppName = _environment.AppFriendlyName;
@@ -1246,7 +1180,7 @@ Directory the zip will be extracted to:
 		return Unit.Default;
 	}
 
-	private void RefreshSteamWorkshopUpdatesBackground()
+	public void RefreshSteamWorkshopUpdatesBackground()
 	{
 		_updater.SteamWorkshop.SteamAppID = AppSettings.DefaultPathways.Steam.AppID;
 
@@ -1256,7 +1190,7 @@ Directory the zip will be extracted to:
 
 	private IDisposable _refreshAllModUpdatesBackgroundTask;
 
-	private void RefreshAllModUpdatesBackground()
+	public void RefreshAllModUpdatesBackground()
 	{
 		IsRefreshingModUpdates = true;
 		_refreshAllModUpdatesBackgroundTask?.Dispose();
@@ -1268,30 +1202,6 @@ Directory the zip will be extracted to:
 
 			IsRefreshingModUpdates = false;
 		});
-	}
-
-	public void OnMainProgressComplete(double delay = 0)
-	{
-		DivinityApp.Log($"Main progress is complete.");
-
-		MainProgressValue = 1d;
-		MainProgressWorkText = "Finished.";
-
-		MainProgressToken?.Dispose();
-
-		if (delay > 0)
-		{
-			RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(delay), _ =>
-			{
-				MainProgressIsActive = false;
-				CanCancelProgress = true;
-			});
-		}
-		else
-		{
-			MainProgressIsActive = false;
-			CanCancelProgress = true;
-		}
 	}
 
 	public void AddImportedMod(DivinityModData mod, bool toActiveList = false)
@@ -1343,7 +1253,7 @@ Directory the zip will be extracted to:
 		DivinityApp.Log($"Imported Mod: {mod}");
 	}
 
-	private async void ExportLoadOrderToArchive_Start()
+	public async Task ExportLoadOrderToArchiveAsync()
 	{
 		//view.MainWindowMessageBox.Text = "Add active mods to a zip file?";
 		//view.MainWindowMessageBox.Caption = "Depending on the number of mods, this may take some time.";
@@ -1353,17 +1263,17 @@ Directory the zip will be extracted to:
 			InteractionMessageBoxType.YesNo));
 		if (result)
 		{
-			await StartMainProgressAsync("Adding active mods to zip...");
-			MainProgressToken = new CancellationTokenSource();
-			await Observable.Start(async () =>
+			Progress.Title = "Adding active mods to zip...";
+			Progress.Start(async token =>
 			{
-				await _importer.ExportLoadOrderToArchiveAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder, "", MainProgressToken.Token);
-				await Observable.Start(() => OnMainProgressComplete(), RxApp.MainThreadScheduler);
-			}, RxApp.TaskpoolScheduler);
+				await _importer.ExportLoadOrderToArchiveAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder, "", token);
+			}, true);
 		}
 	}
 
-	private async Task ExportLoadOrderToArchiveAs(DivinityProfileData profile, DivinityLoadOrder order)
+	public async Task ExportLoadOrderToArchiveAsAsync() => await ExportLoadOrderToArchiveAsAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder);
+
+	public async Task ExportLoadOrderToArchiveAsAsync(DivinityProfileData? profile = null, DivinityLoadOrder? order = null)
 	{
 		if (profile != null && order != null)
 		{
@@ -1383,9 +1293,11 @@ Directory the zip will be extracted to:
 
 			if (result.Success)
 			{
-				await StartMainProgressAsync("Adding active mods to zip...");
-				await _importer.ExportLoadOrderToArchiveAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder, result.File, MainProgressToken.Token);
-				await Observable.Start(() => OnMainProgressComplete(), RxApp.MainThreadScheduler);
+				Progress.Title = "Adding active mods to zip...";
+				Progress.Start(async token =>
+				{
+					await _importer.ExportLoadOrderToArchiveAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder, result.File, token);
+				}, true);
 			}
 		}
 		else
@@ -1394,7 +1306,7 @@ Directory the zip will be extracted to:
 		}
 	}
 
-	private async Task RenameSave_Start()
+	public async Task RenameSaveAsync()
 	{
 		var profileSavesDirectory = "";
 		if (ViewModelLocator.ModOrder.SelectedProfile != null)
@@ -1570,24 +1482,11 @@ Directory the zip will be extracted to:
 		{
 			ViewModelLocator.ModUpdates.Clear();
 			//TODO Replace with reloading the individual mods that changed
-			if (refresh) RefreshCommand.Execute(Unit.Default).Subscribe();
+			if (refresh) Dispatcher.UIThread.Invoke(RefreshStart, DispatcherPriority.Background);
 			Window.Activate();
 		});
 
 		InitSettingsBindings();
-
-		if (DebugMode)
-		{
-			var lastMessage = "";
-			this.WhenAnyValue(x => x.MainProgressWorkText, x => x.MainProgressValue).Subscribe((ob) =>
-			{
-				if (!String.IsNullOrEmpty(ob.Item1) && lastMessage != ob.Item1)
-				{
-					DivinityApp.Log($"[{ob.Item2:P0}] {ob.Item1}");
-					lastMessage = ob.Item1;
-				}
-			});
-		}
 
 		await LoadSettings();
 		Keys.LoadKeybindings(this);
@@ -1626,8 +1525,7 @@ Directory the zip will be extracted to:
 	{
 		if (!IsInitialized)
 		{
-			StartMainProgress("Loading...");
-			Views.SwitchToModOrderView();
+			Progress.Title = "Loading...";
 			RefreshStart();
 		}
 	}
@@ -1677,62 +1575,61 @@ Directory the zip will be extracted to:
 			var targetMods = _manager.SelectedPakMods.ToImmutableList();
 
 			var totalWork = targetMods.Count;
-			var taskStepAmount = 1.0 / totalWork;
-			MainProgressTitle = $"Extracting {totalWork} mods...";
-			MainProgressValue = 0d;
-			MainProgressToken = new CancellationTokenSource();
-			CanCancelProgress = true;
-			MainProgressIsActive = true;
+			var taskStepAmount = 100d / totalWork;
+			Progress.Title = $"Extracting {totalWork} mods...";
 
 			var openOutputPath = result.File;
 
 			var successes = 0;
-			foreach (var path in targetMods.Select(x => x.FilePath))
-			{
-				if (MainProgressToken.IsCancellationRequested) break;
-				try
-				{
-					//Put each pak into its own folder
-					var pakName = Path.GetFileNameWithoutExtension(path);
-					RxApp.MainThreadScheduler.Schedule(_ => MainProgressWorkText = $"Extracting {pakName}...");
-					var destination = Path.Join(outputDirectory, pakName);
 
-					//In case the foldername == the pak name and we're only extracting one pak
-					if (totalWork == 1 && Path.GetDirectoryName(outputDirectory).Equals(pakName))
+			var filesToProcess = targetMods.Select(x => x.FilePath);
+			Progress.Start(async token =>
+			{
+				await Parallel.ForEachAsync(filesToProcess, token, async (path, t) =>
+				{
+					if (t.IsCancellationRequested) return;
+
+					try
 					{
-						destination = outputDirectory;
-					}
-					var success = await FileUtils.ExtractPackageAsync(path, destination, MainProgressToken.Token);
-					if (success)
-					{
-						successes += 1;
-						if (totalWork == 1)
+						//Put each pak into its own folder
+						var pakName = Path.GetFileNameWithoutExtension(path);
+						Progress.WorkText += $"Extracting {pakName}...\n";
+						var destination = Path.Join(outputDirectory, pakName);
+
+						//In case the foldername == the pak name and we're only extracting one pak
+						if (totalWork == 1 && Path.GetDirectoryName(outputDirectory).Equals(pakName))
 						{
-							openOutputPath = destination;
+							destination = outputDirectory;
+						}
+						var success = await FileUtils.ExtractPackageAsync(path, destination, token);
+						if (success)
+						{
+							successes += 1;
+							if (totalWork == 1)
+							{
+								openOutputPath = destination;
+							}
 						}
 					}
-				}
-				catch (Exception ex)
+					catch (Exception ex)
+					{
+						DivinityApp.Log($"Error extracting package: {ex}");
+					}
+					Progress.Value += taskStepAmount;
+				});
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					DivinityApp.Log($"Error extracting package: {ex}");
-				}
-				IncreaseMainProgressValue(taskStepAmount);
-			}
-
-			RxApp.MainThreadScheduler.Schedule(_ => OnMainProgressComplete());
-
-			RxApp.MainThreadScheduler.Schedule(() =>
-			{
-				if (successes >= totalWork)
-				{
-					_globalCommands.ShowAlert($"Successfully extracted all selected mods to '{result.File}'", AlertType.Success, 20);
-					FileUtils.TryOpenPath(openOutputPath);
-				}
-				else
-				{
-					_globalCommands.ShowAlert($"Error occurred when extracting selected mods to '{result.File}'", AlertType.Danger, 30);
-				}
-			});
+					if (successes >= totalWork)
+					{
+						_globalCommands.ShowAlert($"Successfully extracted all selected mods to '{result.File}'", AlertType.Success, 20);
+						FileUtils.TryOpenPath(openOutputPath);
+					}
+					else
+					{
+						_globalCommands.ShowAlert($"Error occurred when extracting selected mods to '{result.File}'", AlertType.Danger, 30);
+					}
+				});
+			}, true);
 		}
 	}
 
@@ -1777,50 +1674,45 @@ Directory the zip will be extracted to:
 			var outputDirectory = result.File;
 			DivinityApp.Log($"Extracting adventure mod to '{outputDirectory}'.");
 
-			MainProgressTitle = $"Extracting {mod.DisplayName}...";
-			MainProgressValue = 0d;
-			MainProgressToken = new CancellationTokenSource();
-			CanCancelProgress = true;
-			MainProgressIsActive = true;
+			Progress.Title = $"Extracting {mod.DisplayName}...";
 
 			var openOutputPath = result.File;
 
-			if (MainProgressToken.IsCancellationRequested) return;
-
 			var path = mod.FilePath;
 			var success = false;
-			try
-			{
-				var pakName = Path.GetFileNameWithoutExtension(path);
-				RxApp.MainThreadScheduler.Schedule(_ => MainProgressWorkText = $"Extracting {pakName}...");
-				var destination = Path.Join(outputDirectory, pakName);
-				if (Path.GetDirectoryName(outputDirectory).Equals(pakName))
-				{
-					destination = outputDirectory;
-				}
-				openOutputPath = destination;
-				success = await FileUtils.ExtractPackageAsync(path, destination, MainProgressToken.Token);
-			}
-			catch (Exception ex)
-			{
-				DivinityApp.Log($"Error extracting package: {ex}");
-			}
-			IncreaseMainProgressValue(1);
 
-			RxApp.MainThreadScheduler.Schedule(_ => OnMainProgressComplete());
-
-			RxApp.MainThreadScheduler.Schedule(() =>
+			Progress.Start(async token =>
 			{
-				if (success)
+				try
 				{
-					_globalCommands.ShowAlert($"Successfully extracted adventure mod to '{result.File}'", AlertType.Success, 20);
-					FileUtils.TryOpenPath(openOutputPath);
+					var pakName = Path.GetFileNameWithoutExtension(path);
+					Progress.WorkText = $"Extracting {pakName}...";
+					var destination = Path.Join(outputDirectory, pakName);
+					if (Path.GetDirectoryName(outputDirectory).Equals(pakName))
+					{
+						destination = outputDirectory;
+					}
+					openOutputPath = destination;
+					success = await FileUtils.ExtractPackageAsync(path, destination, token);
 				}
-				else
+				catch (Exception ex)
 				{
-					_globalCommands.ShowAlert($"Error occurred when extracting adventure mod to '{result.File}'", AlertType.Danger, 30);
+					DivinityApp.Log($"Error extracting package: {ex}");
 				}
-			});
+
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					if (success)
+					{
+						_globalCommands.ShowAlert($"Successfully extracted adventure mod to '{result.File}'", AlertType.Success, 20);
+						FileUtils.TryOpenPath(openOutputPath);
+					}
+					else
+					{
+						_globalCommands.ShowAlert($"Error occurred when extracting adventure mod to '{result.File}'", AlertType.Danger, 30);
+					}
+				});
+			}, true);
 		}
 	}
 
@@ -1864,28 +1756,28 @@ Directory the zip will be extracted to:
 		_dialogs = dialogsService;
 		_globalCommands = globalCommands;
 
-		RefreshCommand = ReactiveCommand.Create(RefreshStart, this.WhenAnyValue(x => x.IsLocked, b => !b));
-		//RefreshCommand = ReactiveCommand.CreateRunInBackground(RefreshAsync, this.WhenAnyValue(x => x.IsLocked, b => !b));
-		//RefreshCommand = ReactiveCommand.CreateFromObservable(() => ObservableEx.CreateAndStartAsync(async (token) => await RefreshAsync(), RxApp.TaskpoolScheduler), this.WhenAnyValue(x => x.IsLocked, b => !b));
+		//var canCancelProgress = RefreshCommand.IsExecuting.CombineLatest(this.WhenAnyValue(x => x.CanCancelProgress)).Select(x => x.First && x.Second);
 
-		this.WhenAnyValue(x => x.IsRefreshing, x => x.MainProgressIsActive, x => x.IsDragging).Select(PropertyConverters.AnyBool).BindTo(this, x => x.IsLocked);
-		this.WhenAnyValue(x => x.IsLocked, x => x.IsInitialized, (b1, b2) => !b1 && b2).BindTo(this, x => x.AllowDrop);
-
-		var canCancelProgress = RefreshCommand.IsExecuting.CombineLatest(this.WhenAnyValue(x => x.CanCancelProgress)).Select(x => x.First && x.Second);
-
-		CancelMainProgressCommand = ReactiveCommand.Create(() =>
-		{
-			if (MainProgressToken != null && MainProgressToken.Token.CanBeCanceled)
-			{
-				MainProgressToken.Token.Register(() => { MainProgressIsActive = IsRefreshing = false; });
-				MainProgressToken.Cancel();
-			}
-		}, canCancelProgress);
+		//CancelMainProgressCommand = ReactiveCommand.Create(() =>
+		//{
+		//	if (MainProgressToken != null && token.CanBeCanceled)
+		//	{
+		//		token.Register(() => { MainProgressIsActive = IsRefreshing = false; });
+		//		MainProgressToken.Cancel();
+		//	}
+		//}, canCancelProgress);
 
 		_keys = new AppKeys(this);
 		_keys.SaveDefaultKeybindings();
 
 		Router = new RoutingState();
+
+		//var progressIsActive = this.WhenAnyValue(x => x.Router.CurrentViewModel).OfType<IProgressBarViewModel>();
+		this.WhenAnyValue(x => x.IsRefreshing, x => x.IsDragging)
+			//.CombineLatest(progressIsActive)
+			.Select(x => x.Item1 || x.Item2)
+			.BindTo(this, x => x.IsLocked);
+		this.WhenAnyValue(x => x.IsLocked, x => x.IsInitialized, (b1, b2) => !b1 && b2).BindTo(this, x => x.AllowDrop);
 
 		interactionsService.ShowAlert.RegisterHandler(input =>
 		{
@@ -1906,9 +1798,6 @@ Directory the zip will be extracted to:
 				input.SetOutput(true);
 			}, RxApp.MainThreadScheduler);
 		});
-
-		MainProgressValue = 0d;
-		MainProgressIsActive = true;
 
 		DownloadBar = new DownloadActivityBarViewModel();
 
@@ -1942,7 +1831,7 @@ Directory the zip will be extracted to:
 
 		this.WhenAnyValue(x => x.Settings.UpdateSettings.NexusModsAPIKey).BindTo(nexusModsService, x => x.ApiKey);
 
-		IDisposable importDownloadsTask = null;
+		IDisposable? importDownloadsTask = null;
 		_nexusMods.DownloadResults
 		.ToObservableChangeSet()
 		.CountChanged()
@@ -2036,31 +1925,11 @@ Directory the zip will be extracted to:
 
 		#region Keys Setup
 
-
-		Keys.Refresh.AddAction(() => RefreshCommand.Execute(Unit.Default).Subscribe(), RefreshCommand.CanExecute);
-
-		var canRefreshModUpdates = this.WhenAnyValue(x => x.IsRefreshing, x => x.IsRefreshingModUpdates, x => x.AppSettingsLoaded,
-		(b1, b2, b3) => !b1 && !b2 && b3)
-		.ObserveOn(RxApp.MainThreadScheduler).StartWith(false);
-
-		RefreshModUpdatesCommand = ReactiveCommand.Create(() =>
-		{
-			ViewModelLocator.ModUpdates?.Clear();
-			ModUpdatesAvailable = false;
-			RefreshAllModUpdatesBackground();
-		}, canRefreshModUpdates, RxApp.MainThreadScheduler);
-
-		Keys.RefreshModUpdates.AddAction(() => RefreshModUpdatesCommand.Execute().Subscribe(), canRefreshModUpdates);
-
 		//Keys.OpenCollectionDownloaderWindow.AddAction(() => App.WM.CollectionDownload.Toggle(true));
 
-		CheckForGitHubModUpdatesCommand = ReactiveCommand.Create(RefreshGitHubModsUpdatesBackground, this.WhenAnyValue(x => x.GitHubModSupportEnabled), RxApp.MainThreadScheduler);
-		CheckForNexusModsUpdatesCommand = ReactiveCommand.Create(RefreshNexusModsUpdatesBackground, this.WhenAnyValue(x => x.NexusModsSupportEnabled), RxApp.MainThreadScheduler);
-		CheckForSteamWorkshopUpdatesCommand = ReactiveCommand.Create(RefreshSteamWorkshopUpdatesBackground, this.WhenAnyValue(x => x.SteamWorkshopSupportEnabled), RxApp.MainThreadScheduler);
-
-		var canStartExport = this.WhenAny(x => x.MainProgressToken, (t) => t != null).StartWith(false);
-		Keys.ExportOrderToZip.AddAction(ExportLoadOrderToArchive_Start, canStartExport);
-		Keys.ExportOrderToArchiveAs.AddAction(() => ExportLoadOrderToArchiveAs(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder), canStartExport);
+		//var canStartExport = this.WhenAny(x => x.MainProgressToken, (t) => t != null);
+		//Keys.ExportOrderToZip.AddAsyncAction(ExportLoadOrderToArchiveAsync, canStartExport);
+		//Keys.ExportOrderToArchiveAs.AddAsyncAction(ExportLoadOrderToArchiveAsAsync, canStartExport);
 
 		Keys.OpenDonationLink.AddAction(() =>
 		{
@@ -2099,35 +1968,7 @@ Directory the zip will be extracted to:
 
 		Router.CurrentViewModel.Select(x => x == ViewModelLocator.ModUpdates).ToUIProperty(this, x => x.UpdatesViewIsVisible, false);
 
-		var canToggleUpdatesView = this.WhenAnyValue(x => x.ModUpdatesAvailable);
-		void toggleUpdatesView()
-		{
-			if (Router.GetCurrentViewModel() != ViewModelLocator.ModUpdates)
-			{
-				Views.SwitchToModUpdates();
-			}
-			else
-			{
-				Views.SwitchToModOrderView();
-			}
-		};
-		Keys.ToggleUpdatesView.AddAction(toggleUpdatesView, canToggleUpdatesView);
-		ToggleUpdatesViewCommand = ReactiveCommand.Create(toggleUpdatesView, canToggleUpdatesView);
-
-		RenameSaveCommand = ReactiveCommand.CreateFromTask(RenameSave_Start, this.WhenAnyValue(x => x.IsLocked, b => !b));
-
 		DivinityApp.Events.OrderNameChanged += OnOrderNameChanged;
-
-		var canCheckForUpdates = this.WhenAnyValue(x => x.MainProgressIsActive, b => b == false);
-		void checkForUpdatesAction()
-		{
-			_globalCommands.ShowAlert("Checking for updates...", AlertType.Info, 30);
-			_userInvokedUpdate = true;
-			//CheckForUpdates(true);
-			SaveSettings();
-		}
-		CheckForAppUpdatesCommand = ReactiveCommand.Create(checkForUpdatesAction, canCheckForUpdates);
-		Keys.CheckForUpdates.AddAction(checkForUpdatesAction, canCheckForUpdates);
 
 		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
 		if (AppSettings.Features.ScriptExtender)
@@ -2149,8 +1990,6 @@ Directory the zip will be extracted to:
 
 		var anyPakModSelectedObservable = _manager.SelectedPakMods.ToObservableChangeSet().CountChanged().Select(x => _manager.SelectedPakMods.Count > 0);
 		Keys.ExtractSelectedMods.AddAsyncAction(ExtractSelectedMods_Start, anyPakModSelectedObservable);
-
-		SaveSettingsSilentlyCommand = ReactiveCommand.Create(SaveSettings);
 
 		_interactions.ConfirmModDeletion.RegisterHandler(async interaction =>
 		{

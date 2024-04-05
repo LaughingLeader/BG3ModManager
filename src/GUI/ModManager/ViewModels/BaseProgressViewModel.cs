@@ -1,6 +1,6 @@
 ﻿namespace ModManager.ViewModels;
 
-public class BaseProgressViewModel : ReactiveObject, IClosableViewModel
+public abstract class BaseProgressViewModel : ReactiveObject, IClosableViewModel
 {
 	#region IClosableViewModel
 	[Reactive] public bool IsVisible { get; set; }
@@ -22,15 +22,15 @@ public class BaseProgressViewModel : ReactiveObject, IClosableViewModel
 	public ReactiveCommand<Unit, bool> RunCommand { get; }
 	public RxCommandUnit CancelRunCommand { get; }
 
-	internal async Task<Unit> UpdateProgress(string title = "", string workText = "", double value = -1)
+	internal async Task UpdateProgress(string title = "", string workText = "", double value = -1)
 	{
 		await Observable.Start(() =>
 		{
-			if (!String.IsNullOrEmpty(title))
+			if (title.IsValid())
 			{
 				ProgressTitle = title;
 			}
-			if (!String.IsNullOrEmpty(workText))
+			if (workText.IsValid())
 			{
 				ProgressWorkText = workText;
 			}
@@ -39,7 +39,6 @@ public class BaseProgressViewModel : ReactiveObject, IClosableViewModel
 				ProgressValue = value;
 			}
 		}, RxApp.MainThreadScheduler);
-		return Unit.Default;
 	}
 
 	public virtual async Task<bool> Run(CancellationToken token)

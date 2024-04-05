@@ -131,7 +131,7 @@ public class ModImportService(IDialogService _dialogService)
 				BuiltinMods = builtinMods,
 				OnlyMods = true,
 				Extension = ext,
-				ReportProgress = amount => ViewModel.IncreaseMainProgressValue(amount),
+				ReportProgress = amount => ViewModel.Progress.IncreaseValue(amount),
 				ShowAlert = AppServices.Commands.ShowAlert
 			};
 
@@ -181,24 +181,20 @@ public class ModImportService(IDialogService _dialogService)
 			//	view.AlertBar.SetDangerAlert($"Currently only .zip format archives are supported.", -1);
 			//	return;
 			//}
-			ViewModel.MainProgressTitle = $"Importing mods from '{filePath}'.";
-			ViewModel.MainProgressWorkText = "";
-			ViewModel.MainProgressValue = 0d;
-			ViewModel.MainProgressIsActive = true;
+			ViewModel.Progress.Title = $"Importing mods from '{filePath}'.";
 			var result = new ImportOperationResults()
 			{
 				TotalFiles = 1
 			};
-			RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
+			ViewModel.Progress.Start(async token =>
 			{
 				var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
-				ViewModel.MainProgressToken = new CancellationTokenSource();
 
-				var importOptions = new ImportParameters(filePath, Pathways.AppDataModsPath, ViewModel.MainProgressToken.Token, result)
+				var importOptions = new ImportParameters(filePath, Pathways.AppDataModsPath, token, result)
 				{
 					BuiltinMods = builtinMods,
 					OnlyMods = false,
-					ReportProgress = amount => ViewModel.IncreaseMainProgressValue(amount),
+					ReportProgress = amount => ViewModel.Progress.IncreaseValue(amount),
 					ShowAlert = AppServices.Commands.ShowAlert
 				};
 
@@ -217,13 +213,11 @@ public class ModImportService(IDialogService _dialogService)
 
 				if (result.Mods.Count > 0 && result.Mods.Any(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
 				{
-					await AppServices.Updater.NexusMods.Update(result.Mods, ViewModel.MainProgressToken.Token);
+					await AppServices.Updater.NexusMods.Update(result.Mods, token);
 				}
-				await ctrl.Yield();
+
 				RxApp.MainThreadScheduler.Schedule(_ =>
 				{
-					ViewModel.OnMainProgressComplete();
-
 					if (result.Errors.Count > 0)
 					{
 						var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
@@ -281,8 +275,7 @@ public class ModImportService(IDialogService _dialogService)
 						AppServices.Commands.ShowAlert($"Successfully extracted archive, but no mods or load orders were found", AlertType.Warning, 20);
 					}
 				});
-				return Disposable.Empty;
-			});
+			}, true);
 		}
 	}
 
@@ -446,83 +439,71 @@ public class ModImportService(IDialogService _dialogService)
 
 	public void ImportMods(IEnumerable<string?> files, int total, bool toActiveList = false)
 	{
-		if (!ViewModel.MainProgressIsActive)
+		ViewModel.Progress.Title = "Importing Mods...";
+		var result = new ImportOperationResults()
 		{
-			ViewModel.MainProgressTitle = "Importing mods.";
-			ViewModel.MainProgressWorkText = "";
-			ViewModel.MainProgressValue = 0d;
-			ViewModel.MainProgressIsActive = true;
+			TotalFiles = total
+		};
 
-			var result = new ImportOperationResults()
+		ViewModel.Progress.Start(async token =>
+		{
+			var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
+			foreach (var f in files)
 			{
-				TotalFiles = total
-			};
+				await ImportModFromFile(builtinMods, result, f, token, toActiveList);
+			}
 
-			RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
+			if (AppServices.Updater.NexusMods.IsEnabled && result.Mods.Count > 0 && result.Mods.Any(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
 			{
-				var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
-				ViewModel.MainProgressToken = new CancellationTokenSource();
-				foreach (var f in files)
-				{
-					await ImportModFromFile(builtinMods, result, f, ViewModel.MainProgressToken.Token, toActiveList);
-				}
+				await AppServices.Updater.NexusMods.Update(result.Mods, token);
+				await AppServices.Updater.NexusMods.SaveCacheAsync(false, ViewModel.Version, token);
+			}
 
-				if (AppServices.Updater.NexusMods.IsEnabled && result.Mods.Count > 0 && result.Mods.Any(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
+			RxApp.MainThreadScheduler.Schedule(_ =>
+			{
+				if (result.Errors.Count > 0)
 				{
-					await AppServices.Updater.NexusMods.Update(result.Mods, ViewModel.MainProgressToken.Token);
-					await AppServices.Updater.NexusMods.SaveCacheAsync(false, ViewModel.Version, ViewModel.MainProgressToken.Token);
-				}
-
-				await ctrl.Yield();
-				RxApp.MainThreadScheduler.Schedule(_ =>
-				{
-					ViewModel.OnMainProgressComplete();
-
-					if (result.Errors.Count > 0)
+					var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+					var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportMods_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
+					var logsDir = Path.GetDirectoryName(errorOutputPath);
+					if (!Directory.Exists(logsDir))
 					{
-						var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
-						var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportMods_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
-						var logsDir = Path.GetDirectoryName(errorOutputPath);
-						if (!Directory.Exists(logsDir))
-						{
-							Directory.CreateDirectory(logsDir);
-						}
-						File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+						Directory.CreateDirectory(logsDir);
 					}
+					File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+				}
 
-					var total = result.Mods.Count;
-					if (result.Success)
+				var total = result.Mods.Count;
+				if (result.Success)
+				{
+					if (result.Mods.Count > 1)
 					{
-						if (result.Mods.Count > 1)
-						{
-							AppServices.Commands.ShowAlert($"Successfully imported {total} mods", AlertType.Success, 20);
-						}
-						else if (total == 1)
-						{
-							var modFileName = result.Mods.First().FileName;
-							var fileNames = String.Join(", ", files.Select(x => Path.GetFileName(x)));
-							AppServices.Commands.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
-						}
-						else
-						{
-							AppServices.Commands.ShowAlert("Skipped importing mod - No .pak file found", AlertType.Success, 20);
-						}
+						AppServices.Commands.ShowAlert($"Successfully imported {total} mods", AlertType.Success, 20);
+					}
+					else if (total == 1)
+					{
+						var modFileName = result.Mods.First().FileName;
+						var fileNames = String.Join(", ", files.Select(x => Path.GetFileName(x)));
+						AppServices.Commands.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
 					}
 					else
 					{
-						if (total == 0)
-						{
-							AppServices.Commands.ShowAlert("No mods imported. Does the file contain a .pak?", AlertType.Warning, 60);
-						}
-						else
-						{
-							AppServices.Commands.ShowAlert($"Only imported {total}/{result.TotalPaks} mods - Check the log", AlertType.Danger, 60);
-						}
+						AppServices.Commands.ShowAlert("Skipped importing mod - No .pak file found", AlertType.Success, 20);
 					}
-				});
-				return Disposable.Empty;
+				}
+				else
+				{
+					if (total == 0)
+					{
+						AppServices.Commands.ShowAlert("No mods imported. Does the file contain a .pak?", AlertType.Warning, 60);
+					}
+					else
+					{
+						AppServices.Commands.ShowAlert($"Only imported {total}/{result.TotalPaks} mods - Check the log", AlertType.Danger, 60);
+					}
+				}
 			});
-		}
+		});
 	}
 
 	public async Task OpenModImportDialog()
@@ -567,70 +548,59 @@ public class ModImportService(IDialogService _dialogService)
 				Settings.Save(out _);
 			}
 
-			if (!ViewModel.MainProgressIsActive)
+			ViewModel.Progress.Title = "Parsing files for NexusMods ModIds...";
+			var result = new ImportOperationResults()
 			{
-				ViewModel.MainProgressTitle = "Parsing files for NexusMods ModIds...";
-				ViewModel.MainProgressWorkText = "";
-				ViewModel.MainProgressValue = 0d;
-				ViewModel.MainProgressIsActive = true;
-				var result = new ImportOperationResults()
+				TotalFiles = dialogResult.Total
+			};
+
+			ViewModel.Progress.Start(async token =>
+			{
+				await FetchNexusModsIdFromFilesAsync(dialogResult.Files, result, token);
+
+				RxApp.MainThreadScheduler.Schedule(_ =>
 				{
-					TotalFiles = dialogResult.Total
-				};
-
-				RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
-				{
-					ViewModel.MainProgressToken = new CancellationTokenSource();
-
-					await FetchNexusModsIdFromFilesAsync(dialogResult.Files, result, ViewModel.MainProgressToken.Token);
-
-					RxApp.MainThreadScheduler.Schedule(_ =>
+					if (result.Errors.Count > 0)
 					{
-						ViewModel.OnMainProgressComplete();
-
-						if (result.Errors.Count > 0)
+						var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
+						var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportNexusModsModIds_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
+						var logsDir = Path.GetDirectoryName(errorOutputPath);
+						if (!Directory.Exists(logsDir))
 						{
-							var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
-							var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportNexusModsModIds_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
-							var logsDir = Path.GetDirectoryName(errorOutputPath);
-							if (!Directory.Exists(logsDir))
-							{
-								Directory.CreateDirectory(logsDir);
-							}
-							File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+							Directory.CreateDirectory(logsDir);
 						}
+						File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+					}
 
-						var total = result.Mods.Count;
-						if (result.Success)
+					var total = result.Mods.Count;
+					if (result.Success)
+					{
+						if (result.Mods.Count > 1)
 						{
-							if (result.Mods.Count > 1)
-							{
-								AppServices.Commands.ShowAlert($"Successfully imported NexusMods ids for {total} mods", AlertType.Success, 20);
-							}
-							else if (total == 1)
-							{
-								AppServices.Commands.ShowAlert($"Successfully imported the NexusMods id for '{result.Mods.First().Name}'", AlertType.Success, 20);
-							}
-							else
-							{
-								AppServices.Commands.ShowAlert("No NexusMods ids found", AlertType.Success, 20);
-							}
+							AppServices.Commands.ShowAlert($"Successfully imported NexusMods ids for {total} mods", AlertType.Success, 20);
+						}
+						else if (total == 1)
+						{
+							AppServices.Commands.ShowAlert($"Successfully imported the NexusMods id for '{result.Mods.First().Name}'", AlertType.Success, 20);
 						}
 						else
 						{
-							if (total == 0)
-							{
-								AppServices.Commands.ShowAlert("No NexusMods ids found. Does the .zip name contain an id, with a .pak file inside?", AlertType.Warning, 60);
-							}
-							else if (result.Errors.Count > 0)
-							{
-								AppServices.Commands.ShowAlert($"Encountered some errors fetching ids - Check the log", AlertType.Danger, 60);
-							}
+							AppServices.Commands.ShowAlert("No NexusMods ids found", AlertType.Success, 20);
 						}
-					});
-					return Disposable.Empty;
+					}
+					else
+					{
+						if (total == 0)
+						{
+							AppServices.Commands.ShowAlert("No NexusMods ids found. Does the .zip name contain an id, with a .pak file inside?", AlertType.Warning, 60);
+						}
+						else if (result.Errors.Count > 0)
+						{
+							AppServices.Commands.ShowAlert($"Encountered some errors fetching ids - Check the log", AlertType.Danger, 60);
+						}
+					}
 				});
-			}
+			}, true);
 		}
 	}
 
@@ -696,7 +666,7 @@ public class ModImportService(IDialogService _dialogService)
 			var modPaks = new List<DivinityModData>(modManager.AllMods.Where(x => selectedModOrder.Order.Any(o => o.UUID == x.UUID)));
 			modPaks.AddRange(modManager.ForceLoadedMods.Where(x => !x.IsForceLoadedMergedMod));
 
-			var incrementProgress = 1d / modPaks.Count;
+			var incrementProgress = 100d / modPaks.Count;
 
 			try
 			{
@@ -749,7 +719,7 @@ public class ModImportService(IDialogService _dialogService)
 						}
 					}
 
-					await ViewModel.IncreaseMainProgressValueAsync(incrementProgress);
+					ViewModel.Progress.IncreaseValue(incrementProgress);
 				}
 
 				RxApp.MainThreadScheduler.Schedule(() =>

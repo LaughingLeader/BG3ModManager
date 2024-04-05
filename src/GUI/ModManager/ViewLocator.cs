@@ -56,6 +56,7 @@ public class ViewLocator : IViewLocator
 		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
 		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);
 		RegisterConstant<MessageBoxViewModel, MessageBoxView>(resolver);
+		resolver.RegisterLazySingleton(() => (IViewFor<IProgressBarViewModel>)AppServices.Get<ProgressBarView>());
 
 		//Register<DownloadActivityBarViewModel, DownloadActivityBar>(resolver);
 		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>(resolver);
