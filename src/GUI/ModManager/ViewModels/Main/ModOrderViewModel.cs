@@ -366,11 +366,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IsRefreshing = true;
 		DivinityApp.Log($"Refreshing data asynchronously...");
 
-		var taskStepAmount = 1.0 / 9;
+		var taskStepAmount = 1.0 / 6;
 
 		var modManager = ModManager;
 
-		List<DivinityLoadOrderEntry> lastActiveOrder = null;
+		List<DivinityLoadOrderEntry>? lastActiveOrder = null;
 		var lastOrderName = "";
 		if (SelectedModOrder != null)
 		{
@@ -378,7 +378,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			lastOrderName = SelectedModOrder.Name;
 		}
 
-		string lastAdventureMod = null;
+		string? lastAdventureMod = null;
 		if (SelectedAdventureMod != null) lastAdventureMod = SelectedAdventureMod.UUID;
 
 		var selectedProfileUUID = "";
@@ -391,7 +391,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			DivinityApp.Log("Loading mods...");
 			await main.SetMainProgressTextAsync("Loading mods...");
-			var loadedMods = await ModManager.LoadModsAsync(PathwayData.AppDataModsPath, new(main.SetMainProgressTextAsync, main.IncreaseMainProgressValueAsync), taskStepAmount);
+			var loadedMods = await ModManager.LoadModsAsync(Settings.GameDataPath, PathwayData.AppDataModsPath, token);
 			await main.IncreaseMainProgressValueAsync(taskStepAmount);
 
 			DivinityApp.Log("Loading profiles...");
