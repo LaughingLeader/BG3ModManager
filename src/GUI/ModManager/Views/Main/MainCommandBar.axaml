@@ -42,7 +42,7 @@
 		<WrapPanel Grid.Row="2" Margin="12,0" VerticalAlignment="Top">
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
-				<ComboBox AutoScrollToSelectedItem="False" SelectedIndex="0">
+				<ComboBox x:Name="ProfileComboBox" AutoScrollToSelectedItem="False" SelectedIndex="0">
 					<ComboBox.Items>
 						<ComboBoxItem Content="Public" />
 						<ComboBoxItem Content="Debug Client Profile 1" />
@@ -71,25 +71,25 @@
 				</controls:ComboBoxWithRightClick>
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<Button ToolTip.Tip="Save Order">
+				<Button Command="{Binding SaveOrderCommand}" ToolTip.Tip="Save Order">
 					<materialIcons:MaterialIcon Foreground="LightGreen" Kind="ContentSave" />
 				</Button>
-				<Button ToolTip.Tip="Save Order As...">
+				<Button Command="{Binding SaveOrderAsCommand}" ToolTip.Tip="Save Order As...">
 					<materialIcons:MaterialIcon Kind="ContentSaveEdit" />
 				</Button>
-				<Button ToolTip.Tip="Add New Order">
+				<Button Command="{Binding AddNewOrderCommand}" ToolTip.Tip="Add New Order">
 					<materialIcons:MaterialIcon Foreground="OrangeRed" Kind="Add" />
 				</Button>
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Export" />
-				<Button ToolTip.Tip="Export Order to Game">
+				<Button Command="{Binding ExportOrderCommand}" ToolTip.Tip="Export Order to Game">
 					<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="Export" />
 				</Button>
-				<Button ToolTip.Tip="Export Active Mods to Zip">
+				<Button Command="{Binding ExportModsToZipCommand}" ToolTip.Tip="Export Active Mods to Zip">
 					<materialIcons:MaterialIcon Kind="FolderZip" />
 				</Button>
-				<Button ToolTip.Tip="Export Active Mods to Zip As...">
+				<Button Command="{Binding ExportModsToZipAsCommand}" ToolTip.Tip="Export Active Mods to Zip As...">
 					<materialIcons:MaterialIcon Kind="ArchiveEdit" />
 				</Button>
 			</StackPanel>
@@ -107,13 +107,16 @@
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Shortcuts" />
-				<Button ToolTip.Tip="Open Mods Folder...">
+				<Button Command="{Binding OpenModsFolderCommand}" ToolTip.Tip="Open Mods Folder...">
 					<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="FolderOpen" />
 				</Button>
-				<Button ToolTip.Tip="Launch Game...">
+				<Button Command="{Binding LaunchGameCommand}" ToolTip.Tip="Launch Game...">
 					<materialIcons:MaterialIcon Foreground="Red" Kind="Launch" />
 				</Button>
-				<ComboBox AutoScrollToSelectedItem="False" SelectedIndex="0" ToolTip.Tip="When launching the game, performed this action on this window">
+				<ComboBox x:Name="CampaignComboBox"
+				          AutoScrollToSelectedItem="False"
+				          SelectedIndex="0"
+				          ToolTip.Tip="When launching the game, performed this action on this window">
 					<ComboBoxItem Content="None" />
 					<ComboBoxItem Content="Minimize" />
 					<ComboBoxItem Content="Close" />
@@ -121,19 +124,19 @@
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Links" />
-				<Button ToolTip.Tip="Open Game Hub in Steam...">
+				<Button Command="{Binding OpenSteamPageCommand}" ToolTip.Tip="Open Steam Page...">
 					<materialIcons:MaterialIcon Kind="Switch" />
 				</Button>
-				<Button ToolTip.Tip="Open Nexus Mods...">
+				<Button Command="{Binding OpenNexusModsCommand}" ToolTip.Tip="Open Nexus Mods...">
 					<materialIcons:MaterialIcon Kind="OpenInBrowser" />
 				</Button>
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Support" />
-				<Button ToolTip.Tip="Donate a Coffee">
+				<Button Command="{Binding OpenDonationPageCommand}" ToolTip.Tip="Donate a Coffee">
 					<materialIcons:MaterialIcon Kind="Donate" />
 				</Button>
-				<Button ToolTip.Tip="Open Program Site (GitHub)...">
+				<Button Command="{Binding OpenGitHubRepoCommand}" ToolTip.Tip="Open Program Site (GitHub)...">
 					<materialIcons:MaterialIcon Kind="Github" />
 				</Button>
 			</StackPanel>

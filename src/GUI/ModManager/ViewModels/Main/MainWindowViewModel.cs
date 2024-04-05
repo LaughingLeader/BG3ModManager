@@ -1518,6 +1518,8 @@ Directory the zip will be extracted to:
 			}
 		}*/
 
+		ViewModelLocator.CommandBar.CreateCommands(this, ViewModelLocator.ModOrder);
+
 		LoadInitial();
 	}
 

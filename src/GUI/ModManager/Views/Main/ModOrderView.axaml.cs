@@ -10,10 +10,7 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 
 		this.WhenActivated(d =>
 		{
-			if(ViewModel != null)
-			{
-				//ActiveModsGrid.Children.Add(new ModListView() { ViewModel = ViewModel.ActiveModsView });
-			}
+			this.OneWayBind(ViewModel, vm => vm.CommandBar, x => x.CommandBar.ViewModel);
 		});
 	}
 }

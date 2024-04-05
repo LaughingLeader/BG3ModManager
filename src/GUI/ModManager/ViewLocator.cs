@@ -51,7 +51,7 @@ public class ViewLocator : IViewLocator
 	{
 		var resolver = Locator.CurrentMutable;
 
-		RegisterConstant<MainCommandBarViewModel, MainCommandBar>(resolver);
+		//RegisterConstant<MainCommandBarViewModel, MainCommandBar>(resolver);
 		RegisterConstant<DeleteFilesViewModel, DeleteFilesView>(resolver);
 		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
 		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);

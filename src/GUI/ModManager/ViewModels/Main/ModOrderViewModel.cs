@@ -34,7 +34,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private readonly IGlobalCommandsService _globalCommands;
 	private readonly IDialogService _dialogs;
 
-	public MainCommandBarViewModel CommandBar => ViewModelLocator.CommandBar;
+	public MainCommandBarViewModel CommandBar { get; }
 
 	public DivinityPathwayData PathwayData => AppServices.Pathways.Data;
 	public ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
@@ -1602,7 +1602,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IInteractionsService interactionsService,
 		IGlobalCommandsService globalCommands,
 		IDialogService dialogService,
-		ModImportService modImportService
+		ModImportService modImportService,
+		MainCommandBarViewModel commandBar
 		)
 	{
 		ModManager = modManagerService;
@@ -1610,6 +1611,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		_interactions = interactionsService;
 		_globalCommands = globalCommands;
 		_dialogs = dialogService;
+
+		CommandBar = commandBar;
 
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;

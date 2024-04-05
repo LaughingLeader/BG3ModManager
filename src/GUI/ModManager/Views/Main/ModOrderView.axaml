@@ -6,7 +6,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:mv="using:ModManager.Views.Mods"
              xmlns:rxui="http://reactiveui.net"
-             xmlns:views="using:ModManager.Views"
+             xmlns:views="using:ModManager.Views.Main"
              xmlns:vm="using:ModManager.ViewModels.Main"
              d:DesignHeight="1080"
              d:DesignWidth="1920"
@@ -31,7 +31,7 @@
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*,20">
-		<rxui:ViewModelViewHost x:Name="CommandBarViewHost" ViewModel="{Binding CommandBar}" />
+		<views:MainCommandBar x:Name="CommandBar" />
 		<Grid Grid.Row="1" Margin="4,0" ColumnDefinitions="*,auto,*">
 			<controls:GlassCard IsOpaque="True">
 				<Grid x:Name="ActiveModsGrid" RowDefinitions="3*,auto,1*">

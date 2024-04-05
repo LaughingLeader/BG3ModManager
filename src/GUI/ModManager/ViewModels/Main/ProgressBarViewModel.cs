@@ -63,18 +63,14 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 
 		await Dispatcher.UIThread.InvokeAsync(async () =>
 		{
-			if (TokenSource != null)
-			{
-				TokenSource.Cancel();
-				TokenSource.Dispose();
-			}
+			TokenSource?.Dispose();
 			TokenSource = new CancellationTokenSource();
 			CanCancel = canCancel;
 			Value = 0;
 
 			nextView = switchToViewOnFinish ?? await HostScreen.Router.CurrentViewModel;
 			await HostScreen.Router.Navigate.Execute(this);
-		}, DispatcherPriority.ApplicationIdle);
+		}, DispatcherPriority.Background);
 
 		RxApp.TaskpoolScheduler.ScheduleAsync(async (_, _) =>
 		{

@@ -56,7 +56,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<MessageBoxViewModel>();
 
-		SplatRegistrations.RegisterLazySingleton<MainCommandBar>();
+		//SplatRegistrations.RegisterLazySingleton<MainCommandBar>();
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesView>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();
