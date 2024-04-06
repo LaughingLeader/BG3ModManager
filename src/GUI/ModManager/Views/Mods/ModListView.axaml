@@ -21,6 +21,14 @@
 		<Style x:DataType="m:IModEntry" Selector="TreeDataGridRow">
 			<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWayToSource}" />
 		</Style>
+		<Style Selector="TreeDataGridRow[IsSelected=false] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
+			<Setter Property="Background" Value="#5C5F74" />
+			<Setter Property="BorderBrush" Value="#A9A9C0" />
+		</Style>
+		<Style Selector="TreeDataGridRow[IsSelected=true] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
+			<Setter Property="Background" Value="#5168b8" />
+			<Setter Property="BorderBrush" Value="#A9A9C0" />
+		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*">
 		<Grid ColumnDefinitions="auto,auto,auto,*">
