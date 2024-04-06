@@ -1810,12 +1810,20 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		});
 
-		this.WhenAnyValue(x => x.SelectedProfile).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(profile =>
+		this.WhenAnyValue(x => x.SelectedProfile)
+			.WhereNotNull()
+			.ThrottleFirst(TimeSpan.FromMilliseconds(50))
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.Subscribe(profile =>
 		{
 			BuildModOrderList(profile, Math.Max(0, SelectedModOrderIndex));
 		});
 
-		this.WhenAnyValue(x => x.SelectedModOrder).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(order =>
+		this.WhenAnyValue(x => x.SelectedModOrder)
+			.WhereNotNull()
+			.ThrottleFirst(TimeSpan.FromMilliseconds(50))
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.Subscribe(order =>
 		{
 			if (!order.IsLoaded)
 			{
@@ -1838,13 +1846,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			SelectedModOrder?.Sort(SortModOrder);
 		});
 
-		modManagerService.AdventureMods.ToObservableChangeSet().CountChanged()
-		.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex))
-		//.ThrottleFirst(TimeSpan.FromMilliseconds(50))
-		.ObserveOn(RxApp.MainThreadScheduler)
-		.Select(x => x.First.ElementAtOrDefault(x.Second)?.Item.Current)
-		.WhereNotNull()
-		.ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
+		modManagerService.AdventureMods.ToObservableChangeSet()
+			.CountChanged()
+			.CombineLatest(this.WhenAnyValue(x => x.SelectedAdventureModIndex))
+			//.ThrottleFirst(TimeSpan.FromMilliseconds(50))
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.Select(x => x.First.ElementAtOrDefault(x.Second)?.Item.Current)
+			.WhereNotNull()
+			.ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);
 
 		this.WhenAnyValue(x => x.SelectedAdventureModIndex).Throttle(TimeSpan.FromMilliseconds(50)).Subscribe((i) =>
 		{
