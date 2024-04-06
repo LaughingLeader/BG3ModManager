@@ -36,11 +36,17 @@
 		       Margin="16,0"
 		       HorizontalAlignment="Stretch"
 		       VerticalAlignment="Center">
-			<ProgressBar x:Name="ProgressBarControl"
+			<!--<ProgressBar x:Name="ProgressBarControl"
 			             Maximum="100"
 			             Minimum="0"
 			             ShowProgressText="True"
-			             Value="75" />
+			             Value="75" />-->
+			<suki:CircleProgressBar x:Name="ProgressBarControl"
+			                        Width="130"
+			                        Height="130"
+			                        StrokeWidth="11">
+				<TextBlock x:Name="ProgressValueTextControl" Margin="0,1,0,0" Classes="h3" />
+			</suki:CircleProgressBar>
 			<!--<suki:WaveProgress IsTextVisible="True" Value="{Binding UIValue}" />-->
 		</Panel>
 
