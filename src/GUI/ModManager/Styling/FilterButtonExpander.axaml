@@ -88,6 +88,11 @@
 			</Style>
 		</Style>
 
+		<!--  Hide the tooltip when pressed  -->
+		<Style Selector="^ /template/ ToggleButton#PART_ToggleButton:pressed">
+			<Setter Property="ToolTip.Tip" Value="{x:Null}" />
+		</Style>
+
 		<Style Selector="^:expanded /template/ materialIcons|MaterialIcon#PART_Icon">
 			<Setter Property="Kind" Value="FilterMinus" />
 		</Style>

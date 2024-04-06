@@ -36,6 +36,14 @@
 		<Style Selector="TextBlock.Title:pointerover">
 			<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
 		</Style>
+
+		<Style Selector="Expander /template/ ToggleButton#PART_ToggleButton">
+			<Setter Property="ToolTip.Placement" Value="Top" />
+			<Setter Property="ToolTip.ShowDelay" Value="500" />
+			<Setter Property="ToolTip.Tip" Value="Toggle Filter" />
+			<Setter Property="ToolTip.VerticalOffset" Value="-2" />
+		</Style>
+
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*">
 		<Grid ColumnDefinitions="auto,auto,auto,*">
@@ -49,8 +57,7 @@
 			          Margin="0"
 			          VerticalAlignment="Center"
 			          ExpandDirection="Right"
-			          Theme="{StaticResource FilterButtonExpander}"
-			          ToolTip.Tip="Toggle Filter">
+			          Theme="{StaticResource FilterButtonExpander}">
 				<TextBox x:Name="FilterTextBox"
 				         Width="200"
 				         Margin="0"
