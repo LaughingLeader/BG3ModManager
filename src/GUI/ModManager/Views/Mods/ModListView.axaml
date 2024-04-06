@@ -20,21 +20,21 @@
 		</Style>
 
 		<Style Selector="TreeDataGridRow[IsSelected=false] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
-			<Setter Property="Background" Value="#5C5F74" />
-			<Setter Property="BorderBrush" Value="#A9A9C0" />
+			<Setter Property="Background" Value="{DynamicResource ModListHoveredCellBackground}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ModListHoveredCellBorder}" />
 		</Style>
 
 		<Style Selector="TreeDataGridRow[IsSelected=true] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
-			<Setter Property="Background" Value="#5168b8" />
-			<Setter Property="BorderBrush" Value="#A9A9C0" />
+			<Setter Property="Background" Value="{DynamicResource ModListHoveredCellSelectedBackground}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ModListHoveredCellBorder}" />
 		</Style>
 
 		<Style Selector="TreeDataGridTextCell:pointerover /template/ Border#CellBorder > TextBlock">
-			<Setter Property="Foreground" Value="Lime" />
+			<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
 		</Style>
 
 		<Style Selector="TextBlock.Title:pointerover">
-			<Setter Property="Foreground" Value="Lime" />
+			<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*">
@@ -44,7 +44,8 @@
 			           Classes="Title"
 			           Text="{Binding Title}"
 			           TextAlignment="Left" />
-			<Expander Grid.Column="1"
+			<Expander x:Name="FilterExpander"
+			          Grid.Column="1"
 			          Margin="0"
 			          VerticalAlignment="Center"
 			          ExpandDirection="Right"

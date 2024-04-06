@@ -11,6 +11,7 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/General.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/FilterButtonExpander.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 
@@ -30,7 +31,7 @@
 					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Opacity="0.4" Color="Black" />
 				</ResourceDictionary>
 				<ResourceDictionary x:Key="Dark">
-					<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Opacity="0.1" Color="#5B74CD" />
+					<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="#4A4A5E" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="#38394A" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="#38394A" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
