@@ -16,6 +16,9 @@ public interface IEnvironmentService
 	/// <inheritdoc cref="AppDomain.FriendlyName"/>
 	string AppFriendlyName { get; }
 
+	/// <inheritdoc cref="System.Reflection.AssemblyProductAttribute"/>
+	string AppProductName { get; }
+
 	/// <inheritdoc cref="Environment.SpecialFolder.ApplicationData"/>
 	string ApplicationDataPath { get; }
 

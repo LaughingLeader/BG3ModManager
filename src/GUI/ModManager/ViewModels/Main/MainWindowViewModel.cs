@@ -1810,7 +1810,7 @@ Directory the zip will be extracted to:
 		RxApp.DefaultExceptionHandler = exceptionHandler;
 
 		Version = environmentService.AppVersion.ToString();
-		Title = $"{environmentService.AppFriendlyName} {Version}";
+		Title = $"{environmentService.AppProductName} {Version}";
 		DivinityApp.Log($"{Title} initializing...");
 
 		_nexusMods.WhenLimitsChange.Throttle(TimeSpan.FromMilliseconds(50)).Select(NexusModsLimitToText).ToUIProperty(this, x => x.NexusModsLimitsText);

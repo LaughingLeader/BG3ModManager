@@ -6,6 +6,15 @@ namespace ModManager.Services;
 /// <inheritdoc cref="IEnvironmentService" />
 public class EnvironmentService : IEnvironmentService
 {
+	private static string GetEntryAssemblyAttribute<T>(Func<T, string> value) where T : Attribute
+	{
+		if(Assembly.GetEntryAssembly() is Assembly assembly && Attribute.GetCustomAttribute(assembly, typeof(T)) is T attribute)
+		{
+			return value.Invoke(attribute);
+		}
+		return string.Empty;
+	}
+
 	/// <inheritdoc />
 	public IEnumerable<string> CommandLineArguments => Environment.GetCommandLineArgs();
 
@@ -14,6 +23,9 @@ public class EnvironmentService : IEnvironmentService
 
 	/// <inheritdoc />
 	public string AppFriendlyName => AppDomain.CurrentDomain.FriendlyName;
+
+	/// <inheritdoc />
+	public string AppProductName => GetEntryAssemblyAttribute<AssemblyProductAttribute>(a => a.Product);
 
 	/// <inheritdoc />
 	public string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
