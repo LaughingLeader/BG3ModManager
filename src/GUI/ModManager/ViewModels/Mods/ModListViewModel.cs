@@ -1,4 +1,6 @@
-﻿using DynamicData;
+﻿using Avalonia.Controls.Selection;
+
+using DynamicData;
 using DynamicData.Binding;
 
 using ModManager.Models;
@@ -18,6 +20,7 @@ public partial class ModListViewModel : ReactiveObject
 	private static partial Regex FilterPropertyPatternWithQuotesRe();
 
 	private readonly ICollection<IModEntry> _mods;
+	private readonly ITreeDataGridRowSelectionModel<IModEntry> _rowSelection;
 
 	public HierarchicalTreeDataGridSource<IModEntry> Mods { get; }
 
@@ -173,6 +176,19 @@ public partial class ModListViewModel : ReactiveObject
 		}
 	}
 
+	private void UpdateSelection(TreeSelectionModelSelectionChangedEventArgs<IModEntry> e)
+	{
+		foreach(var item in e.SelectedItems)
+		{
+			if (item != null) item.IsSelected = true;
+		}
+
+		foreach (var item in e.DeselectedItems)
+		{
+			if (item != null) item.IsSelected = false;
+		}
+	}
+
 	public ModListViewModel(HierarchicalTreeDataGridSource<IModEntry> treeGridSource,
 		ICollection<IModEntry> collection,
 		INotifyCollectionChanged observedCollection,
@@ -181,9 +197,17 @@ public partial class ModListViewModel : ReactiveObject
 	{
 		_mods = collection;
 		Mods = treeGridSource;
-		treeGridSource.RowSelection!.SingleSelect = false;
-
 		Title = title;
+
+		_rowSelection = treeGridSource.RowSelection!;
+		_rowSelection.SingleSelect = false;
+
+		Observable.FromEvent<EventHandler<TreeSelectionModelSelectionChangedEventArgs<IModEntry>>?, TreeSelectionModelSelectionChangedEventArgs<IModEntry>>(
+			h => (sender, e) => h(e),
+			h => _rowSelection.SelectionChanged += h,
+			h => _rowSelection.SelectionChanged -= h
+		).ObserveOn(RxApp.MainThreadScheduler)
+		.Subscribe(UpdateSelection);
 
 		Observable.FromEvent<NotifyCollectionChangedEventHandler?, NotifyCollectionChangedEventArgs>(
 			h => (sender, e) => h(e),

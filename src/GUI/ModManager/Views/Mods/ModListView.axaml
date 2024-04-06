@@ -18,22 +18,30 @@
 		<Style Selector="TextBox /template/ TextBlock#PART_Watermark">
 			<Setter Property="Opacity" Value="0.3" />
 		</Style>
-		<Style x:DataType="m:IModEntry" Selector="TreeDataGridRow">
-			<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWayToSource}" />
-		</Style>
+
 		<Style Selector="TreeDataGridRow[IsSelected=false] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
 			<Setter Property="Background" Value="#5C5F74" />
 			<Setter Property="BorderBrush" Value="#A9A9C0" />
 		</Style>
+
 		<Style Selector="TreeDataGridRow[IsSelected=true] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
 			<Setter Property="Background" Value="#5168b8" />
 			<Setter Property="BorderBrush" Value="#A9A9C0" />
+		</Style>
+
+		<Style Selector="TreeDataGridTextCell:pointerover /template/ Border#CellBorder > TextBlock">
+			<Setter Property="Foreground" Value="Lime" />
+		</Style>
+
+		<Style Selector="TextBlock.Title:pointerover">
+			<Setter Property="Foreground" Value="Lime" />
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*">
 		<Grid ColumnDefinitions="auto,auto,auto,*">
 			<TextBlock Padding="4"
 			           VerticalAlignment="Center"
+			           Classes="Title"
 			           Text="{Binding Title}"
 			           TextAlignment="Left" />
 			<Expander Grid.Column="1"
