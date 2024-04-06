@@ -59,7 +59,6 @@
 				         AcceptsReturn="False"
 				         AcceptsTab="False"
 				         MaxLines="1"
-				         Text="{Binding FilterInputText}"
 				         TextAlignment="Left"
 				         UseFloatingWatermark="False"
 				         Watermark="{Binding FilterPlaceholderText}" />

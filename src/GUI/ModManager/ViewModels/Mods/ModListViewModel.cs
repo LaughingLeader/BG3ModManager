@@ -223,15 +223,10 @@ public partial class ModListViewModel : ReactiveObject
 			.Select(ToFilterResultText)
 			.ToUIProperty(this, x => x.FilterResultText);
 
-		this.WhenAnyValue(x => x.FilterInputText)
-			.Throttle(TimeSpan.FromMilliseconds(500))
+		//Disable/enable filtering depending on the expander
+		this.WhenAnyValue(x => x.IsFilterEnabled, x => x.FilterInputText)
 			.ObserveOn(RxApp.MainThreadScheduler)
-			.Subscribe(FilterMods);
-
-		//Disable/enable filtering depending on the expander, and don't delay this filtering
-		this.WhenAnyValue(x => x.IsFilterEnabled)
-			.ObserveOn(RxApp.MainThreadScheduler)
-			.Select(x => x ? FilterInputText : null)
+			.Select(x => x.Item1 ? x.Item2 : null)
 			.Subscribe(FilterMods);
 
 		this.WhenAnyValue(x => x.Title).Select(x => $"Filter {x}").ToUIProperty(this, x => x.FilterPlaceholderText);
