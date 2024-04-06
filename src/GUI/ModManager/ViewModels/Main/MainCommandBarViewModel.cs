@@ -25,8 +25,6 @@ public class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? SaveSettingsSilentlyCommand { get; set; }
 	public RxCommandUnit? ToggleUpdatesViewCommand { get; set; }
 
-	private readonly IGlobalCommandsService _globalCommands;
-
 	public void CreateCommands(MainWindowViewModel main, ModOrderViewModel modOrder)
 	{
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
@@ -38,7 +36,7 @@ public class MainCommandBarViewModel : ReactiveObject
 
 		CheckForAppUpdatesCommand = ReactiveCommand.Create(() =>
 		{
-			_globalCommands.ShowAlert("Checking for updates...", AlertType.Info, 30);
+			AppServices.Commands.ShowAlert("Checking for updates...", AlertType.Info, 30);
 			//main.CheckForUpdates(true);
 			main.SaveSettings();
 		}, canExecuteCommands);
@@ -88,10 +86,8 @@ public class MainCommandBarViewModel : ReactiveObject
 		}, canToggleUpdatesView);
 	}
 
-	public MainCommandBarViewModel(IGlobalCommandsService globalCommands)
+	public MainCommandBarViewModel()
 	{
-		_globalCommands = globalCommands;
-
 		
 	}
 }

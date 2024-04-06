@@ -4,6 +4,7 @@
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mm="using:ModManager"
              xmlns:mv="using:ModManager.Views.Mods"
              xmlns:rxui="http://reactiveui.net"
              xmlns:views="using:ModManager.Views.Main"
@@ -31,7 +32,8 @@
 		</Style>
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*,20">
-		<views:MainCommandBar x:Name="CommandBar" />
+		<!--<views:MainCommandBar x:Name="CommandBar" />-->
+		<rxui:ViewModelViewHost x:Name="CommandBar" ViewModel="{x:Static mm:ViewModelLocator.CommandBar}" />
 		<Grid Grid.Row="1" Margin="4,0" ColumnDefinitions="*,auto,*">
 			<controls:GlassCard IsOpaque="True">
 				<Grid x:Name="ActiveModsGrid" RowDefinitions="3*,auto,1*">
