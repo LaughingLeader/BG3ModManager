@@ -95,7 +95,7 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 			if(!IsVisible)
 			{
 				Title = WorkText = string.Empty;
-				Value = 0;
+				Value = 0d;
 			}
 		});
 	}
@@ -107,6 +107,7 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 			Finish();
 			if (lastView != null)
 			{
+				await Task.Delay(500);
 				await Dispatcher.UIThread.InvokeAsync(async () =>
 				{
 					await HostScreen.Router.Navigate.Execute(lastView);
@@ -117,6 +118,9 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 
 	public ProgressBarViewModel(IScreen? host = null)
 	{
+		Title = WorkText = string.Empty;
+		Value = 0d;
+
 		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 
 		this.WhenAnyValue(x => x.TokenSource).WhereNotNull().Select(x => x.Token).BindTo(this, x => x.Token);
