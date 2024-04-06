@@ -48,12 +48,6 @@
 		<None Include="Resources\*.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<Resource Include="Resources\Icons\*.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Resource>
-		<Resource Include="Resources\Icons\*.svg">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Resource>
-		<Resource Include="Resources\BG3MMSplashScreen.png" />
+		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
 </Project>

@@ -11,6 +11,7 @@
                  d:DesignWidth="800"
                  x:DataType="vm:MainWindowViewModel"
                  Focusable="True"
+                 Icon="avares://ModManager/Assets/BG3ModManager.ico"
                  mc:Ignorable="d">
 	<!--<suki:SukiWindow.Resources>
 		<ResourceDictionary>
@@ -25,6 +26,11 @@
 			<Setter Property="Background" Value="#4e38c9" />
 		</Style>
 	</suki:SukiWindow.Styles>
+
+	<suki:SukiWindow.LogoContent>
+		<Image Width="16" Height="16" Source="avares://ModManager/Assets/BG3ModManager.ico" />
+	</suki:SukiWindow.LogoContent>
+
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<rxui:RoutedViewHost x:Name="ViewHost"
 		                     HorizontalContentAlignment="Stretch"
