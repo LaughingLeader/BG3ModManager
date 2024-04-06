@@ -91,8 +91,6 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		}
 	}
 
-	[Reactive] public DateTimeOffset? LastUpdated { get; set; }
-
 	[Reactive] public DivinityExtenderModStatus ExtenderModStatus { get; set; }
 	[Reactive] public DivinityOsirisModStatus OsirisModStatus { get; set; }
 
@@ -689,7 +687,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 		this.WhenAnyValue(x => x.Notes).Select(Validators.IsValid).ToUIProperty(this, x => x.NotesVisibility);
 
-		this.WhenAnyValue(x => x.LastUpdated).SkipWhile(x => !x.HasValue)
+		this.WhenAnyValue(x => x.LastModified).SkipWhile(x => !x.HasValue)
 			.Select(x => x.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture))
 			.ToUIProperty(this, x => x.LastModifiedDateText, "");
 

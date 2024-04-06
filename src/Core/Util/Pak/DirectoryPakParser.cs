@@ -140,7 +140,6 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 					try
 					{
 						mod.LastModified = _fs.File.GetLastWriteTime(metaFilePath);
-						mod.LastUpdated = mod.LastModified;
 					}
 					catch (Exception ex)
 					{

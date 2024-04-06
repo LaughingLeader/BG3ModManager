@@ -225,7 +225,6 @@ public static class ImportUtils
 									try
 									{
 										mod.LastModified = File.GetLastWriteTime(options.FilePath);
-										mod.LastUpdated = mod.LastModified;
 									}
 									catch (Exception ex)
 									{

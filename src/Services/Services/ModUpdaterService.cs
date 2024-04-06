@@ -66,7 +66,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 						mod.AddTags(workshopData.Tags);
 						if (workshopData.LastUpdated > 0)
 						{
-							mod.LastUpdated = mod.WorkshopData.UpdatedDate;
+							mod.LastModified = mod.WorkshopData.UpdatedDate;
 						}
 					}
 				}
@@ -227,7 +227,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 								mod.AddTags(workshopData.Tags);
 								if (workshopData.LastUpdated > 0)
 								{
-									mod.LastUpdated = mod.WorkshopData.UpdatedDate;
+									mod.LastModified = mod.WorkshopData.UpdatedDate;
 								}
 							}
 						}

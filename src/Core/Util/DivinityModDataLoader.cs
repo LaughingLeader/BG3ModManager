@@ -405,6 +405,19 @@ public static partial class DivinityModDataLoader
 		PackagedFileInfo? extenderConfigPath = null;
 		PackagedFileInfo? modManagerConfigPath = null;
 
+		DateTimeOffset fileModified = DateTimeOffset.Now;
+		if (File.Exists(pakPath))
+		{
+			try
+			{
+				fileModified = File.GetLastWriteTime(pakPath);
+			}
+			catch (PlatformNotSupportedException ex)
+			{
+				DivinityApp.Log($"Error getting pak last modified date for '{pakPath}': {ex}");
+			}
+		}
+
 		if (pak != null && pak.Files != null)
 		{
 			if (skipFileParsing)
@@ -546,18 +559,8 @@ public static partial class DivinityModDataLoader
 							modData.IsForceLoaded = true;
 						}
 						modData.FilePath = pakPath;
-						if (File.Exists(pakPath))
-						{
-							try
-							{
-								modData.LastModified = File.GetLastWriteTime(pakPath);
-								modData.LastUpdated = modData.LastModified;
-							}
-							catch (PlatformNotSupportedException ex)
-							{
-								DivinityApp.Log($"Error getting pak last modified date for '{pakPath}': {ex}");
-							}
-						}
+
+						modData.LastModified = fileModified;
 
 						if (extenderConfigPath != null)
 						{
@@ -600,6 +603,7 @@ public static partial class DivinityModDataLoader
 					Folder = builtinModOverrides.FirstOrDefault().Key,
 					Description = "This file overrides base game data.",
 					ModType = "File Override",
+					LastModified = fileModified,
 					IsForceLoaded = true,
 				});
 			}
@@ -1816,7 +1820,6 @@ public static partial class DivinityModDataLoader
 					try
 					{
 						modData.LastModified = File.GetLastWriteTime(filePath);
-						modData.LastUpdated = modData.LastModified;
 					}
 					catch (Exception ex)
 					{
@@ -1838,7 +1841,6 @@ public static partial class DivinityModDataLoader
 					try
 					{
 						modData.LastModified = File.GetLastWriteTime(fileTimeFile);
-						modData.LastUpdated = modData.LastModified;
 					}
 					catch (Exception ex)
 					{
