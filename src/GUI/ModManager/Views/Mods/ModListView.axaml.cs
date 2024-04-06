@@ -2,6 +2,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Selection;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 
 using DynamicData;
@@ -56,6 +57,8 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 
 		this.WhenActivated(d =>
 		{
+			FilterExpander.GetObservable(Expander.IsExpandedProperty).Skip(1).BindTo(ViewModel, x => x.IsFilterEnabled);
+
 			d(Observable.FromEventPattern<KeyEventArgs>(FilterTextBox, nameof(FilterTextBox.KeyDown)).Subscribe(e =>
 			{
 				var key = e.EventArgs.Key;
