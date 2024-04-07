@@ -1,40 +1,42 @@
-<suki:SukiWindow x:Class="ModManager.Windows.MainWindow"
-                 xmlns="https://github.com/avaloniaui"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:rxui="http://reactiveui.net"
-                 xmlns:suki="using:SukiUI.Controls"
-                 xmlns:vm="using:ModManager.ViewModels.Main"
-                 Title="{Binding Title}"
-                 d:DesignHeight="450"
-                 d:DesignWidth="800"
-                 x:DataType="vm:MainWindowViewModel"
-                 Focusable="True"
-                 Icon="avares://ModManager/Assets/BG3ModManager.ico"
-                 mc:Ignorable="d">
-	<!--<suki:SukiWindow.Resources>
+<Window x:Class="ModManager.Windows.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:suki="using:SukiUI.Controls"
+    xmlns:vm="using:ModManager.ViewModels.Main"
+    Title="{Binding Title}"
+    Width="1600"
+    Height="800"
+    x:DataType="vm:MainWindowViewModel"
+    Focusable="True"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    mc:Ignorable="d">
+	<!--<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="/Styling/ColorThemes/Dracula.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
-	</suki:SukiWindow.Resources>-->
-	<suki:SukiWindow.Styles>
-		<!--  Title Bar recoloring  -->
-		<Style Selector="suki|SukiWindow /template/ LayoutTransformControl#PART_LayoutTransform > Panel">
-			<Setter Property="Background" Value="#4e38c9" />
+	</Window.Resources>-->
+	<Window.Styles>
+		<Style Selector="Window">
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource SukiText}" />
 		</Style>
-	</suki:SukiWindow.Styles>
+	</Window.Styles>
 
-	<suki:SukiWindow.LogoContent>
+	<!--<Window.LogoContent>
 		<Image Width="16" Height="16" Source="avares://ModManager/Assets/BG3ModManager.ico" />
-	</suki:SukiWindow.LogoContent>
+	</Window.LogoContent>-->
 
-	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<rxui:RoutedViewHost x:Name="ViewHost"
-		                     HorizontalContentAlignment="Stretch"
-		                     VerticalContentAlignment="Stretch"
-		                     Router="{Binding Router}" />
-	</Grid>
-</suki:SukiWindow>
+	<suki:SukiHost>
+		<Panel>
+			<suki:SukiBackground Name="PART_Background" IsHitTestVisible="False" />
+			<rxui:RoutedViewHost x:Name="ViewHost"
+			    HorizontalContentAlignment="Stretch"
+			    VerticalContentAlignment="Stretch"
+			    Router="{Binding Router}" />
+		</Panel>
+	</suki:SukiHost>
+</Window>
