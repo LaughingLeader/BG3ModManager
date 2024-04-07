@@ -38,10 +38,10 @@
 		</Style>
 
 		<Style Selector="Expander /template/ ToggleButton#PART_ToggleButton">
-			<Setter Property="ToolTip.Placement" Value="Top" />
+			<!--<Setter Property="ToolTip.VerticalOffset" Value="-2" />
+			<Setter Property="ToolTip.Placement" Value="Top" />-->
 			<Setter Property="ToolTip.ShowDelay" Value="500" />
 			<Setter Property="ToolTip.Tip" Value="Toggle Filter" />
-			<Setter Property="ToolTip.VerticalOffset" Value="-2" />
 		</Style>
 
 	</UserControl.Styles>

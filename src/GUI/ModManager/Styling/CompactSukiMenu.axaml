@@ -1,0 +1,134 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:SukiUI.Controls"
+    xmlns:system="clr-namespace:System;assembly=netstandard">
+	<Design.PreviewWith>
+		<Menu Theme="{StaticResource CompactSukiMenuStyle}">
+			<MenuItem Header="File">
+				<MenuItem Header="Save" />
+			</MenuItem>
+			<MenuItem Header="Edit" />
+		</Menu>
+	</Design.PreviewWith>
+	<ControlTheme x:Key="SukiCompactTopLevelMenuItem" TargetType="MenuItem">
+		<Setter Property="FontWeight" Value="Regular" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Padding" Value="10 0" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Name="root"
+				    Margin="2,2"
+				    Background="{TemplateBinding Background}"
+				    BorderBrush="{DynamicResource SukiLightBorderBrush}"
+				    BorderThickness="0"
+				    CornerRadius="0">
+					<Panel>
+						<ContentPresenter Name="PART_HeaderPresenter"
+						    Margin="{TemplateBinding Padding}"
+						    HorizontalContentAlignment="Left"
+						    VerticalContentAlignment="Center"
+						    Content="{TemplateBinding Header}">
+							<ContentPresenter.DataTemplates>
+								<DataTemplate DataType="system:String">
+									<TextBlock FontWeight="Regular" Text="{CompiledBinding}" />
+								</DataTemplate>
+							</ContentPresenter.DataTemplates>
+						</ContentPresenter>
+						<Popup Name="PART_Popup"
+						    ClipToBounds="True"
+						    IsLightDismissEnabled="True"
+						    IsOpen="{TemplateBinding IsSubMenuOpen,
+						                             Mode=TwoWay}"
+						    Opacity="0"
+						    OverlayInputPassThroughElement="{Binding $parent[Menu]}"
+						    Placement="BottomEdgeAlignedLeft">
+							<LayoutTransformControl Name="PART_LayoutTransform" RenderTransformOrigin="50%, 0%">
+								<Grid Margin="-12,0,0,0">
+									<Border Margin="16,8,8,8" BoxShadow="{DynamicResource SukiPopupShadow}" CornerRadius="6" />
+									<Border Name="PART_Border"
+									    Margin="16,8,8,8"
+									    Background="{DynamicResource SukiCardBackground}"
+									    BorderBrush="{DynamicResource SukiLightBorderBrush}"
+									    BorderThickness="1"
+									    BoxShadow="{DynamicResource SukiPopupShadow}"
+									    ClipToBounds="True"
+									    CornerRadius="6">
+										<ScrollViewer>
+											<ItemsPresenter Name="PART_ItemsPresenter" Grid.IsSharedSizeScope="True" ItemsPanel="{TemplateBinding ItemsPanel}" />
+										</ScrollViewer>
+									</Border>
+								</Grid>
+							</LayoutTransformControl>
+						</Popup>
+					</Panel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+		<Style Selector="^:pointerover">
+			<Setter Property="Background" Value="{DynamicResource SukiLightBorderBrush}" />
+		</Style>
+
+		<Style Selector="^:open /template/ LayoutTransformControl#PART_LayoutTransform">
+			<Style.Animations>
+				<Animation Easing="{StaticResource MenuEasing}" FillMode="Forward" Duration="{StaticResource ShortAnimationDuration}">
+					<KeyFrame Cue="0%">
+						<Setter Property="ScaleTransform.ScaleY" Value="0.88" />
+						<Setter Property="ScaleTransform.ScaleX" Value="0.88" />
+						<Setter Property="Opacity" Value="0" />
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="ScaleTransform.ScaleY" Value="1" />
+						<Setter Property="ScaleTransform.ScaleX" Value="1" />
+						<Setter Property="Opacity" Value="1" />
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+	</ControlTheme>
+
+	<ControlTheme x:Key="CompactSukiMenuStyle" TargetType="Menu">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="ItemContainerTheme" Value="{StaticResource SukiCompactTopLevelMenuItem}" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<LayoutTransformControl Name="PART_LayoutTransform" RenderTransformOrigin="50%, 0%">
+					<ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" KeyboardNavigation.TabNavigation="Continue" />
+				</LayoutTransformControl>
+			</ControlTemplate>
+		</Setter>
+		<Style Selector="^[IsEnabled=True] /template/ LayoutTransformControl#PART_LayoutTransform">
+			<Style.Animations>
+				<Animation Easing="{StaticResource MenuEasing}" FillMode="Forward" Duration="{StaticResource MediumAnimationDuration}">
+					<KeyFrame Cue="0%">
+						<Setter Property="ScaleTransform.ScaleY" Value="0.92" />
+						<Setter Property="ScaleTransform.ScaleX" Value="0.92" />
+						<Setter Property="Opacity" Value="0" />
+						<Setter Property="IsVisible" Value="True" />
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="ScaleTransform.ScaleY" Value="1" />
+						<Setter Property="ScaleTransform.ScaleX" Value="1" />
+						<Setter Property="Opacity" Value="1" />
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+		<Style Selector="^[IsEnabled=False] /template/ LayoutTransformControl#PART_LayoutTransform">
+			<Style.Animations>
+				<Animation Easing="{StaticResource MenuEasing}" FillMode="Forward" Duration="{StaticResource MediumAnimationDuration}">
+					<KeyFrame Cue="0%">
+						<Setter Property="ScaleTransform.ScaleY" Value="1" />
+						<Setter Property="ScaleTransform.ScaleX" Value="1" />
+						<Setter Property="Opacity" Value="1" />
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="ScaleTransform.ScaleY" Value="0.9" />
+						<Setter Property="ScaleTransform.ScaleX" Value="0.9" />
+						<Setter Property="Opacity" Value="0" />
+						<Setter Property="IsVisible" Value="False" />
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
+		</Style>
+	</ControlTheme>
+</ResourceDictionary>

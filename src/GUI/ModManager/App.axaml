@@ -1,10 +1,10 @@
 <Application x:Class="ModManager.App"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:ModManager"
-             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
-             RequestedThemeVariant="Dark">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ModManager"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
+    RequestedThemeVariant="Dark">
 	<!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
 	<Application.Resources>
@@ -13,6 +13,7 @@
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/General.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/FilterButtonExpander.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/CompactSukiMenu.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<ResourceDictionary.ThemeDictionaries>
@@ -26,8 +27,8 @@
 					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Opacity="0.6" Color="Black" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="Black" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="Black" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
 					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Opacity="0.4" Color="Black" />
 				</ResourceDictionary>
 				<ResourceDictionary x:Key="Dark">
@@ -36,8 +37,8 @@
 					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="#38394A" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
 					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="Lime" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="Lime" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
 					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="#425595" />
 				</ResourceDictionary>
 			</ResourceDictionary.ThemeDictionaries>
@@ -53,10 +54,10 @@
 				<Setter Property="Template">
 					<ControlTemplate>
 						<Border Width="{TemplateBinding Width}"
-						        Height="{TemplateBinding Height}"
-						        HorizontalAlignment="Center"
-						        VerticalAlignment="Center"
-						        Background="Transparent">
+						    Height="{TemplateBinding Height}"
+						    HorizontalAlignment="Center"
+						    VerticalAlignment="Center"
+						    Background="Transparent">
 							<materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center" Kind="ChevronRight" />
 						</Border>
 					</ControlTemplate>
@@ -70,6 +71,7 @@
 					</Setter>
 				</Style>
 			</ControlTheme>
+
 		</ResourceDictionary>
 	</Application.Resources>
 
@@ -78,5 +80,6 @@
 		<materialIcons:MaterialIconStyles />
 		<StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
 		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
+		<StyleInclude Source="avares://ModManager/Styling/DefaultStyles.axaml" />
 	</Application.Styles>
 </Application>

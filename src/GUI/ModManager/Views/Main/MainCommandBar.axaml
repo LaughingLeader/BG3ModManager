@@ -1,15 +1,15 @@
 <UserControl x:Class="ModManager.Views.Main.MainCommandBar"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="using:ModManager.Controls"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:ModManager.ViewModels.Main"
-             d:DesignHeight="240"
-             d:DesignWidth="1600"
-             x:DataType="vm:MainCommandBarViewModel"
-             mc:Ignorable="d">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ModManager.ViewModels.Main"
+    d:DesignHeight="240"
+    d:DesignWidth="1600"
+    x:DataType="vm:MainCommandBarViewModel"
+    mc:Ignorable="d">
 	<UserControl.Resources />
 	<UserControl.Styles>
 		<Style Selector="Button">
@@ -18,14 +18,18 @@
 			<Setter Property="Width" Value="24" />
 			<Setter Property="Height" Value="24" />
 		</Style>
+
 		<Style Selector="ComboBox">
 			<Setter Property="Margin" Value="2" />
 			<Setter Property="AutoScrollToSelectedItem" Value="False" />
 		</Style>
+
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,1,*">
-		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="File" />
+		<Menu DockPanel.Dock="Top" Theme="{StaticResource CompactSukiMenuStyle}">
+			<MenuItem Header="File">
+				<MenuItem Header="Save" />
+			</MenuItem>
 			<MenuItem Header="Edit" />
 			<MenuItem Header="Settings" />
 			<MenuItem Header="View" />
@@ -35,10 +39,10 @@
 			<MenuItem Header="Help" />
 		</Menu>
 		<Separator Grid.Row="1"
-		           Margin="0"
-		           HorizontalAlignment="Stretch"
-		           VerticalAlignment="Stretch"
-		           Background="LightGray" />
+		    Margin="0"
+		    HorizontalAlignment="Stretch"
+		    VerticalAlignment="Stretch"
+		    Background="LightGray" />
 		<WrapPanel Grid.Row="2" Margin="12,0" VerticalAlignment="Top">
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
@@ -114,9 +118,9 @@
 					<materialIcons:MaterialIcon Foreground="Red" Kind="Launch" />
 				</Button>
 				<ComboBox x:Name="CampaignComboBox"
-				          AutoScrollToSelectedItem="False"
-				          SelectedIndex="0"
-				          ToolTip.Tip="When launching the game, performed this action on this window">
+				    AutoScrollToSelectedItem="False"
+				    SelectedIndex="0"
+				    ToolTip.Tip="When launching the game, performed this action on this window">
 					<ComboBoxItem Content="None" />
 					<ComboBoxItem Content="Minimize" />
 					<ComboBoxItem Content="Close" />
