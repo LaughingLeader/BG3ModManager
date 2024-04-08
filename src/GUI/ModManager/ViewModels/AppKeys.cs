@@ -2,7 +2,7 @@
 
 using DynamicData;
 
-using ModManager.Models.App;
+using ModManager.Models;
 using ModManager.Util;
 using ModManager.ViewModels.Main;
 
@@ -15,7 +15,7 @@ namespace ModManager.ViewModels;
 
 public class AppKeys : ReactiveObject
 {
-	[MenuSettings("File", "Import Mods...", true)]
+	/*[MenuSettings("File", "Import Mods...", true)]
 	public Hotkey ImportMod { get; } = new Hotkey(Key.O, ModifierKeys.Control);
 
 	[MenuSettings("File", "Import Nexus Mods Data from Archives...", true)]
@@ -264,5 +264,7 @@ public class AppKeys : ReactiveObject
 			hotkey.ID = prop.Name;
 			keyMap.AddOrUpdate(hotkey);
 		}
-	}
+	}*/
+
+	public AppKeys(MainWindowViewModel vm) { }
 }

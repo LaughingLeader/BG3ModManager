@@ -134,9 +134,9 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 		CloseView?.Invoke(true);
 	}
 
-	internal ModUpdatesViewModel(IScreen host = null)
+	internal ModUpdatesViewModel(IScreen? host = null)
 	{
-		HostScreen = host ?? Locator.Current.GetService<IScreen>();
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 
 		Unlocked = true;
 		AllSelected = true;

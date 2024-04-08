@@ -2,7 +2,7 @@
 
 using ModManager.Enums.Extender;
 using ModManager.Extensions;
-using ModManager.Models.App;
+using ModManager.Models;
 using ModManager.Models.Extender;
 using ModManager.Models.Settings;
 using ModManager.Util;
@@ -284,7 +284,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 					ExportExtenderUpdaterSettings();
 					break;
 				case SettingsWindowTab.Keybindings:
-					var success = ViewModelLocator.Main.Keys.SaveKeybindings(out var msg);
+					/*var success = ViewModelLocator.Main.Keys.SaveKeybindings(out var msg);
 					if (!success)
 					{
 						AppServices.Commands.ShowAlert(msg, AlertType.Danger);
@@ -292,7 +292,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 					else if (!String.IsNullOrEmpty(msg))
 					{
 						AppServices.Commands.ShowAlert(msg, AlertType.Success, 10);
-					}
+					}*/
 					break;
 			}
 		}
@@ -437,7 +437,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 							Settings.ExtenderUpdaterSettings.SetToDefault();
 							break;
 						case SettingsWindowTab.Keybindings:
-							ViewModelLocator.Main.Keys.SetToDefault();
+							//ViewModelLocator.Main.Keys.SetToDefault();
 							break;
 						case SettingsWindowTab.Advanced:
 							Settings.DebugModeEnabled = false;

@@ -51,8 +51,8 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	[Reactive] public string Title { get; set; }
 	[Reactive] public string Version { get; set; }
 
-	private readonly AppKeys _keys;
-	public AppKeys Keys => _keys;
+	//private readonly AppKeys _keys;
+	//public AppKeys Keys => _keys;
 
 	[Reactive] public bool IsInitialized { get; private set; }
 
@@ -687,7 +687,7 @@ Directory the zip will be extracted to:
 		var canOpenGameExe = whenGameExeProperties.Select(CanLaunchGameCheck);
 		canOpenGameExe.ToUIProperty(this, x => x.CanLaunchGame);
 
-		Keys.LaunchGame.AddAction(LaunchGame, canOpenGameExe);
+		/*Keys.LaunchGame.AddAction(LaunchGame, canOpenGameExe);
 
 		var canOpenLogDirectory = Settings.WhenAnyValue(x => x.ExtenderLogDirectory, (f) => Directory.Exists(f)).StartWith(false);
 
@@ -722,7 +722,7 @@ Directory the zip will be extracted to:
 			{
 				FileUtils.TryOpenPath(Settings.WorkshopPath);
 			}
-		}, canOpenWorkshopFolder);
+		}, canOpenWorkshopFolder);*/
 
 		Settings.WhenAnyValue(x => x.LogEnabled).Subscribe((logEnabled) =>
 		{
@@ -924,10 +924,10 @@ Directory the zip will be extracted to:
 		else
 		{
 			Settings.CanSaveSettings = false;
-			if (!Keys.SaveKeybindings(out var errorMsg))
+			/*if (!Keys.SaveKeybindings(out var errorMsg))
 			{
 				_globalCommands.ShowAlert(errorMsg, AlertType.Danger);
-			}
+			}*/
 		}
 	}
 
@@ -1473,7 +1473,7 @@ Directory the zip will be extracted to:
 		Window = window;
 
 		var canExtractAdventure = ViewModelLocator.ModOrder.WhenAnyValue(x => x.SelectedAdventureMod).Select(x => x != null && !x.IsEditorMod && !x.IsLarianMod);
-		Keys.ExtractSelectedAdventure.AddAsyncAction(ExtractSelectedAdventure, canExtractAdventure);
+		//Keys.ExtractSelectedAdventure.AddAsyncAction(ExtractSelectedAdventure, canExtractAdventure);
 
 		ViewModelLocator.DeleteFiles.WhenAnyValue(x => x.IsVisible).ToUIProperty(this, x => x.IsDeletingFiles);
 		ViewModelLocator.ModUpdates.WhenAnyValue(x => x.TotalUpdates, total => total > 0).BindTo(this, x => x.ModUpdatesAvailable);
@@ -1489,7 +1489,7 @@ Directory the zip will be extracted to:
 		InitSettingsBindings();
 
 		await LoadSettings();
-		Keys.LoadKeybindings(this);
+		//Keys.LoadKeybindings(this);
 		//if (Settings.CheckForUpdates) CheckForUpdates();
 		SaveSettings();
 
@@ -1769,8 +1769,8 @@ Directory the zip will be extracted to:
 		//	}
 		//}, canCancelProgress);
 
-		_keys = new AppKeys(this);
-		_keys.SaveDefaultKeybindings();
+		//_keys = new AppKeys(this);
+		//_keys.SaveDefaultKeybindings();
 
 		Router = new RoutingState();
 
@@ -1933,7 +1933,7 @@ Directory the zip will be extracted to:
 		//Keys.ExportOrderToZip.AddAsyncAction(ExportLoadOrderToArchiveAsync, canStartExport);
 		//Keys.ExportOrderToArchiveAs.AddAsyncAction(ExportLoadOrderToArchiveAsAsync, canStartExport);
 
-		Keys.OpenDonationLink.AddAction(() =>
+		/*Keys.OpenDonationLink.AddAction(() =>
 		{
 			FileUtils.TryOpenPath(DivinityApp.URL_DONATION);
 		});
@@ -1964,7 +1964,7 @@ Directory the zip will be extracted to:
 		Keys.DownloadNXMLink.AddAction(() =>
 		{
 			//App.WM.NxmDownload.Toggle();
-		});
+		});*/
 
 		#endregion
 
@@ -1991,7 +1991,7 @@ Directory the zip will be extracted to:
 		}
 
 		var anyPakModSelectedObservable = _manager.SelectedPakMods.ToObservableChangeSet().CountChanged().Select(x => _manager.SelectedPakMods.Count > 0);
-		Keys.ExtractSelectedMods.AddAsyncAction(ExtractSelectedMods_Start, anyPakModSelectedObservable);
+		//Keys.ExtractSelectedMods.AddAsyncAction(ExtractSelectedMods_Start, anyPakModSelectedObservable);
 
 		_interactions.ConfirmModDeletion.RegisterHandler(async interaction =>
 		{

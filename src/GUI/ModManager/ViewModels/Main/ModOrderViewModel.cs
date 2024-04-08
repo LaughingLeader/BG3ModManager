@@ -40,8 +40,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
 	public AppSettings AppSettings => AppServices.Settings.AppSettings;
 
-	public AppKeys Keys { get; }
-
 	//public IModViewLayout Layout { get; set; }
 
 	//public ModListDropHandler DropHandler { get; }
@@ -260,7 +258,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return "Launch Game";
 	}
 
-	private void SetupKeys(AppKeys keys, MainWindowViewModel main, IObservable<bool> canExecuteCommands)
+	/*private void SetupKeys(AppKeys keys, MainWindowViewModel main, IObservable<bool> canExecuteCommands)
 	{
 		var modImporter = AppServices.Get<ModImportService>();
 
@@ -316,7 +314,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		keys.SpeakActiveModOrder.AddAction(() =>
 		{
 			//TODO Update since ScreenReaderHelper used native dlls like Tolk
-			/*if (ActiveMods.Count > 0)
+			*//*if (ActiveMods.Count > 0)
 			{
 				var text = String.Join(", ", ActiveMods.Select(x => x.DisplayName));
 				ScreenReaderHelper.Speak($"{ActiveMods.Count} mods in the active order, including:", true);
@@ -327,9 +325,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				//ShowAlert($"No mods in active order.", AlertType.Warning, 10);
 				ScreenReaderHelper.Speak($"The active mods order is empty.");
-			}*/
+			}*//*
 		}, canExecuteCommands);
-	}
+	}*/
 
 	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
 
@@ -1690,8 +1688,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		CanSaveOrder = true;
 
-		Keys = host.Keys;
-
 		var isRefreshing = host.WhenAnyValue(x => x.IsRefreshing);
 
 		host.WhenAnyValue(x => x.IsLocked).BindTo(this, x => x.IsLocked);
@@ -1878,7 +1874,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var justSelectedGameMasterCampaign = this.WhenAnyValue(x => x.SelectedGameMasterCampaignIndex, x => x.GameMasterCampaigns.Count);
 		justSelectedGameMasterCampaign.Select(x => GameMasterCampaigns.ElementAtOrDefault(x.Item1)).ToUIProperty(this, x => x.SelectedGameMasterCampaign);
 
-		host.Keys.ImportOrderFromSelectedGMCampaign.AddAction(() => LoadGameMasterCampaignModOrder(SelectedGameMasterCampaign), gmModeChanged);
+		//host.Keys.ImportOrderFromSelectedGMCampaign.AddAction(() => LoadGameMasterCampaignModOrder(SelectedGameMasterCampaign), gmModeChanged);
 
 		justSelectedGameMasterCampaign.ObserveOn(RxApp.MainThreadScheduler).Subscribe((d) =>
 		{
@@ -1933,6 +1929,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		});
 
-		SetupKeys(host.Keys, host, canExecuteCommands);
+		//SetupKeys(host.Keys, host, canExecuteCommands);
 	}
 }

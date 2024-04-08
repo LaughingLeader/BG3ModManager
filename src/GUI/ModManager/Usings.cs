@@ -1,6 +1,7 @@
 ﻿global using Avalonia;
 global using Avalonia.Controls;
 global using Avalonia.ReactiveUI;
+global using Avalonia.Input;
 
 global using ReactiveUI;
 global using ReactiveUI.Fody.Helpers;
