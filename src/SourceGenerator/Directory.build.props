@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup>
+        <BaseIntermediateOutputPath>$(SolutionDir)obj\SourceGenerator\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+</Project>

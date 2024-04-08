@@ -1,9 +1,13 @@
 ﻿using ModManager.Util;
 
 namespace ModManager.ViewModels.Main;
-public class MainCommandBarViewModel : ReactiveObject
+
+
+public partial class MainCommandBarViewModel : ReactiveObject
 {
+	[Keybinding("Add New Order", Key.M)]
 	public RxCommandUnit? AddNewOrderCommand { get; set; }
+	//[Keybinding("Check For App Updates", Key.U)]
 	public RxCommandUnit? CheckForAppUpdatesCommand { get; set; }
 	public RxCommandUnit? CheckForGitHubModUpdatesCommand { get; set; }
 	public RxCommandUnit? CheckForNexusModsUpdatesCommand { get; set; }
@@ -84,6 +88,8 @@ public class MainCommandBarViewModel : ReactiveObject
 				main.Views.SwitchToModOrderView();
 			}
 		}, canToggleUpdatesView);
+
+		this.RegisterKeybindings();
 	}
 
 	public MainCommandBarViewModel()

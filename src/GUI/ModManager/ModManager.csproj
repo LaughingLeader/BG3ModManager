@@ -12,6 +12,9 @@
 		<ProjectReference Include="..\..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
 		<ProjectReference Include="..\..\Core\Core.csproj" />
 		<ProjectReference Include="..\..\Services\Services.csproj" />
+		<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<!--<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
+		<!--<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />-->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -30,7 +33,7 @@
 		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.10.2" />
 		<PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
 		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
-		<PackageReference Include="SukiUI" Version="6.0.0-beta4" />
+		<PackageReference Include="SukiUI" Version="6.0.0-beta4" ExcludeAssets="contentFiles" />
 		<PackageReference Include="AsyncImageLoader.Avalonia" Version="3.2.1" />
 		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="DynamicData" Version="8.4.1" />
