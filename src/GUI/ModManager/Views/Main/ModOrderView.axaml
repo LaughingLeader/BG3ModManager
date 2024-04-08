@@ -1,27 +1,34 @@
 <UserControl x:Class="ModManager.Views.Main.ModOrderView"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:mm="using:ModManager"
-             xmlns:mv="using:ModManager.Views.Mods"
-             xmlns:rxui="http://reactiveui.net"
-             xmlns:views="using:ModManager.Views.Main"
-             xmlns:vm="using:ModManager.ViewModels.Main"
-             d:DesignHeight="1080"
-             d:DesignWidth="1920"
-             x:DataType="vm:ModOrderViewModel"
-             Background="Transparent"
-             Focusable="True"
-             mc:Ignorable="d">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mm="using:ModManager"
+    xmlns:mv="using:ModManager.Views.Mods"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:views="using:ModManager.Views.Main"
+    xmlns:vm="using:ModManager.ViewModels.Main"
+    d:DesignHeight="1080"
+    d:DesignWidth="1920"
+    x:DataType="vm:ModOrderViewModel"
+    Background="Transparent"
+    Focusable="True"
+    mc:Ignorable="d">
 	<UserControl.Styles>
 		<Style Selector="mv|ModListView">
 			<Setter Property="Margin" Value="8,0,8,0" />
 		</Style>
+
 		<Style Selector="GridSplitter:pointerover">
 			<Setter Property="Background" Value="{DynamicResource ThemeBorderMidColor}" />
 		</Style>
+
+		<!--<Style Selector="controls|GlassCard[IsOpaque=True] /template/ Border#PART_BorderCard">
+			<Setter Property="Opacity" Value="1" />
+			<Setter Property="Background" Value="{DynamicResource ModListCardBackground}" />
+		</Style>-->
+
 		<Style Selector="GridSplitter">
 			<Setter Property="Background" Value="Transparent" />
 			<Setter Property="Transitions">
@@ -36,18 +43,18 @@
 		<rxui:ViewModelViewHost x:Name="CommandBar" ViewModel="{x:Static mm:ViewModelLocator.CommandBar}" />
 		<Grid Grid.Row="1" Margin="4,0" ColumnDefinitions="*,auto,*">
 			<controls:GlassCard IsOpaque="True">
-				<Grid x:Name="ActiveModsGrid" RowDefinitions="3*,auto,1*">
+				<Grid x:Name="ActiveModsGrid" RowDefinitions="2*,auto,1*">
 					<mv:ModListView x:Name="ActiveModsList"
-					                Grid.Row="0"
-					                VerticalAlignment="Stretch"
-					                DataContext="{Binding ActiveModsView}" />
+					    Grid.Row="0"
+					    VerticalAlignment="Stretch"
+					    DataContext="{Binding ActiveModsView}" />
 
 					<GridSplitter Grid.Row="1" MinHeight="4" ResizeDirection="Rows" />
 
 					<mv:ModListView x:Name="OverrideModsList"
-					                Grid.Row="2"
-					                VerticalAlignment="Stretch"
-					                DataContext="{Binding OverrideModsView}" />
+					    Grid.Row="2"
+					    VerticalAlignment="Stretch"
+					    DataContext="{Binding OverrideModsView}" />
 				</Grid>
 			</controls:GlassCard>
 			<GridSplitter Grid.Column="1" MinWidth="4" ResizeDirection="Columns" />

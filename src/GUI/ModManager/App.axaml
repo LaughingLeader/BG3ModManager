@@ -12,6 +12,7 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/General.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/Dracula.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/FilterButtonExpander.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/CompactSukiMenu.axaml" />
 			</ResourceDictionary.MergedDictionaries>

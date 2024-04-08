@@ -55,18 +55,23 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 	{
 		InitializeComponent();
 
+		if (Design.IsDesignMode) return;
+
 		this.WhenActivated(d =>
 		{
-			d(FilterExpander.GetObservable(Expander.IsExpandedProperty).Skip(1).BindTo(ViewModel, x => x.IsFilterEnabled));
+			if(ViewModel != null)
+			{
+				d(FilterExpander.GetObservable(Expander.IsExpandedProperty).Skip(1).BindTo(ViewModel, x => x.IsFilterEnabled));
 
-			//Throttle filtering here so we can be sure we're delaying when the user may be typing
-			d(FilterTextBox.GetObservable(TextBox.TextProperty)
-			.Skip(1)
-			.Throttle(TimeSpan.FromMilliseconds(500))
-			.ObserveOn(RxApp.MainThreadScheduler)
-			.BindTo(ViewModel, x => x.FilterInputText));
+				//Throttle filtering here so we can be sure we're delaying when the user may be typing
+				d(FilterTextBox.GetObservable(TextBox.TextProperty)
+				.Skip(1)
+				.Throttle(TimeSpan.FromMilliseconds(500))
+				.ObserveOn(RxApp.MainThreadScheduler)
+				.BindTo(ViewModel, x => x.FilterInputText));
 
-			d(ViewModel.WhenAnyValue(x => x.FilterInputText).BindTo(this, x => x.FilterTextBox.Text));
+				d(ViewModel.WhenAnyValue(x => x.FilterInputText).BindTo(this, x => x.FilterTextBox.Text));
+			}
 
 			d(Observable.FromEventPattern<KeyEventArgs>(FilterTextBox, nameof(FilterTextBox.KeyDown)).Subscribe(e =>
 			{
