@@ -60,7 +60,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
 			Dispatcher.UIThread.InvokeAsync(() => ViewModel.OnViewActivated(this), DispatcherPriority.Background);
 
-			AppServices.Interactions.ShowMessageBox.RegisterHandler(context =>
+			var interactions = AppServices.Interactions;
+
+			interactions.ShowMessageBox.RegisterHandler(context =>
 			{
 				return Observable.StartAsync(async () =>
 				{
@@ -82,6 +84,34 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 					}
 					//SukiHost.ShowDialog(dialogVM, true, !data.MessageBoxType.HasFlag(InteractionMessageBoxType.YesNo));
 				}, RxApp.TaskpoolScheduler);
+			});
+
+			interactions.ShowAlert.RegisterHandler(async context =>
+			{
+				var data = context.Input;
+				var title = data.Title;
+				var duration = data.Timeout <= 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(data.Timeout);
+				if (!title.IsValid())
+				{
+					switch (data.AlertType)
+					{
+						case AlertType.Danger:
+							title = "Error";
+							break;
+						case AlertType.Warning:
+							title = "Warning";
+							break;
+						case AlertType.Info:
+							title = "Information";
+							break;
+						default:
+							title = string.Empty;
+							break;
+					}
+
+				}
+				await SukiHost.ShowToast(this, title, data.Message, duration);
+				context.SetOutput(true);
 			});
 		});
 	}

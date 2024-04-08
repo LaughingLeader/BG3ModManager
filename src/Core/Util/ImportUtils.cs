@@ -22,38 +22,33 @@ public struct ImportedJsonFile
 	public string Text;
 }
 
-public class ImportParameters
+public class ImportParameters(string filePath, string outputDirectory, CancellationToken token, ImportOperationResults? result = null)
 {
-	public string FilePath;
+	public string? FilePath { get; } = filePath;
 
-	private string _ext;
-	public string Extension
+	private string? _ext;
+	public string? Extension
 	{
 		get
 		{
-			if (_ext == null) _ext = Path.GetExtension(FilePath).ToLower();
+			if (_ext == null) _ext = Path.GetExtension(FilePath)?.ToLower();
 			return _ext;
 		}
 		set => _ext = value?.ToLower();
 	}
-	public string OutputDirectory;
-	public bool OnlyMods;
-	public readonly CancellationToken Token;
-	public Action<double> ReportProgress;
-	public Action<string, AlertType, int> ShowAlert;
-	public ImportOperationResults Result;
-	public Dictionary<string, DivinityModData> BuiltinMods;
-	public List<ImportedJsonFile> ImportedJsonFiles;
 
-	public ImportParameters(string filePath, string outputDirectory, CancellationToken token, ImportOperationResults result = null)
-	{
-		Result = result ?? new ImportOperationResults();
-		ImportedJsonFiles = [];
+	public delegate void ShowAlertAction(string message, AlertType alertType, int timeout = 0, string? title = "");
 
-		FilePath = filePath;
-		OutputDirectory = outputDirectory;
-		Token = token;
-	}
+	public string OutputDirectory { get; } = outputDirectory;
+	public bool OnlyMods { get; set; }
+	public CancellationToken Token { get; } = token;
+	public Action<double>? ReportProgress { get; set; }
+	public ShowAlertAction? ShowAlert { get; set; }
+
+	public ImportOperationResults Result { get; } = result ?? new ImportOperationResults();
+
+	public Dictionary<string, DivinityModData>? BuiltinMods { get; set; }
+	public List<ImportedJsonFile> ImportedJsonFiles { get; } = [];
 }
 
 public static class ImportUtils
@@ -75,6 +70,8 @@ public static class ImportUtils
 		var success = false;
 		try
 		{
+			if (!options.FilePath.IsValid()) throw new FileNotFoundException($"FilePath is not valid: {options.FilePath}");
+
 			using var fileStream = new FileStream(options.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
 			if (fileStream != null)
 			{

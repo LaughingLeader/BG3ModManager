@@ -9,6 +9,8 @@
     Title="{Binding Title}"
     Width="1600"
     Height="800"
+    suki:SukiHost.ToastLimit="4"
+    suki:SukiHost.ToastLocation="BottomRight"
     x:DataType="vm:MainWindowViewModel"
     Focusable="True"
     Icon="avares://ModManager/Assets/BG3ModManager.ico"

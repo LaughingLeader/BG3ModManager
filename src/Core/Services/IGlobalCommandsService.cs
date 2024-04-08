@@ -24,6 +24,6 @@ public interface IGlobalCommandsService
 	ReactiveCommand<DivinityModData?, Unit> OpenModPropertiesCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> ValidateStatsCommand { get; }
 
-	void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0);
-	Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0);
+	void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
+	Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
 }

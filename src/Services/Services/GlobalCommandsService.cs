@@ -190,14 +190,14 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		_interactions.DeleteSelectedMods.Handle(Unit.Default).Subscribe();
 	}
 
-	public void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0)
+	public void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "")
 	{
-		_interactions.ShowAlert.Handle(new(message, alertType, timeout)).Subscribe();
+		_interactions.ShowAlert.Handle(new(message, alertType, timeout, title)).Subscribe();
 	}
 
-	public async Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0)
+	public async Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "")
 	{
-		await _interactions.ShowAlert.Handle(new(message, alertType, timeout));
+		await _interactions.ShowAlert.Handle(new(message, alertType, timeout, title));
 	}
 
 	public GlobalCommandsService(IInteractionsService interactionsService, IFileSystemService fileSystemService)

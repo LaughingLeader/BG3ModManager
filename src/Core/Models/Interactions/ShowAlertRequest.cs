@@ -1,3 +1,3 @@
 ﻿namespace ModManager;
 
-public record struct ShowAlertRequest(string Message, AlertType AlertType, int Timeout);
+public record ShowAlertRequest(string Message, AlertType AlertType, int Timeout = 20, string? Title = "");

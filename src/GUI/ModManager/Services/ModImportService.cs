@@ -268,11 +268,11 @@ public class ModImportService(IDialogService _dialogService)
 							messages.Add($"{result.Mods.Count} mod(s)");
 						}
 						var msg = String.Join(", ", messages);
-						AppServices.Commands.ShowAlert($"Imported {msg}", AlertType.Success, 20);
+						AppServices.Commands.ShowAlert($"Successfully imported {msg}", AlertType.Success, 20, "Import Order");
 					}
 					else
 					{
-						AppServices.Commands.ShowAlert($"Successfully extracted archive, but no mods or load orders were found", AlertType.Warning, 20);
+						AppServices.Commands.ShowAlert($"Successfully extracted archive, but no mods or load orders were found", AlertType.Warning, 20, "Import Order");
 					}
 				});
 			}, true);
