@@ -28,6 +28,7 @@ public static class AppServices
 		SplatRegistrations.RegisterConstant<IBackgroundCommandService>(new BackgroundCommandService(DivinityApp.PIPE_ID));
 		SplatRegistrations.RegisterLazySingleton<ModImportService>();
 		SplatRegistrations.RegisterLazySingleton<IDialogService, DialogService>();
+		SplatRegistrations.RegisterLazySingleton<AppKeysService>();
 		resolver.RegisterConstant<IViewLocator>(new ViewLocator());
 
 		//SplatRegistrations.Register<ModListDropHandler>();
