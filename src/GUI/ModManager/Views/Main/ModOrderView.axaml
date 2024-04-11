@@ -20,23 +20,36 @@
 			<Setter Property="Margin" Value="8,0,8,0" />
 		</Style>
 
-		<Style Selector="GridSplitter:pointerover">
-			<Setter Property="Background" Value="{DynamicResource ThemeBorderMidColor}" />
-		</Style>
-
-		<!--<Style Selector="controls|GlassCard[IsOpaque=True] /template/ Border#PART_BorderCard">
-			<Setter Property="Opacity" Value="1" />
-			<Setter Property="Background" Value="{DynamicResource ModListCardBackground}" />
+		<!--<Style Selector="GridSplitter:pointerover">
+			<Setter Property="Background" Value="{DynamicResource TextControlSelectionHighlightColor}" />
 		</Style>-->
 
-		<Style Selector="GridSplitter">
+		<Style Selector="GridSplitter.splitter1">
+			<Setter Property="Background" Value="{DynamicResource GlassBorderBrush}" />
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Easing="QuadraticEaseInOut" Property="Background" Duration="0:0:0.25" />
+				</Transitions>
+			</Setter>
+
+			<Style Selector="^:pointerover">
+				<Setter Property="Background" Value="{DynamicResource TextControlSelectionHighlightColor}" />
+			</Style>
+		</Style>
+
+		<Style Selector="GridSplitter.splitter2">
 			<Setter Property="Background" Value="Transparent" />
 			<Setter Property="Transitions">
 				<Transitions>
 					<BrushTransition Easing="QuadraticEaseInOut" Property="Background" Duration="0:0:0.25" />
 				</Transitions>
 			</Setter>
+
+			<Style Selector="^:pointerover">
+				<Setter Property="Background" Value="{DynamicResource TextControlSelectionHighlightColor}" />
+			</Style>
 		</Style>
+
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*,20">
 		<!--<views:MainCommandBar x:Name="CommandBar" />-->
@@ -49,7 +62,10 @@
 					    VerticalAlignment="Stretch"
 					    DataContext="{Binding ActiveModsView}" />
 
-					<GridSplitter Grid.Row="1" MinHeight="4" ResizeDirection="Rows" />
+					<GridSplitter Grid.Row="1"
+					    MinHeight="4"
+					    Classes="splitter1"
+					    ResizeDirection="Rows" />
 
 					<mv:ModListView x:Name="OverrideModsList"
 					    Grid.Row="2"
@@ -57,7 +73,11 @@
 					    DataContext="{Binding OverrideModsView}" />
 				</Grid>
 			</controls:GlassCard>
-			<GridSplitter Grid.Column="1" MinWidth="4" ResizeDirection="Columns" />
+			<GridSplitter Grid.Column="1"
+			    MinWidth="4"
+			    Margin="0,20"
+			    Classes="splitter2"
+			    ResizeDirection="Columns" />
 			<controls:GlassCard Grid.Column="2" IsOpaque="True">
 				<mv:ModListView x:Name="InactiveModsList" DataContext="{Binding InactiveModsView}" />
 			</controls:GlassCard>

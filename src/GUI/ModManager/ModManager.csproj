@@ -29,6 +29,7 @@
 		<PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
 		<PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
 		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
 		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.10.2" />
 		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.10.2" />
 		<PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
