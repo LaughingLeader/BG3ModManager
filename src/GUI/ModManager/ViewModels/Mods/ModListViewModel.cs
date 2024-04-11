@@ -20,7 +20,7 @@ public partial class ModListViewModel : ReactiveObject
 	private static partial Regex FilterPropertyPatternWithQuotesRe();
 
 	private readonly ICollection<IModEntry> _mods;
-	private readonly ITreeDataGridRowSelectionModel<IModEntry> _rowSelection;
+	private readonly ModEntryTreeDataGridRowSelectionModel _rowSelection;
 
 	public HierarchicalTreeDataGridSource<IModEntry> Mods { get; }
 
@@ -200,8 +200,8 @@ public partial class ModListViewModel : ReactiveObject
 		Mods = treeGridSource;
 		Title = title;
 
-		_rowSelection = treeGridSource.RowSelection!;
-		_rowSelection.SingleSelect = false;
+		_rowSelection = new ModEntryTreeDataGridRowSelectionModel(treeGridSource) { SingleSelect = false };
+		treeGridSource.Selection = _rowSelection;
 
 		Observable.FromEvent<EventHandler<TreeSelectionModelSelectionChangedEventArgs<IModEntry>>?, TreeSelectionModelSelectionChangedEventArgs<IModEntry>>(
 			h => (sender, e) => h(e),

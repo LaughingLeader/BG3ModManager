@@ -16,6 +16,7 @@ public interface IModEntry : ISelectable
 	bool IsActive { get; set; }
 	bool IsExpanded { get; set; }
 	bool CanDelete { get; }
+	bool PreserveSelection { get; set; }
 
 	IObservableCollection<IModEntry>? Children { get; }
 

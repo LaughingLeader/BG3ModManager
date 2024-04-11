@@ -106,12 +106,6 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 		}
 	}
 
-
-	/// <summary>
-	/// Janky, but this is used to preserve selections when drag+drop reordering mods.
-	/// </summary>
-	private readonly HashSet<string> _lastSelected = [];
-
 	/// <summary>
 	/// Prevents dropping mods into other mods, and instead makes the drop operation move the mod in the list.
 	/// Only ModCategory models should allow dropping mods into them.
@@ -129,15 +123,8 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 	private void OnDrag(TreeDataGridRowDragEventArgs e)
 	{
 		MaybeRedirectDrop(e);
-		_lastSelected.Clear();
 		if (e.Inner.Data.Get(DragInfo.DataFormat) is DragInfo di && di.Source.Selection is ITreeDataGridRowSelectionModel<IModEntry> selection)
 		{
-			var mods = selection.SelectedItems;
-			foreach (var mod in mods)
-			{
-				if (mod?.UUID.IsValid() == true) _lastSelected.Add(mod.UUID);
-			}
-
 			//List to List
 			if (e.Position == TreeDataGridRowDropPosition.None && di.Source != ModsTreeDataGrid.Source)
 			{
@@ -157,10 +144,17 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 			&& di.Source is HierarchicalTreeDataGridSource<IModEntry> listSource
 			&& ModsTreeDataGrid.Source is HierarchicalTreeDataGridSource<IModEntry> target)
 		{
+			foreach (var mod in listSource.RowSelection!.SelectedItems)
+			{
+				if (mod != null) mod.PreserveSelection = true;
+			}
+
 			if (e.Position == TreeDataGridRowDropPosition.None)
 			{
 				e.Position = GetDropPosition(e.TargetRow.Model is ModCategory, e.Inner, e.TargetRow);
 			}
+			//Clear the previous selection, so only the dropped items are selected
+			target.RowSelection!.Clear();
 			var targetIndex = target.Rows.RowIndexToModelIndex(e.TargetRow.RowIndex);
 			DragDropRows(listSource, target, listSource.RowSelection!.SelectedIndexes, targetIndex, e.Position, e.Inner.DragEffects);
 		}
@@ -196,63 +190,64 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 				.BindTo(ViewModel, x => x.FilterInputText));
 
 				d(ViewModel.WhenAnyValue(x => x.FilterInputText).BindTo(this, x => x.FilterTextBox.Text));
-			}
 
-			d(Observable.FromEventPattern<KeyEventArgs>(FilterTextBox, nameof(FilterTextBox.KeyDown)).Subscribe(e =>
-			{
-				var key = e.EventArgs.Key;
-				if (key == Key.Return || key == Key.Enter || key == Key.Escape)
+				d(Observable.FromEventPattern<KeyEventArgs>(FilterTextBox, nameof(FilterTextBox.KeyDown)).Subscribe(e =>
 				{
-					ModsTreeDataGrid.Focus(NavigationMethod.Pointer);
-				}
-			}));
-
-			d(Observable.FromEvent<EventHandler<TreeDataGridRowDragEventArgs>?, TreeDataGridRowDragEventArgs>(
-				h => (sender, e) => h(e),
-				h => ModsTreeDataGrid.RowDragOver += h,
-				h => ModsTreeDataGrid.RowDragOver -= h
-			).Subscribe(OnDrag, OnError));
-
-			d(Observable.FromEvent<EventHandler<TreeDataGridRowDragEventArgs>?, TreeDataGridRowDragEventArgs>(
-				h => (sender, e) => h(e),
-				h => ModsTreeDataGrid.RowDrop += h,
-				h => ModsTreeDataGrid.RowDrop -= h
-			).Subscribe(OnDrop, OnError));
-
-			d(Observable.FromEvent<EventHandler<TreeDataGridRowDragStartedEventArgs>?, TreeDataGridRowDragStartedEventArgs>(
-				h => (sender, e) => h(e),
-				h => ModsTreeDataGrid.RowDragStarted += h,
-				h => ModsTreeDataGrid.RowDragStarted -= h
-			).Subscribe(OnDragStarted, OnError));
-
-			d(Observable.FromEventPattern<ChildIndexChangedEventArgs>(ModsTreeDataGrid.RowsPresenter!,
-				nameof(ModsTreeDataGrid.RowsPresenter.ChildIndexChanged)).Subscribe(e =>
-			{
-				if (e.EventArgs.Child is TreeDataGridRow row && row.Model is IModEntry mod)
-				{
-					mod.Index = e.EventArgs.Index;
-					if (mod.UUID.IsValid() && _lastSelected.Contains(mod.UUID))
+					var key = e.EventArgs.Key;
+					if (key == Key.Return || key == Key.Enter || key == Key.Escape)
 					{
-						_lastSelected.Remove(mod.UUID);
-						RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(10), () =>
-						{
-							ModsTreeDataGrid.RowSelection!.Select(mod.Index);
-						});
+						ModsTreeDataGrid.Focus(NavigationMethod.Pointer);
 					}
-				}
-			}));
+				}));
 
+				d(Observable.FromEvent<EventHandler<TreeDataGridRowDragEventArgs>, TreeDataGridRowDragEventArgs>(
+					h => (sender, e) => h(e),
+					h => ModsTreeDataGrid.RowDragOver += h,
+					h => ModsTreeDataGrid.RowDragOver -= h
+				).Subscribe(OnDrag, OnError));
 
-			/*d(Observable.FromEvent<EventHandler<TreeDataGridRowDragStartedEventArgs>?, TreeDataGridRowDragStartedEventArgs>(
-				h => (sender, e) => h(e),
-				h => ModsTreeDataGrid.RowDragStarted += h,
-				h => ModsTreeDataGrid.RowDragStarted -= h
-			).Throttle(TimeSpan.FromMilliseconds(50))
-			.ObserveOn(RxApp.MainThreadScheduler)
-			.Subscribe(e =>
-			{
-				
-			}));*/
+				d(Observable.FromEvent<EventHandler<TreeDataGridRowDragEventArgs>, TreeDataGridRowDragEventArgs>(
+					h => (sender, e) => h(e),
+					h => ModsTreeDataGrid.RowDrop += h,
+					h => ModsTreeDataGrid.RowDrop -= h
+				).Subscribe(OnDrop, OnError));
+
+				d(Observable.FromEvent<EventHandler<TreeDataGridRowDragStartedEventArgs>, TreeDataGridRowDragStartedEventArgs>(
+					h => (sender, e) => h(e),
+					h => ModsTreeDataGrid.RowDragStarted += h,
+					h => ModsTreeDataGrid.RowDragStarted -= h
+				).Subscribe(OnDragStarted, OnError));
+
+				d(Observable.FromEvent<EventHandler<TreeDataGridRowEventArgs>, TreeDataGridRowEventArgs>(
+					h => (sender, e) => h(e),
+					h => ModsTreeDataGrid.RowPrepared += h,
+					h => ModsTreeDataGrid.RowPrepared -= h
+				).Subscribe(e =>
+				{
+					if (e.Row.Model is IModEntry mod && mod.PreserveSelection)
+					{
+						/*ModEntryTreeDataGridRowSelectionModel preserves the selection after drag + drop visually,
+						while this makes sure the backing data stays selected.
+						If this isn't set here, then the next drag + drop will only move the directly selected item.
+						*/
+						ModsTreeDataGrid.RowSelection!.Select(e.RowIndex);
+						mod.PreserveSelection = false;
+					}
+				}));
+
+				d(Observable.FromEvent<EventHandler<ChildIndexChangedEventArgs>, ChildIndexChangedEventArgs>(
+					h => (sender, e) => h(e),
+					h => ModsTreeDataGrid.RowsPresenter!.ChildIndexChanged += h,
+					h => ModsTreeDataGrid.RowsPresenter!.ChildIndexChanged -= h
+				).Subscribe(e =>
+				{
+					if (e.Index > -1 && e.Child is TreeDataGridRow row && row.Model is IModEntry mod)
+					{
+						//var index = ModsTreeDataGrid.Rows!.RowIndexToModelIndex(e.Index);
+						mod.Index = e.Index;
+					}
+				}));
+			}
 		});
 	}
 }

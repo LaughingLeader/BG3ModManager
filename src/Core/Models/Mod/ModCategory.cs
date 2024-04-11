@@ -13,6 +13,7 @@ public class ModCategory : ReactiveObject, IModEntry
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
+	[Reactive] public bool PreserveSelection { get; set; }
 
 	public string? Version => string.Empty;
 	public string? Author => string.Empty;

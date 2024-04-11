@@ -19,6 +19,7 @@ public class ModEntry : ReactiveObject, IModEntry
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
+	[Reactive] public bool PreserveSelection { get; set; }
 
 	[ObservableAsProperty] public string? UUID { get; }
 	[ObservableAsProperty] public string? DisplayName { get; }
