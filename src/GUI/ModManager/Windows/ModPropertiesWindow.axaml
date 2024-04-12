@@ -1,0 +1,156 @@
+<Window x:Class="ModManager.Windows.ModPropertiesWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:vm="using:ModManager.ViewModels"
+    Title="Mod Properties"
+    Width="419"
+    Height="550"
+    x:DataType="vm:ModPropertiesWindowViewModel"
+    mc:Ignorable="d">
+	<Design.DataContext>
+		<vm:DesignModPropertiesWindowViewModel />
+	</Design.DataContext>
+	<Window.Styles>
+		<!--<Style Selector="TabControl /template/ ContentPresenter#PART_SelectedContentHost">
+			<Setter Property="Background" Value="#323442" />
+		</Style>
+		<Style Selector="TabControl /template/ LayoutTransformControl#PART_LayoutTransform ItemsPresenter#PART_ItemsPresenter &gt; WrapPanel">
+			<Setter Property="Background" Value="#323442" />
+		</Style>-->
+	</Window.Styles>
+	<Border Padding="8"
+	    Background="{DynamicResource SukiCardBackground}"
+	    BorderBrush="Transparent"
+	    BorderThickness="0">
+		<Grid RowDefinitions="*,auto">
+			<Panel Background="{DynamicResource ModPropertiesBackground}">
+				<TabControl>
+					<TabItem Header="General">
+						<TabItem.Styles>
+							<Style Selector="TextBox.selectable">
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="BorderBrush" Value="Transparent" />
+								<Setter Property="BorderThickness" Value="0" />
+								<Setter Property="CornerRadius" Value="0" />
+								<Setter Property="FontSize" Value="12" />
+								<Setter Property="HorizontalAlignment" Value="Stretch" />
+								<Setter Property="IsReadOnly" Value="True" />
+								<Setter Property="IsTabStop" Value="False" />
+								<Setter Property="Margin" Value="0,0,0,8" />
+								<Setter Property="MinHeight" Value="12" />
+								<Setter Property="Padding" Value="0" />
+								<Setter Property="Template" Value="{StaticResource CompactTextBox}" />
+								<Setter Property="TextAlignment" Value="Left" />
+								<Setter Property="ToolTip.Tip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+								<Setter Property="VerticalAlignment" Value="Top" />
+								<Setter Property="VerticalContentAlignment" Value="Top" />
+							</Style>
+
+							<Style Selector="TextBlock.left">
+								<Setter Property="Padding" Value="0" />
+								<Setter Property="Margin" Value="0,0,8,8" />
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="VerticalAlignment" Value="Top" />
+								<Setter Property="HorizontalAlignment" Value="Stretch" />
+								<Setter Property="TextAlignment" Value="Left" />
+							</Style>
+
+							<Style Selector="TextBlock.right">
+								<Setter Property="Padding" Value="0" />
+								<Setter Property="Margin" Value="0,0,0,8" />
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="VerticalAlignment" Value="Top" />
+								<Setter Property="HorizontalAlignment" Value="Stretch" />
+								<Setter Property="TextAlignment" Value="Left" />
+							</Style>
+
+							<Style Selector="Separator">
+								<Setter Property="Margin" Value="0,0,0,8" />
+								<Setter Property="Background" Value="{DynamicResource SukiControlBorderBrush}" />
+							</Style>
+						</TabItem.Styles>
+						<controls:AutoGrid Margin="10,0" RowCount="8" RowHeight="auto">
+							<controls:AutoGrid.ColumnDefinitions>
+								<ColumnDefinition Width="auto" />
+								<ColumnDefinition Width="*" />
+							</controls:AutoGrid.ColumnDefinitions>
+
+							<materialIcons:MaterialIcon x:Name="ModTypeIconControl"
+							    Width="36"
+							    Height="36"
+							    HorizontalAlignment="Left"
+							    Foreground="{DynamicResource SukiAccentColor}"
+							    Kind="File" />
+
+							<TextBox MinHeight="0"
+							    Margin="0"
+							    Padding="4"
+							    Background="{DynamicResource SukiCardBackground}"
+							    BorderBrush="{DynamicResource SukiControlBorderBrush}"
+							    BorderThickness="1"
+							    CornerRadius="0"
+							    IsReadOnly="True"
+							    Template="{StaticResource CompactTextBox}"
+							    Text="{Binding ModFileName}" />
+
+							<Separator Grid.ColumnSpan="2" Margin="0,8,0,8" />
+
+							<TextBlock Classes="left" Text="Mod type:" />
+							<TextBlock Classes="right" Text="{Binding ModType}" />
+
+							<TextBlock Classes="left" Text="Name:" />
+							<TextBox Classes="selectable" Text="{Binding ModName}" TextWrapping="Wrap" />
+
+							<TextBlock Classes="left" Text="Description:" />
+							<TextBox MaxHeight="128"
+							    Classes="selectable"
+							    FontSize="12"
+							    Text="{Binding ModDescription}"
+							    TextWrapping="Wrap" />
+
+							<Separator Grid.ColumnSpan="2" />
+
+							<TextBlock Classes="left" Text="Location:" />
+							<TextBox Classes="selectable" Text="{Binding ModFilePath}" TextWrapping="NoWrap" />
+
+							<TextBlock Classes="left" Text="Size:" />
+							<TextBlock Classes="right" Text="{Binding ModSizeText}" TextWrapping="NoWrap" />
+						</controls:AutoGrid>
+					</TabItem>
+					<TabItem Header="Config" />
+					<TabItem Header="Notes" />
+				</TabControl>
+			</Panel>
+			<UniformGrid Grid.Row="1"
+			    Margin="0,8,0,0"
+			    HorizontalAlignment="Right"
+			    Columns="3"
+			    Rows="1">
+				<UniformGrid.Styles>
+					<Style Selector="Button">
+						<Setter Property="Padding" Value="24,4" />
+						<Setter Property="Margin" Value="4,0" />
+					</Style>
+				</UniformGrid.Styles>
+				<Button x:Name="OKButton"
+				    Classes="Flat"
+				    Command="{Binding OKCommand}"
+				    Content="OK" />
+				<Button x:Name="CancelButton"
+				    Classes="Flat"
+				    Command="{Binding CancelCommand}"
+				    Content="Cancel" />
+				<Button x:Name="ApplyButton"
+				    Margin="4,0,0,0"
+				    Classes="Flat"
+				    Command="{Binding ApplyCommand}"
+				    Content="Apply" />
+			</UniformGrid>
+		</Grid>
+	</Border>
+</Window>

@@ -1,6 +1,43 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="using:ModManager.Controls">
-	<!--<ControlTheme
-		x:Key="{x:Type controls:ComboBoxWithRightClick}"
-		BasedOn="{StaticResource {x:Type ComboBox}}"
-		TargetType="controls:ComboBoxWithRightClick" />-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:content="using:SukiUI.Content"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:theme="using:SukiUI.Theme">
+	<ControlTemplate x:Key="CompactTextBox" TargetType="TextBox">
+		<Border>
+			<Border Name="border"
+			    Background="{TemplateBinding Background}"
+			    BorderBrush="{TemplateBinding BorderBrush}"
+			    BorderThickness="{TemplateBinding BorderThickness}"
+			    BoxShadow="{DynamicResource SukiLowShadow}"
+			    CornerRadius="{TemplateBinding CornerRadius}">
+				<Border.Transitions>
+					<Transitions>
+						<BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+					</Transitions>
+				</Border.Transitions>
+				<DockPanel Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+					<DataValidationErrors>
+						<ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}" VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+							<TextPresenter Name="PART_TextPresenter"
+							    Margin="0"
+							    CaretBrush="{DynamicResource SukiText}"
+							    CaretIndex="{TemplateBinding CaretIndex}"
+							    PasswordChar="{TemplateBinding PasswordChar}"
+							    RevealPassword="{TemplateBinding RevealPassword}"
+							    SelectionBrush="{TemplateBinding SelectionBrush}"
+							    SelectionEnd="{TemplateBinding SelectionEnd}"
+							    SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+							    SelectionStart="{TemplateBinding SelectionStart}"
+							    Text="{TemplateBinding Text,
+							                           Mode=TwoWay}"
+							    TextAlignment="{TemplateBinding TextAlignment}"
+							    TextBlock.Foreground="{TemplateBinding Foreground}"
+							    TextWrapping="{TemplateBinding TextWrapping}" />
+						</ScrollViewer>
+					</DataValidationErrors>
+				</DockPanel>
+			</Border>
+		</Border>
+	</ControlTemplate>
 </ResourceDictionary>

@@ -6,17 +6,26 @@
 	</Design.PreviewWith>
 	<ResourceDictionary.ThemeDictionaries>
 		<ResourceDictionary x:Key="Light">
-			<Color x:Key="ModListHoveredTextForeground">#2e664b</Color>
+			<Color x:Key="ModListHoveredTextForeground">#2E664B</Color>
+
+			<Color x:Key="ModListHoveredCellBackground">#5C5F74</Color>
+			<Color x:Key="ModListHoveredCellSelectedBackground">#5168B8</Color>
+			<Color x:Key="ModListHoveredCellBorder">#A9A9C0</Color>
+
+			<Color x:Key="ModListCardBackground">#282A36</Color>
+
+			<Color x:Key="ModPropertiesBackground">#B5B5B5</Color>
 		</ResourceDictionary>
 		<ResourceDictionary x:Key="Dark">
 			<Color x:Key="ModListHoveredTextForeground">#73FFBB</Color>
 
 			<Color x:Key="ModListHoveredCellBackground">#5C5F74</Color>
-			<Color x:Key="ModListHoveredCellSelectedBackground">#5168b8</Color>
+			<Color x:Key="ModListHoveredCellSelectedBackground">#5168B8</Color>
 			<Color x:Key="ModListHoveredCellBorder">#A9A9C0</Color>
 
 			<Color x:Key="ModListCardBackground">#282A36</Color>
 
+			<Color x:Key="ModPropertiesBackground">#323442</Color>
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

@@ -7,17 +7,10 @@ using System.ComponentModel;
 
 namespace ModManager.ViewModels;
 
-public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
+public class ModPropertiesWindowViewModel : ReactiveObject
 {
-	#region IClosableViewModel/IRoutableViewModel
-	public string UrlPathSegment => "modproperties";
-	public IScreen HostScreen { get; }
-	[Reactive] public bool IsVisible { get; set; }
-	public RxCommandUnit CloseCommand { get; }
-	#endregion
-
 	[Reactive] public string? Title { get; set; }
-	[Reactive] public bool IsActive { get; set; }
+	[Reactive] public bool IsVisible { get; set; }
 	[Reactive] public bool Locked { get; set; }
 	[Reactive] public bool HasChanges { get; private set; }
 	[Reactive] public DivinityModData? Mod { get; set; }
@@ -26,15 +19,20 @@ public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, 
 	[Reactive] public long NexusModsId { get; set; }
 	[Reactive] public long SteamWorkshopId { get; set; }
 
+	[ObservableAsProperty] public string? ModFileName { get; }
+	[ObservableAsProperty] public string? ModName { get; }
+	[ObservableAsProperty] public string? ModDescription { get; }
 	[ObservableAsProperty] public string? ModType { get; }
 	[ObservableAsProperty] public string? ModSizeText { get; }
 	[ObservableAsProperty] public string? ModFilePath { get; }
 	[ObservableAsProperty] public bool IsEditorMod { get; }
 	[ObservableAsProperty] public bool GitHubPlaceholderLabelVisibility { get; }
 
-	public RxCommandUnit OKCommand { get; set; }
-	public RxCommandUnit CancelCommand { get; set; }
+	public RxCommandUnit OKCommand { get; }
+	public RxCommandUnit CancelCommand { get; }
 	public RxCommandUnit ApplyCommand { get; }
+
+	public long NexusModsIDMinimum => DivinityApp.NEXUSMODS_MOD_ID_START;
 
 	public void SetMod(DivinityModData mod)
 	{
@@ -92,7 +90,13 @@ public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, 
 		Mod = null;
 	}
 
-	private static string ModToTitle(DivinityModData mod) => mod != null ? $"{mod.DisplayName} Properties" : "Mod Properties";
+	private static string ModToTitle(ValueTuple<bool, DivinityModData?> x)
+	{
+		var (b, mod) = x;
+		var result = b ? "*" : string.Empty;
+		result += mod != null ? $"{mod.Name} Properties" : "Mod Properties";
+		return result;
+	}
 	private static string GetModType(DivinityModData mod) => mod?.IsEditorMod == true ? "Editor Project" : "Pak";
 	private static string GetModFilePath(DivinityModData mod) => StringUtils.ReplaceSpecialPathways(mod.FilePath);
 
@@ -123,15 +127,11 @@ public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, 
 		return "0 bytes";
 	}
 
-	public ModPropertiesWindowViewModel(IScreen? host = null)
+	public ModPropertiesWindowViewModel()
 	{
-		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
-		CloseCommand = this.CreateCloseCommand();
-
 		Title = "Mod Properties";
 
 		var whenModSet = this.WhenAnyValue(x => x.Mod).WhereNotNull();
-		whenModSet.Select(ModToTitle).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.Title);
 
 		whenModSet.Subscribe(LoadConfigProperties);
 
@@ -139,9 +139,10 @@ public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, 
 		whenModSet.Select(GetModSize).ToUIProperty(this, x => x.ModSizeText);
 		whenModSet.Select(GetModFilePath).ToUIProperty(this, x => x.ModFilePath);
 		whenModSet.Select(x => x.IsEditorMod).ToUIProperty(this, x => x.IsEditorMod);
+		whenModSet.Select(x => x.FileName).ToUIProperty(this, x => x.ModFileName);
+		whenModSet.Select(x => x.Name).ToUIProperty(this, x => x.ModName);
+		whenModSet.Select(x => x.Description).ToUIProperty(this, x => x.ModDescription);
 
-		var whenNotLocked = this.WhenAnyValue(x => x.Locked, x => x.IsActive).Select(x => !x.Item1 && x.Item2);
-		var whenConfig = Observable.FromEventPattern<PropertyChangedEventArgs>(this, nameof(ReactiveObject.PropertyChanged));
 		var autoSaveProperties = new HashSet<string>()
 		{
 			nameof(GitHub),
@@ -150,19 +151,46 @@ public class ModPropertiesWindowViewModel : ReactiveObject, IClosableViewModel, 
 			nameof(Notes),
 		};
 
-		whenConfig.Where(e => e.EventArgs.PropertyName.IsValid() && autoSaveProperties.Contains(e.EventArgs.PropertyName))
-			.Subscribe(e =>
+		var whenAutosavePropertiesChange = Observable.FromEvent<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+			h => (sender, e) => h(e),
+			h => PropertyChanged += h,
+			h => PropertyChanged -= h
+		)
+		.Where(e => e.PropertyName.IsValid() && autoSaveProperties.Contains(e.PropertyName));
+
+		this.WhenAnyValue(x => x.IsVisible, x => x.Locked).Select(x => x.Item1 && !x.Item2)
+		.CombineLatest(whenAutosavePropertiesChange)
+		.Subscribe(_ =>
 		{
-			if (IsActive && !Locked) HasChanges = true;
+			HasChanges = true;
 		});
 
 		this.WhenAnyValue(x => x.GitHub).Select(x => !x.IsValid())
 			.ToUIProperty(this, x => x.GitHubPlaceholderLabelVisibility);
 
-		ApplyCommand = ReactiveCommand.Create(Apply, this.WhenAnyValue(x => x.HasChanges));
-		/*whenConfig.Where(e => autoSaveProperties.Contains(e.EventArgs.PropertyName))
-		.Throttle(TimeSpan.FromMilliseconds(100))
-		.Select(x => Unit.Default)
-		.InvokeCommand(ApplyConfigCommand);*/
+		var hasChanges = this.WhenAnyValue(x => x.HasChanges);
+		hasChanges.CombineLatest(whenModSet).Select(ModToTitle).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.Title);
+
+		OKCommand = ReactiveCommand.Create(Apply);
+		CancelCommand = ReactiveCommand.Create(OnClose);
+		ApplyCommand = ReactiveCommand.Create(Apply, hasChanges);
+	}
+}
+
+public class DesignModPropertiesWindowViewModel : ModPropertiesWindowViewModel
+{
+	public DesignModPropertiesWindowViewModel()
+	{
+		Mod = new DivinityModData()
+		{
+			UUID = "98a0d3f4-1c87-444c-8559-51c1d5ba650f",
+			Name = "Test Mod",
+			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\Mods\\TestMod.pak",
+			Author = "LaughingLeader",
+			Version = new Models.LarianVersion("1.2.3.4"),
+			Folder = "TestMod_98a0d3f4-1c87-444c-8559-51c1d5ba650f",
+			ModType = "Add-on",
+			Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis efficitur velit. Nullam nibh ex, pharetra eu bibendum pretium, mollis sit amet sapien. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vestibulum vestibulum accumsan odio sed interdum. Morbi in dictum urna. Sed dapibus velit congue libero pharetra, in egestas nisi vehicula. Aliquam erat volutpat. Integer malesuada tincidunt lacus, dictum gravida augue maximus eu. Donec lobortis, urna quis convallis vehicula, arcu arcu vehicula massa, sed fermentum nisl nisi nec lacus. Suspendisse porttitor sem magna, nec sollicitudin nibh efficitur at. Sed metus enim, lobortis sed risus id, lacinia imperdiet tellus. Phasellus enim est, tristique iaculis ornare non, blandit vitae nibh. Morbi mollis magna id enim congue iaculis. Maecenas ipsum mauris, dignissim nec imperdiet et, elementum vel magna."
+		};
 	}
 }

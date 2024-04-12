@@ -38,7 +38,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Presets the margin of all child controls")]
 	public Thickness? ChildMargin
 	{
-		get => (Thickness?)GetValue(ChildMarginProperty);
+		get => GetValue(ChildMarginProperty);
 		set => SetValue(ChildMarginProperty, value);
 	}
 
@@ -49,7 +49,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Presets the vertical alignment of all child controls")]
 	public VerticalAlignment? ChildVerticalAlignment
 	{
-		get => (VerticalAlignment?)GetValue(ChildVerticalAlignmentProperty);
+		get => GetValue(ChildVerticalAlignmentProperty);
 		set => SetValue(ChildVerticalAlignmentProperty, value);
 	}
 
@@ -59,7 +59,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Defines a set number of columns")]
 	public int ColumnCount
 	{
-		get => (int)GetValue(ColumnCountProperty);
+		get => GetValue(ColumnCountProperty);
 		set => SetValue(ColumnCountProperty, value);
 	}
 
@@ -70,7 +70,7 @@ public class AutoGrid : Grid
 
 	public GridLength ColumnWidth
 	{
-		get => (GridLength)GetValue(ColumnWidthProperty);
+		get => GetValue(ColumnWidthProperty);
 		set => SetValue(ColumnWidthProperty, value);
 	}
 
@@ -84,7 +84,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Set to false to disable the auto layout functionality")]
 	public bool IsAutoIndexing
 	{
-		get => (bool)GetValue(IsAutoIndexingProperty);
+		get => GetValue(IsAutoIndexingProperty);
 		set => SetValue(IsAutoIndexingProperty, value);
 	}
 
@@ -96,7 +96,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Defines the directionality of the autolayout. Use vertical for a column first layout, horizontal for a row first layout.")]
 	public Orientation Orientation
 	{
-		get => (Orientation)GetValue(OrientationProperty);
+		get => GetValue(OrientationProperty);
 		set => SetValue(OrientationProperty, value);
 	}
 
@@ -106,7 +106,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Defines a set number of rows")]
 	public int RowCount
 	{
-		get => (int)GetValue(RowCountProperty);
+		get => GetValue(RowCountProperty);
 		set => SetValue(RowCountProperty, value);
 	}
 
@@ -116,7 +116,7 @@ public class AutoGrid : Grid
 	[Category("Layout"), Description("Presets the height of all rows set using the RowCount property")]
 	public GridLength RowHeight
 	{
-		get => (GridLength)GetValue(RowHeightProperty);
+		get => GetValue(RowHeightProperty);
 		set => SetValue(RowHeightProperty, value);
 	}
 
@@ -125,19 +125,21 @@ public class AutoGrid : Grid
 	/// </summary>
 	public static void ColumnCountChanged(AutoGrid grid, AvaloniaPropertyChangedEventArgs e)
 	{
-		if ((int)e.NewValue < 0)
-			return;
+		if (e.NewValue is int count)
+		{
+			if (count < 0) return;
 
-		// look for an existing column definition for the height
-		var width = grid.ColumnWidth;
-		if (!grid.IsSet(ColumnWidthProperty) && grid.ColumnDefinitions.Count > 0)
-			width = grid.ColumnDefinitions[0].Width;
+			// look for an existing column definition for the height
+			var width = grid.ColumnWidth;
+			if (!grid.IsSet(ColumnWidthProperty) && grid.ColumnDefinitions.Count > 0)
+				width = grid.ColumnDefinitions[0].Width;
 
-		// clear and rebuild
-		grid.ColumnDefinitions.Clear();
-		for (var i = 0; i < (int)e.NewValue; i++)
-			grid.ColumnDefinitions.Add(
-				new ColumnDefinition() { Width = width });
+			// clear and rebuild
+			grid.ColumnDefinitions.Clear();
+			for (var i = 0; i < (int)e.NewValue; i++)
+				grid.ColumnDefinitions.Add(
+					new ColumnDefinition() { Width = width });
+		}
 	}
 
 	/// <summary>
@@ -145,13 +147,17 @@ public class AutoGrid : Grid
 	/// </summary>
 	public static void FixedColumnWidthChanged(AutoGrid grid, AvaloniaPropertyChangedEventArgs e)
 	{
-		// add a default column if missing
-		if (grid.ColumnDefinitions.Count == 0)
-			grid.ColumnDefinitions.Add(new ColumnDefinition());
+		if (e.NewValue is GridLength length)
+		{
+			// add a default column if missing
+			if (grid.ColumnDefinitions.Count == 0) grid.ColumnDefinitions.Add(new ColumnDefinition());
 
-		// set all existing columns to this width
-		foreach (var t in grid.ColumnDefinitions)
-			t.Width = (GridLength)e.NewValue;
+			// set all existing columns to this width
+			foreach (var t in grid.ColumnDefinitions)
+			{
+				t.Width = length;
+			}
+		}
 	}
 
 	/// <summary>
@@ -159,13 +165,17 @@ public class AutoGrid : Grid
 	/// </summary>
 	public static void FixedRowHeightChanged(AutoGrid grid, AvaloniaPropertyChangedEventArgs e)
 	{
-		// add a default row if missing
-		if (grid.RowDefinitions.Count == 0)
-			grid.RowDefinitions.Add(new RowDefinition());
+		if(e.NewValue is GridLength length)
+		{
+			// add a default row if missing
+			if (grid.RowDefinitions.Count == 0) grid.RowDefinitions.Add(new RowDefinition());
 
-		// set all existing rows to this height
-		foreach (var t in grid.RowDefinitions)
-			t.Height = (GridLength)e.NewValue;
+			// set all existing rows to this height
+			foreach (var t in grid.RowDefinitions)
+			{
+				t.Height = length;
+			}
+		}
 	}
 
 	/// <summary>
@@ -173,19 +183,21 @@ public class AutoGrid : Grid
 	/// </summary>
 	public static void RowCountChanged(AutoGrid grid, AvaloniaPropertyChangedEventArgs e)
 	{
-		if ((int)e.NewValue < 0)
-			return;
+		if(e.NewValue is int count)
+		{
+			if(count < 0) return;
 
-		// look for an existing row to get the height
-		var height = grid.RowHeight;
-		if (!grid.IsSet(RowHeightProperty) && grid.RowDefinitions.Count > 0)
-			height = grid.RowDefinitions[0].Height;
+			// look for an existing row to get the height
+			var height = grid.RowHeight;
+			if (!grid.IsSet(RowHeightProperty) && grid.RowDefinitions.Count > 0)
+				height = grid.RowDefinitions[0].Height;
 
-		// clear and rebuild
-		grid.RowDefinitions.Clear();
-		for (var i = 0; i < (int)e.NewValue; i++)
-			grid.RowDefinitions.Add(
-				new RowDefinition() { Height = height });
+			// clear and rebuild
+			grid.RowDefinitions.Clear();
+			for (var i = 0; i < count; i++)
+				grid.RowDefinitions.Add(
+					new RowDefinition() { Height = height });
+		}
 	}
 
 	/// <summary>
@@ -328,32 +340,32 @@ public class AutoGrid : Grid
 		}
 	}
 
-	public static readonly AvaloniaProperty ChildHorizontalAlignmentProperty =
+	public static readonly StyledProperty<HorizontalAlignment?> ChildHorizontalAlignmentProperty =
 		AvaloniaProperty.Register<AutoGrid, HorizontalAlignment?>("ChildHorizontalAlignment");
 
-	public static readonly AvaloniaProperty ChildMarginProperty =
+	public static readonly StyledProperty<Thickness?> ChildMarginProperty =
 		AvaloniaProperty.Register<AutoGrid, Thickness?>("ChildMargin");
 
-	public static readonly AvaloniaProperty ChildVerticalAlignmentProperty =
+	public static readonly StyledProperty<VerticalAlignment?> ChildVerticalAlignmentProperty =
 		AvaloniaProperty.Register<AutoGrid, VerticalAlignment?>("ChildVerticalAlignment");
 
-	public static readonly AvaloniaProperty ColumnCountProperty =
-		AvaloniaProperty.RegisterAttached<Control, int>("ColumnCount", typeof(AutoGrid), 1);
+	public static readonly StyledProperty<int> ColumnCountProperty =
+		AvaloniaProperty.RegisterAttached<AutoGrid, int>("ColumnCount", typeof(AutoGrid), 1);
 
-	public static readonly AvaloniaProperty ColumnWidthProperty =
-		AvaloniaProperty.RegisterAttached<Control, GridLength>("ColumnWidth", typeof(AutoGrid), GridLength.Auto);
+	public static readonly StyledProperty<GridLength> ColumnWidthProperty =
+		AvaloniaProperty.RegisterAttached<AutoGrid, GridLength>("ColumnWidth", typeof(AutoGrid), GridLength.Auto);
 
-	public static readonly AvaloniaProperty IsAutoIndexingProperty =
+	public static readonly StyledProperty<bool> IsAutoIndexingProperty =
 		AvaloniaProperty.Register<AutoGrid, bool>("IsAutoIndexing", true);
 
-	public static readonly AvaloniaProperty OrientationProperty =
+	public static readonly StyledProperty<Orientation> OrientationProperty =
 		AvaloniaProperty.Register<AutoGrid, Orientation>("Orientation");
 
-	public static readonly AvaloniaProperty RowCountProperty =
-		AvaloniaProperty.RegisterAttached<Control, int>("RowCount", typeof(AutoGrid), 1);
+	public static readonly StyledProperty<int> RowCountProperty =
+		AvaloniaProperty.RegisterAttached<AutoGrid, int>("RowCount", typeof(AutoGrid), 1);
 
-	public static readonly AvaloniaProperty RowHeightProperty =
-		AvaloniaProperty.RegisterAttached<Control, GridLength>("RowHeight", typeof(AutoGrid), GridLength.Auto);
+	public static readonly StyledProperty<GridLength> RowHeightProperty =
+		AvaloniaProperty.RegisterAttached<AutoGrid, GridLength>("RowHeight", typeof(AutoGrid), GridLength.Auto);
 
 	static AutoGrid()
 	{
