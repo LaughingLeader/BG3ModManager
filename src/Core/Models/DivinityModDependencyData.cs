@@ -1,20 +1,20 @@
 ﻿using ModManager.Models.Mod;
 
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ModManager.Models;
 
-[JsonObject(MemberSerialization.OptIn)]
+[DataContract]
 public struct DivinityModDependencyData : IDivinityModData
 {
-	[JsonProperty] public string UUID { get; set; }
-	[JsonProperty] public string Name { get; set; }
+	[DataMember] public string UUID { get; set; }
+	[DataMember] public string Name { get; set; }
 	public string Folder { get; set; }
 	public string MD5 { get; set; }
-	[JsonProperty] public LarianVersion Version { get; set; }
+	[DataMember] public LarianVersion Version { get; set; }
 	public DateTimeOffset? LastModified { get; set; }
 
-	public override string ToString() => $"Dependency|Name({Name}) UUID({UUID}) Version({Version?.Version})";
+	public readonly override string ToString() => $"Dependency|Name({Name}) UUID({UUID}) Version({Version?.Version})";
 
 	public static DivinityModDependencyData FromModData(DivinityModData m)
 	{

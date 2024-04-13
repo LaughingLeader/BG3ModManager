@@ -1,60 +1,50 @@
 ﻿using DynamicData;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace ModManager.Json;
 
-public class JsonArrayToSourceListConverter<T> : JsonConverter
+public class JsonArrayToSourceListConverter<T> : JsonConverter<SourceList<T>> where T : class
 {
 	public override bool CanConvert(Type objectType)
 	{
 		return objectType.IsArray && objectType.GetElementType() == typeof(T);
 	}
 
-	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+	public override SourceList<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		T[] arr = null;
-		if (reader.TokenType != JsonToken.Null)
+		if (reader.TokenType != JsonTokenType.StartArray)
 		{
-			if (reader.TokenType == JsonToken.StartArray)
-			{
-				var token = JToken.Load(reader);
-				arr = token.ToObject<T[]>();
-			}
+			throw new JsonException($"Unexpected JSON token. Expected {JsonTokenType.StartArray} but read {reader.TokenType}");
 		}
 
-		if (arr != null)
-		{
-			SourceList<T> result = null;
-			if (existingValue is SourceList<T> existingList)
-			{
-				result = existingList;
-			}
-			else
-			{
-				result = new SourceList<T>();
-			}
-			result.AddRange(arr);
-			return result;
-		}
+		SourceList<T> result = new();
 
-		return null;
+		while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+		{
+			var entry = JsonSerializer.Deserialize<T>(ref reader, options);
+			if (entry != null)
+			{
+				result.Add(entry);
+			}
+		}
+		return result;
 	}
 
-	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	public override void Write(Utf8JsonWriter writer, SourceList<T>? value, JsonSerializerOptions options)
 	{
-		if (value == null)
+		if (value is null)
 		{
-			writer.WriteNull();
+			writer.WriteNullValue();
+			return;
 		}
-		else if (value is SourceList<T> list)
+		else
 		{
 			writer.WriteStartArray();
-			foreach (var entry in list.Items)
+
+			foreach (var entry in value.Items)
 			{
-				writer.WriteValue(entry);
+				JsonSerializer.Serialize(writer, entry, options);
 			}
+
 			writer.WriteEndArray();
 		}
 	}

@@ -1,6 +1,6 @@
 ﻿namespace ModManager;
 
-public class MenuSettingsAttribute(string parent = "", string displayName = "", 
+public class MenuSettingsAttribute(string parent = "", string displayName = "",
 	bool addSeparatorAfter = false, string tooltip = "") : Attribute
 {
 	public string DisplayName { get; set; } = displayName;

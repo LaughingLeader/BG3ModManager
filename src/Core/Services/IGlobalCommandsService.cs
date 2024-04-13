@@ -1,9 +1,5 @@
 ﻿using ModManager.Models.Mod;
 
-using ReactiveUI;
-
-using System.Reactive;
-
 namespace ModManager;
 
 public interface IGlobalCommandsService

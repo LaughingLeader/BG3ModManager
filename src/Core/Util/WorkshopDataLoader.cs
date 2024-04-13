@@ -2,8 +2,6 @@
 using ModManager.Models.Mod;
 using ModManager.Models.Steam;
 
-using Newtonsoft.Json;
-
 namespace ModManager.Util;
 
 public static class WorkshopDataLoader
@@ -136,19 +134,10 @@ public static class WorkshopDataLoader
 				DivinityApp.Log($"Error requesting Steam API to get workshop mod data:\n{ex}");
 			}
 
-			if (!String.IsNullOrEmpty(responseData))
+			if (!String.IsNullOrEmpty(responseData)
+				&& DivinityJsonUtils.TrySafeDeserialize<QueryFilesResponse>(responseData, out var pResponse))
 			{
-				QueryFilesResponse pResponse = null;
-				try
-				{
-					pResponse = JsonConvert.DeserializeObject<QueryFilesResponse>(responseData);
-				}
-				catch (Exception ex)
-				{
-					DivinityApp.Log(ex.ToString());
-				}
-
-				if (pResponse != null && pResponse.Response != null && pResponse.Response.PublishedFileDetails != null && pResponse.Response.PublishedFileDetails.Count > 0)
+				if (pResponse.Response != null && pResponse.Response.PublishedFileDetails != null && pResponse.Response.PublishedFileDetails.Count > 0)
 				{
 					if (pResponse.Response.Total > total)
 					{
@@ -223,20 +212,9 @@ public static class WorkshopDataLoader
 			}
 
 			//DivinityApp.LogMessage(responseData);
-			if (!String.IsNullOrEmpty(responseData))
+			if (!String.IsNullOrEmpty(responseData) && DivinityJsonUtils.TrySafeDeserialize<QueryFilesResponse>(responseData, out var pResponse))
 			{
-				QueryFilesResponse pResponse = null;
-				//QueryFilesResponse pResponse = DivinityJsonUtils.SafeDeserialize<QueryFilesResponse>(responseData);
-				try
-				{
-					pResponse = JsonConvert.DeserializeObject<QueryFilesResponse>(responseData);
-				}
-				catch (Exception ex)
-				{
-					DivinityApp.Log(ex.ToString());
-				}
-
-				if (pResponse != null && pResponse.Response != null && pResponse.Response.PublishedFileDetails != null && pResponse.Response.PublishedFileDetails.Count > 0)
+				if (pResponse.Response != null && pResponse.Response.PublishedFileDetails != null && pResponse.Response.PublishedFileDetails.Count > 0)
 				{
 					var details = pResponse.Response.PublishedFileDetails;
 

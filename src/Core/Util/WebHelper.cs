@@ -1,6 +1,4 @@
-﻿using Splat;
-
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace ModManager.Util;
 

@@ -9,10 +9,6 @@ using ModManager.Models.App;
 using ModManager.Models.Mod;
 using ModManager.Util.Pak;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -52,6 +48,13 @@ public static partial class DivinityModDataLoader
 	private static readonly Regex _multiPartPakPatternNoExtension = MultiPartPakPattern();
 	private static readonly Regex _modMetaPattern = ModMetaPattern();
 	private static readonly Regex _ModFolderPattern = ModFolderPattern();
+
+	private static readonly JsonSerializerOptions _indentedJsonSettings = new()
+	{
+		AllowTrailingCommas = true,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+	};
 
 	public static bool IgnoreMod(string modUUID)
 	{
@@ -386,7 +389,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<List<DivinityModData>> InternalLoadModDataFromPakAsync(Package pak, string pakPath, 
+	private static async Task<List<DivinityModData>> InternalLoadModDataFromPakAsync(Package pak, string pakPath,
 		Dictionary<string, DivinityModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
 	{
 		var pakName = Path.GetFileNameWithoutExtension(pakPath);
@@ -405,7 +408,7 @@ public static partial class DivinityModDataLoader
 		PackagedFileInfo? extenderConfigPath = null;
 		PackagedFileInfo? modManagerConfigPath = null;
 
-		DateTimeOffset fileModified = DateTimeOffset.Now;
+		var fileModified = DateTimeOffset.Now;
 		if (File.Exists(pakPath))
 		{
 			try
@@ -531,7 +534,7 @@ public static partial class DivinityModDataLoader
 				if (f != null)
 				{
 					var modData = await GetModDataFromMeta(f);
-					if(modData != null)
+					if (modData != null)
 					{
 						if (DivinityApp.IgnoredMods.Any(x => x.UUID == modData.UUID))
 						{
@@ -593,7 +596,7 @@ public static partial class DivinityModDataLoader
 
 		if (loadedData.Count == 0)
 		{
-			if(isOverridingBuiltinDirectory)
+			if (isOverridingBuiltinDirectory)
 			{
 				loadedData.Add(new DivinityModData()
 				{
@@ -1136,7 +1139,7 @@ public static partial class DivinityModDataLoader
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
-		var contents = JsonConvert.SerializeObject(order, Newtonsoft.Json.Formatting.Indented);
+		var contents = JsonSerializer.Serialize(order, _indentedJsonSettings);
 
 		FileUtils.WriteTextFile(outputFilePath, contents);
 
@@ -1150,7 +1153,7 @@ public static partial class DivinityModDataLoader
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
-		var contents = JsonConvert.SerializeObject(order, Newtonsoft.Json.Formatting.Indented);
+		var contents = JsonSerializer.Serialize(order, _indentedJsonSettings);
 
 		await FileUtils.WriteTextFileAsync(outputFilePath, contents);
 
@@ -1271,10 +1274,10 @@ public static partial class DivinityModDataLoader
 						{
 							IsDecipheredOrder = true
 						};
-						foreach(var entry in exportedOrder)
+						foreach (var entry in exportedOrder)
 						{
 							var data = allMods.FirstOrDefault(x => x.UUID == entry.UUID);
-							if(data != null)
+							if (data != null)
 							{
 								order.Add(new ModEntry(data));
 							}
@@ -1442,7 +1445,7 @@ public static partial class DivinityModDataLoader
 			settings["DisplayModsDetectedMsg"] = enableModWarnings;
 		}
 
-		var contents = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented);
+		var contents = JsonSerializer.Serialize(settings, _indentedJsonSettings);
 
 		await FileUtils.WriteTextFileAsync(settingsFilePath, contents);
 
@@ -1715,33 +1718,16 @@ public static partial class DivinityModDataLoader
 
 	private readonly static List<string> _fallbackFeatureFlags = [];
 
-	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(string configFile)
+	private static async Task<DivinityModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(string configFile)
 	{
 		try
 		{
 			using var reader = File.OpenText(configFile);
 			var text = await reader.ReadToEndAsync();
-			if (!String.IsNullOrWhiteSpace(text))
+			if (!string.IsNullOrWhiteSpace(text) &&
+				DivinityJsonUtils.TrySafeDeserialize<DivinityModScriptExtenderConfig>(text, out var config))
 			{
-				var config = DivinityJsonUtils.SafeDeserialize<DivinityModScriptExtenderConfig>(text);
-				if (config != null)
-				{
-					return config;
-				}
-				else
-				{
-					DivinityApp.Log($"Error reading '{configFile}'. Trying to manually read json text.");
-					var jsonObj = JObject.Parse(text);
-					if (jsonObj != null)
-					{
-						config = new DivinityModScriptExtenderConfig
-						{
-							RequiredVersion = jsonObj.GetValue("RequiredExtensionVersion", -1)
-						};
-						config.FeatureFlags.AddRange(jsonObj.GetValue("FeatureFlags", _fallbackFeatureFlags));
-						return config;
-					}
-				}
+				return config;
 			}
 		}
 		catch (Exception ex)
@@ -1751,33 +1737,16 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(Stream stream)
+	private static async Task<DivinityModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(Stream stream)
 	{
 		try
 		{
 			using var sr = new StreamReader(stream);
 			var text = await sr.ReadToEndAsync();
-			if (!String.IsNullOrWhiteSpace(text))
+			if (!string.IsNullOrWhiteSpace(text)
+				&& DivinityJsonUtils.TrySafeDeserialize<DivinityModScriptExtenderConfig>(text, out var config))
 			{
-				var config = DivinityJsonUtils.SafeDeserialize<DivinityModScriptExtenderConfig>(text);
-				if (config != null)
-				{
-					return config;
-				}
-				else
-				{
-					DivinityApp.Log($"Error reading Config.json. Trying to manually read json text.");
-					var jsonObj = JObject.Parse(text);
-					if (jsonObj != null)
-					{
-						config = new DivinityModScriptExtenderConfig
-						{
-							RequiredVersion = jsonObj.GetValue("RequiredExtensionVersion", -1)
-						};
-						config.FeatureFlags.AddRange(jsonObj.GetValue("FeatureFlags", _fallbackFeatureFlags));
-						return config;
-					}
-				}
+				return config;
 			}
 		}
 		catch (Exception ex)
@@ -1787,7 +1756,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModScriptExtenderConfig> LoadScriptExtenderConfigAsync(PackagedFileInfo configFile)
+	private static async Task<DivinityModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(PackagedFileInfo configFile)
 	{
 		try
 		{
@@ -1877,9 +1846,9 @@ public static partial class DivinityModDataLoader
 		using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
 		var baseMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
 
-		foreach(var mod in DivinityApp.IgnoredMods)
+		foreach (var mod in DivinityApp.IgnoredMods)
 		{
-			if(!baseMods.Mods.ContainsKey(mod.UUID))
+			if (!baseMods.Mods.ContainsKey(mod.UUID))
 			{
 				baseMods.Mods[mod.UUID] = mod;
 			}
@@ -1929,7 +1898,7 @@ public static partial class DivinityModDataLoader
 	{
 		var pr = new PackageReader();
 		using var pak = pr.Read(pakPath);
-		if(pak != null && pak.Files?.Count > 0)
+		if (pak != null && pak.Files?.Count > 0)
 		{
 			var osiFile = pak.Files.FirstOrDefault(x => x.Name.EndsWith("story.div.osi")); //Or GustavDev/Story/story.div.osi
 			if (osiFile != null)

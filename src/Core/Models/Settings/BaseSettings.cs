@@ -1,7 +1,5 @@
 ﻿using ModManager.Util;
 
-using Newtonsoft.Json;
-
 using System.ComponentModel;
 
 namespace ModManager.Models.Settings;
@@ -20,10 +18,11 @@ public abstract class BaseSettings<T> : ReactiveObject where T : ISerializableSe
 
 	public virtual string GetDirectory() => DivinityApp.GetAppDirectory("Data");
 
-	private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
+	private static readonly JsonSerializerOptions _serializerSettings = new()
 	{
-		Formatting = Formatting.Indented,
-		NullValueHandling = NullValueHandling.Ignore
+		AllowTrailingCommas = true,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
 	public BaseSettings(string fileName)
@@ -31,7 +30,7 @@ public abstract class BaseSettings<T> : ReactiveObject where T : ISerializableSe
 		FileName = fileName;
 	}
 
-	public virtual bool Save(out Exception error)
+	public virtual bool Save(out Exception? error)
 	{
 		error = null;
 		try
@@ -39,7 +38,7 @@ public abstract class BaseSettings<T> : ReactiveObject where T : ISerializableSe
 			var directory = GetDirectory();
 			var filePath = Path.Join(directory, FileName);
 			Directory.CreateDirectory(directory);
-			var contents = JsonConvert.SerializeObject(this, _jsonSerializerSettings);
+			var contents = JsonSerializer.Serialize(this, _serializerSettings);
 			File.WriteAllText(filePath, contents);
 			return true;
 		}

@@ -1,26 +1,21 @@
 ﻿using ModManager.Models.Cache;
 using ModManager.Models.Mod;
 
-using Newtonsoft.Json;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.ModUpdater.Cache;
 
 public class NexusModsCacheHandler : ReactiveObject, IExternalModCacheHandler<NexusModsCachedData>
 {
 	public ModSourceType SourceType => ModSourceType.NEXUSMODS;
 	public string FileName => "nexusmodsdata.json";
-	public JsonSerializerSettings SerializerSettings { get; }
+	public JsonSerializerOptions SerializerSettings { get; }
 	[Reactive] public bool IsEnabled { get; set; }
 	public NexusModsCachedData CacheData { get; set; }
 
-	public string APIKey { get; set; }
-	public string AppName { get; set; }
-	public string AppVersion { get; set; }
+	public string? APIKey { get; set; }
+	public string? AppName { get; set; }
+	public string? AppVersion { get; set; }
 
-	public NexusModsCacheHandler(JsonSerializerSettings serializerSettings)
+	public NexusModsCacheHandler(JsonSerializerOptions serializerSettings)
 	{
 		SerializerSettings = serializerSettings;
 		CacheData = new NexusModsCachedData();

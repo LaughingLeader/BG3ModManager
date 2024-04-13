@@ -6,5 +6,5 @@ public interface IWorkshopPublishFileDetails
 	long TimeCreated { get; set; }
 	long TimeUpdated { get; set; }
 
-	List<WorkshopTag> Tags { get; set; }
+	List<WorkshopTag>? Tags { get; set; }
 }

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace ModManager.Models.Steam;
+﻿namespace ModManager.Models.Steam;
 
 public enum EPublishedFileVisibility
 {
@@ -11,53 +9,52 @@ public enum EPublishedFileVisibility
 
 public struct WorkshopTag
 {
-	[JsonProperty("tag")]
-	public string Tag { get; set; }
+	[JsonPropertyName("tag")]
+	public string? Tag { get; set; }
 }
 
 public class PublishedFileDetailsResponse
 {
-	[JsonProperty("response")]
-	public PublishedFileDetailsResponseData Response { get; set; }
+	[JsonPropertyName("response")]
+	public PublishedFileDetailsResponseData? Response { get; set; }
 }
 
 public class PublishedFileDetailsResponseData
 {
-	[JsonProperty("result")]
+	[JsonPropertyName("result")]
 	public int Result { get; set; }
 
-	[JsonProperty("resultcount")]
+	[JsonPropertyName("resultcount")]
 	public int ResultCount { get; set; }
 
-	[JsonProperty("publishedfiledetails")]
-	public List<PublishedFileDetails> PublishedFileDetails { get; set; }
+	[JsonPropertyName("publishedfiledetails")]
+	public List<PublishedFileDetails>? PublishedFileDetails { get; set; }
 }
-
 
 public class PublishedFileDetails : IWorkshopPublishFileDetails
 {
-	[JsonProperty("publishedfileid")] public long PublishedFileId { get; set; }
-	[JsonProperty("result")] public int Result { get; set; }
-	[JsonProperty("creator")] public string Creator { get; set; }
-	[JsonProperty("creator_app_id")] public int CreatorAppId { get; set; }
-	[JsonProperty("consumer_app_id")] public int ConsumerAppId { get; set; }
-	[JsonProperty("filename")] public string FileName { get; set; }
-	[JsonProperty("file_size")] public string FileSize { get; set; }
-	[JsonProperty("file_url")] public string FileUrl { get; set; }
-	[JsonProperty("hcontent_file")] public string HContentFile { get; set; }
-	[JsonProperty("preview_url")] public string PreviewUrl { get; set; }
-	[JsonProperty("hcontent_preview")] public string HContentPreview { get; set; }
-	[JsonProperty("title")] public string Title { get; set; }
-	[JsonProperty("description")] public string Description { get; set; }
-	[JsonProperty("time_created")] public long TimeCreated { get; set; }
-	[JsonProperty("time_updated")] public long TimeUpdated { get; set; }
-	[JsonProperty("visibility")] public EPublishedFileVisibility Visibility { get; set; }
-	[JsonProperty("banned")] public bool Banned { get; set; }
-	[JsonProperty("ban_reason")] public string BanReason { get; set; }
-	[JsonProperty("subscriptions")] public int Subscriptions { get; set; }
-	[JsonProperty("favorited")] public int Favorited { get; set; }
-	[JsonProperty("lifetime_subscriptions")] public int LifetimeSubscriptions { get; set; }
-	[JsonProperty("lifetime_favorited")] public int LifetimeFavorited { get; set; }
-	[JsonProperty("views")] public int Views { get; set; }
-	[JsonProperty("tags")] public List<WorkshopTag> Tags { get; set; }
+	[JsonPropertyName("publishedfileid")] public long PublishedFileId { get; set; }
+	[JsonPropertyName("result")] public int Result { get; set; }
+	[JsonPropertyName("creator")] public string? Creator { get; set; }
+	[JsonPropertyName("creator_app_id")] public int CreatorAppId { get; set; }
+	[JsonPropertyName("consumer_app_id")] public int ConsumerAppId { get; set; }
+	[JsonPropertyName("filename")] public string? FileName { get; set; }
+	[JsonPropertyName("file_size")] public string? FileSize { get; set; }
+	[JsonPropertyName("file_url")] public string? FileUrl { get; set; }
+	[JsonPropertyName("hcontent_file")] public string? HContentFile { get; set; }
+	[JsonPropertyName("preview_url")] public string? PreviewUrl { get; set; }
+	[JsonPropertyName("hcontent_preview")] public string? HContentPreview { get; set; }
+	[JsonPropertyName("title")] public string? Title { get; set; }
+	[JsonPropertyName("description")] public string? Description { get; set; }
+	[JsonPropertyName("time_created")] public long TimeCreated { get; set; }
+	[JsonPropertyName("time_updated")] public long TimeUpdated { get; set; }
+	[JsonPropertyName("visibility")] public EPublishedFileVisibility Visibility { get; set; }
+	[JsonPropertyName("banned")] public bool Banned { get; set; }
+	[JsonPropertyName("ban_reason")] public string? BanReason { get; set; }
+	[JsonPropertyName("subscriptions")] public int Subscriptions { get; set; }
+	[JsonPropertyName("favorited")] public int Favorited { get; set; }
+	[JsonPropertyName("lifetime_subscriptions")] public int LifetimeSubscriptions { get; set; }
+	[JsonPropertyName("lifetime_favorited")] public int LifetimeFavorited { get; set; }
+	[JsonPropertyName("views")] public int Views { get; set; }
+	[JsonPropertyName("tags")] public List<WorkshopTag>? Tags { get; set; }
 }

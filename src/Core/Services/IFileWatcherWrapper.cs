@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ModManager.Services;
+﻿namespace ModManager.Services;
 public interface IFileWatcherWrapper
 {
 	string DefaultDirectory { get; }

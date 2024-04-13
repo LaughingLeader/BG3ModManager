@@ -1,11 +1,6 @@
 ﻿using ModManager.Models.Cache;
 using ModManager.Models.Mod;
 
-using Newtonsoft.Json;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.ModUpdater.Cache;
 
 public class GitHubModsCacheHandler : ReactiveObject, IExternalModCacheHandler<GitHubModsCachedData>
@@ -14,10 +9,11 @@ public class GitHubModsCacheHandler : ReactiveObject, IExternalModCacheHandler<G
 	public string FileName => "githubdata.json";
 
 	//Format GitHub data so people can more easily edit/add mods manually.
-	public JsonSerializerSettings SerializerSettings => new()
+	public JsonSerializerOptions SerializerSettings { get; } = new()
 	{
-		NullValueHandling = NullValueHandling.Ignore,
-		Formatting = Formatting.Indented,
+		AllowTrailingCommas = true,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
 	[Reactive] public bool IsEnabled { get; set; }

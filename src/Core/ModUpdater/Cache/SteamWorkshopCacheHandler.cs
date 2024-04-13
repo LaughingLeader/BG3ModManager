@@ -2,24 +2,19 @@
 using ModManager.Models.Mod;
 using ModManager.Util;
 
-using Newtonsoft.Json;
-
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 namespace ModManager.ModUpdater.Cache;
 
 public class SteamWorkshopCacheHandler : ReactiveObject, IExternalModCacheHandler<SteamWorkshopCachedData>
 {
 	public ModSourceType SourceType => ModSourceType.STEAM;
 	public string FileName => "steamworkshopdata.json";
-	public JsonSerializerSettings SerializerSettings { get; }
+	public JsonSerializerOptions SerializerSettings { get; }
 	public SteamWorkshopCachedData CacheData { get; set; }
 	[Reactive] public bool IsEnabled { get; set; }
 
-	public string SteamAppID { get; set; }
+	public string? SteamAppID { get; set; }
 
-	public SteamWorkshopCacheHandler(JsonSerializerSettings serializerSettings)
+	public SteamWorkshopCacheHandler(JsonSerializerOptions serializerSettings)
 	{
 		SerializerSettings = serializerSettings;
 		CacheData = new SteamWorkshopCachedData();

@@ -3,8 +3,6 @@
 using ModManager.Models;
 using ModManager.Models.Mod;
 
-using System.Collections.ObjectModel;
-
 namespace ModManager.ViewModels;
 
 public interface IModOrderViewModel

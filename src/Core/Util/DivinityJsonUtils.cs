@@ -1,34 +1,21 @@
 ﻿using LSLib.LS;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace ModManager.Util;
 
 public static class DivinityJsonUtils
 {
-	private static readonly JsonSerializerSettings _errorHandleSettings = new()
+	private static readonly JsonSerializerOptions _serializerSettings = new()
 	{
-		Error = delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
-		{
-			DivinityApp.Log(args.ErrorContext.Error.Message);
-			args.ErrorContext.Handled = true;
-		}
+		AllowTrailingCommas = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
-	public static T GetValue<T>(this JToken jToken, string key, T defaultValue = default)
+	public static T? SafeDeserialize<T>(string text, JsonSerializerOptions? opts = null)
 	{
-		dynamic ret = jToken[key];
-		if (ret == null) return defaultValue;
-		if (ret is JObject) return JsonConvert.DeserializeObject<T>(ret.ToString());
-		return (T)ret;
-	}
-
-	public static T SafeDeserialize<T>(string text)
-	{
-		var result = JsonConvert.DeserializeObject<T>(text, _errorHandleSettings);
+		var result = JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
 		if (result != null)
 		{
 			return result;
@@ -36,14 +23,14 @@ public static class DivinityJsonUtils
 		return default;
 	}
 
-	public static T SafeDeserializeFromPath<T>(string path)
+	public static T? SafeDeserializeFromPath<T>(string path, JsonSerializerOptions? opts = null)
 	{
 		try
 		{
 			if (File.Exists(path))
 			{
 				var contents = File.ReadAllText(path);
-				return SafeDeserialize<T>(contents);
+				return SafeDeserialize<T?>(contents, opts ?? _serializerSettings);
 			}
 			else
 			{
@@ -57,25 +44,25 @@ public static class DivinityJsonUtils
 		return default;
 	}
 
-	public static bool TrySafeDeserialize<T>(string text, out T result)
+	public static bool TrySafeDeserialize<T>(string text, [NotNullWhen(true)] out T? result, JsonSerializerOptions? opts = null)
 	{
-		result = JsonConvert.DeserializeObject<T>(text, _errorHandleSettings);
+		result = JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
 		return result != null;
 	}
 
-	public static bool TrySafeDeserializeFromPath<T>(string path, out T result)
+	public static bool TrySafeDeserializeFromPath<T>(string path, [NotNullWhen(true)] out T? result, JsonSerializerOptions? opts = null)
 	{
 		if (File.Exists(path))
 		{
 			var contents = File.ReadAllText(path);
-			result = JsonConvert.DeserializeObject<T>(contents, _errorHandleSettings);
+			result = JsonSerializer.Deserialize<T?>(contents, opts ?? _serializerSettings);
 			return result != null;
 		}
 		result = default;
 		return false;
 	}
 
-	public static async Task<T> DeserializeFromPathAsync<T>(string path, CancellationToken token)
+	public static async Task<T?> DeserializeFromPathAsync<T>(string path, CancellationToken token, JsonSerializerOptions? opts = null)
 	{
 		try
 		{
@@ -85,7 +72,7 @@ public static class DivinityJsonUtils
 				var contents = Encoding.UTF8.GetString(fileBytes);
 				if (!String.IsNullOrEmpty(contents))
 				{
-					return JsonConvert.DeserializeObject<T>(contents, _errorHandleSettings);
+					return JsonSerializer.Deserialize<T?>(contents, opts ?? _serializerSettings);
 				}
 			}
 		}
@@ -96,7 +83,7 @@ public static class DivinityJsonUtils
 		return default;
 	}
 
-	public static async Task<T> DeserializeFromAbstractAsync<T>(Stream stream, CancellationToken token)
+	public static async Task<T?> DeserializeFromAbstractAsync<T>(Stream stream, CancellationToken token, JsonSerializerOptions? opts = null)
 	{
 		try
 		{
@@ -104,7 +91,7 @@ public static class DivinityJsonUtils
 			var text = await sr.ReadToEndAsync(token);
 			if (!String.IsNullOrWhiteSpace(text))
 			{
-				return JsonConvert.DeserializeObject<T>(text, _errorHandleSettings);
+				return JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
 			}
 		}
 		catch (Exception ex)
@@ -114,12 +101,12 @@ public static class DivinityJsonUtils
 		return default;
 	}
 
-	public static async Task<T> DeserializeFromAbstractAsync<T>(PackagedFileInfo file, CancellationToken token)
+	public static async Task<T?> DeserializeFromAbstractAsync<T>(PackagedFileInfo file, CancellationToken token, JsonSerializerOptions? opts = null)
 	{
 		try
 		{
 			using var stream = file.CreateContentReader();
-			return await DeserializeFromAbstractAsync<T>(stream, token);
+			return await DeserializeFromAbstractAsync<T?>(stream, token, opts);
 		}
 		catch (Exception ex)
 		{

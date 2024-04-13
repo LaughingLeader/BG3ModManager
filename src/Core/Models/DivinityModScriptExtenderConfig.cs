@@ -2,8 +2,6 @@
 
 using ModManager.Json;
 
-using Newtonsoft.Json;
-
 using System.Runtime.Serialization;
 
 namespace ModManager.Models;

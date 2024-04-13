@@ -1,15 +1,13 @@
 ﻿using ModManager.Models.Cache;
 using ModManager.Models.Mod;
 
-using Newtonsoft.Json;
-
 namespace ModManager.ModUpdater.Cache;
 
 public interface IExternalModCacheHandler<T> where T : IModCacheData
 {
 	ModSourceType SourceType { get; }
 	string FileName { get; }
-	JsonSerializerSettings SerializerSettings { get; }
+	JsonSerializerOptions SerializerSettings { get; }
 
 	bool IsEnabled { get; set; }
 	T CacheData { get; set; }

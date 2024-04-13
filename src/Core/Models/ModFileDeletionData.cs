@@ -13,7 +13,7 @@ public class ModFileDeletionData : ReactiveObject
 
 	public static ModFileDeletionData? FromModEntry(IModEntry entry, bool isWorkshopMod = false, bool isDeletingDuplicates = false, IEnumerable<DivinityModData>? loadedMods = null)
 	{
-		if(entry.EntryType is ModEntryType.Mod && entry is ModEntry modEntry && modEntry.Data != null)
+		if (entry.EntryType is ModEntryType.Mod && entry is ModEntry modEntry && modEntry.Data != null)
 		{
 			var mod = modEntry.Data;
 			var data = new ModFileDeletionData { FilePath = mod.FilePath, DisplayName = mod.DisplayName, IsSelected = true, UUID = mod.UUID, IsWorkshop = isWorkshopMod };

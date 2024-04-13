@@ -1,7 +1,5 @@
 ﻿using DynamicData;
 
-using Newtonsoft.Json;
-
 namespace ModManager.Json;
 
 public interface IObjectWithId
@@ -9,41 +7,38 @@ public interface IObjectWithId
 	string Id { get; set; }
 }
 
-public class DictionaryToSourceCacheConverter<TValue> : JsonConverter where TValue : IObjectWithId
+public class DictionaryToSourceCacheConverter<TValue> : JsonConverter<SourceCache<TValue, string>> where TValue : IObjectWithId
 {
 	private static readonly Type _type = typeof(SourceCache<TValue, string>);
 
 	public override bool CanConvert(Type objectType) => _type.IsAssignableFrom(objectType);
 
-	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+	public override SourceCache<TValue, string>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		if (reader.TokenType == JsonToken.Null) return null;
+		if (reader.TokenType == JsonTokenType.Null) return default;
 
-		if (reader.TokenType == JsonToken.StartObject)
+		var value = reader.GetString();
+
+		if (reader.TokenType == JsonTokenType.StartObject)
 		{
 			try
 			{
 				reader.Read();
 				var entries = new List<TValue>();
-				while (reader.TokenType == JsonToken.PropertyName)
+				while (reader.TokenType == JsonTokenType.PropertyName)
 				{
-					var key = reader.Value as string;
+					if (reader.GetString() is string key)
+					{
+						reader.Read();
+						if (reader.GetString() is string valStr && JsonSerializer.Deserialize<TValue>(valStr, options) is TValue dictValue)
+						{
+							dictValue.Id = key;
+							entries.Add(dictValue);
+						}
+					}
 					reader.Read();
-					var val = serializer.Deserialize<TValue>(reader);
-					val.Id = key;
-					reader.Read();
-					entries.Add(val);
 				}
-				SourceCache<TValue, string> cache = null;
-				if (existingValue is SourceCache<TValue, string> existingCache)
-				{
-					cache = existingCache;
-				}
-				else
-				{
-					cache = new SourceCache<TValue, string>(x => x.Id);
-				}
-
+				var cache = new SourceCache<TValue, string>(x => x.Id);
 				foreach (var entry in entries)
 				{
 					cache.AddOrUpdate(entry);
@@ -53,27 +48,27 @@ public class DictionaryToSourceCacheConverter<TValue> : JsonConverter where TVal
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error converting dictionary: {reader.Value}", ex);
+				throw new Exception($"Error converting dictionary: {value}", ex);
 			}
 		}
 
-		throw new Exception($"Unexpected token({reader.TokenType}) or value({reader.Value}");
+		throw new Exception($"Unexpected token({reader.TokenType}) or value({value}");
 	}
 
-	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	public override void Write(Utf8JsonWriter writer, SourceCache<TValue, string>? cache, JsonSerializerOptions options)
 	{
-		if (value == null)
+		if (cache == null)
 		{
-			writer.WriteNull();
+			writer.WriteNullValue();
 		}
-		else if (value is SourceCache<TValue, string> cache)
+		else
 		{
 			writer.WriteStartObject();
 
 			foreach (var entry in cache.Items)
 			{
 				writer.WritePropertyName(entry.Id);
-				serializer.Serialize(writer, entry);
+				JsonSerializer.Serialize(writer, entry, options);
 			}
 			writer.WriteEndObject();
 		}

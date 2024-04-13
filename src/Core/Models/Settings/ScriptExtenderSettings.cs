@@ -1,7 +1,5 @@
 ﻿using ModManager.Extensions;
 
-using Newtonsoft.Json;
-
 using System.ComponentModel;
 using System.Runtime.Serialization;
 

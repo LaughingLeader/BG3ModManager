@@ -1,9 +1,6 @@
 ﻿using ModManager.Models.Cache;
 using ModManager.Util;
 
-using Newtonsoft.Json;
-
-using System.IO;
 using System.Text;
 
 namespace ModManager.ModUpdater.Cache;
@@ -44,7 +41,7 @@ public static class IExternalModCacheDataExtensions
 			}
 			handler.CacheData.LastVersion = currentAppVersion;
 
-			var contents = JsonConvert.SerializeObject(handler.CacheData, handler.SerializerSettings);
+			var contents = JsonSerializer.Serialize(handler.CacheData, handler.SerializerSettings);
 
 			var buffer = Encoding.UTF8.GetBytes(contents);
 			using (var fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create,

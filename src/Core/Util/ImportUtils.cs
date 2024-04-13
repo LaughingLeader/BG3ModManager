@@ -111,7 +111,7 @@ public static class ImportUtils
 								var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
 								if (parsed?.Count > 0)
 								{
-									foreach(var mod in parsed)
+									foreach (var mod in parsed)
 									{
 										options.Result.Mods.Add(mod);
 										mod.NexusModsData.SetModVersion(info);

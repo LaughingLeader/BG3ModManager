@@ -2,10 +2,6 @@
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
-using ReactiveUI;
-
-using System.Reactive;
-
 namespace ModManager;
 
 public interface IInteractionsService

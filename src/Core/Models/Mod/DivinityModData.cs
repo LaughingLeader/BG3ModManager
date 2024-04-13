@@ -7,12 +7,8 @@ using ModManager.Models.NexusMods;
 using ModManager.Models.Steam;
 using ModManager.Util;
 
-using Newtonsoft.Json;
-
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Serialization;
-using System.Windows;
 
 namespace ModManager.Models.Mod;
 
@@ -563,10 +559,11 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		}
 	}
 
-	private static readonly JsonSerializerSettings _serializerSettings = new()
+	private static readonly JsonSerializerOptions _serializerSettings = new()
 	{
-		NullValueHandling = NullValueHandling.Ignore,
-		Formatting = Formatting.Indented,
+		AllowTrailingCommas = true,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
 	public string Export(ModExportType exportType)
@@ -574,7 +571,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		var result = exportType switch
 		{
 			ModExportType.XML => String.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt),
-			ModExportType.JSON => JsonConvert.SerializeObject(this, _serializerSettings),
+			ModExportType.JSON => JsonSerializer.Serialize(this, _serializerSettings),
 			ModExportType.TXT => StringUtils.ModToTextLine(this),
 			ModExportType.TSV => StringUtils.ModToTSVLine(this),
 			_ => String.Empty,

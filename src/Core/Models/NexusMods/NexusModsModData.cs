@@ -1,82 +1,59 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using NexusModsNET.DataModels;
 
-using NexusModsNET.DataModels;
-
-using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace ModManager.Models.NexusMods;
 
-public class NexusModsModData : INotifyPropertyChanged
+public class NexusModsModData : ReactiveObject
 {
-	[JsonProperty("uuid")]
-	public string UUID { get; set; }
+	[JsonPropertyName("uuid")]
+	public string? UUID { get; set; }
 
-	private long _lastFileId;
+	[JsonPropertyName("last_file_id"), Reactive]
+	public long LastFileId { get; set; }
 
-	[JsonProperty("last_file_id")]
-	public long LastFileId
-	{
-		get => _lastFileId;
-		set
-		{
-			if (_lastFileId != value)
-			{
-				_lastFileId = value;
-				RaisePropertyChanged(nameof(LastFileId));
-			}
-		}
-	}
+	[JsonPropertyName("name")]
+	public string? Name { get; set; }
 
-	[JsonProperty("name")]
-	public string Name { get; set; }
+	[JsonPropertyName("summary")]
+	public string? Summary { get; set; }
 
-	[JsonProperty("summary")]
-	public string Summary { get; set; }
+	//[JsonPropertyName("description")]
+	//public string? Description { get; set; }
 
-	//[JsonProperty("description")]
-	//public string Description { get; set; }
+	[JsonPropertyName("picture_url")]
+	public Uri? PictureUrl { get; set; }
 
-	[JsonProperty("picture_url")]
-	public Uri PictureUrl { get; set; }
-
-	[JsonProperty("mod_id")]
+	[JsonPropertyName("mod_id"), Reactive]
 	public long ModId { get; set; }
 
-	[JsonProperty("category_id")]
+	[JsonPropertyName("category_id")]
 	public long CategoryId { get; set; }
 
-	[JsonProperty("version")]
-	public string Version { get; set; }
+	[JsonPropertyName("version")]
+	public string? Version { get; set; }
 
-	[JsonProperty("endorsement_count")]
+	[JsonPropertyName("endorsement_count")]
 	public long EndorsementCount { get; set; }
 
-	[JsonProperty("created_timestamp")]
+	[JsonPropertyName("created_timestamp")]
 	public long CreatedTimestamp { get; set; }
 
-	[JsonProperty("updated_timestamp")]
+	[JsonPropertyName("updated_timestamp")]
 	public long UpdatedTimestamp { get; set; }
 
-	[JsonProperty("author")]
-	public string Author { get; set; }
+	[JsonPropertyName("author")]
+	public string? Author { get; set; }
 
-	[JsonProperty("contains_adult_content")]
+	[JsonPropertyName("contains_adult_content")]
 	public bool ContainsAdultContent { get; set; }
 
-	[JsonProperty("status")]
-	public string Status { get; set; }
+	[JsonPropertyName("status")]
+	public string? Status { get; set; }
 
-	[JsonProperty("available")]
+	[JsonPropertyName("available")]
 	public bool Available { get; set; }
-
-	public event PropertyChangedEventHandler PropertyChanged;
-
-	public void RaisePropertyChanged(string propertyName)
-	{
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-	}
 
 	public void SetModVersion(NexusModFileVersionData info)
 	{
@@ -91,7 +68,6 @@ public class NexusModsModData : INotifyPropertyChanged
 		if (ModId != modId)
 		{
 			ModId = modId;
-			RaisePropertyChanged(nameof(ModId));
 		}
 
 		if (fileId > LastFileId)
@@ -102,7 +78,7 @@ public class NexusModsModData : INotifyPropertyChanged
 
 	private static readonly IEnumerable<PropertyInfo> _lazySerializedProperties = typeof(NexusModsModData)
 		.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-		.Where(prop => prop.GetCustomAttribute<JsonPropertyAttribute>(true) != null);
+		.Where(prop => prop.GetCustomAttribute<DataMemberAttribute>(true) != null);
 
 	public void Update(NexusModsModData data)
 	{
@@ -112,11 +88,10 @@ public class NexusModsModData : INotifyPropertyChanged
 			if (value != null)
 			{
 				prop.SetValue(this, value);
-				RaisePropertyChanged(prop.Name);
+				this.RaisePropertyChanged(prop.Name);
 			}
 		}
 		IsUpdated = true;
-		RaisePropertyChanged(nameof(IsUpdated));
 	}
 
 	public void Update(NexusMod data)
@@ -131,15 +106,14 @@ public class NexusModsModData : INotifyPropertyChanged
 				if (value != null)
 				{
 					prop.SetValue(this, value);
-					RaisePropertyChanged(prop.Name);
+					this.RaisePropertyChanged(prop.Name);
 				}
 			}
 		}
 		IsUpdated = true;
-		RaisePropertyChanged(nameof(IsUpdated));
 	}
 
-	[JsonIgnore] public bool IsUpdated { get; set; }
+	[Reactive, JsonIgnore] public bool IsUpdated { get; set; }
 
 	/// <summary>
 	/// True if ModId is set.

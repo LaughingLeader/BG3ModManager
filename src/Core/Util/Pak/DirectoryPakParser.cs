@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace ModManager.Util.Pak;
 
-public partial class DirectoryPakParser(string directoryPath, EnumerationOptions? opts = null, 
+public partial class DirectoryPakParser(string directoryPath, EnumerationOptions? opts = null,
 	Dictionary<string, DivinityModData>? baseMods = null, HashSet<string>? packageBlackList = null) : IDisposable
 {
 	private bool _isDisposed;
@@ -69,7 +69,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		"VirtualTextures.pak",
         // Localization
         "English.pak",
-        "English_Animations.pak",
+		"English_Animations.pak",
 		"VoiceMeta.pak",
 		"Voice.pak"
 	];
@@ -89,7 +89,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 
 	private async Task<ModDirectoryLoadingResults> LoadPackagesAsync(bool detectDuplicates, bool parseLooseMetaFiles, CancellationToken token)
 	{
-		
+
 		var opts = new ParallelOptions()
 		{
 			CancellationToken = token,
@@ -104,7 +104,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(package, _baseMods, t, !detectDuplicates);
 			if (parsed?.Count > 0)
 			{
-				foreach(var mod in parsed)
+				foreach (var mod in parsed)
 				{
 					if (detectDuplicates)
 					{
@@ -132,7 +132,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			await Parallel.ForEachAsync(metaFiles, opts, async (metaFilePath, t) =>
 			{
 				var mod = await DivinityModDataLoader.GetModDataFromMeta(metaFilePath, t);
-				if(mod != null)
+				if (mod != null)
 				{
 					mod.IsEditorMod = true;
 					mod.FilePath = metaFilePath;
@@ -188,7 +188,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 	public async Task<ModDirectoryLoadingResults> ProcessAsync(bool detectDuplicates, bool parseLooseMetaFiles, CancellationToken token)
 	{
 #if DEBUG
-		if(!_fs.Directory.Exists(directoryPath)) throw new DirectoryNotFoundException(directoryPath);
+		if (!_fs.Directory.Exists(directoryPath)) throw new DirectoryNotFoundException(directoryPath);
 #endif
 		if (Directory.Exists(directoryPath))
 		{

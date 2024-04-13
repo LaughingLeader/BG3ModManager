@@ -2,8 +2,6 @@
 
 using NexusModsNET.DataModels.GraphQL.Types;
 
-using System.Windows;
-
 namespace ModManager.Models.NexusMods;
 
 public class NexusModsCollectionModData : ReactiveObject

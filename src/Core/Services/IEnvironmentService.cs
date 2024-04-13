@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ModManager;
+﻿namespace ModManager;
 
 /// <summary>
 /// Shortcuts for common application environment variables.
@@ -24,7 +22,7 @@ public interface IEnvironmentService
 
 	/// <inheritdoc cref="AppDomain.BaseDirectory"/>
 	string AppDirectory { get; }
-	
+
 	/// <inheritdoc cref="Path.DirectorySeparatorChar"/>
 	char DirectorySeparatorChar { get; }
 

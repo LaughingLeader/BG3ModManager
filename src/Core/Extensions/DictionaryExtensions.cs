@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace ModManager.Extensions;
+﻿namespace ModManager.Extensions;
 
 public static class DictionaryExtensions
 {

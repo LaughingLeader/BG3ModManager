@@ -29,7 +29,7 @@ public class ModCategory : ReactiveObject, IModEntry
 	{
 		this.WhenAnyValue(x => x.IsHidden).Subscribe(b =>
 		{
-			if(!b) IsSelected = false;
+			if (!b) IsSelected = false;
 		});
 	}
 }

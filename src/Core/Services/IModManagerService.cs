@@ -1,11 +1,7 @@
 ﻿using DynamicData;
 
 using ModManager.Models.Mod;
-using ModManager.Models.View;
 
-using ReactiveUI.Fody.Helpers;
-
-using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 
 namespace ModManager;

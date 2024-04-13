@@ -1,9 +1,6 @@
 ﻿using ModManager.Enums.Extender;
 using ModManager.Extensions;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
@@ -18,7 +15,7 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 	[SettingsEntry("Update Channel", "Use a specific update channel", HideFromUI = true)]
 	[DataMember, Reactive]
 	[DefaultValue(ExtenderUpdateChannel.Release)]
-	[JsonConverter(typeof(StringEnumConverter))]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public ExtenderUpdateChannel UpdateChannel { get; set; }
 
 	[SettingsEntry("Target Version", "Update to a specific version of the script extender (ex. '5.0.0.0')")]

@@ -1,7 +1,6 @@
 ﻿using ModManager.Models.Mod;
 
 using System.Globalization;
-using System.Windows;
 
 namespace ModManager.Models.Updates;
 

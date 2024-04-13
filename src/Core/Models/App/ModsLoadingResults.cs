@@ -1,6 +1,4 @@
-﻿using ModManager.Models.Mod;
-
-namespace ModManager.Models.App;
+﻿namespace ModManager.Models.App;
 public class ModsLoadingResults
 {
 	public ModDirectoryLoadingResults DataDirectoryMods { get; }

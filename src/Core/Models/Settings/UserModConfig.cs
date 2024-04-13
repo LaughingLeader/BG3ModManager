@@ -12,7 +12,8 @@ namespace ModManager.Models.Settings;
 [DataContract]
 public class UserModConfig : BaseSettings<UserModConfig>, ISerializableSettings
 {
-	[Newtonsoft.Json.JsonConverter(typeof(DictionaryToSourceCacheConverter<ModConfig>)), DataMember]
+	[DataMember]
+	[JsonConverter(typeof(DictionaryToSourceCacheConverter<ModConfig>))]
 	public SourceCache<ModConfig, string> Mods { get; set; }
 
 	[DataMember] public Dictionary<string, long> LastUpdated { get; set; }

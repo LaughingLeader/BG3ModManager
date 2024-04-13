@@ -1,8 +1,6 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using System.Collections.ObjectModel;
-
 namespace ModManager.Models.View;
 public class StatsValidatorFileResults : TreeViewEntry
 {

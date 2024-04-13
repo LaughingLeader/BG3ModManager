@@ -213,7 +213,7 @@ public static class DivinityApp
 	public static async Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0)
 	{
 		var commands = Locator.Current.GetService<IGlobalCommandsService>();
-		if(commands != null)
+		if (commands != null)
 		{
 			await commands.ShowAlertAsync(message, alertType, timeout);
 		}
