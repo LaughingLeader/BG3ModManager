@@ -51,7 +51,7 @@ public class TextBlockSettingsEntryAttributeBehavior
 			if (settingsEntry != null)
 			{
 				element.Text = settingsEntry.DisplayName;
-				element.ToolTip = settingsEntry.Tooltip;
+				element.ToolTip = settingsEntry.ToolTip;
 			}
 		}
 	}

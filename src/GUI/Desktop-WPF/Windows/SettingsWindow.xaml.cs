@@ -52,13 +52,13 @@ public partial class SettingsWindow : SettingsWindowBase
 
 		foreach (var prop in props)
 		{
-			var isBlankTooltip = String.IsNullOrEmpty(prop.Attribute.Tooltip);
+			var isBlankTooltip = String.IsNullOrEmpty(prop.Attribute.ToolTip);
 			var targetRow = row;
 			row++;
 			var tb = new TextBlock
 			{
 				Text = prop.Attribute.DisplayName,
-				ToolTip = !isBlankTooltip ? prop.Attribute.Tooltip : null,
+				ToolTip = !isBlankTooltip ? prop.Attribute.ToolTip : null,
 			};
 			targetGrid.Children.Add(tb);
 			Grid.SetRow(tb, targetRow);
@@ -72,7 +72,7 @@ public partial class SettingsWindow : SettingsWindowBase
 			{
 				var combo = new ComboBox()
 				{
-					ToolTip = !isBlankTooltip ? prop.Attribute.Tooltip : null,
+					ToolTip = !isBlankTooltip ? prop.Attribute.ToolTip : null,
 					DisplayMemberPath = "Description",
 					SelectedValuePath = "Value",
 					ItemsSource = prop.Property.PropertyType.GetEnumValues().Cast<Enum>().Select(x => new EnumEntry(x.GetDescription(), x))
@@ -114,7 +114,7 @@ public partial class SettingsWindow : SettingsWindowBase
 				case TypeCode.Boolean:
 					var cb = new CheckBox
 					{
-						ToolTip = !isBlankTooltip ? prop.Attribute.Tooltip : null,
+						ToolTip = !isBlankTooltip ? prop.Attribute.ToolTip : null,
 						VerticalAlignment = VerticalAlignment.Center
 					};
 					//cb.HorizontalAlignment = HorizontalAlignment.Right;
@@ -136,7 +136,7 @@ public partial class SettingsWindow : SettingsWindowBase
 				case TypeCode.String:
 					var utb = new UnfocusableTextBox
 					{
-						ToolTip = !isBlankTooltip ? prop.Attribute.Tooltip : null,
+						ToolTip = !isBlankTooltip ? prop.Attribute.ToolTip : null,
 						VerticalAlignment = VerticalAlignment.Center,
 						//utb.HorizontalAlignment = HorizontalAlignment.Stretch;
 						TextAlignment = TextAlignment.Left
@@ -159,7 +159,7 @@ public partial class SettingsWindow : SettingsWindowBase
 				case TypeCode.Int64:
 					var ud = new Xceed.Wpf.Toolkit.IntegerUpDown
 					{
-						ToolTip = !isBlankTooltip ? prop.Attribute.Tooltip : null,
+						ToolTip = !isBlankTooltip ? prop.Attribute.ToolTip : null,
 						VerticalAlignment = VerticalAlignment.Center,
 						HorizontalAlignment = HorizontalAlignment.Left,
 						Padding = new Thickness(4, 2, 4, 2),
