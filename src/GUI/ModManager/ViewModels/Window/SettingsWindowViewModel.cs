@@ -175,9 +175,16 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 		}
 	}
 
+	[GenerateView]
 	public ModManagerSettings Settings { get; private set; }
+
+	[GenerateView]
 	public ModManagerUpdateSettings UpdateSettings { get; private set; }
+
+	[GenerateView]
 	public ScriptExtenderSettings ExtenderSettings { get; private set; }
+
+	[GenerateView]
 	public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; private set; }
 
 	public void OnTargetVersionSelected(ScriptExtenderUpdateVersion entry)

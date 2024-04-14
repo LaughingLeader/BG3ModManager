@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
-namespace ModManager;
+namespace ModManager.Generators;
 
 [Generator]
 public class HotkeyGenerator : ISourceGenerator

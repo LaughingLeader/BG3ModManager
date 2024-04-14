@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace ModManager;
+namespace ModManager.Generators;
 
 public record struct HotkeyPropertyValue(IPropertySymbol Property, string? Id = null, string? DisplayName = null, string? Key = null, string? Modifiers = null);
 
@@ -47,23 +47,20 @@ internal class HotkeySyntaxReceiver : ISyntaxContextReceiver
 						string? key = null;
 						string? modifiers = null;
 
-						var i = 0;
-						foreach(var arg in attributeSyntax.ArgumentList.Arguments)
+						foreach(var arg in attributeSyntax.GetArguments())
 						{
-							var value = arg.Expression.ToString();
-							switch (i)
+							if(arg.IsNameOrPosition("DisplayName", 0))
 							{
-								case 0:
-									displayName = value;
-									break;
-								case 1:
-									key = value;
-									break;
-								case 2:
-									modifiers = value;
-									break;
+								displayName = arg.Value;
 							}
-							i++;
+							else if (arg.IsNameOrPosition("Key", 1))
+							{
+								key = arg.Value;
+							}
+							else if (arg.IsNameOrPosition("Modifiers", 2))
+							{
+								modifiers = arg.Value;
+							}
 						}
 
 						string? id = displayName != null ? displayName.Trim().Replace(" ", "") : "";
