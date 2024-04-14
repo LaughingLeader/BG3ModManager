@@ -9,11 +9,11 @@ public class NexusDownloadModProtocolData : INexusModsProtocol
 
 	private static readonly Regex _pattern = new("nxm://(?<game>[^/]+)/mods/(?<mod>[^/]+)/files/(?<file>[^?]+)", RegexOptions.IgnoreCase);
 
-	public string GameDomain { get; set; }
+	public string? GameDomain { get; set; }
 	public int ModId { get; set; }
 	public int FileId { get; set; }
 	public int UserId { get; set; }
-	public string Key { get; set; }
+	public string? Key { get; set; }
 	public int Expires { get; set; }
 
 	public bool IsValid => !string.IsNullOrEmpty(GameDomain) && ModId > 0 && FileId > 0 && UserId > 0 && !string.IsNullOrEmpty(Key) && Expires > 0;

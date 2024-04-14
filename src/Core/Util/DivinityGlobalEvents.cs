@@ -2,8 +2,8 @@
 
 public class OrderNameChangedArgs : EventArgs
 {
-	public string LastName { get; set; }
-	public string NewName { get; set; }
+	public string? LastName { get; set; }
+	public string? NewName { get; set; }
 }
 
 public class DivinityGlobalEvents

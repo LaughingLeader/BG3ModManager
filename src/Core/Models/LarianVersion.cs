@@ -112,7 +112,7 @@ public class LarianVersion : ReactiveObject
 	}
 #endif
 
-	[DataMember, Reactive] public string Version { get; set; }
+	[DataMember, Reactive] public string? Version { get; set; }
 
 	private void UpdateVersion() => Version = $"{Major}.{Minor}.{Revision}.{Build}";
 

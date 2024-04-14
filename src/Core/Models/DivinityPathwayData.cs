@@ -8,32 +8,32 @@ public class DivinityPathwayData : ReactiveObject
 	/// <summary>
 	/// The path to the root game folder, i.e. SteamLibrary\steamapps\common\Baldur's Gate 3
 	/// </summary>
-	[Reactive] public string InstallPath { get; set; }
+	[Reactive] public string? InstallPath { get; set; }
 
 	/// <summary>
 	/// The path to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3
 	/// </summary>
-	[Reactive] public string AppDataGameFolder { get; set; }
+	[Reactive] public string? AppDataGameFolder { get; set; }
 
 	/// <summary>
 	/// The path to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Mods
 	/// </summary>
-	[Reactive] public string AppDataModsPath { get; set; }
+	[Reactive] public string? AppDataModsPath { get; set; }
 
 	/// <summary>
 	/// The path to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\PlayerProfiles
 	/// </summary>
-	[Reactive] public string AppDataProfilesPath { get; set; }
+	[Reactive] public string? AppDataProfilesPath { get; set; }
 
 	/// <summary>
 	/// The path to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\DMCampaigns
 	/// </summary>
-	[Reactive] public string AppDataCampaignsPath { get; set; }
+	[Reactive] public string? AppDataCampaignsPath { get; set; }
 
-	[Reactive] public string LastSaveFilePath { get; set; }
+	[Reactive] public string? LastSaveFilePath { get; set; }
 
-	[Reactive] public string ScriptExtenderLatestReleaseUrl { get; set; }
-	[Reactive] public string ScriptExtenderLatestReleaseVersion { get; set; }
+	[Reactive] public string? ScriptExtenderLatestReleaseUrl { get; set; }
+	[Reactive] public string? ScriptExtenderLatestReleaseVersion { get; set; }
 
 	public DivinityPathwayData()
 	{
@@ -46,7 +46,7 @@ public class DivinityPathwayData : ReactiveObject
 		ScriptExtenderLatestReleaseVersion = "";
 	}
 
-	public string ScriptExtenderSettingsFile(ModManagerSettings settings)
+	public string? ScriptExtenderSettingsFile(ModManagerSettings settings)
 	{
 		if (settings.GameExecutablePath.IsExistingFile())
 		{
@@ -55,7 +55,7 @@ public class DivinityPathwayData : ReactiveObject
 		return "";
 	}
 
-	public string ScriptExtenderUpdaterConfigFile(ModManagerSettings settings)
+	public string? ScriptExtenderUpdaterConfigFile(ModManagerSettings settings)
 	{
 		if (settings.GameExecutablePath.IsExistingFile())
 		{

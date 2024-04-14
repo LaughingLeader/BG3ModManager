@@ -5,7 +5,7 @@ namespace ModManager.Models.App;
 public struct ImportOperationError
 {
 	public Exception Exception { get; set; }
-	public string File { get; set; }
+	public string? File { get; set; }
 }
 
 public class ImportOperationResults

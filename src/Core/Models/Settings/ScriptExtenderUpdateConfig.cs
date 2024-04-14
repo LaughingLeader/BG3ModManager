@@ -21,12 +21,12 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 	[SettingsEntry("Target Version", "Update to a specific version of the script extender (ex. '5.0.0.0')")]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string TargetVersion { get; set; }
+	public string? TargetVersion { get; set; }
 
 	[SettingsEntry("Target Resource Digest", "Use a specific Digest for the target update", true)]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string TargetResourceDigest { get; set; }
+	public string? TargetResourceDigest { get; set; }
 
 	[SettingsEntry("Disable Updates", "Disable automatic updating to the latest extender version")]
 	[DataMember, Reactive]
@@ -46,17 +46,17 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 	[SettingsEntry("Manifest URL", "", true)]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string ManifestURL { get; set; }
+	public string? ManifestURL { get; set; }
 
 	[SettingsEntry("Manifest Name", "", true)]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string ManifestName { get; set; }
+	public string? ManifestName { get; set; }
 
 	[SettingsEntry("CachePath", "", true)]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string CachePath { get; set; }
+	public string? CachePath { get; set; }
 
 	[SettingsEntry("Validate Signature", "", true)]
 	[DataMember, Reactive]

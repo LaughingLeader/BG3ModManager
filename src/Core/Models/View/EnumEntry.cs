@@ -2,7 +2,7 @@
 
 public class EnumEntry : ReactiveObject
 {
-	[Reactive] public string Description { get; set; }
+	[Reactive] public string? Description { get; set; }
 	[Reactive] public object Value { get; set; }
 
 	public EnumEntry(string description, object value)

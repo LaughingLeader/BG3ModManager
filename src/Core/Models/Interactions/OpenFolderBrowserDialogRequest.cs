@@ -2,7 +2,7 @@
 
 public readonly struct OpenFolderBrowserDialogRequest
 {
-	public string Title { get; init; }
+	public string? Title { get; init; }
 	public string? Description { get; init; }
 	public string? StartingPath { get; init; }
 	public bool MultiSelect { get; init; }

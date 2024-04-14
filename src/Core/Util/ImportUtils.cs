@@ -18,8 +18,8 @@ namespace ModManager.Util;
 
 public struct ImportedJsonFile
 {
-	public string FileName;
-	public string Text;
+	public string? FileName;
+	public string? Text;
 }
 
 public class ImportParameters(string filePath, string outputDirectory, CancellationToken token, ImportOperationResults? result = null)
@@ -39,7 +39,7 @@ public class ImportParameters(string filePath, string outputDirectory, Cancellat
 
 	public delegate void ShowAlertAction(string message, AlertType alertType, int timeout = 0, string? title = "");
 
-	public string OutputDirectory { get; } = outputDirectory;
+	public string? OutputDirectory { get; } = outputDirectory;
 	public bool OnlyMods { get; set; }
 	public CancellationToken Token { get; } = token;
 	public Action<double>? ReportProgress { get; set; }

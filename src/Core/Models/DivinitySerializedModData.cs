@@ -8,24 +8,24 @@ namespace ModManager.Models;
 public class DivinitySerializedModData : IDivinityModData
 {
 	[DataMember] public int Index { get; set; }
-	[DataMember] public string FileName { get; set; }
-	[DataMember] public string UUID { get; set; }
-	[DataMember] public string Folder { get; set; }
-	[DataMember] public string Name { get; set; }
-	[DataMember] public string Description { get; set; }
-	[DataMember] public string Author { get; set; }
+	[DataMember] public string? FileName { get; set; }
+	[DataMember] public string? UUID { get; set; }
+	[DataMember] public string? Folder { get; set; }
+	[DataMember] public string? Name { get; set; }
+	[DataMember] public string? Description { get; set; }
+	[DataMember] public string? Author { get; set; }
 
 	[DataMember] public LarianVersion Version { get; set; }
 
-	[DataMember] public string Type { get; set; }
+	[DataMember] public string? Type { get; set; }
 	[DataMember] public List<string> Modes { get; set; }
 
-	[DataMember] public string Targets { get; set; }
+	[DataMember] public string? Targets { get; set; }
 
 	[DataMember] public DivinityModScriptExtenderConfig ScriptExtenderData { get; set; }
 	[DataMember] public List<DivinityModDependencyData> Dependencies { get; set; }
 
-	[DataMember] public string MD5 { get; set; }
+	[DataMember] public string? MD5 { get; set; }
 
 	public DateTimeOffset? LastModified { get; set; }
 

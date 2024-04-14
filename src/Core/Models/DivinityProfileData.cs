@@ -2,16 +2,16 @@
 
 public class DivinityProfileData : ReactiveObject
 {
-	[Reactive] public string Name { get; set; }
-	[Reactive] public string FolderName { get; set; }
+	[Reactive] public string? Name { get; set; }
+	[Reactive] public string? FolderName { get; set; }
 
 	/// <summary>
 	/// The stored name in the profile.lsb or profile5.lsb file.
 	/// </summary>
-	[Reactive] public string ProfileName { get; set; }
-	[Reactive] public string UUID { get; set; }
-	[Reactive] public string FilePath { get; set; }
-	[Reactive] public string ModSettingsFile { get; private set; }
+	[Reactive] public string? ProfileName { get; set; }
+	[Reactive] public string? UUID { get; set; }
+	[Reactive] public string? FilePath { get; set; }
+	[Reactive] public string? ModSettingsFile { get; private set; }
 
 	/// <summary>
 	/// The saved load order from modsettings.lsx

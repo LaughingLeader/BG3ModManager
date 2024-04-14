@@ -3,12 +3,12 @@ public class StatsValidatorLineText : TreeViewEntry
 {
 	public override object ViewModel => this;
 
-	[Reactive] public string Text { get; set; }
+	[Reactive] public string? Text { get; set; }
 	[Reactive] public int Start { get; set; }
 	[Reactive] public int End { get; set; }
 	[Reactive] public bool IsError { get; set; }
 
-	[ObservableAsProperty] public string HighlightedText { get; }
+	[ObservableAsProperty] public string? HighlightedText { get; }
 
 	private static string GetHighlightedText(ValueTuple<string, int, int> x)
 	{

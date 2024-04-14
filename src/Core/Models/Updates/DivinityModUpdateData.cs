@@ -15,16 +15,16 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 
 	[ObservableAsProperty] public ModSourceType Source { get; }
 	[ObservableAsProperty] public bool IsEditorMod { get; }
-	[ObservableAsProperty] public string Author { get; }
-	[ObservableAsProperty] public string CurrentVersion { get; }
-	[ObservableAsProperty] public string UpdateVersion { get; }
-	[ObservableAsProperty] public string SourceText { get; }
+	[ObservableAsProperty] public string? Author { get; }
+	[ObservableAsProperty] public string? CurrentVersion { get; }
+	[ObservableAsProperty] public string? UpdateVersion { get; }
+	[ObservableAsProperty] public string? SourceText { get; }
 	[ObservableAsProperty] public Uri UpdateLink { get; }
-	[ObservableAsProperty] public string LocalFilePath { get; }
-	[ObservableAsProperty] public string LocalFileDateText { get; }
-	[ObservableAsProperty] public string UpdateFilePath { get; }
-	[ObservableAsProperty] public string UpdateDateText { get; }
-	[ObservableAsProperty] public string UpdateToolTip { get; }
+	[ObservableAsProperty] public string? LocalFilePath { get; }
+	[ObservableAsProperty] public string? LocalFileDateText { get; }
+	[ObservableAsProperty] public string? UpdateFilePath { get; }
+	[ObservableAsProperty] public string? UpdateDateText { get; }
+	[ObservableAsProperty] public string? UpdateToolTip { get; }
 
 	private Uri SourceToLink(ValueTuple<DivinityModData, ModSourceType> data)
 	{

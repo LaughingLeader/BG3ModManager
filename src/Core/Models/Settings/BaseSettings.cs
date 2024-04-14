@@ -8,13 +8,13 @@ public interface ISerializableSettings
 {
 	string FileName { get; }
 	string GetDirectory();
-	bool Save(out Exception error);
-	bool Load(out Exception error, bool saveIfNotFound = true);
+	bool Save(out Exception? error);
+	bool Load(out Exception? error, bool saveIfNotFound = true);
 }
 
-public abstract class BaseSettings<T> : ReactiveObject where T : ISerializableSettings
+public abstract class BaseSettings<T>(string fileName) : ReactiveObject where T : ISerializableSettings
 {
-	[JsonIgnore] public string FileName { get; }
+	[JsonIgnore] public string FileName { get; } = fileName;
 
 	public virtual string GetDirectory() => DivinityApp.GetAppDirectory("Data");
 
@@ -24,11 +24,6 @@ public abstract class BaseSettings<T> : ReactiveObject where T : ISerializableSe
 		WriteIndented = true,
 		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
-
-	public BaseSettings(string fileName)
-	{
-		FileName = fileName;
-	}
 
 	public virtual bool Save(out Exception? error)
 	{
@@ -50,7 +45,7 @@ public abstract class BaseSettings<T> : ReactiveObject where T : ISerializableSe
 		return false;
 	}
 
-	public virtual bool Load(out Exception error, bool saveIfNotFound = true)
+	public virtual bool Load(out Exception? error, bool saveIfNotFound = true)
 	{
 		error = null;
 		try

@@ -4,7 +4,7 @@ public class DivinityConflictGroup : ReactiveObject
 {
 	private string header;
 
-	public string Header
+	public string? Header
 	{
 		get => header;
 		set { this.RaiseAndSetIfChanged(ref header, value); }

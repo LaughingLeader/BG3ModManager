@@ -13,16 +13,16 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 	/// The mod UUID or FileName (override paks) associated with this config.
 	/// </summary>
 	public bool IsLoaded { get; set; }
-	public string Id { get; set; }
+	public string? Id { get; set; }
 
-	[Reactive, DataMember] public string Notes { get; set; }
+	[Reactive, DataMember] public string? Notes { get; set; }
 
-	[Reactive, DataMember] public string GitHub { get; set; }
+	[Reactive, DataMember] public string? GitHub { get; set; }
 	[Reactive, DataMember] public long NexusModsId { get; set; }
 	[Reactive, DataMember] public long SteamWorkshopId { get; set; }
 
-	[ObservableAsProperty] public string GitHubAuthor { get; }
-	[ObservableAsProperty] public string GitHubRepository { get; }
+	[ObservableAsProperty] public string? GitHubAuthor { get; }
+	[ObservableAsProperty] public string? GitHubRepository { get; }
 
 
 	[GeneratedRegex("^.*/([^/]+)/([^/]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]

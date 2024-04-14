@@ -9,8 +9,8 @@ public class NexusDownloadCollectionProtocolData : INexusModsProtocol
 	//nxm://{game}/collections/{slug}/revisions/{revisionID}
 	private static readonly Regex _pattern = new("nxm://(?<game>[^/]+)/collections/(?<slug>[^/]+)/revisions/(?<revision>[^?]+)", RegexOptions.IgnoreCase);
 
-	public string GameDomain { get; set; }
-	public string Slug { get; set; }
+	public string? GameDomain { get; set; }
+	public string? Slug { get; set; }
 	public int Revision { get; set; }
 
 	public bool IsValid => !string.IsNullOrEmpty(GameDomain) && !string.IsNullOrEmpty(Slug) && Revision > -1;

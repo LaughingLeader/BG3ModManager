@@ -9,12 +9,12 @@ public class NexusModsCollectionModData : ReactiveObject
 	public NexusGraphModFile ModFileData { get; }
 
 	[Reactive] public int Index { get; set; }
-	[Reactive] public string Name { get; set; }
-	[Reactive] public string Author { get; set; }
-	[Reactive] public string Summary { get; set; }
-	[Reactive] public string Description { get; set; }
-	[Reactive] public string Version { get; set; }
-	[Reactive] public string Category { get; set; }
+	[Reactive] public string? Name { get; set; }
+	[Reactive] public string? Author { get; set; }
+	[Reactive] public string? Summary { get; set; }
+	[Reactive] public string? Description { get; set; }
+	[Reactive] public string? Version { get; set; }
+	[Reactive] public string? Category { get; set; }
 	[Reactive] public long SizeInBytes { get; set; }
 	[Reactive] public Uri AuthorAvatarUrl { get; set; }
 	[Reactive] public Uri ImageUrl { get; set; }
@@ -25,12 +25,12 @@ public class NexusModsCollectionModData : ReactiveObject
 	//UI-related properties
 	[Reactive] public bool IsSelected { get; set; }
 
-	[ObservableAsProperty] public string SizeText { get; }
-	[ObservableAsProperty] public string AuthorDisplayText { get; }
-	[ObservableAsProperty] public string CreatedDateText { get; }
-	[ObservableAsProperty] public string UpdatedDateText { get; }
-	public string NexusModsURL { get; }
-	public string NexusModsURLDisplayText { get; }
+	[ObservableAsProperty] public string? SizeText { get; }
+	[ObservableAsProperty] public string? AuthorDisplayText { get; }
+	[ObservableAsProperty] public string? CreatedDateText { get; }
+	[ObservableAsProperty] public string? UpdatedDateText { get; }
+	public string? NexusModsURL { get; }
+	public string? NexusModsURLDisplayText { get; }
 	[ObservableAsProperty] public bool DescriptionVisibility { get; }
 	[ObservableAsProperty] public bool AuthorAvatarVisibility { get; }
 	[ObservableAsProperty] public bool ImageVisibility { get; }

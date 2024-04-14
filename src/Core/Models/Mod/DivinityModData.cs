@@ -16,16 +16,16 @@ namespace ModManager.Models.Mod;
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
 public class DivinityModData : ReactiveObject, IDivinityModData
 {
-	[Reactive] public string FilePath { get; set; }
+	[Reactive] public string? FilePath { get; set; }
 
 	#region meta.lsx Properties
-	[Reactive, DataMember] public string UUID { get; set; }
-	[Reactive, DataMember] public string Folder { get; set; }
-	[Reactive, DataMember] public string Name { get; set; }
-	[Reactive, DataMember] public string Description { get; set; }
-	[Reactive, DataMember] public string Author { get; set; }
-	[Reactive, DataMember] public string ModType { get; set; }
-	[Reactive] public string MD5 { get; set; }
+	[Reactive, DataMember] public string? UUID { get; set; }
+	[Reactive, DataMember] public string? Folder { get; set; }
+	[Reactive, DataMember] public string? Name { get; set; }
+	[Reactive, DataMember] public string? Description { get; set; }
+	[Reactive, DataMember] public string? Author { get; set; }
+	[Reactive, DataMember] public string? ModType { get; set; }
+	[Reactive] public string? MD5 { get; set; }
 	[Reactive, DataMember] public LarianVersion Version { get; set; }
 	[Reactive] public LarianVersion HeaderVersion { get; set; }
 	[Reactive] public LarianVersion PublishVersion { get; set; }
@@ -33,7 +33,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 	public ObservableCollectionExtended<string> Modes { get; private set; } = [];
 
-	public string Targets { get; set; }
+	public string? Targets { get; set; }
 	public SourceList<DivinityModDependencyData> Dependencies { get; set; } = new SourceList<DivinityModDependencyData>();
 	#endregion
 
@@ -64,15 +64,15 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	/// For situations where an override pak has a meta.lsx with no original files, but it needs to be allowed in the load order anyway.
 	/// </summary>
 	[Reactive] public bool ForceAllowInLoadOrder { get; set; }
-	[Reactive] public string BuiltinOverrideModsText { get; set; }
+	[Reactive] public string? BuiltinOverrideModsText { get; set; }
 
-	[Reactive] public string HelpText { get; set; }
+	[Reactive] public string? HelpText { get; set; }
 
 	[Reactive] public bool IsVisible { get; set; }
 
 	[Reactive] public int Index { get; set; }
 
-	public string OutputPakName
+	public string? OutputPakName
 	{
 		get
 		{
@@ -112,18 +112,18 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public bool IsDraggable { get; set; }
 
 	//These properties may be accessed from code, so they need BindTo in order to be updated as soon as possible.
-	[Reactive] public string FileName { get; private set; }
-	[Reactive] public string AuthorDisplayName { get; private set; }
+	[Reactive] public string? FileName { get; private set; }
+	[Reactive] public string? AuthorDisplayName { get; private set; }
 
 	// This is a property instead of an ObservableAsProperty so the name is set immediately
-	[Reactive] public string DisplayName { get; private set; }
+	[Reactive] public string? DisplayName { get; private set; }
 	[ObservableAsProperty] public bool CanAddToLoadOrder { get; }
 	[ObservableAsProperty] public bool CanDelete { get; }
-	[ObservableAsProperty] public string ScriptExtenderSupportToolTipText { get; }
-	[ObservableAsProperty] public string OsirisStatusToolTipText { get; }
-	[ObservableAsProperty] public string LastModifiedDateText { get; }
-	[ObservableAsProperty] public string DisplayVersion { get; }
-	[ObservableAsProperty] public string Notes { get; }
+	[ObservableAsProperty] public string? ScriptExtenderSupportToolTipText { get; }
+	[ObservableAsProperty] public string? OsirisStatusToolTipText { get; }
+	[ObservableAsProperty] public string? LastModifiedDateText { get; }
+	[ObservableAsProperty] public string? DisplayVersion { get; }
+	[ObservableAsProperty] public string? Notes { get; }
 	[ObservableAsProperty] public bool DescriptionVisibility { get; }
 	[ObservableAsProperty] public bool AuthorVisibility { get; }
 	[ObservableAsProperty] public bool DependencyVisibility { get; }
@@ -141,7 +141,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[ObservableAsProperty] public bool NexusModsInformationVisibility { get; }
 	[ObservableAsProperty] public DateTime NexusModsCreatedDate { get; }
 	[ObservableAsProperty] public DateTime NexusModsUpdatedDate { get; }
-	[ObservableAsProperty] public string NexusModsTooltipInfo { get; }
+	[ObservableAsProperty] public string? NexusModsTooltipInfo { get; }
 
 	#endregion
 
@@ -150,8 +150,8 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public bool SteamWorkshopEnabled { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
 	[Reactive] public bool DeveloperMode { get; set; }
-	[Reactive] public string SelectedColor { get; set; }
-	[Reactive] public string ListColor { get; set; }
+	[Reactive] public string? SelectedColor { get; set; }
+	[Reactive] public string? ListColor { get; set; }
 	[Reactive] public bool HasColorOverride { get; set; }
 
 	public HashSet<string> Files { get; set; }
@@ -331,7 +331,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		return false;
 	}
 
-	public string GetURL(ModSourceType modSourceType, bool asProtocol = false)
+	public string? GetURL(ModSourceType modSourceType, bool asProtocol = false)
 	{
 		switch (modSourceType)
 		{
@@ -566,7 +566,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
-	public string Export(ModExportType exportType)
+	public string? Export(ModExportType exportType)
 	{
 		var result = exportType switch
 		{

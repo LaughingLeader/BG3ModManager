@@ -4,10 +4,10 @@ namespace ModManager.Models;
 
 public class DivinityMissingModData
 {
-	public string Name { get; set; }
+	public string? Name { get; set; }
 	public int Index { get; set; }
-	public string UUID { get; set; }
-	public string Author { get; set; }
+	public string? UUID { get; set; }
+	public string? Author { get; set; }
 	public bool Dependency { get; set; }
 
 	public override string ToString()

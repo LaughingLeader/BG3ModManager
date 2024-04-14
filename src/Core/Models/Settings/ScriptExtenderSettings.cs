@@ -10,7 +10,7 @@ public class ScriptExtenderSettings : ReactiveObject
 {
 	[Reactive] public bool ExtenderIsAvailable { get; set; }
 	[Reactive] public bool ExtenderUpdaterIsAvailable { get; set; }
-	[Reactive] public string ExtenderVersion { get; set; }
+	[Reactive] public string? ExtenderVersion { get; set; }
 	[Reactive] public int ExtenderMajorVersion { get; set; }
 
 	[SettingsEntry("Export Default Values", "Export all values, even if it matches a default extender value")]
@@ -27,7 +27,7 @@ public class ScriptExtenderSettings : ReactiveObject
 	[SettingsEntry("Custom Profile", "Use a profile other than Public\nThis should be the profile folder name")]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string CustomProfile { get; set; }
+	public string? CustomProfile { get; set; }
 
 	[SettingsEntry("Create Console Window", "Creates a console window that logs extender internals\nMainly useful for debugging")]
 	[DataMember, Reactive]
@@ -52,7 +52,7 @@ public class ScriptExtenderSettings : ReactiveObject
 	[SettingsEntry("Log Directory", "Directory where the generated Osiris logs will be stored\nDefault is Documents\\OsirisLogs")]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string LogDirectory { get; set; }
+	public string? LogDirectory { get; set; }
 
 	[SettingsEntry("Log Runtime", "Log extender console and script output to a log file")]
 	[DataMember, Reactive]
@@ -122,7 +122,7 @@ public class ScriptExtenderSettings : ReactiveObject
 	[SettingsEntry("Lua Builtin Directory", "An additional directory where the Script Extender will check for builtin scripts\nThis setting is meant for developers, to make it easier to test builtin script changes", true)]
 	[DataMember, Reactive]
 	[DefaultValue("")]
-	public string LuaBuiltinResourceDirectory { get; set; }
+	public string? LuaBuiltinResourceDirectory { get; set; }
 
 	[SettingsEntry("Clear Console On Reset", "Clears the extender console when the reset command is used", true)]
 	[DataMember, Reactive]

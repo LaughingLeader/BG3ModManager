@@ -4,7 +4,7 @@ namespace ModManager.Models.GitHub;
 
 public class GitHubModData : ReactiveObject
 {
-	[Reactive] public string Url { get; set; }
+	[Reactive] public string? Url { get; set; }
 	[Reactive] public GitHubLatestReleaseData LatestRelease { get; set; }
 
 	/// <summary>
@@ -12,8 +12,8 @@ public class GitHubModData : ReactiveObject
 	/// </summary>
 	[Reactive] public bool IsEnabled { get; private set; }
 
-	[ObservableAsProperty] public string Author { get; }
-	[ObservableAsProperty] public string Repository { get; }
+	[ObservableAsProperty] public string? Author { get; }
+	[ObservableAsProperty] public string? Repository { get; }
 
 	public void Update(GitHubModData data)
 	{

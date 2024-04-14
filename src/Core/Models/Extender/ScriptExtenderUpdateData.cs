@@ -8,14 +8,14 @@ public class ScriptExtenderUpdateData
 {
 	[DataMember] public int ManifestMinorVersion { get; set; }
 	[DataMember] public int ManifestVersion { get; set; }
-	[DataMember] public string NoMatchingVersionNotice { get; set; }
+	[DataMember] public string? NoMatchingVersionNotice { get; set; }
 	[DataMember] public List<ScriptExtenderUpdateResource> Resources { get; set; }
 }
 
 [DataContract]
 public class ScriptExtenderUpdateResource
 {
-	[DataMember] public string Name { get; set; }
+	[DataMember] public string? Name { get; set; }
 	[DataMember] public List<ScriptExtenderUpdateVersion> Versions { get; set; }
 }
 
@@ -23,15 +23,15 @@ public class ScriptExtenderUpdateResource
 public class ScriptExtenderUpdateVersion : ReactiveObject
 {
 	[DataMember, Reactive] public long BuildDate { get; set; }
-	[DataMember, Reactive] public string Digest { get; set; }
-	[DataMember, Reactive] public string MinGameVersion { get; set; }
-	[DataMember, Reactive] public string Notice { get; set; }
-	[DataMember, Reactive] public string URL { get; set; }
-	[DataMember, Reactive] public string Version { get; set; }
-	[DataMember, Reactive] public string Signature { get; set; }
+	[DataMember, Reactive] public string? Digest { get; set; }
+	[DataMember, Reactive] public string? MinGameVersion { get; set; }
+	[DataMember, Reactive] public string? Notice { get; set; }
+	[DataMember, Reactive] public string? URL { get; set; }
+	[DataMember, Reactive] public string? Version { get; set; }
+	[DataMember, Reactive] public string? Signature { get; set; }
 
-	[ObservableAsProperty] public string DisplayName { get; }
-	[ObservableAsProperty] public string BuildDateDisplayString { get; }
+	[ObservableAsProperty] public string? DisplayName { get; }
+	[ObservableAsProperty] public string? BuildDateDisplayString { get; }
 	[ObservableAsProperty] public bool IsEmpty { get; }
 
 	private static string TimestampToReadableString(long timestamp)

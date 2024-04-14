@@ -4,10 +4,10 @@ namespace ModManager.Models;
 
 public class DivinityProfileActiveModData
 {
-	public string Folder { get; set; }
-	public string MD5 { get; set; }
-	public string Name { get; set; }
-	public string UUID { get; set; }
+	public string? Folder { get; set; }
+	public string? MD5 { get; set; }
+	public string? Name { get; set; }
+	public string? UUID { get; set; }
 	public ulong Version { get; set; }
 
 	private T GetAttribute<T>(Dictionary<string, NodeAttribute> attributes, string name, T fallBack)

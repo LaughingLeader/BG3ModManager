@@ -7,10 +7,10 @@ namespace ModManager.Models;
 [DataContract]
 public struct DivinityModDependencyData : IDivinityModData
 {
-	[DataMember] public string UUID { get; set; }
-	[DataMember] public string Name { get; set; }
-	public string Folder { get; set; }
-	public string MD5 { get; set; }
+	[DataMember] public string? UUID { get; set; }
+	[DataMember] public string? Name { get; set; }
+	public string? Folder { get; set; }
+	public string? MD5 { get; set; }
 	[DataMember] public LarianVersion Version { get; set; }
 	public DateTimeOffset? LastModified { get; set; }
 

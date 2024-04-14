@@ -13,17 +13,17 @@ public enum ModDownloadPathType
 public struct ModDownloadResult
 {
 	public bool Success;
-	public string OutputFilePath;
+	public string? OutputFilePath;
 }
 
 public class ModDownloadData : ReactiveObject
 {
-	[Reactive] public string DownloadPath { get; set; }
+	[Reactive] public string? DownloadPath { get; set; }
 	[Reactive] public ModDownloadPathType DownloadPathType { get; set; }
 	[Reactive] public ModSourceType DownloadSourceType { get; set; }
 	[Reactive] public DateTimeOffset? Date { get; set; }
-	[Reactive] public string Version { get; set; }
-	[Reactive] public string Description { get; set; }
+	[Reactive] public string? Version { get; set; }
+	[Reactive] public string? Description { get; set; }
 	[Reactive] public bool IsIndirectDownload { get; set; }
 
 	private static bool FileNamesMatch(string localFilePath, string newFilePath) => Path.GetFileName(localFilePath).Equals(Path.GetFileName(newFilePath), StringComparison.OrdinalIgnoreCase);

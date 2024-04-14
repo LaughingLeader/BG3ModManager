@@ -8,21 +8,21 @@ namespace ModManager.Models.Mod;
 
 public class ModuleInfo
 {
-	public string Author;
-	public string CharacterCreationLevelName;
-	public string Description;
-	public string Folder;
-	public string LobbyLevelName;
-	public string MD5;
-	public string MainMenuBackgroundVideo;
-	public string MenuLevelName;
-	public string Name;
+	public string? Author;
+	public string? CharacterCreationLevelName;
+	public string? Description;
+	public string? Folder;
+	public string? LobbyLevelName;
+	public string? MD5;
+	public string? MainMenuBackgroundVideo;
+	public string? MenuLevelName;
+	public string? Name;
 	public int NumPlayers;
-	public string PhotoBooth;
-	public string StartupLevelName;
-	public string Tags;
-	public string Type;
-	public string UUID;
+	public string? PhotoBooth;
+	public string? StartupLevelName;
+	public string? Tags;
+	public string? Type;
+	public string? UUID;
 	public long Version64;
 
 	private static readonly NodeSerializationSettings nodeSerializationSettings = new();

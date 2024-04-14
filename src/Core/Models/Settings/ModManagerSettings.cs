@@ -13,10 +13,10 @@ namespace ModManager.Models.Settings;
 public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializableSettings
 {
 	[SettingsEntry("Game Data Path", "The path to the Data folder, for loading editor mods\nExample: Baldur's Gate 3/Data")]
-	[DataMember, Reactive] public string GameDataPath { get; set; }
+	[DataMember, Reactive] public string? GameDataPath { get; set; }
 
 	[SettingsEntry("Game Executable Path", "The path to bg3.exe")]
-	[DataMember, Reactive] public string GameExecutablePath { get; set; }
+	[DataMember, Reactive] public string? GameExecutablePath { get; set; }
 
 	[DefaultValue(false)]
 	[SettingsEntry("Enable Story Log", "When launching the game, enable the Osiris story log (osiris.log)")]
@@ -47,11 +47,11 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public bool LimitToSingleInstance { get; set; }
 
 	//[SettingsEntry("Workshop Path", "The Steam Workshop folder for Baldur's Gate 3\nUsed for detecting mod updates and new mods to be copied into the local mods folder\nExample: Steam/steamapps/workshop/content/1086940")]
-	[DataMember, Reactive] public string WorkshopPath { get; set; }
+	[DataMember, Reactive] public string? WorkshopPath { get; set; }
 
 	[DefaultValue("Orders")]
 	[SettingsEntry("Saved Load Orders Path", "The folder containing mod load orders")]
-	[DataMember, Reactive] public string LoadOrderPath { get; set; }
+	[DataMember, Reactive] public string? LoadOrderPath { get; set; }
 
 	[DefaultValue(false)]
 	[SettingsEntry("Enable Internal Log", "Enable the log for the mod manager", HideFromUI = true)]
@@ -67,7 +67,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 
 	[DefaultValue("")]
 	[SettingsEntry("AppData Path Override", "[EXPERIMENTAL]\nOverride the default location to %LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\nThis folder is used when exporting load orders, loading profiles, and loading mods.")]
-	[DataMember, Reactive] public string DocumentsFolderPathOverride { get; set; }
+	[DataMember, Reactive] public string? DocumentsFolderPathOverride { get; set; }
 
 	//[SettingsEntry("Automatically Load GM Campaign Mods", "When a GM campaign is selected, its dependency mods will automatically be loaded without needing to manually import them")]
 	//[DataMember, Reactive] public bool AutomaticallyLoadGMCampaignMods { get; set; }
@@ -76,11 +76,11 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 
 	[DataMember, Reactive] public long LastUpdateCheck { get; set; }
 
-	[DataMember, Reactive] public string LastOrder { get; set; }
+	[DataMember, Reactive] public string? LastOrder { get; set; }
 
-	[DataMember, Reactive] public string LastImportDirectoryPath { get; set; }
-	[DataMember, Reactive] public string LastLoadedOrderFilePath { get; set; }
-	[DataMember, Reactive] public string LastExtractOutputPath { get; set; }
+	[DataMember, Reactive] public string? LastImportDirectoryPath { get; set; }
+	[DataMember, Reactive] public string? LastLoadedOrderFilePath { get; set; }
+	[DataMember, Reactive] public string? LastExtractOutputPath { get; set; }
 
 	[DefaultValue(true)]
 	[DataMember, Reactive] public bool DarkThemeEnabled { get; set; }
@@ -93,9 +93,9 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; set; }
 	[DataMember, Reactive] public ModManagerUpdateSettings UpdateSettings { get; set; }
 
-	public string DefaultExtenderLogDirectory { get; set; }
+	public string? DefaultExtenderLogDirectory { get; set; }
 
-	public string ExtenderLogDirectory
+	public string? ExtenderLogDirectory
 	{
 		get
 		{
@@ -129,7 +129,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	public bool DebugModeEnabled { get; set; }
 
 	[DefaultValue("")]
-	[DataMember, Reactive] public string GameLaunchParams { get; set; }
+	[DataMember, Reactive] public string? GameLaunchParams { get; set; }
 
 	[DefaultValue(false)]
 	[DataMember, Reactive] public bool GameMasterModeEnabled { get; set; }

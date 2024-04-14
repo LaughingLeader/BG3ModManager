@@ -7,9 +7,9 @@ namespace ModManager.Models.NexusMods;
 public class NexusModsBaseCollectionData : ReactiveObject
 {
 	[Reactive] public bool HasAdultContent { get; set; }
-	[Reactive] public string Name { get; set; }
-	[Reactive] public string Author { get; set; }
-	[Reactive] public string Description { get; set; }
+	[Reactive] public string? Name { get; set; }
+	[Reactive] public string? Author { get; set; }
+	[Reactive] public string? Description { get; set; }
 	[Reactive] public Uri AuthorAvatarUrl { get; set; }
 	[Reactive] public Uri TileImageUrl { get; set; }
 	[Reactive] public Uri TileImageThumbnailUrl { get; set; }

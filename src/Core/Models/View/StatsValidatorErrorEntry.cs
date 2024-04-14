@@ -7,9 +7,9 @@ public class StatsValidatorErrorEntry : TreeViewEntry
 
 	public StatLoadingError Error { get; }
 
-	[Reactive] public string Message { get; set; }
-	[Reactive] public string Code { get; set; }
-	[Reactive] public string LineText { get; set; }
+	[Reactive] public string? Message { get; set; }
+	[Reactive] public string? Code { get; set; }
+	[Reactive] public string? LineText { get; set; }
 
 	[ObservableAsProperty] public bool IsError { get; }
 

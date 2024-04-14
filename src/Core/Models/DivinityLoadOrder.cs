@@ -8,10 +8,10 @@ namespace ModManager.Models;
 public class DivinityLoadOrderEntry
 {
 	[DataMember]
-	public string UUID { get; set; }
+	public string? UUID { get; set; }
 
 	[DataMember]
-	public string Name { get; set; }
+	public string? Name { get; set; }
 	public bool Missing { get; set; }
 
 	public DivinityLoadOrderEntry Clone()
@@ -25,8 +25,8 @@ public class DivinityLoadOrder : ReactiveObject
 {
 	private string _lastName;
 
-	[Reactive] public string Name { get; set; }
-	[Reactive] public string FilePath { get; set; }
+	[Reactive] public string? Name { get; set; }
+	[Reactive] public string? FilePath { get; set; }
 	[Reactive] public DateTime LastModifiedDate { get; set; }
 	[Reactive] public bool IsLoaded { get; set; }
 
@@ -37,7 +37,7 @@ public class DivinityLoadOrder : ReactiveObject
 	/// </summary>
 	[Reactive] public bool IsDecipheredOrder { get; set; }
 
-	[ObservableAsProperty] public string LastModified { get; }
+	[ObservableAsProperty] public string? LastModified { get; }
 
 	[DataMember]
 	public List<DivinityLoadOrderEntry> Order { get; set; } = [];

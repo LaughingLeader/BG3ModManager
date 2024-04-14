@@ -13,7 +13,7 @@ public interface IModCacheData
 public class BaseModCacheData<T> : IModCacheData
 {
 	[DataMember] public long LastUpdated { get; set; }
-	[DataMember] public string LastVersion { get; set; }
+	[DataMember] public string? LastVersion { get; set; }
 	[DataMember] public Dictionary<string, T> Mods { get; set; } = [];
 
 	public bool CacheUpdated { get; set; }

@@ -6,8 +6,8 @@ namespace ModManager.Models;
 
 public struct DivinityModFilterData
 {
-	public string FilterProperty { get; set; }
-	public string FilterValue { get; set; }
+	public string? FilterProperty { get; set; }
+	public string? FilterValue { get; set; }
 
 	private static readonly char[] separators = new char[1] { ' ' };
 

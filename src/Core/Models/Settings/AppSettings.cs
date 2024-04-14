@@ -7,7 +7,7 @@ public class AppSettings : ReactiveObject
 	[Reactive] public DefaultPathwayData DefaultPathways { get; set; }
 	[Reactive] public AppFeatures Features { get; set; }
 
-	public string GetDirectory() => DivinityApp.GetAppDirectory("Resources");
+	public static string GetDirectory() => DivinityApp.GetAppDirectory("Resources");
 
 	public AppSettings()
 	{

@@ -6,14 +6,14 @@ namespace ModManager;
 
 public class SettingsEntryAttribute : Attribute
 {
-	public string DisplayName { get; set; }
-	public string Tooltip { get; set; }
+	public string? DisplayName { get; set; }
+	public string? ToolTip { get; set; }
 	public bool IsDebug { get; set; }
 	public bool HideFromUI { get; set; }
 	public SettingsEntryAttribute(string displayName = "", string tooltip = "", bool isDebug = false)
 	{
 		DisplayName = displayName;
-		Tooltip = tooltip;
+		ToolTip = tooltip;
 		IsDebug = isDebug;
 	}
 }

@@ -20,7 +20,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 	private readonly Dictionary<string, DivinityModData> _baseMods = baseMods ?? [];
 	private readonly HashSet<string> _packageBlackList = packageBlackList ?? PackageBlacklistBG3;
 
-	public string DirectoryPath { get; } = directoryPath;
+	public string? DirectoryPath { get; } = directoryPath;
 	public List<DivinityModData> Mods { get; } = [];
 
 	#region Static Properties

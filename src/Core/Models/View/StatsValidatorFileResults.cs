@@ -6,12 +6,12 @@ public class StatsValidatorFileResults : TreeViewEntry
 {
 	public override object ViewModel => this;
 
-	[Reactive] public string FilePath { get; set; }
+	[Reactive] public string? FilePath { get; set; }
 
-	[ObservableAsProperty] public string Name { get; }
+	[ObservableAsProperty] public string? Name { get; }
 	[ObservableAsProperty] public int Total { get; }
-	[ObservableAsProperty] public string DisplayName { get; }
-	[ObservableAsProperty] public string ToolTip { get; }
+	[ObservableAsProperty] public string? DisplayName { get; }
+	[ObservableAsProperty] public string? ToolTip { get; }
 	[ObservableAsProperty] public bool HasErrors { get; }
 
 	private readonly ReadOnlyObservableCollection<StatsValidatorErrorEntry> _errors;
