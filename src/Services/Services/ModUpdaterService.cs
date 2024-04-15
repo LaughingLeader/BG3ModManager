@@ -6,14 +6,13 @@ using ModManager.ModUpdater;
 using ModManager.ModUpdater.Cache;
 using ModManager.Util;
 
-using Newtonsoft.Json;
-
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ModManager.Services;
 public class ModUpdaterService : ReactiveObject, IModUpdaterService
@@ -29,10 +28,11 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 
 	[Reactive] public bool IsRefreshing { get; set; }
 
-	private static readonly JsonSerializerSettings DefaultSerializerSettings = new()
+	private static readonly JsonSerializerOptions DefaultSerializerSettings = new()
 	{
-		NullValueHandling = NullValueHandling.Ignore,
-		Formatting = Formatting.None
+		AllowTrailingCommas = true,
+		WriteIndented = false,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
 	public async Task<bool> UpdateInfoAsync(IEnumerable<DivinityModData> mods, CancellationToken token)
