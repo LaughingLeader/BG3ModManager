@@ -1,8 +1,8 @@
-﻿using ModManager.Utils;
+﻿using ModManager.SourceGenerator.Utils;
 
 using System.Text;
 
-namespace ModManager.Data;
+namespace ModManager.SourceGenerator.Data;
 public readonly record struct SettingsViewToGenerate
 {
 	public readonly string DisplayName;

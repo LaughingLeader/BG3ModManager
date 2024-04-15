@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
-namespace ModManager.Utils;
+namespace ModManager.SourceGenerator.Utils;
 internal class CodeBuilder(char spaceChar = '\t')
 {
 	private readonly StringBuilder _sb = new();

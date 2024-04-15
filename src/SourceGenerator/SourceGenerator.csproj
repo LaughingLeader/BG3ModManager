@@ -11,7 +11,7 @@
 		<PlatformTarget>x64</PlatformTarget>
 
 		<AssemblyName>ModManager.SourceGenerator</AssemblyName>
-		<RootNamespace>ModManager</RootNamespace>
+		<RootNamespace>ModManager.SourceGenerator</RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup>

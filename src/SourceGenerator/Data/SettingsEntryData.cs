@@ -1,4 +1,4 @@
-﻿namespace ModManager.Data;
+﻿namespace ModManager.SourceGenerator.Data;
 public readonly record struct SettingsEntryData
 {
 	public readonly string PropertyName;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Text;
 
-using ModManager.Data;
+using ModManager.SourceGenerator.Data;
 
 using System.Text;
 
