@@ -2,33 +2,65 @@
 public readonly record struct SettingsEntryData
 {
 	public readonly string PropertyName;
-	public readonly string PropertyType;
+	public readonly ITypeSymbol PropertyType;
+	public readonly string PropertyTypeName;
 	public readonly string? DisplayName;
 	public readonly string? ToolTip;
-	public readonly bool IsDebug;
-	public readonly bool HideFromUI;
+	public readonly string? BindTo;
+	public readonly string? BindVisibilityTo;
+	public readonly bool DisableAutoGen;
 
-	public SettingsEntryData(string propertyName, string propertyType, string? name, string? tooltip, bool isDebug = false, bool hide = false)
+	public SettingsEntryData(string propertyName, ITypeSymbol propertyType, string? name, string? tooltip, string? bindTo, string? bindVisibilityTo, bool disableAutoGen)
 	{
 		PropertyName = propertyName;
 		PropertyType = propertyType;
+		PropertyTypeName = propertyType.Name;
 		DisplayName = name;
 		ToolTip = tooltip;
-		IsDebug = isDebug;
-		HideFromUI = hide;
+		BindTo = bindTo;
+		BindVisibilityTo = bindVisibilityTo;
+		DisableAutoGen = disableAutoGen;
 	}
 
 	public static SettingsEntryData FromAttribute(IPropertySymbol symbol, AttributeData attribute)
 	{
 		var propertyName = symbol.Name;
-		var propertyType = symbol.Type.Name;
 		var name = "";
 		var tooltip = "";
-		var isDebug = false;
-		var hideFromUI = false;
+		string? bindTo = null;
+		string? bindVisibilityTo = null;
+		bool disableAutoGen = false;
 
-		foreach(var namedArg in attribute.NamedArguments)
+		for (var i = 0; i < attribute.ConstructorArguments.Length; i++)
 		{
+			var arg = attribute.ConstructorArguments[i];
+			if (arg.IsNull) continue;
+
+			var value = arg.Value?.ToString();
+			switch (i)
+			{
+				case 0:
+					name = value;
+					break;
+				case 1:
+					tooltip = value;
+					break;
+				case 2:
+					bindTo = value;
+					break;
+				case 3:
+					bindVisibilityTo = value;
+					break;
+				case 4:
+					disableAutoGen = bool.Parse(value);
+					break;
+			}
+		}
+
+		foreach (var namedArg in attribute.NamedArguments)
+		{
+			if (namedArg.Value.IsNull) continue;
+
 			var value = namedArg.Value.Value?.ToString();
 			switch (namedArg.Key)
 			{
@@ -38,36 +70,23 @@ public readonly record struct SettingsEntryData
 				case "ToolTip":
 					tooltip = value;
 					break;
-				case "IsDebug":
-					isDebug = bool.Parse(value);
+				case "BindTo":
+					bindTo = value;
 					break;
-				case "HideFromUI":
-					hideFromUI = bool.Parse(value);
+				case "BindVisibilityTo":
+					bindVisibilityTo = value;
+					break;
+				case "DisableAutoGen":
+					disableAutoGen = bool.Parse(value);
 					break;
 			}
 		}
 
-		var i = 0;
-		foreach(var arg in attribute.ConstructorArguments)
+		if(propertyName == "DebugModeEnabled")
 		{
-			switch (i)
-			{
-				case 0:
-					name = arg.Value?.ToString();
-					break;
-				case 1:
-					tooltip = arg.Value?.ToString();
-					break;
-				case 2:
-					isDebug = bool.Parse(arg.Value?.ToString());
-					break;
-				case 3:
-					hideFromUI = bool.Parse(arg.Value?.ToString());
-					break;
-			}
-			i++;
+			System.Diagnostics.Trace.WriteLine(propertyName);
 		}
 
-		return new SettingsEntryData(propertyName, propertyType, name, tooltip, isDebug, hideFromUI);
+		return new SettingsEntryData(propertyName, symbol.Type, name, tooltip, bindTo, bindVisibilityTo, disableAutoGen);
 	}
 }

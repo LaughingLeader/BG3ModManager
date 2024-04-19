@@ -8,6 +8,8 @@ namespace ModManager.Models.Settings;
 [DataContract]
 public class ScriptExtenderSettings : ReactiveObject
 {
+	[Reactive] public bool DevOptionsEnabled { get; set; }
+
 	[Reactive] public bool ExtenderIsAvailable { get; set; }
 	[Reactive] public bool ExtenderUpdaterIsAvailable { get; set; }
 	[Reactive] public string? ExtenderVersion { get; set; }
@@ -59,17 +61,17 @@ public class ScriptExtenderSettings : ReactiveObject
 	[DefaultValue(false)]
 	public bool LogRuntime { get; set; }
 
-	[SettingsEntry("Disable Launcher", "Prevents the exe from force-opening the launcher\nMay not work correctly if extender auto-updating is enabled, or the --skip-launcher launch param is set", true)]
+	[SettingsEntry("Disable Launcher", "Prevents the exe from force-opening the launcher\nMay not work correctly if extender auto-updating is enabled, or the --skip-launcher launch param is set", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool DisableLauncher { get; set; }
 
-	[SettingsEntry("Disable Story Merge", "Prevents story.div.osi merging, which automatically happens when mods are present\nMay only occur when loading a save", true)]
+	[SettingsEntry("Disable Story Merge", "Prevents story.div.osi merging, which automatically happens when mods are present\nMay only occur when loading a save", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(true)]
 	public bool DisableStoryMerge { get; set; }
 
-	[SettingsEntry("Disable Story Patching", "Prevents patching story.bin with story.div.osi when loading saves, effectively preventing the Osiris scripts in the save from updating", true)]
+	[SettingsEntry("Disable Story Patching", "Prevents patching story.bin with story.div.osi when loading saves, effectively preventing the Osiris scripts in the save from updating", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool DisableStoryPatching { get; set; }
@@ -84,7 +86,7 @@ public class ScriptExtenderSettings : ReactiveObject
 	[DefaultValue(true)]
 	public bool EnableAchievements { get; set; }
 
-	[SettingsEntry("Enable Extensions", "Enables or disables extender API functionality", true)]
+	[SettingsEntry("Enable Extensions", "Enables or disables extender API functionality", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(true)]
 	public bool EnableExtensions { get; set; }
@@ -94,17 +96,17 @@ public class ScriptExtenderSettings : ReactiveObject
 	[DefaultValue(true)]
 	public bool SendCrashReports { get; set; }
 
-	[SettingsEntry("Enable Osiris Debugger", "Enables the Osiris debugger interface (vscode extension)", true)]
+	[SettingsEntry("Enable Osiris Debugger", "Enables the Osiris debugger interface (vscode extension)", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool EnableDebugger { get; set; }
 
-	[SettingsEntry("Osiris Debugger Port", "Port number the Osiris debugger will listen on\nDefault: 9999", true)]
+	[SettingsEntry("Osiris Debugger Port", "Port number the Osiris debugger will listen on\nDefault: 9999", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(9999)]
 	public int DebuggerPort { get; set; }
 
-	[SettingsEntry("Dump Network Strings", "Dumps the NetworkFixedString table to LogDirectory\nMainly useful for debugging desync issues", true)]
+	[SettingsEntry("Dump Network Strings", "Dumps the NetworkFixedString table to LogDirectory\nMainly useful for debugging desync issues", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool DumpNetworkStrings { get; set; }
@@ -114,27 +116,27 @@ public class ScriptExtenderSettings : ReactiveObject
 	[DefaultValue(0)]
 	public int DebuggerFlags { get; set; }
 
-	[SettingsEntry("Enable Lua Debugger", "Enables the Lua debugger interface (vscode extension)", true)]
+	[SettingsEntry("Enable Lua Debugger", "Enables the Lua debugger interface (vscode extension)", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool EnableLuaDebugger { get; set; }
 
-	[SettingsEntry("Lua Builtin Directory", "An additional directory where the Script Extender will check for builtin scripts\nThis setting is meant for developers, to make it easier to test builtin script changes", true)]
+	[SettingsEntry("Lua Builtin Directory", "An additional directory where the Script Extender will check for builtin scripts\nThis setting is meant for developers, to make it easier to test builtin script changes", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue("")]
 	public string? LuaBuiltinResourceDirectory { get; set; }
 
-	[SettingsEntry("Clear Console On Reset", "Clears the extender console when the reset command is used", true)]
+	[SettingsEntry("Clear Console On Reset", "Clears the extender console when the reset command is used", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(true)]
 	public bool ClearOnReset { get; set; }
 
-	[SettingsEntry("Default to Client Side", "Defaults the extender console to the client-side\nThis is setting is intended for developers", true)]
+	[SettingsEntry("Default to Client Side", "Defaults the extender console to the client-side\nThis is setting is intended for developers", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool DefaultToClientConsole { get; set; }
 
-	[SettingsEntry("Show Performance Warnings", "Print warnings to the extender console window, which indicates when the server-side part of the game lags behind (a.k.a. warnings about ticks taking too long).", true)]
+	[SettingsEntry("Show Performance Warnings", "Print warnings to the extender console window, which indicates when the server-side part of the game lags behind (a.k.a. warnings about ticks taking too long).", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool ShowPerfWarnings { get; set; }

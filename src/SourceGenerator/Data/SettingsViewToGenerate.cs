@@ -38,8 +38,6 @@ public readonly record struct SettingsViewToGenerate
 		code.AppendLine(string.Empty);
 		code.AppendLine($"public partial class {DisplayName} : ReactiveUserControl<{TypeName}>");
 		code.StartScope();
-		code.AppendLine(string.Empty);
-
 		code.AppendLine($"public {DisplayName}()");
 		code.StartScope();
 		code.AppendLine("InitializeComponent();");
@@ -48,6 +46,8 @@ public readonly record struct SettingsViewToGenerate
 		code.EndScope();
 		return code.ToString();
 	}
+
+	private const string DescriptionAttributeName = "System.ComponentModel.DescriptionAttribute";
 
 	public readonly string ToXaml()
 	{
@@ -60,25 +60,84 @@ public readonly record struct SettingsViewToGenerate
 
 		foreach (var entry in Entries)
 		{
-			if (entry.HideFromUI) continue;
+			if (entry.DisableAutoGen) continue;
 
 			var textBlockName = $"{entry.PropertyName}TextBlock";
 			var tooltipBinding = $"{{Binding ElementName={textBlockName}, Path=(ToolTip.Tip)}}";
 
-			code.AppendLine($"<TextBlock x:Name=\"{textBlockName}\" Text=\"{entry.DisplayName}\" ToolTip.Tip=\"{entry.ToolTip}\" />");
-			switch (entry.PropertyType)
+			code.AppendLine($"<TextBlock Classes=\"left\" x:Name=\"{textBlockName}\" Text=\"{entry.DisplayName}\" ToolTip.Tip=\"{entry.ToolTip}\" />");
+
+			var controlText = "";
+			var bindTo = !string.IsNullOrEmpty(entry.BindTo) ? entry.BindTo : entry.PropertyName;
+			var isSingleLine = true;
+
+			switch (entry.PropertyTypeName)
 			{
 				case "Boolean":
-					code.AppendLine($"<CheckBox IsChecked=\"{{Binding {entry.PropertyName}}}\" ToolTip.Tip=\"{tooltipBinding}\" />");
+					controlText = $"<CheckBox Classes=\"right\" IsChecked =\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 					break;
 				case "String":
-					code.AppendLine($"<TextBox Text=\"{{Binding {entry.PropertyName}}}\" ToolTip.Tip=\"{tooltipBinding}\" />");
+					controlText = $"<TextBox Classes=\"compact\" Text=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+					break;
+				default:
+					if (entry.PropertyType.TypeKind == TypeKind.Enum)
+					{
+						isSingleLine = false;
+						var comboText = $"<ComboBox SelectedIndex=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+						if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
+						{
+							comboText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
+						}
+						comboText += ">";
+						code.AppendLine(comboText);
+						code.StartScope("");
+						
+						foreach(var member in entry.PropertyType.GetMembers())
+						{
+							//Avoid adding .ctor etc
+							if (member.Kind == SymbolKind.Field)
+							{
+								string? tooltip = "";
+								var attributes = member.GetAttributes();
+								var descriptionAttribute = member.GetAttributes().FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == DescriptionAttributeName);
+								if (descriptionAttribute != null)
+								{
+									if (descriptionAttribute.ConstructorArguments.FirstOrDefault() is var arg && !arg.IsNull)
+									{
+										tooltip = arg.ToCSharpString().Replace("\"", string.Empty);
+									}
+									if (string.IsNullOrEmpty(tooltip) && descriptionAttribute.NamedArguments.FirstOrDefault(x => x.Key == "Name") is var namedArg)
+									{
+										tooltip = namedArg.Value.ToCSharpString().Replace("\"", string.Empty);
+									}
+								}
+
+								tooltip ??= string.Empty;
+								code.AppendLine($"<ComboBoxItem Content=\"{member.Name}\" ToolTip.Tip=\"{tooltip}\" />");
+							}
+						}
+
+						code.EndScope("");
+						code.AppendLine("</ComboBox>");
+					}
 					break;
 			}
+
+			if(isSingleLine)
+			{
+				if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
+				{
+					controlText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
+				}
+				controlText += "/>";
+
+				code.AppendLine(controlText);
+			}
+			
 			code.AppendLine(string.Empty);
 			totalRows++;
 		}
-		return @$"
+		return @$"<!--auto-generated-->
 <UserControl
 	x:Class=""ModManager.Views.Generated.{DisplayName}""
 	xmlns=""https://github.com/avaloniaui""
@@ -88,6 +147,8 @@ public readonly record struct SettingsViewToGenerate
 	xmlns:controls=""using:ModManager.Controls""
 	xmlns:vm=""using:{Namespace}""
 	x:DataType=""vm:{TypeName}""
+	d:DesignHeight=""900""
+    d:DesignWidth=""1600""
 	mc:Ignorable=""d"">
 	<controls:AutoGrid RowCount=""{totalRows}"" RowHeight=""auto"">
 		<controls:AutoGrid.ColumnDefinitions>
@@ -97,7 +158,6 @@ public readonly record struct SettingsViewToGenerate
 
 		{code.ToString().Trim()}
 	</controls:AutoGrid>
-</UserControl>
-";
+</UserControl>";
 	}
 }

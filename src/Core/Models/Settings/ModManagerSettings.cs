@@ -54,7 +54,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public string? LoadOrderPath { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Enable Internal Log", "Enable the log for the mod manager", HideFromUI = true)]
+	[SettingsEntry("Enable Internal Log", "Enable the log for the mod manager", DisableAutoGen = true)]
 	[DataMember, Reactive] public bool LogEnabled { get; set; }
 
 	[DefaultValue(true)]
@@ -107,10 +107,14 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 		}
 	}
 
-	[DefaultValue(DivinityGameLaunchWindowAction.None)]
-	[SettingsEntry("On Game Launch", "When the game launches through the mod manager, this action will be performed")]
 	[DataMember, Reactive]
-	public DivinityGameLaunchWindowAction ActionOnGameLaunch { get; set; }
+	[SettingsEntry("On Game Launch", "When the game launches through the mod manager, this action will be performed", nameof(ActionOnGameLaunchIndex))]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public GameLaunchWindowAction ActionOnGameLaunch { get; set; }
+
+	[DefaultValue(0)]
+	[Reactive]
+	public int ActionOnGameLaunchIndex { get; set; }
 
 	[DefaultValue(false)]
 	[SettingsEntry("Disable Missing Mod Warnings", "If a load order is missing mods, no warnings will be displayed")]
@@ -124,7 +128,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[Reactive] public bool DisplayFileNames { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Mod Developer Mode", "This enables features for mod developers, such as being able to copy a mod's UUID in context menus, and additional Script Extender options", HideFromUI = true)]
+	[SettingsEntry("Mod Developer Mode", "This enables features for mod developers, such as being able to copy a mod's UUID in context menus, and additional Script Extender options", DisableAutoGen = true)]
 	[DataMember, Reactive]
 	public bool DebugModeEnabled { get; set; }
 
@@ -190,7 +194,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 		ExtenderSettings.WhenAnyPropertyChanged(extenderProperties).Subscribe((c) =>
 		{
 			if (SettingsWindowIsOpen) CanSaveSettings = true;
-			this.RaisePropertyChanged("ExtenderLogDirectory");
+			this.RaisePropertyChanged(nameof(ExtenderLogDirectory));
 		});
 
 		var extenderUpdaterProperties = typeof(ScriptExtenderUpdateConfig)
@@ -205,6 +209,12 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 		});
 
 		this.WhenAnyValue(x => x.DebugModeEnabled).Subscribe(b => DivinityApp.DeveloperModeEnabled = b);
+
+		this.WhenAnyValue(x => x.ActionOnGameLaunchIndex).Select(x => (GameLaunchWindowAction)x).BindTo(this, x => x.ActionOnGameLaunch);
+		this.WhenAnyValue(x => x.ActionOnGameLaunch).Select(x => (int)x).BindTo(this, x => x.ActionOnGameLaunchIndex);
+
+		this.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderSettings, x => x.DevOptionsEnabled);
+		this.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderUpdaterSettings, x => x.DevOptionsEnabled);
 
 		this.SetToDefault();
 	}

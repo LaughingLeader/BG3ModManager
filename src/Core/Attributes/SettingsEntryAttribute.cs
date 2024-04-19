@@ -8,13 +8,17 @@ public class SettingsEntryAttribute : Attribute
 {
 	public string? DisplayName { get; set; }
 	public string? ToolTip { get; set; }
-	public bool IsDebug { get; set; }
-	public bool HideFromUI { get; set; }
-	public SettingsEntryAttribute(string displayName = "", string tooltip = "", bool isDebug = false)
+	public string? BindTo { get; set; }
+	public string? BindVisibilityTo { get; set; }
+	public bool DisableAutoGen { get; set; }
+
+	public SettingsEntryAttribute(string displayName = "", string tooltip = "", string? bindTo = null, string? bindVisibilityTo = null, bool disableAutoGen = false)
 	{
 		DisplayName = displayName;
 		ToolTip = tooltip;
-		IsDebug = isDebug;
+		BindTo = bindTo;
+		BindVisibilityTo = bindVisibilityTo;
+		DisableAutoGen = disableAutoGen;
 	}
 }
 

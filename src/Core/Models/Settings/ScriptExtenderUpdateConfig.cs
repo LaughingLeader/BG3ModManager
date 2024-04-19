@@ -9,10 +9,11 @@ namespace ModManager.Models.Settings;
 [DataContract]
 public class ScriptExtenderUpdateConfig : ReactiveObject
 {
+	[Reactive] public bool DevOptionsEnabled { get; set; }
 	[Reactive] public bool UpdaterIsAvailable { get; set; }
 	[Reactive] public int UpdaterVersion { get; set; }
 
-	[SettingsEntry("Update Channel", "Use a specific update channel", HideFromUI = true)]
+	[SettingsEntry("Update Channel", "Use a specific update channel", DisableAutoGen = true)]
 	[DataMember, Reactive]
 	[DefaultValue(ExtenderUpdateChannel.Release)]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
@@ -23,7 +24,7 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 	[DefaultValue("")]
 	public string? TargetVersion { get; set; }
 
-	[SettingsEntry("Target Resource Digest", "Use a specific Digest for the target update", true)]
+	[SettingsEntry("Target Resource Digest", "Use a specific Digest for the target update", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue("")]
 	public string? TargetResourceDigest { get; set; }
@@ -43,22 +44,22 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 	[DefaultValue(false)]
 	public bool Debug { get; set; }
 
-	[SettingsEntry("Manifest URL", "", true)]
+	[SettingsEntry("Manifest URL", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue("")]
 	public string? ManifestURL { get; set; }
 
-	[SettingsEntry("Manifest Name", "", true)]
+	[SettingsEntry("Manifest Name", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue("")]
 	public string? ManifestName { get; set; }
 
-	[SettingsEntry("CachePath", "", true)]
+	[SettingsEntry("CachePath", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue("")]
 	public string? CachePath { get; set; }
 
-	[SettingsEntry("Validate Signature", "", true)]
+	[SettingsEntry("Validate Signature", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool ValidateSignature { get; set; }

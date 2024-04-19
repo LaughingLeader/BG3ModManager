@@ -23,16 +23,16 @@ public class ModManagerUpdateSettings : ReactiveObject
 
 	//TODO: Remove if Larian doesn't add workshop support
 	[DefaultValue(true)]
-	[SettingsEntry("Update Steam Workshop Mods", "Automatically check for updates for mods configured with Steam Workshop releases", HideFromUI = true)]
+	[SettingsEntry("Update Steam Workshop Mods", "Automatically check for updates for mods configured with Steam Workshop releases")]
 	[DataMember, Reactive] public bool UpdateSteamWorkshopMods { get; set; }
 
 	[DefaultValue("")]
-	[SettingsEntry("NexusMods API Key", "Your NexusMods API key, which will allow the mod manager to fetch mod updates/information", HideFromUI = true)]
+	[SettingsEntry("NexusMods API Key", "Your NexusMods API key, which will allow the mod manager to fetch mod updates/information")]
 	[DataMember, Reactive] public string? NexusModsAPIKey { get; set; }
 
 	//Unused since BG3 doesn't have Workshop support, as of 3/1/2024
 	[DefaultValue("")]
-	[SettingsEntry("Steam Web API Key", "Your Steam Web API key, which will allow the mod manager to fetch mod updates/information using the Steam Web API", HideFromUI = true)]
+	//[SettingsEntry("Steam Web API Key", "Your Steam Web API key, which will allow the mod manager to fetch mod updates/information using the Steam Web API", HideFromUI = true)]
 	[DataMember, Reactive] public string? SteamWebAPIKey { get; set; }
 
 	[DefaultValue(typeof(TimeSpan), "00:30:00")] // 30 minutes

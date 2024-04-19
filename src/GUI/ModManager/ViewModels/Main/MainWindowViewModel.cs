@@ -654,14 +654,14 @@ Directory the zip will be extracted to:
 			FileUtils.TryOpenPath(steamUrl);
 		}
 
-		if (Settings.ActionOnGameLaunch != DivinityGameLaunchWindowAction.None)
+		if (Settings.ActionOnGameLaunch != GameLaunchWindowAction.None)
 		{
 			switch (Settings.ActionOnGameLaunch)
 			{
-				case DivinityGameLaunchWindowAction.Minimize:
+				case GameLaunchWindowAction.Minimize:
 					Window.WindowState = WindowState.Minimized;
 					break;
-				case DivinityGameLaunchWindowAction.Close:
+				case GameLaunchWindowAction.Close:
 					App.Current.Shutdown();
 					break;
 			}
