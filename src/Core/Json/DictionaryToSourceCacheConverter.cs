@@ -17,8 +17,6 @@ public class DictionaryToSourceCacheConverter<TValue> : JsonConverter<SourceCach
 	{
 		if (reader.TokenType == JsonTokenType.Null) return default;
 
-		var value = reader.GetString();
-
 		if (reader.TokenType == JsonTokenType.StartObject)
 		{
 			try
@@ -48,11 +46,11 @@ public class DictionaryToSourceCacheConverter<TValue> : JsonConverter<SourceCach
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error converting dictionary: {value}", ex);
+				throw new Exception($"Error converting dictionary", ex);
 			}
 		}
 
-		throw new Exception($"Unexpected token({reader.TokenType}) or value({value}");
+		throw new Exception($"Unexpected token type ({reader.TokenType})");
 	}
 
 	public override void Write(Utf8JsonWriter writer, SourceCache<TValue, string>? cache, JsonSerializerOptions options)
