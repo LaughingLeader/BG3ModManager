@@ -74,78 +74,28 @@ public class SettingsService : ReactiveObject, ISettingsService
 					}
 				}
 
-				foreach (var dict in ignoredModsData.Mods)
+				foreach (var ignoredMod in ignoredModsData.Mods)
 				{
 					var mod = new DivinityModData();
 					mod.SetIsBaseGameMod(true);
 					mod.IsLarianMod = true;
-					if (dict.TryGetValue("UUID", out var uuid))
-					{
-						mod.UUID = (string)uuid;
+					if (ignoredMod.UUID.IsValid()) mod.UUID = ignoredMod.UUID;
+					if (ignoredMod.Name.IsValid()) mod.Name = ignoredMod.Name;
+					if (ignoredMod.Description.IsValid()) mod.Description = ignoredMod.Description;
+					if (ignoredMod.Folder.IsValid()) mod.Folder = ignoredMod.Folder;
+					if (ignoredMod.Type.IsValid()) mod.ModType = ignoredMod.Type;
+					if (ignoredMod.Author.IsValid()) mod.Author = ignoredMod.Author;
+					if (ignoredMod.Version != null) mod.Version = new LarianVersion(ignoredMod.Version.Value);
+					if (ignoredMod.Tags.IsValid()) mod.AddTags(ignoredMod.Tags.Split(';'));
 
-						if (dict.TryGetValue("Name", out var name))
+					if (ignoredMod.Targets.IsValid())
+					{
+						mod.Targets = ignoredMod.Targets;
+
+						mod.Modes.Clear();
+						foreach (var t in ignoredMod.Targets.Split(';'))
 						{
-							mod.Name = (string)name;
-						}
-						if (dict.TryGetValue("Description", out var desc))
-						{
-							mod.Description = (string)desc;
-						}
-						if (dict.TryGetValue("Folder", out var folder))
-						{
-							mod.Folder = (string)folder;
-						}
-						if (dict.TryGetValue("Type", out var modType))
-						{
-							mod.ModType = (string)modType;
-						}
-						if (dict.TryGetValue("Author", out var author))
-						{
-							mod.Author = (string)author;
-						}
-						if (dict.TryGetValue("Targets", out var targets))
-						{
-							var tstr = (string)targets;
-							if (!String.IsNullOrEmpty(tstr))
-							{
-								mod.Modes.Clear();
-								var strTargets = tstr.Split(';');
-								foreach (var t in strTargets)
-								{
-									mod.Modes.Add(t);
-								}
-							}
-						}
-						if (dict.TryGetValue("Version", out var vObj))
-						{
-							ulong version;
-							if (vObj is string vStr)
-							{
-								version = ulong.Parse(vStr);
-							}
-							else
-							{
-								version = Convert.ToUInt64(vObj);
-							}
-							mod.Version = new LarianVersion(version);
-						}
-						if (dict.TryGetValue("Tags", out var tags))
-						{
-							if (tags is string tagsText && !String.IsNullOrWhiteSpace(tagsText))
-							{
-								mod.AddTags(tagsText.Split(';'));
-							}
-						}
-						var existingIgnoredMod = DivinityApp.IgnoredMods.FirstOrDefault(x => x.UUID == mod.UUID);
-						if (existingIgnoredMod == null)
-						{
-							DivinityApp.IgnoredMods.Add(mod);
-							DivinityApp.Log($"Ignored mod added: Name({mod.Name}) UUID({mod.UUID})");
-						}
-						else if (existingIgnoredMod.Version < mod.Version)
-						{
-							DivinityApp.IgnoredMods.Remove(existingIgnoredMod);
-							DivinityApp.IgnoredMods.Add(mod);
+							mod.Modes.Add(t);
 						}
 					}
 				}
