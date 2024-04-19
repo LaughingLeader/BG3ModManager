@@ -4,10 +4,9 @@ namespace ModManager.Json;
 
 public class JsonArrayToSourceListConverter<T> : JsonConverter<SourceList<T>> where T : class
 {
-	public override bool CanConvert(Type objectType)
-	{
-		return objectType.IsArray && objectType.GetElementType() == typeof(T);
-	}
+	private static readonly Type _type = typeof(SourceList<T>);
+
+	public override bool CanConvert(Type objectType) => _type.IsAssignableFrom(objectType);
 
 	public override SourceList<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
