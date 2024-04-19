@@ -1,0 +1,47 @@
+<!--auto-generated-->
+<UserControl
+	x:Class="ModManager.Views.Generated.ScriptExtenderUpdateConfigView"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:controls="using:ModManager.Controls"
+	xmlns:vm="using:ModManager.Models.Settings"
+	x:DataType="vm:ScriptExtenderUpdateConfig"
+	d:DesignHeight="900"
+    d:DesignWidth="1600"
+	mc:Ignorable="d">
+	<controls:AutoGrid RowCount="9" RowHeight="auto">
+		<controls:AutoGrid.ColumnDefinitions>
+			<ColumnDefinition Width="auto" />
+			<ColumnDefinition Width="*" />
+		</controls:AutoGrid.ColumnDefinitions>
+
+		<TextBlock Classes="left" x:Name="TargetVersionTextBlock" Text="Target Version" ToolTip.Tip="Update to a specific version of the script extender (ex. '5.0.0.0')" />
+		<TextBox Classes="compact" Text="{Binding TargetVersion}" ToolTip.Tip="{Binding ElementName=TargetVersionTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="TargetResourceDigestTextBlock" Text="Target Resource Digest" ToolTip.Tip="Use a specific Digest for the target update" />
+		<TextBox Classes="compact" Text="{Binding TargetResourceDigest}" ToolTip.Tip="{Binding ElementName=TargetResourceDigestTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		
+		<TextBlock Classes="left" x:Name="DisableUpdatesTextBlock" Text="Disable Updates" ToolTip.Tip="Disable automatic updating to the latest extender version" />
+		<CheckBox Classes="right" IsChecked ="{Binding DisableUpdates}" ToolTip.Tip="{Binding ElementName=DisableUpdatesTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="IPv4OnlyTextBlock" Text="IPv4Only" ToolTip.Tip="Use only IPv4 when fetching the latest update" />
+		<CheckBox Classes="right" IsChecked ="{Binding IPv4Only}" ToolTip.Tip="{Binding ElementName=IPv4OnlyTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="DebugTextBlock" Text="Debug" ToolTip.Tip="Enable debug mode in the extender updater, which prints more messages to the console window" />
+		<CheckBox Classes="right" IsChecked ="{Binding Debug}" ToolTip.Tip="{Binding ElementName=DebugTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="ManifestURLTextBlock" Text="Manifest URL" ToolTip.Tip="" />
+		<TextBox Classes="compact" Text="{Binding ManifestURL}" ToolTip.Tip="{Binding ElementName=ManifestURLTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		
+		<TextBlock Classes="left" x:Name="ManifestNameTextBlock" Text="Manifest Name" ToolTip.Tip="" />
+		<TextBox Classes="compact" Text="{Binding ManifestName}" ToolTip.Tip="{Binding ElementName=ManifestNameTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		
+		<TextBlock Classes="left" x:Name="CachePathTextBlock" Text="CachePath" ToolTip.Tip="" />
+		<TextBox Classes="compact" Text="{Binding CachePath}" ToolTip.Tip="{Binding ElementName=CachePathTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		
+		<TextBlock Classes="left" x:Name="ValidateSignatureTextBlock" Text="Validate Signature" ToolTip.Tip="" />
+		<CheckBox Classes="right" IsChecked ="{Binding ValidateSignature}" ToolTip.Tip="{Binding ElementName=ValidateSignatureTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+	</controls:AutoGrid>
+</UserControl>

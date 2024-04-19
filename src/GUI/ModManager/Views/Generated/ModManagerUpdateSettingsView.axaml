@@ -1,0 +1,42 @@
+<!--auto-generated-->
+<UserControl
+	x:Class="ModManager.Views.Generated.ModManagerUpdateSettingsView"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:controls="using:ModManager.Controls"
+	xmlns:vm="using:ModManager.Models.Settings"
+	x:DataType="vm:ModManagerUpdateSettings"
+	d:DesignHeight="900"
+    d:DesignWidth="1600"
+	mc:Ignorable="d">
+	<controls:AutoGrid RowCount="7" RowHeight="auto">
+		<controls:AutoGrid.ColumnDefinitions>
+			<ColumnDefinition Width="auto" />
+			<ColumnDefinition Width="*" />
+		</controls:AutoGrid.ColumnDefinitions>
+
+		<TextBlock Classes="left" x:Name="UpdateScriptExtenderTextBlock" Text="Update the Script Extender" ToolTip.Tip="If the Script Extender updater is installed (DXGI.dll), automatically update it via Tools/Toolbox.exe" />
+		<CheckBox Classes="right" IsChecked ="{Binding UpdateScriptExtender}" ToolTip.Tip="{Binding ElementName=UpdateScriptExtenderTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="UpdateGitHubModsTextBlock" Text="Update GitHub Mods" ToolTip.Tip="Automatically check for updates for mods configured with GitHub repository releases" />
+		<CheckBox Classes="right" IsChecked ="{Binding UpdateGitHubMods}" ToolTip.Tip="{Binding ElementName=UpdateGitHubModsTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="UpdateNexusModsTextBlock" Text="Update NexusMods Mods" ToolTip.Tip="Automatically check for updates for mods configured with NexusMods releases" />
+		<CheckBox Classes="right" IsChecked ="{Binding UpdateNexusMods}" ToolTip.Tip="{Binding ElementName=UpdateNexusModsTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="UpdateSteamWorkshopModsTextBlock" Text="Update Steam Workshop Mods" ToolTip.Tip="Automatically check for updates for mods configured with Steam Workshop releases" />
+		<CheckBox Classes="right" IsChecked ="{Binding UpdateSteamWorkshopMods}" ToolTip.Tip="{Binding ElementName=UpdateSteamWorkshopModsTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="NexusModsAPIKeyTextBlock" Text="NexusMods API Key" ToolTip.Tip="Your NexusMods API key, which will allow the mod manager to fetch mod updates/information" />
+		<TextBox Classes="compact" Text="{Binding NexusModsAPIKey}" ToolTip.Tip="{Binding ElementName=NexusModsAPIKeyTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="MinimumUpdateTimePeriodTextBlock" Text="Minimum Update Time Period" ToolTip.Tip="Prevent checking for updates for individual mods until this amount of time has passed since the last check
+This is to prevent hitting API limits too quickly" />
+		/>
+		
+		<TextBlock Classes="left" x:Name="AllowAdultContentTextBlock" Text="Allow Adult Content" ToolTip.Tip="Allow adult content when downloading collections from NexusMods" />
+		<CheckBox Classes="right" IsChecked ="{Binding AllowAdultContent}" ToolTip.Tip="{Binding ElementName=AllowAdultContentTextBlock, Path=(ToolTip.Tip)}"/>
+	</controls:AutoGrid>
+</UserControl>
