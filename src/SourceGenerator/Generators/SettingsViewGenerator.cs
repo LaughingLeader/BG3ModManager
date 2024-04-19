@@ -1,7 +1,7 @@
-﻿using Microsoft.CodeAnalysis.Text;
+﻿using ModManager.SourceGenerator.Data;
 
-using ModManager.SourceGenerator.Data;
-
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace ModManager.Generators;
@@ -9,8 +9,11 @@ namespace ModManager.Generators;
 [Generator]
 public class SettingsViewGenerator : IIncrementalGenerator
 {
+	private const string ViewGeneratorAttributeName = "ModManager.ViewGeneratorAttribute";
 	private const string GenerateViewAttributeName = "ModManager.GenerateViewAttribute";
 	private const string SettingsEntryAttributeName = "ModManager.SettingsEntryAttribute";
+
+	private static IncrementalValueProvider<string?>? projectDirProvider;
 
 	private static IEnumerable<ValueTuple<IPropertySymbol, AttributeData>> GetSettingsAttributes(IPropertySymbol propertySymbol)
 	{
@@ -45,22 +48,35 @@ public class SettingsViewGenerator : IIncrementalGenerator
 		}
 	}
 
-	private static SettingsViewToGenerate? GetToGenerate(SemanticModel semanticModel, SyntaxNode declarationSyntax)
+	private static ValueTuple<INamedTypeSymbol, List<SettingsViewToGenerate>>? GetToGenerate(SemanticModel semanticModel, SyntaxNode declarationSyntax)
 	{
 		var symbol = semanticModel.GetDeclaredSymbol(declarationSyntax);
 
-		if (symbol is IPropertySymbol propertySymbol)
+		if (symbol is INamedTypeSymbol typeSymbol)
 		{
-			var entries = new List<SettingsEntryData>();
+			var views = new List<SettingsViewToGenerate>();
 
-			foreach (var entry in GetSettingsAttributes(propertySymbol))
+			foreach (var prop in typeSymbol.GetMembers())
 			{
-				entries.Add(SettingsEntryData.FromAttribute(entry.Item1, entry.Item2));
+				if (prop is IPropertySymbol propertySymbol)
+				{
+					var entries = new List<SettingsEntryData>();
+
+					foreach (var entry in GetSettingsAttributes(propertySymbol))
+					{
+						entries.Add(SettingsEntryData.FromAttribute(entry.Item1, entry.Item2));
+					}
+
+					if (entries.Count > 0)
+					{
+						views.Add(new SettingsViewToGenerate(propertySymbol, entries));
+					}
+				}
 			}
 
-			if(entries.Count > 0)
+			if (views.Count > 0)
 			{
-				return new SettingsViewToGenerate(propertySymbol, entries);
+				return (typeSymbol, views);
 			}
 		}
 
@@ -69,32 +85,65 @@ public class SettingsViewGenerator : IIncrementalGenerator
 
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		// Add the marker attribute
-		//context.RegisterPostInitializationOutput(static ctx => ctx.AddSource(
-		//	"EnumExtensionsAttribute.g.cs", SourceText.From(SourceGenHelpers.SettingsEntry, Encoding.UTF8)));
-
-		// If you're targeting the .NET 7 SDK, use this version instead:
-		IncrementalValuesProvider<SettingsViewToGenerate?> entriesToGenerate = context.SyntaxProvider
+		var entriesToGenerate = context.SyntaxProvider
 			.ForAttributeWithMetadataName(
-				GenerateViewAttributeName,
-				predicate: static (s, _) => true,
+				ViewGeneratorAttributeName,
+				predicate: static (s, _) => s.IsKind(SyntaxKind.ClassDeclaration),
 				transform: static (ctx, _) => GetToGenerate(ctx.SemanticModel, ctx.TargetNode))
-			.Where(static m => m is not null);
+			.Where(static x => x is not null)
+			.Collect()
+			.SelectMany((entries, _) => entries.Distinct());
 
-		// Generate source code for each enum found
-		context.RegisterSourceOutput(entriesToGenerate,
-			static (spc, source) => Execute(source, spc));
+		IncrementalValueProvider<string?> projectDirProvider = context.AnalyzerConfigOptionsProvider
+		.Select(static (provider, _) => {
+			provider.GlobalOptions.TryGetValue("build_property.projectdir", out string? projectDirectory);
+
+			return projectDirectory;
+		});
+
+		var sourceOuput = entriesToGenerate.Combine(projectDirProvider);
+		context.RegisterSourceOutput(sourceOuput, Generate);
 	}
 
-	static void Execute(in SettingsViewToGenerate? settingsToGenerate, SourceProductionContext context)
+	private static void WriteFile(string outputPath, string contents)
 	{
-		if (settingsToGenerate is { } sg)
-		{
-			var xaml = sg.ToXaml();
-			var codeBehind = sg.ToCode();
+		using var writer = new StreamWriter(new FileStream(outputPath, FileMode.Create, FileAccess.Write), new UTF8Encoding(false, false));
+		writer.Write(contents);
+		writer.Flush();
+		writer.Close();
+	}
 
-			context.AddSource($"{sg.DisplayName}.g.axaml", SourceText.From(xaml, Encoding.UTF8));
-			context.AddSource($"{sg.DisplayName}.g.axaml.cs", SourceText.From(codeBehind, Encoding.UTF8));
+	private static void Generate(SourceProductionContext context, ValueTuple<ValueTuple<INamedTypeSymbol, List<SettingsViewToGenerate>>?, string?> x)
+	{
+		var (obj, projectDir) = x;
+		if(obj?.Item2 is { } entries && projectDir is string projectDirectory)
+		{
+			var outputDir = Path.Combine(projectDirectory, "Views/Generated/")!;
+
+			var names = string.Join(";", entries.Select(x => x.ClassName));
+			Trace.WriteLine($"[SettingsViewGenerator] Names: {names}");
+			Trace.WriteLine("");
+
+			foreach (var entry in entries)
+			{
+				Trace.WriteLine($"[SettingsViewGenerator] Generating view/class for {entry.DisplayName}");
+				try
+				{
+					//context.AddSource(entry.ClassName, SourceText.From(entry.ToXaml(), Encoding.UTF8));
+					//context.AddSource($"{entry.ClassName}.cs", SourceText.From(entry.ToCode(), Encoding.UTF8));
+
+					var outputPath = Path.Combine(outputDir, entry.ClassName)!;
+
+					Directory.CreateDirectory(outputDir);
+
+					WriteFile(Path.Combine(outputDir, entry.ClassName)!, entry.ToXaml());
+					WriteFile(Path.Combine(outputDir, $"{entry.ClassName}.cs")!, entry.ToCode());
+				}
+				catch(Exception ex)
+				{
+					Trace.WriteLine($"[SettingsViewGenerator] Error:\n{ex}");
+				}
+			}
 		}
 	}
 }

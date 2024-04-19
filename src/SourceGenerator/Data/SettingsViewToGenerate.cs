@@ -16,12 +16,16 @@ public readonly record struct SettingsViewToGenerate
 	public readonly bool IsDebug = false;
 #endif
 
+	public readonly string ClassName;
+
 	public SettingsViewToGenerate(IPropertySymbol symbol, List<SettingsEntryData> entries)
 	{
 		DisplayName = $"{symbol.Type.Name}View";
 		TypeName = symbol.Type.Name;
 		Namespace = symbol.Type.ContainingNamespace.ToDisplayString();
 		Entries = entries;
+
+		ClassName = $"{DisplayName}.axaml";
 	}
 
 	public readonly string ToCode()

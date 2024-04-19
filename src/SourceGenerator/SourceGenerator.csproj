@@ -4,38 +4,20 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 
-		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-
 		<Platforms>AnyCPU;x64</Platforms>
 		<PlatformTarget>x64</PlatformTarget>
 
-		<AssemblyName>ModManager.SourceGenerator</AssemblyName>
 		<RootNamespace>ModManager.SourceGenerator</RootNamespace>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<DevelopmentDependency>true</DevelopmentDependency>
+		<AssemblyName>ModManager.SourceGenerator</AssemblyName>
+		
+		<DebugType>embedded</DebugType>
+		
+		<IsPackable>true</IsPackable>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<!-- forces SDK to copy dependencies into build output to make packing easier -->
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<IncludeSymbols>false</IncludeSymbols>
 		<IsRoslynComponent>true</IsRoslynComponent>
-		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-		<!--<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+		<!--<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>-->
 	</PropertyGroup>
-
-	<ItemGroup>
-		<!-- Don't include the output from a previous source generator execution into future runs; the */** trick here ensures that there's
-  at least one subdirectory, which is our key that it's coming from a source generator as opposed to something that is coming from
-  some other tool. -->
-		<Compile Remove="$(CompilerGeneratedFilesOutputPath)/*/**/*.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" PrivateAssets="all" />

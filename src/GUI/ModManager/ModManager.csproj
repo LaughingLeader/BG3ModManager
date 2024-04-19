@@ -12,9 +12,7 @@
 		<ProjectReference Include="..\..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
 		<ProjectReference Include="..\..\Core\Core.csproj" />
 		<ProjectReference Include="..\..\Services\Services.csproj" />
-		<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<!--<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />-->
-		<!--<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />-->
+		<ProjectReference Include="..\..\SourceGenerator\SourceGenerator.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" OutputItemType="Analyzer" />
 	</ItemGroup>
 
 	<ItemGroup>

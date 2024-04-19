@@ -2,12 +2,13 @@
 
 namespace ModManager.ViewModels.Main;
 
-
+[Keybindings]
 public partial class MainCommandBarViewModel : ReactiveObject
 {
 	[Keybinding("Add New Order", Key.M)]
 	public RxCommandUnit? AddNewOrderCommand { get; set; }
-	//[Keybinding("Check For App Updates", Key.U)]
+
+	[Keybinding("Check For App Updates", Key.U)]
 	public RxCommandUnit? CheckForAppUpdatesCommand { get; set; }
 	public RxCommandUnit? CheckForGitHubModUpdatesCommand { get; set; }
 	public RxCommandUnit? CheckForNexusModsUpdatesCommand { get; set; }
@@ -89,7 +90,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			}
 		}, canToggleUpdatesView);
 
-		this.RegisterKeybindings();
+		//this.RegisterKeybindings();
 	}
 
 	public MainCommandBarViewModel()

@@ -41,7 +41,7 @@ public readonly record struct HotkeyData
 			};
 		if (Key != null) args.Add(Key);
 		if (Modifiers != null) args.Add(Modifiers);
-		return $"keys.RegisterCommand({string.Join(", ", args)})";
+		return $"keys.RegisterCommand({string.Join(", ", args)});";
 	}
 
 	public static HotkeyData FromAttribute(IPropertySymbol symbol, AttributeData attribute)
