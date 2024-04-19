@@ -3,4 +3,69 @@
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontFamily" Value="avares://Avalonia.Fonts.Inter/Assets#Inter" />
 	</Style>
+
+	<Style Selector="TextBox.compact">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="Margin" Value="0,0,0,8" />
+		<Setter Property="MinHeight" Value="12" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Template" Value="{StaticResource CompactTextBox}" />
+		<Setter Property="TextAlignment" Value="Left" />
+		<Setter Property="VerticalAlignment" Value="Top" />
+		<Setter Property="VerticalContentAlignment" Value="Top" />
+	</Style>
+
+	<Style Selector="TextBox.readonly-selectable">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="FontSize" Value="12" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="IsReadOnly" Value="True" />
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="Margin" Value="0,0,0,8" />
+		<Setter Property="MinHeight" Value="12" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Template" Value="{StaticResource CompactTextBox}" />
+		<Setter Property="TextAlignment" Value="Left" />
+		<Setter Property="ToolTip.Tip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+		<Setter Property="VerticalAlignment" Value="Top" />
+		<Setter Property="VerticalContentAlignment" Value="Top" />
+	</Style>
+
+	<Style Selector="TextBlock.left">
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Margin" Value="0,0,8,8" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="VerticalAlignment" Value="Top" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="TextAlignment" Value="Left" />
+	</Style>
+
+	<Style Selector="TextBlock.right">
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Margin" Value="0,0,0,8" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="VerticalAlignment" Value="Top" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="TextAlignment" Value="Left" />
+	</Style>
+
+	<Style Selector="CheckBox.right">
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Margin" Value="0,0,0,8" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="Separator">
+		<Setter Property="Margin" Value="0,0,0,8" />
+		<Setter Property="Background" Value="{DynamicResource SukiControlBorderBrush}" />
+	</Style>
 </Styles>

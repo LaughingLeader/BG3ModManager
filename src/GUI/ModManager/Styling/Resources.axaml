@@ -29,8 +29,7 @@
 							    SelectionEnd="{TemplateBinding SelectionEnd}"
 							    SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
 							    SelectionStart="{TemplateBinding SelectionStart}"
-							    Text="{TemplateBinding Text,
-							                           Mode=TwoWay}"
+							    Text="{TemplateBinding Text, Mode=TwoWay}"
 							    TextAlignment="{TemplateBinding TextAlignment}"
 							    TextBlock.Foreground="{TemplateBinding Foreground}"
 							    TextWrapping="{TemplateBinding TextWrapping}" />

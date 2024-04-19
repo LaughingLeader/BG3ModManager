@@ -25,8 +25,6 @@ public partial class ModPropertiesWindow : ReactiveWindow<ModPropertiesWindowVie
 				{
 					Hide();
 				}));
-
-				//new TextPresenter().FontSize = new TextBox().FontSize;
 			}
 		});
 	}

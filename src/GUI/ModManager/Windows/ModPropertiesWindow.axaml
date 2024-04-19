@@ -28,52 +28,10 @@
 	    BorderBrush="Transparent"
 	    BorderThickness="0">
 		<Grid RowDefinitions="*,auto">
+
 			<Panel Background="{DynamicResource ModPropertiesBackground}">
 				<TabControl>
 					<TabItem Header="General">
-						<TabItem.Styles>
-							<Style Selector="TextBox.selectable">
-								<Setter Property="Background" Value="Transparent" />
-								<Setter Property="BorderBrush" Value="Transparent" />
-								<Setter Property="BorderThickness" Value="0" />
-								<Setter Property="CornerRadius" Value="0" />
-								<Setter Property="FontSize" Value="12" />
-								<Setter Property="HorizontalAlignment" Value="Stretch" />
-								<Setter Property="IsReadOnly" Value="True" />
-								<Setter Property="IsTabStop" Value="False" />
-								<Setter Property="Margin" Value="0,0,0,8" />
-								<Setter Property="MinHeight" Value="12" />
-								<Setter Property="Padding" Value="0" />
-								<Setter Property="Template" Value="{StaticResource CompactTextBox}" />
-								<Setter Property="TextAlignment" Value="Left" />
-								<Setter Property="ToolTip.Tip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
-								<Setter Property="VerticalAlignment" Value="Top" />
-								<Setter Property="VerticalContentAlignment" Value="Top" />
-							</Style>
-
-							<Style Selector="TextBlock.left">
-								<Setter Property="Padding" Value="0" />
-								<Setter Property="Margin" Value="0,0,8,8" />
-								<Setter Property="Background" Value="Transparent" />
-								<Setter Property="VerticalAlignment" Value="Top" />
-								<Setter Property="HorizontalAlignment" Value="Stretch" />
-								<Setter Property="TextAlignment" Value="Left" />
-							</Style>
-
-							<Style Selector="TextBlock.right">
-								<Setter Property="Padding" Value="0" />
-								<Setter Property="Margin" Value="0,0,0,8" />
-								<Setter Property="Background" Value="Transparent" />
-								<Setter Property="VerticalAlignment" Value="Top" />
-								<Setter Property="HorizontalAlignment" Value="Stretch" />
-								<Setter Property="TextAlignment" Value="Left" />
-							</Style>
-
-							<Style Selector="Separator">
-								<Setter Property="Margin" Value="0,0,0,8" />
-								<Setter Property="Background" Value="{DynamicResource SukiControlBorderBrush}" />
-							</Style>
-						</TabItem.Styles>
 						<controls:AutoGrid Margin="10,0" RowCount="8" RowHeight="auto">
 							<controls:AutoGrid.ColumnDefinitions>
 								<ColumnDefinition Width="auto" />
@@ -104,11 +62,11 @@
 							<TextBlock Classes="right" Text="{Binding ModType}" />
 
 							<TextBlock Classes="left" Text="Name:" />
-							<TextBox Classes="selectable" Text="{Binding ModName}" TextWrapping="Wrap" />
+							<TextBox Classes="readonly-selectable" Text="{Binding ModName}" TextWrapping="Wrap" />
 
 							<TextBlock Classes="left" Text="Description:" />
 							<TextBox MaxHeight="128"
-							    Classes="selectable"
+							    Classes="readonly-selectable"
 							    FontSize="12"
 							    Text="{Binding ModDescription}"
 							    TextWrapping="Wrap" />
@@ -116,7 +74,7 @@
 							<Separator Grid.ColumnSpan="2" />
 
 							<TextBlock Classes="left" Text="Location:" />
-							<TextBox Classes="selectable" Text="{Binding ModFilePath}" TextWrapping="NoWrap" />
+							<TextBox Classes="readonly-selectable" Text="{Binding ModFilePath}" TextWrapping="NoWrap" />
 
 							<TextBlock Classes="left" Text="Size:" />
 							<TextBlock Classes="right" Text="{Binding ModSizeText}" TextWrapping="NoWrap" />
