@@ -24,6 +24,10 @@
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'AoT'">
+		<PublishAot>true</PublishAot>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\ModManager\ModManager.csproj" />
 	</ItemGroup>

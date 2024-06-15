@@ -11,6 +11,10 @@
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'AoT'">
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
