@@ -22,7 +22,7 @@ namespace ModManager.ViewModels.Mods
         ///     ○ Match a character in the set [^@\s] atomically any number of times.<br/>
         /// </code>
         /// </remarks>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
         private static partial global::System.Text.RegularExpressions.Regex FilterPropertyRe() => global::System.Text.RegularExpressions.Generated.FilterPropertyRe_0.Instance;
     }
 }
@@ -45,7 +45,7 @@ namespace ModManager.ViewModels.Mods
         ///     ○ Match a character in the set [^"@] atomically any number of times.<br/>
         /// </code>
         /// </remarks>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
         private static partial global::System.Text.RegularExpressions.Regex FilterPropertyPatternWithQuotesRe() => global::System.Text.RegularExpressions.Generated.FilterPropertyPatternWithQuotesRe_1.Instance;
     }
 }
@@ -67,7 +67,7 @@ namespace ModManager.ViewModels
         /// ○ Match a character in the set [\n\r] atomically any number of times.<br/>
         /// </code>
         /// </remarks>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
         private static partial global::System.Text.RegularExpressions.Regex RemoveEmptyLinesRe() => global::System.Text.RegularExpressions.Generated.RemoveEmptyLinesRe_2.Instance;
     }
 }
@@ -85,7 +85,7 @@ namespace System.Text.RegularExpressions.Generated
     using System.Threading;
 
     /// <summary>Custom <see cref="Regex"/>-derived type for the FilterPropertyRe method.</summary>
-    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
     file sealed class FilterPropertyRe_0 : Regex
     {
         /// <summary>Cached, thread-safe singleton instance.</summary>
@@ -319,7 +319,7 @@ namespace System.Text.RegularExpressions.Generated
     }
     
     /// <summary>Custom <see cref="Regex"/>-derived type for the FilterPropertyPatternWithQuotesRe method.</summary>
-    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
     file sealed class FilterPropertyPatternWithQuotesRe_1 : Regex
     {
         /// <summary>Cached, thread-safe singleton instance.</summary>
@@ -577,7 +577,7 @@ namespace System.Text.RegularExpressions.Generated
     }
     
     /// <summary>Custom <see cref="Regex"/>-derived type for the RemoveEmptyLinesRe method.</summary>
-    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
     file sealed class RemoveEmptyLinesRe_2 : Regex
     {
         /// <summary>Cached, thread-safe singleton instance.</summary>
@@ -746,7 +746,7 @@ namespace System.Text.RegularExpressions.Generated
     }
     
     /// <summary>Helper methods used by generated <see cref="Regex"/>-derived implementations.</summary>
-    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.11423")]
+    [GeneratedCodeAttribute("System.Text.RegularExpressions.Generator", "8.0.10.21615")]
     file static class Utilities
     {
         /// <summary>Default timeout value set in <see cref="AppContext"/>, or <see cref="Regex.InfiniteMatchTimeout"/> if none was set.</summary>

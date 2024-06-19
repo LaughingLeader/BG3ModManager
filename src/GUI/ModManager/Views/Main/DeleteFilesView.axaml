@@ -1,11 +1,15 @@
-<UserControl
-	x:Class="ModManager.Views.Main.DeleteFilesView"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:vm="using:ModManager.ViewModels.Main"
-	d:DesignHeight="450"
-	d:DesignWidth="800"
-	x:DataType="vm:DeleteFilesViewModel"
-	mc:Ignorable="d" />
+<UserControl x:Class="ModManager.Views.Main.DeleteFilesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ModManager.ViewModels.Main"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:DeleteFilesViewModel"
+    mc:Ignorable="d">
+	<StackPanel>
+		<TextBlock x:Name="TestText" Text="Text Goes Here" ToolTip.Tip="Test" />
+		<CheckBox ToolTip.Tip="{Binding ElementName=TestText, Path=(ToolTip.Tip)}" />
+	</StackPanel>
+</UserControl>
