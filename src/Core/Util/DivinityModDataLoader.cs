@@ -1843,20 +1843,29 @@ public static partial class DivinityModDataLoader
 	{
 		var time = DateTimeOffset.Now;
 
-		using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
-		var baseMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
+		ModDirectoryLoadingResults baseMods = null!;
 
-		foreach (var mod in DivinityApp.IgnoredMods)
+		if(Directory.Exists(gameDataPath))
 		{
-			if (!baseMods.Mods.ContainsKey(mod.UUID))
+			using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
+			baseMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
+
+			foreach (var mod in DivinityApp.IgnoredMods)
 			{
-				baseMods.Mods[mod.UUID] = mod;
+				if (!baseMods.Mods.ContainsKey(mod.UUID))
+				{
+					baseMods.Mods[mod.UUID] = mod;
+				}
 			}
+
+			DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{gameDataPath}'");
+
+			time = DateTimeOffset.Now;
 		}
-
-		DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{gameDataPath}'");
-
-		time = DateTimeOffset.Now;
+		else
+		{
+			baseMods = new ModDirectoryLoadingResults(gameDataPath);
+		}
 
 		using var userPakParser = new DirectoryPakParser(userModsPath, FileUtils.FlatSearchOptions, baseMods.Mods, []);
 		var userMods = await userPakParser.ProcessAsync(detectDuplicates: true, parseLooseMetaFiles: false, token);
