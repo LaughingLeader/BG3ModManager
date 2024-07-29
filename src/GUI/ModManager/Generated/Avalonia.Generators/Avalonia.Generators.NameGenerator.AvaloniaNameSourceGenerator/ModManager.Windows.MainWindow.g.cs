@@ -8,6 +8,7 @@ namespace ModManager.Windows
 {
     partial class MainWindow
     {
+        internal global::SukiUI.Controls.SukiHost DialogHost;
         internal global::SukiUI.Controls.SukiBackground PART_Background;
         internal global::Avalonia.ReactiveUI.RoutedViewHost ViewHost;
 
@@ -31,6 +32,7 @@ namespace ModManager.Windows
             }
 #endif
 
+            DialogHost = this.FindNameScope()?.Find<global::SukiUI.Controls.SukiHost>("DialogHost");
             PART_Background = this.FindNameScope()?.Find<global::SukiUI.Controls.SukiBackground>("PART_Background");
             ViewHost = this.FindNameScope()?.Find<global::Avalonia.ReactiveUI.RoutedViewHost>("ViewHost");
         }
