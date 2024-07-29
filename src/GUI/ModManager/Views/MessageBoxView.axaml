@@ -1,16 +1,17 @@
 <UserControl x:Class="ModManager.Views.MessageBoxView"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="using:SukiUI.Controls"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:rxui="using:Avalonia.ReactiveUI"
-             xmlns:vm="using:ModManager.ViewModels"
-             d:DesignHeight="200"
-             d:DesignWidth="600"
-             x:DataType="vm:MessageBoxViewModel"
-             Background="Transparent"
-             mc:Ignorable="d">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:SukiUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="using:Avalonia.ReactiveUI"
+    xmlns:vm="using:ModManager.ViewModels"
+    d:DesignHeight="200"
+    d:DesignWidth="600"
+    x:CompileBindings="False"
+    x:DataType="vm:MessageBoxViewModel"
+    Background="Transparent"
+    mc:Ignorable="d">
 	<Design.DataContext>
 		<vm:DesignMessageBoxViewModel />
 	</Design.DataContext>
@@ -19,37 +20,37 @@
 		<TextBlock Text="{Binding Title}" TextAlignment="Center" />
 
 		<Border Grid.Row="1"
-		        Height="1"
-		        Margin="0,10,0,10"
-		        Background="{DynamicResource SukiControlBorderBrush}"
-		        BorderThickness="0" />
+		    Height="1"
+		    Margin="0,10,0,10"
+		    Background="{DynamicResource SukiControlBorderBrush}"
+		    BorderThickness="0" />
 
 		<ScrollViewer Grid.Row="2"
-		              MaxHeight="400"
-		              Margin="4,0"
-		              HorizontalAlignment="Center"
-		              VerticalAlignment="Center"
-		              HorizontalScrollBarVisibility="Disabled"
-		              VerticalScrollBarVisibility="Auto">
+		    MaxHeight="400"
+		    Margin="4,0"
+		    HorizontalAlignment="Center"
+		    VerticalAlignment="Center"
+		    HorizontalScrollBarVisibility="Disabled"
+		    VerticalScrollBarVisibility="Auto">
 			<TextBlock Padding="8"
-			           Text="{Binding Message}"
-			           TextAlignment="Left"
-			           TextWrapping="Wrap" />
+			    Text="{Binding Message}"
+			    TextAlignment="Left"
+			    TextWrapping="Wrap" />
 		</ScrollViewer>
 
 		<UniformGrid Grid.Row="3"
-		             HorizontalAlignment="Center"
-		             VerticalAlignment="Bottom"
-		             Rows="1">
+		    HorizontalAlignment="Center"
+		    VerticalAlignment="Bottom"
+		    Rows="1">
 			<Button Margin="8"
-			        Classes="Flat"
-			        Command="{Binding ConfirmCommand}"
-			        Content="{Binding ConfirmButtonText}" />
+			    Classes="Flat"
+			    Command="{Binding ConfirmCommand}"
+			    Content="{Binding ConfirmButtonText}" />
 			<Button Margin="8"
-			        Classes="Flat"
-			        Command="{Binding CancelCommand}"
-			        Content="{Binding CancelButtonText}"
-			        IsVisible="{Binding CancelVisibility, Mode=OneWay}" />
+			    Classes="Flat"
+			    Command="{Binding CancelCommand}"
+			    Content="{Binding CancelButtonText}"
+			    IsVisible="{Binding CancelVisibility, Mode=OneWay}" />
 		</UniformGrid>
 	</Grid>
 </UserControl>
