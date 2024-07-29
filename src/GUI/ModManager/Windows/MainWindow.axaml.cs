@@ -14,7 +14,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
 	public void ShowSukiDialog(object? content, bool showCardBehind = true, bool allowBackgroundClose = false)
 	{
-		var host = this.FindDescendantOfType<SukiHost>() ?? throw new InvalidOperationException("No SukiHost present in this window");
+		var host = this.DialogHost;
 		var viewLocator = AppServices.Get<IViewLocator>();
 		if (viewLocator != null)
 		{
@@ -35,7 +35,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 				host.IsDialogOpen = true;
 				host.DialogContent = dialogContent;
 				host.AllowBackgroundClose = allowBackgroundClose;
-				host.GetTemplateChildren().First((Control n) => n.Name == "BorderDialog1").Opacity = (showCardBehind ? 1 : 0);
+				var borderDialog = host.GetTemplateChildren().First((Control n) => n.Name == "BorderDialog1");
+				if(borderDialog != null)
+				{
+					borderDialog.Opacity = (showCardBehind ? 1 : 0);
+				}
 			}
 		}
 		else
@@ -90,7 +94,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 			{
 				var data = context.Input;
 				var title = data.Title;
-				var duration = data.Timeout <= 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(data.Timeout);
+				var duration = data.Timeout <= 0 ? TimeSpan.FromSeconds(30) : TimeSpan.FromSeconds(data.Timeout);
 				if (!title.IsValid())
 				{
 					switch (data.AlertType)

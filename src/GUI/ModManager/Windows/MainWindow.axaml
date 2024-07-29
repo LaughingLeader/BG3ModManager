@@ -32,7 +32,7 @@
 		<Image Width="16" Height="16" Source="avares://ModManager/Assets/BG3ModManager.ico" />
 	</Window.LogoContent>-->
 
-	<suki:SukiHost>
+	<suki:SukiHost x:Name="DialogHost">
 		<Panel>
 			<suki:SukiBackground Name="PART_Background" IsHitTestVisible="False" />
 			<rxui:RoutedViewHost x:Name="ViewHost"
