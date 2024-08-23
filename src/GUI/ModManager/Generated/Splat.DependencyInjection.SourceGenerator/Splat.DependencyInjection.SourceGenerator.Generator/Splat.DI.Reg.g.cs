@@ -137,6 +137,16 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Views.Main.ProgressBarView));
             }
             {
+                global::System.Lazy<ModManager.Windows.SettingsWindow> lazy = new global::System.Lazy<ModManager.Windows.SettingsWindow>(() => new global::ModManager.Windows.SettingsWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Windows.SettingsWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.SettingsWindow));
+            }
+            {
+                global::System.Lazy<ModManager.Windows.ModPropertiesWindow> lazy = new global::System.Lazy<ModManager.Windows.ModPropertiesWindow>(() => new global::ModManager.Windows.ModPropertiesWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Windows.ModPropertiesWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.ModPropertiesWindow));
+            }
+            {
                 global::System.Lazy<ModManager.Services.WindowManagerService> lazy = new global::System.Lazy<ModManager.Services.WindowManagerService>(() => new global::ModManager.Services.WindowManagerService((global::ModManager.Windows.MainWindow)resolver.GetService(typeof(global::ModManager.Windows.MainWindow))));
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Services.WindowManagerService>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Services.WindowManagerService));

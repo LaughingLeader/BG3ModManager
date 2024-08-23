@@ -6,16 +6,10 @@ using Avalonia.Markup.Xaml;
 
 namespace ModManager.Windows
 {
-    partial class MainWindow
+    partial class SettingsWindow
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::SukiUI.Controls.SukiToastHost ToastHost;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::SukiUI.Controls.SukiDialogHost DialogHost;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::SukiUI.Controls.SukiBackground PART_Background;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::Avalonia.ReactiveUI.RoutedViewHost ViewHost;
+        internal global::ModManager.Views.Generated.ModManagerSettingsView GeneralSettingsView;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -40,10 +34,7 @@ namespace ModManager.Windows
 #endif
 
             var __thisNameScope__ = this.FindNameScope();
-            ToastHost = __thisNameScope__?.Find<global::SukiUI.Controls.SukiToastHost>("ToastHost");
-            DialogHost = __thisNameScope__?.Find<global::SukiUI.Controls.SukiDialogHost>("DialogHost");
-            PART_Background = __thisNameScope__?.Find<global::SukiUI.Controls.SukiBackground>("PART_Background");
-            ViewHost = __thisNameScope__?.Find<global::Avalonia.ReactiveUI.RoutedViewHost>("ViewHost");
+            GeneralSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ModManagerSettingsView>("GeneralSettingsView");
         }
     }
 }
