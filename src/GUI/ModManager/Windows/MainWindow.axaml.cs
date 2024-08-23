@@ -7,44 +7,39 @@ using ModManager.ViewModels.Main;
 using ReactiveUI;
 
 using SukiUI.Controls;
+using SukiUI.Dialogs;
+using SukiUI.Toasts;
 
 namespace ModManager.Windows;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
+	private readonly ISukiToastManager _toastManager = new SukiToastManager();
+	private readonly ISukiDialogManager _dialogManagerManager = new SukiDialogManager();
+
 	public void ShowSukiDialog(object? content, bool showCardBehind = true, bool allowBackgroundClose = false)
 	{
-		var host = this.DialogHost;
-		var viewLocator = AppServices.Get<IViewLocator>();
-		if (viewLocator != null)
+		if (content is string message)
 		{
-			Control? dialogContent = null;
-			if (content is string message)
-			{
-				dialogContent = new TextBlock { Text = message };
-			}
-			else if(content is ReactiveObject viewModel)
-			{
-				if(viewLocator.ResolveView(viewModel) is Control view)
-				{
-					dialogContent = view;
-				}
-			}
-			if(dialogContent != null)
-			{
-				host.IsDialogOpen = true;
-				host.DialogContent = dialogContent;
-				host.AllowBackgroundClose = allowBackgroundClose;
-				var borderDialog = host.GetTemplateChildren().First((Control n) => n.Name == "BorderDialog1");
-				if(borderDialog != null)
-				{
-					borderDialog.Opacity = (showCardBehind ? 1 : 0);
-				}
-			}
+			var dialogContent = new TextBlock { Text = message };
+			var dialog = _dialogManagerManager.CreateDialog().WithContent(dialogContent);
+			dialog.SetCanDismissWithBackgroundClick(allowBackgroundClose);
+			dialog.TryShow();
 		}
-		else
+		else if (content is ReactiveObject viewModel)
 		{
-			throw new InvalidOperationException("Failed to get ViewLocator");
+			var dialog = _dialogManagerManager.CreateDialog().WithViewModel(x =>
+			{
+				x.CanDismissWithBackgroundClick = allowBackgroundClose;
+				return viewModel;
+			});
+			dialog.TryShow();
+		}
+
+		var borderDialog = DialogHost.GetTemplateChildren().FirstOrDefault(x => x.GetType() == typeof(Border));
+		if (borderDialog != null)
+		{
+			borderDialog.Opacity = (showCardBehind ? 1 : 0);
 		}
 	}
 
@@ -54,10 +49,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
 		this.WhenActivated(d =>
 		{
-			var sukiHost = this.FindDescendantOfType<SukiHost>();
+			
+			var sukiHost = this.FindDescendantOfType<SukiDialogHost>();
 			if (sukiHost != null)
 			{
-				sukiHost.GetObservable(SukiHost.IsDialogOpenProperty).BindTo(ViewModelLocator.MessageBox, x => x.IsVisible);
+				sukiHost.GetObservable(SukiDialogHost.IsDialogOpenProperty).BindTo(ViewModelLocator.MessageBox, x => x.IsVisible);
 			}
 
 			this.OneWayBind(ViewModel, x => x.Router, x => x.ViewHost.Router);
@@ -114,7 +110,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 					}
 
 				}
-				await SukiHost.ShowToast(this, title, data.Message, duration);
+				_toastManager.CreateToast().WithTitle(title).WithContent(data.Message).Queue();
+				//await SukiToastManager.ShowToast(this, title, data.Message, duration);
 				context.SetOutput(true);
 			});
 		});

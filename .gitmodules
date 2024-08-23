@@ -4,3 +4,6 @@
 [submodule "lslib"]
 	path = External/lslib
 	url = https://github.com/LaughingLeader/lslib
+[submodule "SukiUI"]
+	path = External/SukiUI
+	url = https://github.com/LaughingLeader/SukiUI

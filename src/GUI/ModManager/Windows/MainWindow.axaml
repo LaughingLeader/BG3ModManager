@@ -9,12 +9,14 @@
     Title="{Binding Title}"
     Width="1600"
     Height="800"
-    suki:SukiHost.ToastLimit="4"
-    suki:SukiHost.ToastLocation="BottomRight"
     x:DataType="vm:MainWindowViewModel"
     Focusable="True"
     Icon="avares://ModManager/Assets/BG3ModManager.ico"
     mc:Ignorable="d">
+	<suki:SukiWindow.Hosts>
+		<suki:SukiToastHost Name="ToastHost" MaxToasts="4" Position="BottomRight" />
+		<suki:SukiDialogHost Name="DialogHost" />
+	</suki:SukiWindow.Hosts>
 	<!--<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -32,13 +34,11 @@
 		<Image Width="16" Height="16" Source="avares://ModManager/Assets/BG3ModManager.ico" />
 	</Window.LogoContent>-->
 
-	<suki:SukiHost x:Name="DialogHost">
-		<Panel>
-			<suki:SukiBackground Name="PART_Background" IsHitTestVisible="False" />
-			<rxui:RoutedViewHost x:Name="ViewHost"
-			    HorizontalContentAlignment="Stretch"
-			    VerticalContentAlignment="Stretch"
-			    Router="{Binding Router}" />
-		</Panel>
-	</suki:SukiHost>
+	<Panel>
+		<suki:SukiBackground Name="PART_Background" IsHitTestVisible="False" />
+		<rxui:RoutedViewHost x:Name="ViewHost"
+		    HorizontalContentAlignment="Stretch"
+		    VerticalContentAlignment="Stretch"
+		    Router="{Binding Router}" />
+	</Panel>
 </Window>
