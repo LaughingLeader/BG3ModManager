@@ -8,6 +8,7 @@ namespace ModManager.Views.Main
 {
     partial class DeleteFilesView
     {
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock TestText;
 
         /// <summary>
@@ -15,6 +16,8 @@ namespace ModManager.Views.Main
         /// </summary>
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
 
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true)
         {
             if (loadXaml)
@@ -22,7 +25,8 @@ namespace ModManager.Views.Main
                 AvaloniaXamlLoader.Load(this);
             }
 
-            TestText = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("TestText");
+            var __thisNameScope__ = this.FindNameScope();
+            TestText = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("TestText");
         }
     }
 }

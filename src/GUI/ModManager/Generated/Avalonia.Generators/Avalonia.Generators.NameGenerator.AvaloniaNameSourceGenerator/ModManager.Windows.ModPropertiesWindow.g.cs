@@ -8,9 +8,13 @@ namespace ModManager.Windows
 {
     partial class ModPropertiesWindow
     {
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Material.Icons.Avalonia.MaterialIcon ModTypeIconControl;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.Button OKButton;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.Button CancelButton;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.Button ApplyButton;
 
         /// <summary>
@@ -19,6 +23,8 @@ namespace ModManager.Windows
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
         /// <param name="attachDevTools">Should the dev tools be attached.</param>
 
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true, bool attachDevTools = true)
         {
             if (loadXaml)
@@ -33,10 +39,11 @@ namespace ModManager.Windows
             }
 #endif
 
-            ModTypeIconControl = this.FindNameScope()?.Find<global::Material.Icons.Avalonia.MaterialIcon>("ModTypeIconControl");
-            OKButton = this.FindNameScope()?.Find<global::Avalonia.Controls.Button>("OKButton");
-            CancelButton = this.FindNameScope()?.Find<global::Avalonia.Controls.Button>("CancelButton");
-            ApplyButton = this.FindNameScope()?.Find<global::Avalonia.Controls.Button>("ApplyButton");
+            var __thisNameScope__ = this.FindNameScope();
+            ModTypeIconControl = __thisNameScope__?.Find<global::Material.Icons.Avalonia.MaterialIcon>("ModTypeIconControl");
+            OKButton = __thisNameScope__?.Find<global::Avalonia.Controls.Button>("OKButton");
+            CancelButton = __thisNameScope__?.Find<global::Avalonia.Controls.Button>("CancelButton");
+            ApplyButton = __thisNameScope__?.Find<global::Avalonia.Controls.Button>("ApplyButton");
         }
     }
 }

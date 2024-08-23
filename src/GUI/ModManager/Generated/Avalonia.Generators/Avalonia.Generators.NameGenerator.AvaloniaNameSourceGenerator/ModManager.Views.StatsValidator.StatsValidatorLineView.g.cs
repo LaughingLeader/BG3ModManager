@@ -8,6 +8,7 @@ namespace ModManager.Views.StatsValidator
 {
     partial class StatsValidatorLineView
     {
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::ModManager.Controls.HighlightingTextBlock LineTextBlock;
 
         /// <summary>
@@ -15,6 +16,8 @@ namespace ModManager.Views.StatsValidator
         /// </summary>
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
 
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true)
         {
             if (loadXaml)
@@ -22,7 +25,8 @@ namespace ModManager.Views.StatsValidator
                 AvaloniaXamlLoader.Load(this);
             }
 
-            LineTextBlock = this.FindNameScope()?.Find<global::ModManager.Controls.HighlightingTextBlock>("LineTextBlock");
+            var __thisNameScope__ = this.FindNameScope();
+            LineTextBlock = __thisNameScope__?.Find<global::ModManager.Controls.HighlightingTextBlock>("LineTextBlock");
         }
     }
 }

@@ -8,8 +8,11 @@ namespace ModManager.Windows
 {
     partial class MainWindow
     {
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::SukiUI.Controls.SukiHost DialogHost;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::SukiUI.Controls.SukiBackground PART_Background;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.ReactiveUI.RoutedViewHost ViewHost;
 
         /// <summary>
@@ -18,6 +21,8 @@ namespace ModManager.Windows
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
         /// <param name="attachDevTools">Should the dev tools be attached.</param>
 
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true, bool attachDevTools = true)
         {
             if (loadXaml)
@@ -32,9 +37,10 @@ namespace ModManager.Windows
             }
 #endif
 
-            DialogHost = this.FindNameScope()?.Find<global::SukiUI.Controls.SukiHost>("DialogHost");
-            PART_Background = this.FindNameScope()?.Find<global::SukiUI.Controls.SukiBackground>("PART_Background");
-            ViewHost = this.FindNameScope()?.Find<global::Avalonia.ReactiveUI.RoutedViewHost>("ViewHost");
+            var __thisNameScope__ = this.FindNameScope();
+            DialogHost = __thisNameScope__?.Find<global::SukiUI.Controls.SukiHost>("DialogHost");
+            PART_Background = __thisNameScope__?.Find<global::SukiUI.Controls.SukiBackground>("PART_Background");
+            ViewHost = __thisNameScope__?.Find<global::Avalonia.ReactiveUI.RoutedViewHost>("ViewHost");
         }
     }
 }

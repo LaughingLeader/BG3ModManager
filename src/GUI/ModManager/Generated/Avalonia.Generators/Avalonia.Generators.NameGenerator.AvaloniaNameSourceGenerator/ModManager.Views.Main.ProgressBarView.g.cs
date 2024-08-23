@@ -8,10 +8,15 @@ namespace ModManager.Views.Main
 {
     partial class ProgressBarView
     {
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock TitleTextControl;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::SukiUI.Controls.CircleProgressBar ProgressBarControl;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock ProgressValueTextControl;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock WorkTextControl;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.Button CancelButton;
 
         /// <summary>
@@ -19,6 +24,8 @@ namespace ModManager.Views.Main
         /// </summary>
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
 
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true)
         {
             if (loadXaml)
@@ -26,11 +33,12 @@ namespace ModManager.Views.Main
                 AvaloniaXamlLoader.Load(this);
             }
 
-            TitleTextControl = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("TitleTextControl");
-            ProgressBarControl = this.FindNameScope()?.Find<global::SukiUI.Controls.CircleProgressBar>("ProgressBarControl");
-            ProgressValueTextControl = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("ProgressValueTextControl");
-            WorkTextControl = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("WorkTextControl");
-            CancelButton = this.FindNameScope()?.Find<global::Avalonia.Controls.Button>("CancelButton");
+            var __thisNameScope__ = this.FindNameScope();
+            TitleTextControl = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("TitleTextControl");
+            ProgressBarControl = __thisNameScope__?.Find<global::SukiUI.Controls.CircleProgressBar>("ProgressBarControl");
+            ProgressValueTextControl = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ProgressValueTextControl");
+            WorkTextControl = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("WorkTextControl");
+            CancelButton = __thisNameScope__?.Find<global::Avalonia.Controls.Button>("CancelButton");
         }
     }
 }

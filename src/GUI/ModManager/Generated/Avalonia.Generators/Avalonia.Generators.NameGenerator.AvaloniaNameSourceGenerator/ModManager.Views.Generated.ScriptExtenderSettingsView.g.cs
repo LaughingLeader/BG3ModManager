@@ -8,30 +8,55 @@ namespace ModManager.Views.Generated
 {
     partial class ScriptExtenderSettingsView
     {
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock ExportDefaultExtenderSettingsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DeveloperModeTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock CustomProfileTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock CreateConsoleTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock LogFailedCompileTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock EnableLoggingTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock LogCompileTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock LogDirectoryTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock LogRuntimeTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DisableLauncherTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DisableStoryMergeTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DisableStoryPatchingTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DisableModValidationTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock EnableAchievementsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock EnableExtensionsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock SendCrashReportsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock EnableDebuggerTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DebuggerPortTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DumpNetworkStringsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DebuggerFlagsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock EnableLuaDebuggerTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock LuaBuiltinResourceDirectoryTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock ClearOnResetTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock DefaultToClientConsoleTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
         internal global::Avalonia.Controls.TextBlock ShowPerfWarningsTextBlock;
 
         /// <summary>
@@ -39,6 +64,8 @@ namespace ModManager.Views.Generated
         /// </summary>
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
 
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.1.3.0")]
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true)
         {
             if (loadXaml)
@@ -46,31 +73,32 @@ namespace ModManager.Views.Generated
                 AvaloniaXamlLoader.Load(this);
             }
 
-            ExportDefaultExtenderSettingsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("ExportDefaultExtenderSettingsTextBlock");
-            DeveloperModeTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DeveloperModeTextBlock");
-            CustomProfileTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("CustomProfileTextBlock");
-            CreateConsoleTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("CreateConsoleTextBlock");
-            LogFailedCompileTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("LogFailedCompileTextBlock");
-            EnableLoggingTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("EnableLoggingTextBlock");
-            LogCompileTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("LogCompileTextBlock");
-            LogDirectoryTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("LogDirectoryTextBlock");
-            LogRuntimeTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("LogRuntimeTextBlock");
-            DisableLauncherTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DisableLauncherTextBlock");
-            DisableStoryMergeTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DisableStoryMergeTextBlock");
-            DisableStoryPatchingTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DisableStoryPatchingTextBlock");
-            DisableModValidationTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DisableModValidationTextBlock");
-            EnableAchievementsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("EnableAchievementsTextBlock");
-            EnableExtensionsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("EnableExtensionsTextBlock");
-            SendCrashReportsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("SendCrashReportsTextBlock");
-            EnableDebuggerTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("EnableDebuggerTextBlock");
-            DebuggerPortTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DebuggerPortTextBlock");
-            DumpNetworkStringsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DumpNetworkStringsTextBlock");
-            DebuggerFlagsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DebuggerFlagsTextBlock");
-            EnableLuaDebuggerTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("EnableLuaDebuggerTextBlock");
-            LuaBuiltinResourceDirectoryTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("LuaBuiltinResourceDirectoryTextBlock");
-            ClearOnResetTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("ClearOnResetTextBlock");
-            DefaultToClientConsoleTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("DefaultToClientConsoleTextBlock");
-            ShowPerfWarningsTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("ShowPerfWarningsTextBlock");
+            var __thisNameScope__ = this.FindNameScope();
+            ExportDefaultExtenderSettingsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ExportDefaultExtenderSettingsTextBlock");
+            DeveloperModeTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DeveloperModeTextBlock");
+            CustomProfileTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("CustomProfileTextBlock");
+            CreateConsoleTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("CreateConsoleTextBlock");
+            LogFailedCompileTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LogFailedCompileTextBlock");
+            EnableLoggingTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableLoggingTextBlock");
+            LogCompileTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LogCompileTextBlock");
+            LogDirectoryTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LogDirectoryTextBlock");
+            LogRuntimeTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LogRuntimeTextBlock");
+            DisableLauncherTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableLauncherTextBlock");
+            DisableStoryMergeTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableStoryMergeTextBlock");
+            DisableStoryPatchingTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableStoryPatchingTextBlock");
+            DisableModValidationTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableModValidationTextBlock");
+            EnableAchievementsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableAchievementsTextBlock");
+            EnableExtensionsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableExtensionsTextBlock");
+            SendCrashReportsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SendCrashReportsTextBlock");
+            EnableDebuggerTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableDebuggerTextBlock");
+            DebuggerPortTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DebuggerPortTextBlock");
+            DumpNetworkStringsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DumpNetworkStringsTextBlock");
+            DebuggerFlagsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DebuggerFlagsTextBlock");
+            EnableLuaDebuggerTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableLuaDebuggerTextBlock");
+            LuaBuiltinResourceDirectoryTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LuaBuiltinResourceDirectoryTextBlock");
+            ClearOnResetTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ClearOnResetTextBlock");
+            DefaultToClientConsoleTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DefaultToClientConsoleTextBlock");
+            ShowPerfWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ShowPerfWarningsTextBlock");
         }
     }
 }
