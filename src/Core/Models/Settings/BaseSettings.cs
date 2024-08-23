@@ -54,7 +54,8 @@ public abstract class BaseSettings<T>(string fileName) : ReactiveObject where T 
 			var filePath = Path.Join(directory, FileName);
 			if (File.Exists(filePath))
 			{
-				if (DivinityJsonUtils.TrySafeDeserializeFromPath<T>(filePath, out var settings))
+				var settings = DivinityJsonUtils.DeserializeFromPath<T>(filePath);
+				if(settings != null)
 				{
 					var props = TypeDescriptor.GetProperties(settings.GetType());
 					foreach (PropertyDescriptor pr in props)

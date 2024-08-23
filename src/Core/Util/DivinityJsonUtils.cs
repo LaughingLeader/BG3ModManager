@@ -10,15 +10,26 @@ public static class DivinityJsonUtils
 	private static readonly JsonSerializerOptions _serializerSettings = new()
 	{
 		AllowTrailingCommas = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 	};
+
+	public static T? Deserialize<T>(string text, JsonSerializerOptions? opts = null) => JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
+
+	public static T? DeserializeFromPath<T>(string path, JsonSerializerOptions? opts = null) => Deserialize<T?>(File.ReadAllText(path), opts ?? _serializerSettings);
 
 	public static T? SafeDeserialize<T>(string text, JsonSerializerOptions? opts = null)
 	{
-		var result = JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
-		if (result != null)
+		try
 		{
-			return result;
+			var result = JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
+			if (result != null)
+			{
+				return result;
+			}
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log("Error deserializing json:\n" + ex.ToString());
 		}
 		return default;
 	}
