@@ -1,5 +1,9 @@
 ﻿
+using Avalonia.Styling;
+
 using ModManager.Windows;
+
+using SukiUI;
 
 using System.Reactive.Subjects;
 
@@ -64,12 +68,13 @@ public class WindowManagerService
 
 	private readonly List<Window> _windows = [];
 
-	public void UpdateColorScheme(Uri theme)
+	public void UpdateColorScheme(ThemeVariant theme)
 	{
-		foreach (var window in _windows)
-		{
-			//ResourceLocator.SetColorScheme(window.Resources, theme);
-		}
+		//foreach (var window in _windows)
+		//{
+		//	window.RequestedThemeVariant = theme;
+		//	//ResourceLocator.SetColorScheme(window.Resources, theme);
+		//}
 	}
 
 	public WindowManagerService(MainWindow main)
@@ -110,10 +115,12 @@ public class WindowManagerService
 		//	Main.Window.ViewModel.Settings.SettingsWindowIsOpen = b;
 		//});
 
-		//AppServices.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
-		//{
-		//	var theme = !darkMode ? App.LightTheme : App.DarkTheme;
-		//	UpdateColorScheme(theme);
-		//});
+		AppServices.Settings.ManagerSettings.WhenAnyValue(x => x.DarkThemeEnabled).Subscribe(darkMode =>
+		{
+			var themeVariant = darkMode ? ThemeVariant.Dark : ThemeVariant.Light;
+			App.Current.RequestedThemeVariant = themeVariant;
+			SukiTheme.GetInstance().ChangeBaseTheme(themeVariant);
+			UpdateColorScheme(themeVariant);
+		});
 	}
 }
