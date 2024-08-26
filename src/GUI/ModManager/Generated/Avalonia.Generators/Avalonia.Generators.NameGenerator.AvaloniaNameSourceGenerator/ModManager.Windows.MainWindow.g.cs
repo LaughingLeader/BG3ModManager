@@ -13,8 +13,6 @@ namespace ModManager.Windows
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
         internal global::SukiUI.Controls.SukiDialogHost DialogHost;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::SukiUI.Controls.SukiBackground PART_Background;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
         internal global::Avalonia.ReactiveUI.RoutedViewHost ViewHost;
 
         /// <summary>
@@ -42,7 +40,6 @@ namespace ModManager.Windows
             var __thisNameScope__ = this.FindNameScope();
             ToastHost = __thisNameScope__?.Find<global::SukiUI.Controls.SukiToastHost>("ToastHost");
             DialogHost = __thisNameScope__?.Find<global::SukiUI.Controls.SukiDialogHost>("DialogHost");
-            PART_Background = __thisNameScope__?.Find<global::SukiUI.Controls.SukiBackground>("PART_Background");
             ViewHost = __thisNameScope__?.Find<global::Avalonia.ReactiveUI.RoutedViewHost>("ViewHost");
         }
     }
