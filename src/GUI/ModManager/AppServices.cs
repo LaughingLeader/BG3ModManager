@@ -3,6 +3,7 @@ using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
 using ModManager.Views;
 using ModManager.Views.Main;
+using ModManager.Windows;
 
 namespace ModManager;
 
@@ -65,11 +66,12 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<MessageBoxView>();
 		SplatRegistrations.RegisterLazySingleton<ProgressBarView>();
 
+		SplatRegistrations.RegisterLazySingleton<SettingsWindow>();
+		SplatRegistrations.RegisterLazySingleton<ModPropertiesWindow>();
 		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
 		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindow>();
-		SplatRegistrations.RegisterLazySingleton<ModPropertiesWindow>();
 		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<SettingsWindow>();
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindow>();

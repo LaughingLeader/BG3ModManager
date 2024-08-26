@@ -176,10 +176,10 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 		}
 	}
 
-	[GenerateView] public ModManagerSettings Settings { get; private set; }
-	[GenerateView] public ModManagerUpdateSettings UpdateSettings { get; private set; }
-	[GenerateView] public ScriptExtenderSettings ExtenderSettings { get; private set; }
-	[GenerateView] public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; private set; }
+	[GenerateView] public ModManagerSettings? Settings { get; private set; }
+	[GenerateView] public ModManagerUpdateSettings? UpdateSettings { get; private set; }
+	[GenerateView] public ScriptExtenderSettings? ExtenderSettings { get; private set; }
+	[GenerateView] public ScriptExtenderUpdateConfig? ExtenderUpdaterSettings { get; private set; }
 
 	public void OnTargetVersionSelected(ScriptExtenderUpdateVersion entry)
 	{
@@ -378,7 +378,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		this.WhenAnyValue(x => x.ExtenderUpdaterSettings.UpdaterIsAvailable,
 			x => x.Settings.DebugModeEnabled,
 			x => x.ExtenderSettings.DeveloperMode)
-			.Select(x => PropertyConverters.BoolToVisibility(x.Item1 && (x.Item2 || x.Item3))).ToUIProperty(this, x => x.ExtenderUpdaterVisibility);
+			.Select(x => x.Item1 && (x.Item2 || x.Item3)).ToUIProperty(this, x => x.ExtenderUpdaterVisibility);
 
 		ExtenderUpdaterSettings.WhenAnyValue(x => x.UpdateChannel).Subscribe((channel) =>
 		{

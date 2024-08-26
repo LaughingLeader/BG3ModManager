@@ -13,7 +13,7 @@
 	mc:Ignorable="d">
 	<controls:AutoGrid RowCount="18" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
-			<ColumnDefinition Width="auto" />
+			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
 		</controls:AutoGrid.ColumnDefinitions>
 
@@ -65,7 +65,7 @@ This folder is used when exporting load orders, loading profiles, and loading mo
 		<CheckBox Classes="right" IsChecked ="{Binding ShiftListFocusOnSwap}" ToolTip.Tip="{Binding ElementName=ShiftListFocusOnSwapTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="ActionOnGameLaunchTextBlock" Text="On Game Launch" ToolTip.Tip="When the game launches through the mod manager, this action will be performed" />
-		<ComboBox SelectedIndex="{Binding ActionOnGameLaunchIndex}" ToolTip.Tip="{Binding ElementName=ActionOnGameLaunchTextBlock, Path=(ToolTip.Tip)}">
+		<ComboBox Classes="right" SelectedIndex="{Binding ActionOnGameLaunchIndex, FallbackValue=0}" ToolTip.Tip="{Binding ElementName=ActionOnGameLaunchTextBlock, Path=(ToolTip.Tip)}">
 			<ComboBoxItem Content="None" ToolTip.Tip="Do nothing" />
 			<ComboBoxItem Content="Minimize" ToolTip.Tip="Minimize the window" />
 			<ComboBoxItem Content="Close" ToolTip.Tip="Close the window" />

@@ -13,7 +13,7 @@
 	mc:Ignorable="d">
 	<controls:AutoGrid RowCount="25" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
-			<ColumnDefinition Width="auto" />
+			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
 		</controls:AutoGrid.ColumnDefinitions>
 
@@ -77,7 +77,6 @@ Speeds up mod loading with no drawbacks" />
 		
 		<TextBlock Classes="left" x:Name="DebuggerPortTextBlock" Text="Osiris Debugger Port" ToolTip.Tip="Port number the Osiris debugger will listen on
 Default: 9999" />
-		 IsVisible="{Binding DevOptionsEnabled}"/>
 		
 		<TextBlock Classes="left" x:Name="DumpNetworkStringsTextBlock" Text="Dump Network Strings" ToolTip.Tip="Dumps the NetworkFixedString table to LogDirectory
 Mainly useful for debugging desync issues" />
@@ -85,7 +84,6 @@ Mainly useful for debugging desync issues" />
 		
 		<TextBlock Classes="left" x:Name="DebuggerFlagsTextBlock" Text="Osiris Debugger Flags" ToolTip.Tip="Debugger flags to set
 Default: 0" />
-		/>
 		
 		<TextBlock Classes="left" x:Name="EnableLuaDebuggerTextBlock" Text="Enable Lua Debugger" ToolTip.Tip="Enables the Lua debugger interface (vscode extension)" />
 		<CheckBox Classes="right" IsChecked ="{Binding EnableLuaDebugger}" ToolTip.Tip="{Binding ElementName=EnableLuaDebuggerTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>

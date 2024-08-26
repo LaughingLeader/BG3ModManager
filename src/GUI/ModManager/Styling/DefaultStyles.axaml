@@ -1,14 +1,13 @@
-﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<Styles xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:suki="using:SukiUI">
 	<Style Selector="TextBlock">
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontFamily" Value="avares://Avalonia.Fonts.Inter/Assets#Inter" />
 	</Style>
 
 	<Style Selector="TextBox.compact">
-		<Setter Property="Background" Value="Transparent" />
-		<Setter Property="BorderBrush" Value="Transparent" />
-		<Setter Property="BorderThickness" Value="0" />
-		<Setter Property="CornerRadius" Value="0" />
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="HorizontalAlignment" Value="Stretch" />
 		<Setter Property="Margin" Value="0,0,0,8" />
@@ -53,7 +52,7 @@
 		<Setter Property="Margin" Value="0,0,0,8" />
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="VerticalAlignment" Value="Top" />
-		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
 		<Setter Property="TextAlignment" Value="Left" />
 	</Style>
 
@@ -61,11 +60,22 @@
 		<Setter Property="Padding" Value="0" />
 		<Setter Property="Margin" Value="0,0,0,8" />
 		<Setter Property="VerticalAlignment" Value="Center" />
-		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
+	</Style>
+
+	<Style Selector="ComboBox.right">
+		<Setter Property="Padding" Value="12,0" />
+		<Setter Property="Margin" Value="0,0,0,8" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
 	</Style>
 
 	<Style Selector="Separator">
 		<Setter Property="Margin" Value="0,0,0,8" />
 		<Setter Property="Background" Value="{DynamicResource SukiControlBorderBrush}" />
+	</Style>
+
+	<Style Selector="Window">
+		<Setter Property="TextElement.Foreground" Value="{DynamicResource SukiText}" />
 	</Style>
 </Styles>

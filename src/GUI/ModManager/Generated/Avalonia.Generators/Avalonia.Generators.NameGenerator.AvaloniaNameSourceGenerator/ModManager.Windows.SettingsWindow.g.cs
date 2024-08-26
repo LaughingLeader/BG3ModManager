@@ -10,6 +10,14 @@ namespace ModManager.Windows
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
         internal global::ModManager.Views.Generated.ModManagerSettingsView GeneralSettingsView;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        internal global::ModManager.Views.Generated.ModManagerUpdateSettingsView UpdateSettingsView;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        internal global::ModManager.Views.Generated.ScriptExtenderSettingsView ExtenderSettingsView;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        internal global::ModManager.Views.Generated.ScriptExtenderUpdateConfigView ExtenderUpdateSettingsView;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        internal global::ModManager.Views.Settings.KeybindingsView KeybindingsView;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -35,6 +43,10 @@ namespace ModManager.Windows
 
             var __thisNameScope__ = this.FindNameScope();
             GeneralSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ModManagerSettingsView>("GeneralSettingsView");
+            UpdateSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ModManagerUpdateSettingsView>("UpdateSettingsView");
+            ExtenderSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ScriptExtenderSettingsView>("ExtenderSettingsView");
+            ExtenderUpdateSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ScriptExtenderUpdateConfigView>("ExtenderUpdateSettingsView");
+            KeybindingsView = __thisNameScope__?.Find<global::ModManager.Views.Settings.KeybindingsView>("KeybindingsView");
         }
     }
 }

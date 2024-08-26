@@ -24,18 +24,13 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Window.Resources>-->
-	<Window.Styles>
-		<Style Selector="Window">
-			<Setter Property="TextElement.Foreground" Value="{DynamicResource SukiText}" />
-		</Style>
-	</Window.Styles>
 
 	<!--<Window.LogoContent>
 		<Image Width="16" Height="16" Source="avares://ModManager/Assets/BG3ModManager.ico" />
 	</Window.LogoContent>-->
 
 	<Panel>
-		<suki:SukiBackground Name="PART_Background" IsHitTestVisible="False" />
+		<suki:SukiBackground IsHitTestVisible="False" />
 		<rxui:RoutedViewHost x:Name="ViewHost"
 		    HorizontalContentAlignment="Stretch"
 		    VerticalContentAlignment="Stretch"

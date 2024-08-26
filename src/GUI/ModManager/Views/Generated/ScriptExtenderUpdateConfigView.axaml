@@ -13,7 +13,7 @@
 	mc:Ignorable="d">
 	<controls:AutoGrid RowCount="9" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
-			<ColumnDefinition Width="auto" />
+			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
 		</controls:AutoGrid.ColumnDefinitions>
 

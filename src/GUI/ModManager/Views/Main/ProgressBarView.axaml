@@ -1,69 +1,69 @@
 <UserControl x:Class="ModManager.Views.Main.ProgressBarView"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:suki="using:SukiUI.Controls"
-             xmlns:vm="using:ModManager.ViewModels.Main"
-             d:DesignHeight="450"
-             d:DesignWidth="800"
-             x:DataType="vm:ProgressBarViewModel"
-             mc:Ignorable="d">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="using:SukiUI.Controls"
+    xmlns:vm="using:ModManager.ViewModels.Main"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:ProgressBarViewModel"
+    mc:Ignorable="d">
 	<Design.DataContext>
 		<vm:DesignProgressBarViewModel />
 	</Design.DataContext>
 	<Grid Margin="24"
-	      HorizontalAlignment="Stretch"
-	      VerticalAlignment="Stretch"
-	      RowDefinitions="*,auto,*,auto">
+	    HorizontalAlignment="Stretch"
+	    VerticalAlignment="Stretch"
+	    RowDefinitions="*,auto,*,auto">
 		<TextBlock x:Name="TitleTextControl"
-		           Margin="12"
-		           VerticalAlignment="Bottom"
-		           FontSize="24"
-		           FontWeight="Bold"
-		           Text="Loading..."
-		           TextAlignment="Center"
-		           TextWrapping="Wrap">
+		    Margin="12"
+		    VerticalAlignment="Bottom"
+		    FontSize="24"
+		    FontWeight="Bold"
+		    Text="Loading..."
+		    TextAlignment="Center"
+		    TextWrapping="Wrap">
 			<TextBlock.Effect>
 				<DropShadowDirectionEffect BlurRadius="4"
-				                           Direction="60"
-				                           Opacity="0.40"
-				                           ShadowDepth="4"
-				                           Color="Black" />
+				    Direction="60"
+				    Opacity="0.40"
+				    ShadowDepth="4"
+				    Color="Black" />
 			</TextBlock.Effect>
 		</TextBlock>
 		<Panel Grid.Row="1"
-		       Margin="16,0"
-		       HorizontalAlignment="Stretch"
-		       VerticalAlignment="Center">
+		    Margin="16,0"
+		    HorizontalAlignment="Stretch"
+		    VerticalAlignment="Center">
 			<!--<ProgressBar x:Name="ProgressBarControl"
 			             Maximum="100"
 			             Minimum="0"
 			             ShowProgressText="True"
 			             Value="75" />-->
 			<suki:CircleProgressBar x:Name="ProgressBarControl"
-			                        Width="130"
-			                        Height="130"
-			                        StrokeWidth="11">
+			    Width="130"
+			    Height="130"
+			    StrokeWidth="11">
 				<TextBlock x:Name="ProgressValueTextControl" Margin="0,1,0,0" Classes="h3" />
 			</suki:CircleProgressBar>
 			<!--<suki:WaveProgress IsTextVisible="True" Value="{Binding UIValue}" />-->
 		</Panel>
 
 		<TextBlock x:Name="WorkTextControl"
-		           Grid.Row="2"
-		           Margin="12"
-		           VerticalAlignment="Top"
-		           FontSize="12"
-		           Text="Processing mod paks..."
-		           TextAlignment="Center"
-		           TextWrapping="Wrap" />
+		    Grid.Row="2"
+		    Margin="12"
+		    VerticalAlignment="Top"
+		    FontSize="12"
+		    Text="Processing mod paks..."
+		    TextAlignment="Center"
+		    TextWrapping="Wrap" />
 		<Button x:Name="CancelButton"
-		        Grid.Row="3"
-		        HorizontalAlignment="Center"
-		        Classes="Flat Large"
-		        Command="{Binding CancelCommand}"
-		        Content="Cancel"
-		        IsVisible="{Binding CanCancel}" />
+		    Grid.Row="3"
+		    HorizontalAlignment="Center"
+		    Classes="Flat Large"
+		    Command="{Binding CancelCommand}"
+		    Content="Cancel"
+		    IsVisible="{Binding CanCancel}" />
 	</Grid>
 </UserControl>
