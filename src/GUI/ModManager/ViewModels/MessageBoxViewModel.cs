@@ -34,7 +34,6 @@ public class MessageBoxViewModel : ReactiveObject
 	private void Close(bool result)
 	{
 		Result.OnNext(result);
-		SukiHost.CloseDialog();
 	}
 
 	private static string MessageBoxTypeToConfirmationText(InteractionMessageBoxType type)
