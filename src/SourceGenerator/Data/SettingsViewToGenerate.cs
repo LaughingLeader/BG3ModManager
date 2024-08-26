@@ -70,6 +70,7 @@ public readonly record struct SettingsViewToGenerate
 			var controlText = "";
 			var bindTo = !string.IsNullOrEmpty(entry.BindTo) ? entry.BindTo : entry.PropertyName;
 			var isSingleLine = true;
+			var addedRightColumn = true;
 
 			switch (entry.PropertyTypeName)
 			{
@@ -79,11 +80,14 @@ public readonly record struct SettingsViewToGenerate
 				case "String":
 					controlText = $"<TextBox Classes=\"compact\" Text=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 					break;
+				case "TimeSpan":
+					controlText = $"<controls:TimeSpanUpDown Classes=\"right\" Value=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+					break;
 				default:
 					if (entry.PropertyType.TypeKind == TypeKind.Enum)
 					{
 						isSingleLine = false;
-						var comboText = $"<ComboBox SelectedIndex=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+						var comboText = $"<ComboBox Classes=\"right\" SelectedIndex=\"{{Binding {bindTo}, FallbackValue=0}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 						if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
 						{
 							comboText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
@@ -120,10 +124,14 @@ public readonly record struct SettingsViewToGenerate
 						code.EndScope("");
 						code.AppendLine("</ComboBox>");
 					}
+					else
+					{
+						addedRightColumn = false;
+					}
 					break;
 			}
 
-			if(isSingleLine)
+			if(isSingleLine && addedRightColumn)
 			{
 				if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
 				{
@@ -152,7 +160,7 @@ public readonly record struct SettingsViewToGenerate
 	mc:Ignorable=""d"">
 	<controls:AutoGrid RowCount=""{totalRows}"" RowHeight=""auto"">
 		<controls:AutoGrid.ColumnDefinitions>
-			<ColumnDefinition Width=""auto"" />
+			<ColumnDefinition Width=""*"" />
 			<ColumnDefinition Width=""*"" />
 		</controls:AutoGrid.ColumnDefinitions>
 

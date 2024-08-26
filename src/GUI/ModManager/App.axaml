@@ -15,6 +15,8 @@
 				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/Dracula.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/FilterButtonExpander.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/CompactSukiMenu.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/TimePickerFix.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/Controls/TimeSpanUpDown.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<ResourceDictionary.ThemeDictionaries>
