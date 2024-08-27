@@ -34,7 +34,7 @@
 		
 		<TextBlock Classes="left" x:Name="MinimumUpdateTimePeriodTextBlock" Text="Minimum Update Time Period" ToolTip.Tip="Prevent checking for updates for individual mods until this amount of time has passed since the last check
 This is to prevent hitting API limits too quickly" />
-		<TimePicker Classes="right" ClockIdentifier="24HourClock" MinuteIncrement="20" SelectedTime="{Binding MinimumUpdateTimePeriod}" ToolTip.Tip="{Binding ElementName=MinimumUpdateTimePeriodTextBlock, Path=(ToolTip.Tip)}"/>
+		<controls:TimeSpanUpDown Classes="right" Value="{Binding MinimumUpdateTimePeriod}" ToolTip.Tip="{Binding ElementName=MinimumUpdateTimePeriodTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="AllowAdultContentTextBlock" Text="Allow Adult Content" ToolTip.Tip="Allow adult content when downloading collections from NexusMods" />
 		<CheckBox Classes="right" IsChecked ="{Binding AllowAdultContent}" ToolTip.Tip="{Binding ElementName=AllowAdultContentTextBlock, Path=(ToolTip.Tip)}"/>
