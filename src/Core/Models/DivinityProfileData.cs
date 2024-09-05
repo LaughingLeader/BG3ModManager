@@ -14,19 +14,22 @@ public class DivinityProfileData : ReactiveObject
 	[Reactive] public string? ModSettingsFile { get; private set; }
 
 	/// <summary>
-	/// The saved load order from modsettings.lsx
-	/// </summary>
-	public List<string> ModOrder { get; set; } = [];
-
-	/// <summary>
 	/// The mod data under the Mods node, from modsettings.lsx.
 	/// </summary>
 	public List<DivinityProfileActiveModData> ActiveMods { get; set; } = [];
 
-	/// <summary>
-	/// The ModOrder transformed into a DivinityLoadOrder. This is the "Current" order.
-	/// </summary>
-	public DivinityLoadOrder SavedLoadOrder { get; set; }
+	public List<string> GetModOrder(bool includeIgnoredMods = false)
+	{
+		var order = new List<string>();
+		foreach(var mod in ActiveMods)
+		{
+			if(!string.IsNullOrEmpty(mod.UUID) && (includeIgnoredMods || !DivinityApp.IgnoredMods.Any(x => x.UUID == mod.UUID)))
+			{
+				order.Add(mod.UUID);
+			}
+		}
+		return order;
+	}
 
 	public DivinityProfileData()
 	{

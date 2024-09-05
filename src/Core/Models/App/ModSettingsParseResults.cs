@@ -2,6 +2,23 @@
 
 public class ModSettingsParseResults
 {
-	public List<string> ModOrder { get; set; }
 	public List<DivinityProfileActiveModData> ActiveMods { get; set; }
+
+	public ModSettingsParseResults()
+	{
+		ActiveMods = [];
+	}
+
+	public int CountActive(bool includeIgnoredMods = false)
+	{
+		var i = 0;
+		foreach (var mod in ActiveMods)
+		{
+			if (includeIgnoredMods || !DivinityApp.IgnoredMods.Any(x => x.UUID == mod.UUID))
+			{
+				i++;
+			}
+		}
+		return i;
+	}
 }

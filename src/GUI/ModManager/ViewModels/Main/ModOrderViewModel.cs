@@ -879,8 +879,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						if (SelectedAdventureMod != null) orderList.Add(SelectedAdventureMod.UUID);
 						orderList.AddRange(SelectedModOrder.Order.Select(x => x.UUID));
 
-						SelectedProfile.ModOrder.Clear();
-						SelectedProfile.ModOrder.AddRange(orderList);
 						SelectedProfile.ActiveMods.Clear();
 						SelectedProfile.ActiveMods.AddRange(orderList.Select(x => ProfileActiveModDataFromUUID(x)));
 						DisplayMissingMods(SelectedModOrder);
@@ -937,8 +935,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 							if (SelectedAdventureMod != null) orderList.Add(SelectedAdventureMod.UUID);
 							orderList.AddRange(SelectedModOrder.Order.Select(x => x.UUID));
 
-							SelectedProfile.ModOrder.Clear();
-							SelectedProfile.ModOrder.AddRange(orderList);
 							SelectedProfile.ActiveMods.Clear();
 							SelectedProfile.ActiveMods.AddRange(orderList.Select(x => ProfileActiveModDataFromUUID(x)));
 							DisplayMissingMods(SelectedModOrder);
@@ -973,48 +969,34 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			List<DivinityMissingModData> missingMods = [];
 
-			DivinityLoadOrder currentOrder = new() { Name = "Current", FilePath = Path.Join(profile.FilePath, "modsettings.lsx"), IsModSettings = true };
+			DivinityLoadOrder currentOrder = new DivinityLoadOrder() { Name = "Current", FilePath = SelectedProfile.ModSettingsFile, IsModSettings = true };
 
 			var modManager = ModManager;
 
-			foreach (var uuid in profile.ModOrder)
+			var i = 0;
+			foreach (var activeMod in SelectedProfile.ActiveMods)
 			{
-				var activeModData = profile.ActiveMods.FirstOrDefault(y => y.UUID == uuid);
-				if (activeModData != null)
+				if (modManager.TryGetMod(activeMod.UUID, out var mod))
 				{
-					if (modManager.TryGetMod(uuid, out var mod))
-					{
-						currentOrder.Add(mod);
-					}
-					else
-					{
-						var x = new DivinityMissingModData
-						{
-							Index = profile.ModOrder.IndexOf(uuid),
-							Name = activeModData.Name,
-							UUID = activeModData.UUID
-						};
-						missingMods.Add(x);
-					}
+					currentOrder.Add(mod);
 				}
 				else
 				{
-					DivinityApp.Log($"UUID {uuid} is missing from the profile's active mod list.");
+					var x = new DivinityMissingModData
+					{
+						Index = i,
+						Name = activeMod.Name,
+						UUID = activeMod.UUID
+					};
+					missingMods.Add(x);
 				}
+				i++;
 			}
 
 			ModOrderList.Clear();
 			ModOrderList.Add(currentOrder);
-			if (profile.SavedLoadOrder != null && !profile.SavedLoadOrder.IsModSettings)
-			{
-				ModOrderList.Add(profile.SavedLoadOrder);
-			}
-			else
-			{
-				profile.SavedLoadOrder = currentOrder;
-			}
 
-			DivinityApp.Log($"Profile order: {String.Join(";", profile.SavedLoadOrder.Order.Select(x => x.Name))}");
+			DivinityApp.Log($"Profile order: {String.Join(";", profile.ActiveMods.Select(x => x.Name))}");
 
 			ModOrderList.AddRange(ExternalModOrders);
 
@@ -1144,7 +1126,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		if (removeFromLoadOrder)
 		{
 			SelectedModOrder.Order.RemoveAll(x => deletedMods.Contains(x.UUID));
-			SelectedProfile.ModOrder.RemoveMany(deletedMods);
 			SelectedProfile.ActiveMods.RemoveAll(x => deletedMods.Contains(x.UUID));
 		}
 
@@ -1914,8 +1895,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				checkModSettingsTask?.Dispose();
 				checkModSettingsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromSeconds(2), async (sch, cts) =>
 				{
+					var activeCount = ActiveMods.Count;
 					var modSettingsData = await DivinityModDataLoader.LoadModSettingsFileAsync(e.FullPath);
-					if (ActiveMods.Count > 0 && modSettingsData.ActiveMods.Count <= 1)
+					if (activeCount > 0 && modSettingsData.CountActive() < activeCount)
 					{
 						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
 						RxApp.MainThreadScheduler.Schedule(() =>

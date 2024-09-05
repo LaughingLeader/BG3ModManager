@@ -27,6 +27,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive, DataMember] public string? ModType { get; set; }
 	[Reactive] public string? MD5 { get; set; }
 	[Reactive, DataMember] public LarianVersion Version { get; set; }
+	[Reactive, DataMember] public ulong PublishHandle { get; set; }
 	[Reactive] public LarianVersion HeaderVersion { get; set; }
 	[Reactive] public LarianVersion PublishVersion { get; set; }
 	public List<string> Tags { get; set; } = [];
@@ -570,7 +571,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	{
 		var result = exportType switch
 		{
-			ModExportType.XML => String.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt),
+			ModExportType.XML => String.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt, PublishHandle),
 			ModExportType.JSON => JsonSerializer.Serialize(this, _serializerSettings),
 			ModExportType.TXT => StringUtils.ModToTextLine(this),
 			ModExportType.TSV => StringUtils.ModToTSVLine(this),
@@ -589,6 +590,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		Folder = "";
 		UUID = "";
 		Name = "";
+		PublishHandle = 0;
 
 		HelpText = "";
 		Targets = "";

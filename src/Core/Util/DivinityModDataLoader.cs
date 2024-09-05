@@ -32,6 +32,10 @@ public static partial class DivinityModDataLoader
 	private static readonly HashSet<string> _allPaksNames = [];
 
 	private static readonly ResourceLoadParameters _loadParams = ResourceLoadParameters.FromGameVersion(Game.BaldursGate3);
+	private static readonly ResourceLoadParameters _modSettingsParams = new()
+	{
+		ByteSwapGuids = false
+	};
 
 	[GeneratedRegex("^(Mods|Public|Generated)/(.+?)/.+$")]
 	private static partial Regex ModFolderPattern();
@@ -225,6 +229,14 @@ public static partial class DivinityModDataLoader
 					author = "Larian Studios";
 				}
 				*/
+
+				ulong publishHandle = 0;
+
+				if (TryGetAttribute(moduleInfoNode, "PublishHandle", out var publishHandleStr) && !String.IsNullOrWhiteSpace(publishHandleStr) && ulong.TryParse(publishHandleStr, out var publishHandleResult))
+				{
+					publishHandle = publishHandleResult;
+				}
+
 				DivinityModData modData = new()
 				{
 					HasMetadata = true,
@@ -235,6 +247,7 @@ public static partial class DivinityModDataLoader
 					Folder = GetAttributeWithId(moduleInfoNode, "Folder", ""),
 					Description = description,
 					MD5 = GetAttributeWithId(moduleInfoNode, "MD5", ""),
+					PublishHandle = publishHandle,
 					ModType = GetAttributeWithId(moduleInfoNode, "Type", ""),
 					HeaderVersion = new LarianVersion(headerMajor, headerMinor, headerRevision, headerBuild)
 				};
@@ -665,203 +678,6 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static string GetNodeAttribute(Node node, string key, string defaultValue)
-	{
-		if (node.Attributes.TryGetValue(key, out var att))
-		{
-			if (att.Type == AttributeType.TranslatedString)
-			{
-				var ts = (TranslatedString)att.Value;
-				return ts.Value;
-			}
-			return att.Value.ToString();
-		}
-		return defaultValue;
-	}
-
-	private static DivinityGameMasterCampaign ParseGameMasterCampaignMetaFile(Resource meta)
-	{
-		try
-		{
-			var headerMajor = HEADER_MAJOR;
-			var headerMinor = HEADER_MINOR;
-			var headerRevision = HEADER_REVISION;
-			var headerBuild = HEADER_BUILD;
-
-			ulong.TryParse(meta.Metadata.MajorVersion.ToString(), out headerMajor);
-			ulong.TryParse(meta.Metadata.MinorVersion.ToString(), out headerMinor);
-			ulong.TryParse(meta.Metadata.Revision.ToString(), out headerRevision);
-			ulong.TryParse(meta.Metadata.BuildNumber.ToString(), out headerBuild);
-
-			if (meta.TryFindNode("ModuleInfo", out var moduleInfoNode))
-			{
-				var uuid = moduleInfoNode.Attributes.First(x => x.Key == "UUID").Value.Value.ToString();
-				var name = moduleInfoNode.Attributes.First(x => x.Key == "Name").Value.Value.ToString();
-				var description = moduleInfoNode.Attributes.First(x => x.Key == "Description").Value.Value.ToString();
-				var author = moduleInfoNode.Attributes.First(x => x.Key == "Author").Value.Value.ToString();
-				/*
-				if (DivinityApp.MODS_GiftBag.Any(x => x.UUID == uuid))
-				{
-					name = UnescapeXml(GetAttributeWithId(moduleInfoNode, "DisplayName", name));
-					description = UnescapeXml(GetAttributeWithId(moduleInfoNode, "DescriptionName", description));
-					author = "Larian Studios";
-				}
-				*/
-
-				DivinityGameMasterCampaign data = new()
-				{
-					UUID = GetNodeAttribute(moduleInfoNode, "UUID", ""),
-					Name = GetNodeAttribute(moduleInfoNode, "Name", ""),
-					Author = GetNodeAttribute(moduleInfoNode, "Author", ""),
-					Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(moduleInfoNode, "Version64", ""))),
-					Folder = GetNodeAttribute(moduleInfoNode, "Folder", ""),
-					Description = GetNodeAttribute(moduleInfoNode, "Description", ""),
-					MD5 = GetNodeAttribute(moduleInfoNode, "MD5", ""),
-					HeaderVersion = new LarianVersion(headerMajor, headerMinor, headerRevision, headerBuild)
-				};
-				var tagsText = GetNodeAttribute(moduleInfoNode, "Tags", "");
-				if (!String.IsNullOrWhiteSpace(tagsText))
-				{
-					var tags = tagsText.Split(';');
-					data.AddTags(tags);
-				}
-
-				if (meta.TryFindNode("Dependencies", out var dependenciesNode))
-				{
-					foreach (var container in dependenciesNode.Children)
-					{
-						foreach (var node in container.Value)
-						{
-							DivinityModDependencyData dependencyMod = new()
-							{
-								UUID = GetNodeAttribute(node, "UUID", ""),
-								Name = GetNodeAttribute(node, "Name", ""),
-								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(node, "Version64", ""))),
-								Folder = GetNodeAttribute(node, "Folder", ""),
-								MD5 = GetNodeAttribute(node, "MD5", "")
-							};
-							//DivinityApp.LogMessage($"Added dependency to {modData.Name} - {dependencyMod.ToString()}");
-							if (dependencyMod.UUID != "")
-							{
-								data.Dependencies.Add(dependencyMod);
-							}
-						}
-					}
-				}
-
-				if (moduleInfoNode.Children.TryGetValue("PublishVersion", out var publishVersionList))
-				{
-					var publishVersion = LarianVersion.FromInt(SafeConvertStringUnsigned(GetNodeAttribute(publishVersionList.First(), "Version64", "")));
-					data.PublishVersion = publishVersion;
-				}
-
-				//if (moduleInfoNode.Children.TryGetValue("TargetModes", out var targetModesList))
-				//{
-				//	foreach (var node in targetModesList)
-				//	{
-				//		var target = GetNodeAttribute(node, "Object", "");
-				//		if (!String.IsNullOrEmpty(target))
-				//		{
-				//			data.Modes.Add(target);
-				//		}
-				//	}
-				//	data.Targets = string.Join(", ", data.Modes);
-				//}
-
-				data.MetaResource = meta;
-
-				return data;
-			}
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Error parsing meta.lsx: {ex}");
-		}
-		return null;
-	}
-
-	private static bool IsMetaFile(string f) => Path.GetFileName(f).Equals("meta.lsf", SCOMP);
-
-	public static List<DivinityGameMasterCampaign> LoadGameMasterData(string folderPath, CancellationToken? token = null)
-	{
-		List<DivinityGameMasterCampaign> campaignEntries = [];
-
-		if (Directory.Exists(folderPath))
-		{
-			List<string> campaignMetaFiles = [];
-			try
-			{
-				var files = FileUtils.EnumerateFiles(folderPath, FileUtils.RecursiveOptions, IsMetaFile);
-				if (files != null)
-				{
-					campaignMetaFiles.AddRange(files);
-				}
-			}
-			catch (Exception ex)
-			{
-				DivinityApp.Log($"Error enumerating GM campaigns folder '{folderPath}':\n{ex}");
-			}
-
-			DivinityApp.Log("Campaign meta files: " + campaignMetaFiles.Count());
-			foreach (var metaPath in campaignMetaFiles)
-			{
-				try
-				{
-					if (token.HasValue && token.Value.IsCancellationRequested)
-					{
-						return campaignEntries;
-					}
-					DivinityGameMasterCampaign campaignData = null;
-
-					using var fileStream = new System.IO.FileStream(metaPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-					using var reader = new LSFReader(fileStream);
-
-					campaignData = ParseGameMasterCampaignMetaFile(reader.Read());
-
-					if (campaignData != null)
-					{
-						campaignData.FilePath = metaPath;
-						try
-						{
-							campaignData.LastModified = File.GetLastWriteTime(metaPath);
-						}
-						catch (PlatformNotSupportedException ex)
-						{
-							DivinityApp.Log($"Error getting pak last modified date for '{metaPath}':\n{ex}");
-						}
-						campaignEntries.Add(campaignData);
-					}
-				}
-				catch (Exception ex)
-				{
-					DivinityApp.Log($"Error loading meta file '{metaPath}':\n{ex}");
-				}
-			}
-		}
-		return campaignEntries;
-	}
-
-	private static Node FindResourceNode(Node node, string attribute, string matchVal)
-	{
-		if (node.Attributes.TryGetValue(attribute, out var att))
-		{
-			var attVal = (string)att.Value;
-			if (attVal.Equals(matchVal, SCOMP))
-			{
-				return node;
-			}
-		}
-		foreach (var nList in node.Children.Values)
-		{
-			foreach (var n in nList)
-			{
-				var match = FindResourceNode(n, attribute, matchVal);
-				if (match != null) return match;
-			}
-		}
-		return null;
-	}
-
 	public static async Task<ModSettingsParseResults> LoadModSettingsFileAsync(string path)
 	{
 		var modOrderUUIDs = new List<string>();
@@ -869,67 +685,50 @@ public static partial class DivinityModDataLoader
 
 		if (File.Exists(path))
 		{
-			Resource modSettingsRes = null;
+			Resource? modSettingsRes = null;
 			try
 			{
-				modSettingsRes = await LoadResourceAsync(path, ResourceFormat.LSX);
+				modSettingsRes = await LoadResourceAsync(path, ResourceFormat.LSX, _modSettingsParams);
 			}
 			catch (Exception ex)
 			{
 				DivinityApp.Log($"Error reading '{path}':\n{ex}");
 			}
 
-			if (modSettingsRes != null && modSettingsRes.Regions.TryGetValue("ModuleSettings", out var region))
+			try
 			{
-				if (region.Children.TryGetValue("ModOrder", out var modOrderRootNode))
+				if (modSettingsRes != null && modSettingsRes.Regions.TryGetValue("ModuleSettings", out var region))
 				{
-					var modOrderChildrenRoot = modOrderRootNode.FirstOrDefault();
-					if (modOrderChildrenRoot != null)
+					if (region.Children.TryGetValue("Mods", out var modListRootNode))
 					{
-						var modOrder = modOrderChildrenRoot.Children.Values.FirstOrDefault();
-						if (modOrder != null)
+						var modListChildrenRoot = modListRootNode.FirstOrDefault();
+						if (modListChildrenRoot != null)
 						{
-							foreach (var c in modOrder)
+							var modList = modListChildrenRoot.Children.Values.FirstOrDefault();
+							if (modList != null)
 							{
-								if (c.Attributes.TryGetValue("UUID", out var attribute))
+								foreach (var c in modList)
 								{
-									var uuid = (string)attribute.Value;
-									if (!String.IsNullOrEmpty(uuid))
+									var activeModData = new DivinityProfileActiveModData();
+									activeModData.LoadFromAttributes(c.Attributes);
+									if (!DivinityModDataLoader.IgnoreMod(activeModData.UUID))
 									{
-										modOrderUUIDs.Add(uuid);
+										activeMods.Add(activeModData);
 									}
 								}
 							}
 						}
 					}
 				}
-
-				if (region.Children.TryGetValue("Mods", out var modListRootNode))
-				{
-					var modListChildrenRoot = modListRootNode.FirstOrDefault();
-					if (modListChildrenRoot != null)
-					{
-						var modList = modListChildrenRoot.Children.Values.FirstOrDefault();
-						if (modList != null)
-						{
-							foreach (var c in modList)
-							{
-								var activeModData = new DivinityProfileActiveModData();
-								activeModData.LoadFromAttributes(c.Attributes);
-								if (!DivinityModDataLoader.IgnoreMod(activeModData.UUID))
-								{
-									activeMods.Add(activeModData);
-								}
-							}
-						}
-					}
-				}
+			}
+			catch(Exception ex)
+			{
+				DivinityApp.Log($"Error parsing modsettings '{path}':\n{ex}");
 			}
 		}
 
 		return new ModSettingsParseResults()
 		{
-			ModOrder = modOrderUUIDs,
 			ActiveMods = activeMods,
 		};
 	}
@@ -989,22 +788,20 @@ public static partial class DivinityModDataLoader
 
 				var modSettingsFile = Path.Join(folder, "modsettings.lsx");
 				var modSettings = await LoadModSettingsFileAsync(modSettingsFile);
-				profileData.ModOrder.AddRange(modSettings.ModOrder);
 				profileData.ActiveMods.AddRange(modSettings.ActiveMods);
-
 				profiles.Add(profileData);
 			}
 		}
 		return profiles;
 	}
 
-	public static async Task<Resource> LoadResourceAsync(string path)
+	public static async Task<Resource?> LoadResourceAsync(string path, ResourceLoadParameters? resourceParams = null)
 	{
 		return await Task.Run(() =>
 		{
 			try
 			{
-				var resource = ResourceUtils.LoadResource(path, _loadParams);
+				var resource = ResourceUtils.LoadResource(path, resourceParams ?? _loadParams);
 				return resource;
 			}
 			catch (Exception ex)
@@ -1015,14 +812,14 @@ public static partial class DivinityModDataLoader
 		});
 	}
 
-	public static async Task<Resource> LoadResourceAsync(string path, ResourceFormat resourceFormat)
+	public static async Task<Resource?> LoadResourceAsync(string path, ResourceFormat resourceFormat, ResourceLoadParameters? resourceParams = null)
 	{
 		try
 		{
 			using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 			await fs.ReadAsync(new byte[fs.Length], 0, (int)fs.Length);
 			fs.Position = 0;
-			var resource = ResourceUtils.LoadResource(fs, resourceFormat, _loadParams);
+			var resource = ResourceUtils.LoadResource(fs, resourceFormat, resourceParams ?? _loadParams);
 			return resource;
 		}
 		catch (Exception ex)
@@ -1032,13 +829,13 @@ public static partial class DivinityModDataLoader
 		}
 	}
 
-	public static async Task<Resource> LoadResourceAsync(System.IO.Stream stream, ResourceFormat resourceFormat)
+	public static async Task<Resource?> LoadResourceAsync(System.IO.Stream stream, ResourceFormat resourceFormat, ResourceLoadParameters? resourceParams = null)
 	{
 		return await Task.Run(() =>
 		{
 			try
 			{
-				var resource = ResourceUtils.LoadResource(stream, resourceFormat, _loadParams);
+				var resource = ResourceUtils.LoadResource(stream, resourceFormat, resourceParams ?? _loadParams);
 				return resource;
 			}
 			catch (Exception ex)
@@ -1049,7 +846,7 @@ public static partial class DivinityModDataLoader
 		});
 	}
 
-	private static FileInfo GetProfileFile(string path)
+	private static FileInfo? GetProfileFile(string path)
 	{
 		var files = FileUtils.EnumerateFiles(path, null, (f) =>
 		{
@@ -1526,8 +1323,6 @@ public static partial class DivinityModDataLoader
 
 	public static string GenerateModSettingsFile(IEnumerable<DivinityModData> orderList)
 	{
-		/* Active mods are contained within the "ModOrder" node.*/
-		var modulesText = "";
 		/* The "Mods" node is used for the in-game menu it seems. The selected adventure mod is always at the top. */
 		var modShortDescText = "";
 
@@ -1539,13 +1334,12 @@ public static partial class DivinityModDataLoader
 				var modText = mod.Export(ModExportType.XML);
 				if (!String.IsNullOrEmpty(modText))
 				{
-					modulesText += String.Format(DivinityApp.XML_MOD_ORDER_MODULE, mod.UUID) + Environment.NewLine;
 					modShortDescText += modText + Environment.NewLine;
 				}
 			}
 		}
 
-		return String.Format(DivinityApp.XML_MOD_SETTINGS_TEMPLATE, modulesText, modShortDescText);
+		return String.Format(DivinityApp.XML_MOD_SETTINGS_TEMPLATE, modShortDescText);
 	}
 
 	public static string CreateHandle()

@@ -417,7 +417,7 @@ public static class FileUtils
 
 	private static readonly EnumerationOptions _defaultOpts = new() { AttributesToSkip = FileAttributes.Hidden };
 
-	public static IEnumerable<string> EnumerateFiles(string path, EnumerationOptions opts = null, Func<string, bool> inclusionFilter = null)
+	public static IEnumerable<string> EnumerateFiles(string path, EnumerationOptions? opts = null, Func<string, bool>? inclusionFilter = null)
 	{
 		opts ??= _defaultOpts;
 		if (inclusionFilter != null)
@@ -427,7 +427,7 @@ public static class FileUtils
 		return Directory.EnumerateFiles(path, "*", opts);
 	}
 
-	public static IEnumerable<string> EnumerateDirectories(string path, EnumerationOptions opts = null, Func<string, bool> inclusionFilter = null)
+	public static IEnumerable<string> EnumerateDirectories(string path, EnumerationOptions? opts = null, Func<string, bool>? inclusionFilter = null)
 	{
 		opts ??= _defaultOpts;
 		if (inclusionFilter != null)

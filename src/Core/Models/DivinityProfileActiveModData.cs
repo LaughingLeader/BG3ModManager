@@ -10,26 +10,28 @@ public class DivinityProfileActiveModData
 	public string? UUID { get; set; }
 	public ulong Version { get; set; }
 
-	private T GetAttribute<T>(Dictionary<string, NodeAttribute> attributes, string name, T fallBack)
+	private static readonly NodeSerializationSettings _serializationSettings = new NodeSerializationSettings()
+	{
+		ByteSwapGuids = false,
+		DefaultByteSwapGuids = false
+	};
+
+	private static string GetAttributeAsString(Dictionary<string, NodeAttribute> attributes, string name, string fallBack)
 	{
 		if (attributes.TryGetValue(name, out var attribute))
 		{
-			var val = (T)attribute.Value;
-			if (val != null)
-			{
-				return val;
-			}
+			return attribute.AsString(_serializationSettings);
 		}
 		return fallBack;
 	}
 
-	private ulong GetULongAttribute(Dictionary<string, NodeAttribute> attributes, string name, ulong fallBack)
+	private static ulong GetULongAttribute(Dictionary<string, NodeAttribute> attributes, string name, ulong fallBack)
 	{
 		if (attributes.TryGetValue(name, out var attribute))
 		{
 			if (attribute.Value is string att)
 			{
-				if (UInt64.TryParse(att, out var val))
+				if (ulong.TryParse(att, out var val))
 				{
 					return val;
 				}
@@ -48,10 +50,10 @@ public class DivinityProfileActiveModData
 
 	public void LoadFromAttributes(Dictionary<string, NodeAttribute> attributes)
 	{
-		Folder = GetAttribute<string>(attributes, "Folder", "");
-		MD5 = GetAttribute<string>(attributes, "MD5", "");
-		Name = GetAttribute<string>(attributes, "Name", "");
-		UUID = GetAttribute<string>(attributes, "UUID", "");
+		Folder = GetAttributeAsString(attributes, "Folder", "");
+		MD5 = GetAttributeAsString(attributes, "MD5", "");
+		Name = GetAttributeAsString(attributes, "Name", "");
+		UUID = GetAttributeAsString(attributes, "UUID", "");
 		Version = GetULongAttribute(attributes, "Version", 0UL);
 
 		//DivinityApp.LogMessage($"[DivinityProfileActiveModData] Name({Name}) UUID({UUID})");

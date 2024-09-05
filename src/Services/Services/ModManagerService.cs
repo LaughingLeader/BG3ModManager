@@ -240,31 +240,6 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		return finalMods;
 	}
 
-	public async Task<List<DivinityGameMasterCampaign>> LoadGameMasterCampaignsAsync(string campaignsDirectoryPath, ProgressUpdateActions progress, double taskStepAmount = 0.1d)
-	{
-		List<DivinityGameMasterCampaign> data = null;
-
-		var cancelTokenSource = GetCancellationToken(int.MaxValue);
-
-		if (!String.IsNullOrWhiteSpace(campaignsDirectoryPath) && Directory.Exists(campaignsDirectoryPath))
-		{
-			DivinityApp.Log($"Loading gamemaster campaigns from '{campaignsDirectoryPath}'.");
-			await progress.UpdateProgressText("Loading GM Campaigns from documents folder...");
-			cancelTokenSource.CancelAfter(60000);
-			data = DivinityModDataLoader.LoadGameMasterData(campaignsDirectoryPath, cancelTokenSource.Token);
-			cancelTokenSource = GetCancellationToken(int.MaxValue);
-			await progress.IncreaseAmount(taskStepAmount);
-		}
-
-		if (data != null)
-		{
-			data = data.OrderBy(m => m.Name).ToList();
-			DivinityApp.Log($"Loaded '{data.Count}' GM campaigns.");
-		}
-
-		return data;
-	}
-
 	#endregion
 
 	private readonly IInteractionsService _interactions;

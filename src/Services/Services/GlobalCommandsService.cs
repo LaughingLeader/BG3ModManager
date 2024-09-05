@@ -98,7 +98,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		try
 		{
 			var safeName = System.Security.SecurityElement.Escape(mod.Name);
-			var text = string.Format(DivinityApp.XML_MODULE_SHORT_DESC_FORMATTED, mod.Folder, mod.MD5, safeName, mod.UUID, mod.Version.VersionInt);
+			var text = string.Format(DivinityApp.XML_MODULE_SHORT_DESC_FORMATTED, mod.Folder, mod.MD5, safeName, mod.UUID, mod.Version.VersionInt, mod.PublishHandle);
 			ClipboardService.SetText(text);
 			ShowAlert($"Copied ModuleShortDesc for mod '{mod.Name}' to clipboard", 0, 10);
 		}
