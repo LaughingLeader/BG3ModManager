@@ -119,7 +119,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 		var capturedErrors = new List<Exception>();
 		_saveSettings.ForEach(entry =>
 		{
-			if (!entry.Save(out var ex))
+			if (!entry.Save(out var ex) && ex != null)
 			{
 				capturedErrors.Add(ex);
 			}
@@ -133,7 +133,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 		var capturedErrors = new List<Exception>();
 		_loadSettings.ForEach(entry =>
 		{
-			if (!entry.Load(out var ex))
+			if (!entry.Load(out var ex) && ex != null)
 			{
 				capturedErrors.Add(ex);
 			}
@@ -162,7 +162,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 			var time = DateTime.Now.Ticks;
 			foreach (var mod in updatedMods)
 			{
-				ModConfig.LastUpdated[mod.UUID] = time;
+				if (!String.IsNullOrEmpty(mod.UUID)) ModConfig.LastUpdated[mod.UUID] = time;
 			}
 			ModConfig.Save(out _);
 		}

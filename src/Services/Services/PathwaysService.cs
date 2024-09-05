@@ -182,7 +182,7 @@ public class PathwaysService : IPathwaysService
 
 			if (!Directory.Exists(_settingsService.ManagerSettings.GameDataPath) || !File.Exists(_settingsService.ManagerSettings.GameExecutablePath))
 			{
-				DivinityApp.Log("Failed to find game data path.");
+				DivinityApp.Log($"Failed to find game data path at '{_settingsService.ManagerSettings.GameDataPath}', and/or executable at '{_settingsService.ManagerSettings.GameExecutablePath}'");
 				return false;
 			}
 

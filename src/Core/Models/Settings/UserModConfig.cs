@@ -20,11 +20,6 @@ public class UserModConfig : BaseSettings<UserModConfig>, ISerializableSettings
 
 	private ICommand AutosaveCommand { get; }
 
-	public void TrySave()
-	{
-		this.Save(out _);
-	}
-
 	public UserModConfig() : base("usermodconfig.json")
 	{
 		Mods = new SourceCache<ModConfig, string>(x => x.Id);
@@ -36,7 +31,10 @@ public class UserModConfig : BaseSettings<UserModConfig>, ISerializableSettings
 		.Select(prop => prop.Name)
 		.ToArray();
 
-		AutosaveCommand = ReactiveCommand.Create(TrySave);
+		AutosaveCommand = ReactiveCommand.Create(() =>
+		{
+			this.Save(out _);
+		});
 
 		Mods.Connect().WhenAnyPropertyChanged(props).Throttle(TimeSpan.FromMilliseconds(25)).Select(x => Unit.Default).InvokeCommand(AutosaveCommand);
 	}
