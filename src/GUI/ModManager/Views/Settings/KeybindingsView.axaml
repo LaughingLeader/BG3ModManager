@@ -2,7 +2,84 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:m="using:ModManager.Models"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ModManager.ViewModels.Settings"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    mc:Ignorable="d" />
+    x:DataType="vm:KeybindingsViewModel"
+    Background="Black"
+    mc:Ignorable="d">
+
+	<Design.DataContext>
+		<vm:KeybindingsDesignViewModel />
+	</Design.DataContext>
+
+	<UserControl.Resources>
+		<MenuFlyout x:Key="ShortcutContextMenu">
+			<MenuItem Margin="10,0,0,0"
+			    Command="{Binding ResetKeyCommand}"
+			    CommandParameter="{Binding $parent[Button].Tag}"
+			    Header="Reset"
+			    ToolTip.Tip="Reset to Default" />
+			<MenuItem Margin="10,0,0,0"
+			    Command="{Binding ClearKeyCommand}"
+			    CommandParameter="{Binding $parent[Button].Tag}"
+			    Header="Clear"
+			    ToolTip.Tip="Clear Keybinding" />
+		</MenuFlyout>
+
+		<Animation x:Key="FadeInAnimation" x:SetterTargetType="Grid" Duration="0:0:04">
+			<KeyFrame Cue="0%">
+				<Setter Property="Opacity" Value="0.0" />
+			</KeyFrame>
+			<KeyFrame Cue="100%">
+				<Setter Property="Opacity" Value="1.0" />
+			</KeyFrame>
+		</Animation>
+
+		<Animation x:Key="FadeOutAnimation" x:SetterTargetType="Grid" Duration="0:0:02">
+			<KeyFrame Cue="0%">
+				<Setter Property="Opacity" Value="1.0" />
+			</KeyFrame>
+			<KeyFrame Cue="100%">
+				<Setter Property="Opacity" Value="0.0" />
+			</KeyFrame>
+		</Animation>
+	</UserControl.Resources>
+
+	<Panel>
+		<ItemsControl Margin="128,12" ItemsSource="{Binding Hotkeys}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="m:Hotkey">
+					<Grid Margin="4" Background="Transparent">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" SharedSizeGroup="Name" />
+							<ColumnDefinition Width="*" SharedSizeGroup="Shortcut" />
+						</Grid.ColumnDefinitions>
+						<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding DisplayName}" />
+						<Button Grid.Column="1"
+						    HorizontalAlignment="Right"
+						    Command="{ReflectionBinding Path=StartBindingKeyCommand, Source=$parent[UserControl].DataContext}"
+						    CommandParameter="{Binding}"
+						    Content="{Binding KeyBindingText}"
+						    ContextFlyout="{StaticResource ShortcutContextMenu}"
+						    Tag="{Binding}" />
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<Grid x:Name="KeyConfirmationGrid"
+		    HorizontalAlignment="Stretch"
+		    VerticalAlignment="Stretch"
+		    IsHitTestVisible="False"
+		    Opacity="0">
+			<Panel Background="Navy" Opacity="0.5" />
+			<TextBlock HorizontalAlignment="Center"
+			    VerticalAlignment="Center"
+			    FontSize="24"
+			    Text="Press Any Key..." />
+		</Grid>
+	</Panel>
+</UserControl>
