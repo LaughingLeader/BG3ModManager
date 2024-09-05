@@ -5,10 +5,7 @@
 	// All other rights reserved.
 -->
 
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:sys="using:System"
-    x:ClassModifier="internal">
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="using:System">
 	<Design.PreviewWith>
 		<Border Height="500" Padding="20">
 			<StackPanel VerticalAlignment="Center" Spacing="20">
