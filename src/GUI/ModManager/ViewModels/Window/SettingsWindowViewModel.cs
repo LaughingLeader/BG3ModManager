@@ -7,6 +7,7 @@ using ModManager.Models.Extender;
 using ModManager.Models.Settings;
 using ModManager.Util;
 using ModManager.ViewModels.Main;
+using ModManager.ViewModels.Settings;
 
 using Newtonsoft.Json;
 

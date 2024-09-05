@@ -1,6 +1,7 @@
 ﻿using ModManager.Services;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.ViewModels.Settings;
 using ModManager.Views;
 using ModManager.Views.Main;
 using ModManager.Windows;
@@ -55,6 +56,8 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ExportOrderToArchiveViewModel>();
+
+		SplatRegistrations.RegisterLazySingleton<KeybindingsViewModel>();
 
 		SplatRegistrations.RegisterLazySingleton<MessageBoxViewModel>();
 

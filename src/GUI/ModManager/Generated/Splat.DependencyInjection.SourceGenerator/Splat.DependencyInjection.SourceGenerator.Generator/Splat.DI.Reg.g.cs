@@ -102,6 +102,11 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.ExportOrderToArchiveViewModel));
             }
             {
+                global::System.Lazy<ModManager.ViewModels.Settings.KeybindingsViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Settings.KeybindingsViewModel>(() => new global::ModManager.ViewModels.Settings.KeybindingsViewModel());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.Settings.KeybindingsViewModel>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Settings.KeybindingsViewModel));
+            }
+            {
                 global::System.Lazy<ModManager.ViewModels.MessageBoxViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.MessageBoxViewModel>(() => new global::ModManager.ViewModels.MessageBoxViewModel());
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.MessageBoxViewModel>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.MessageBoxViewModel));
