@@ -18,9 +18,6 @@ public class DivinitySerializedModData : IDivinityModData
 	[DataMember] public LarianVersion Version { get; set; }
 
 	[DataMember] public string? Type { get; set; }
-	[DataMember] public List<string> Modes { get; set; }
-
-	[DataMember] public string? Targets { get; set; }
 
 	[DataMember] public DivinityModScriptExtenderConfig ScriptExtenderData { get; set; }
 	[DataMember] public List<ModuleShortDesc> Dependencies { get; set; }
@@ -41,8 +38,6 @@ public class DivinitySerializedModData : IDivinityModData
 			Name = mod.Name,
 			Version = mod.Version,
 			Type = mod.ModType,
-			Modes = mod.Modes.ToList(),
-			Targets = mod.Targets,
 			Index = mod.Index,
 			ScriptExtenderData = mod.ScriptExtenderData,
 			UUID = mod.UUID,

@@ -65,17 +65,6 @@ public struct DivinityModFilterData
 		{
 			var mod = mentry.Data;
 
-			if (PropertyContains("Mode"))
-			{
-				foreach (var mode in mod.Modes)
-				{
-					if (ValueContains(mode))
-					{
-						return true;
-					}
-				}
-			}
-
 			if (PropertyContains("Depend"))
 			{
 				foreach (var dependency in mod.Dependencies.Items)
@@ -122,14 +111,6 @@ public struct DivinityModFilterData
 				{
 					var f = this;
 					if (mod.Tags.Any(x => f.ValueContains(x))) return true;
-					// GM, Story, Arena are technically tags as well
-					foreach (var mode in mod.Modes)
-					{
-						if (ValueContains(mode))
-						{
-							return true;
-						}
-					}
 				}
 			}
 		}
