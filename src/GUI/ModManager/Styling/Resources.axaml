@@ -39,4 +39,23 @@
 			</Border>
 		</Border>
 	</ControlTemplate>
+
+	<MenuFlyout x:Key="EnhancedTextBoxContextFlyout" FlyoutPresenterClasses="TextBox" Placement="Bottom">
+		<MenuItem Command="{Binding $parent[TextBox].Cut}"
+		    Header="Cut"
+		    InputGesture="{x:Static TextBox.CutGesture}"
+		    IsEnabled="{Binding $parent[TextBox].CanCut}" />
+		<MenuItem Command="{Binding $parent[TextBox].Copy}"
+		    Header="Copy"
+		    InputGesture="{x:Static TextBox.CopyGesture}"
+		    IsEnabled="{Binding $parent[TextBox].CanCopy}" />
+		<MenuItem Command="{Binding $parent[TextBox].Paste}"
+		    Header="Paste"
+		    InputGesture="{x:Static TextBox.PasteGesture}"
+		    IsEnabled="{Binding $parent[TextBox].CanPaste}" />
+		<MenuItem Command="{Binding $parent[controls:EnhancedTextBox].Clear}"
+		    Header="Clear"
+		    InputGesture="{x:Static controls:EnhancedTextBox.ClearGesture}"
+		    IsEnabled="{Binding $parent[controls:EnhancedTextBox].CanClear}" />
+	</MenuFlyout>
 </ResourceDictionary>

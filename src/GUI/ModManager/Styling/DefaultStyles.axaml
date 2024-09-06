@@ -2,6 +2,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:ModManager.Controls"
     xmlns:suki="using:SukiUI">
+
 	<Style Selector="TextBlock">
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontFamily" Value="avares://Avalonia.Fonts.Inter/Assets#Inter" />
@@ -54,6 +55,14 @@
 		<Setter Property="VerticalAlignment" Value="Top" />
 		<Setter Property="HorizontalAlignment" Value="Left" />
 		<Setter Property="TextAlignment" Value="Left" />
+	</Style>
+
+	<Style Selector="FlyoutPresenter.TextBox">
+		<Setter Property="MinWidth" Value="400" />
+	</Style>
+
+	<Style Selector="controls|EnhancedTextBox">
+		<Setter Property="ContextFlyout" Value="{StaticResource EnhancedTextBoxContextFlyout}" />
 	</Style>
 
 	<Style Selector="CheckBox.right">

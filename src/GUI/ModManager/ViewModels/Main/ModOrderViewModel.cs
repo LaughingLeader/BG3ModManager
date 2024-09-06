@@ -237,13 +237,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private static IObservable<bool> AllTrue(IObservable<bool> first, IObservable<bool> second) => first.CombineLatest(second).Select(x => x.First && x.Second);
 
-	private static string GetLaunchGameTooltip(ValueTuple<string, bool, bool, bool> x)
+	private static string GetLaunchGameTooltip(ValueTuple<string?, bool, bool, bool> x)
 	{
 		var exePath = x.Item1;
 		var limitToSingle = x.Item2;
 		var isRunning = x.Item3;
 		var canForce = x.Item4;
-		if (exePath.IsExistingFile())
+		if (exePath?.IsExistingFile() == true)
 		{
 			if (isRunning && limitToSingle)
 			{
@@ -1677,7 +1677,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
 		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
 
-		profiles.Connect().Sort(_profileSort).Bind(out _uiprofiles).DisposeMany().Subscribe();
+		profiles.Connect().SortAndBind(out _uiprofiles, _profileSort).DisposeMany().Subscribe();
 
 		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
 		var hasNonNullProfile = whenProfile.Select(x => x != null);
@@ -1884,7 +1884,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			_modSettingsWatcher.SetDirectory(path);
 		});
 
-		IDisposable checkModSettingsTask = null;
+		IDisposable? checkModSettingsTask = null;
 
 		_modSettingsWatcher.FileChanged.Subscribe(e =>
 		{
