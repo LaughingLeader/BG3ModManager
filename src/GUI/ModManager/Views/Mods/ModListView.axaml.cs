@@ -3,6 +3,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Selection;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
 
 using DynamicData;
 
@@ -174,7 +175,11 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 	{
 		InitializeComponent();
 
-		if (Design.IsDesignMode) return;
+		if (Design.IsDesignMode)
+		{
+			Background = Brushes.Black;
+			return;
+		}
 
 		this.WhenActivated(d =>
 		{

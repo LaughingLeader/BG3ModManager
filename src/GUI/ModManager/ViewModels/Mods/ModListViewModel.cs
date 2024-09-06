@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls.Selection;
+﻿using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Selection;
 
 using DynamicData;
 using DynamicData.Binding;
@@ -230,5 +231,62 @@ public partial class ModListViewModel : ReactiveObject
 			.Subscribe(FilterMods);
 
 		this.WhenAnyValue(x => x.Title).Select(x => $"Filter {x}").ToUIProperty(this, x => x.FilterPlaceholderText);
+	}
+}
+
+public class DesignModListViewModel : ModListViewModel
+{
+	private static class DesignModListViewModelDataSource
+	{
+		public static readonly ObservableCollectionExtended<IModEntry> ReadonlyMods = [];
+
+		public static ObservableCollectionExtended<IModEntry> Mods { get; }
+		public static HierarchicalTreeDataGridSource<IModEntry> DataSource { get; }
+		public static IObservable<IChangeSet<IModEntry>> ModsConnection { get; }
+
+		static DesignModListViewModelDataSource()
+		{
+			Mods = [];
+			Mods.AddRange(ModelGlobals.TestMods);
+
+			Mods.ToObservableChangeSet()
+				.AutoRefresh(x => x.IsHidden)
+				.Filter(x => !x.IsHidden)
+				.ObserveOn(RxApp.MainThreadScheduler).Bind(ReadonlyMods).Subscribe();
+
+			ModsConnection = Mods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler);
+
+			DataSource = new HierarchicalTreeDataGridSource<IModEntry>(ReadonlyMods)
+			{
+				Columns =
+				{
+					//Avalonia.Controls.Models.TreeDataGrid.
+					new TextColumn<IModEntry, int>("Index", x => x.Index, GridLength.Auto),
+					new HierarchicalExpanderColumn<IModEntry>(
+					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
+					x => x.Children, x => x.Children != null && x.Children.Count > 0, x => x.IsExpanded),
+					new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
+					new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
+					new TextColumn<IModEntry, string>("Last Updated", x => x.LastUpdated, GridLength.Auto),
+				}
+			};
+		}
+	}
+
+	public DesignModListViewModel() : base(DesignModListViewModelDataSource.DataSource,
+		DesignModListViewModelDataSource.Mods,
+		DesignModListViewModelDataSource.ReadonlyMods,
+		DesignModListViewModelDataSource.ModsConnection, "Active")
+	{
+
+	}
+
+	public DesignModListViewModel(HierarchicalTreeDataGridSource<IModEntry> treeGridSource,
+		ICollection<IModEntry> collection,
+		INotifyCollectionChanged observedCollection,
+		IObservable<IChangeSet<IModEntry>> connection,
+		string title = "") : base(treeGridSource, collection, observedCollection, connection, title)
+	{
+
 	}
 }
