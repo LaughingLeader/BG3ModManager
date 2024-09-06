@@ -110,7 +110,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 					}
 
 				}
-				_toastManager.CreateToast().WithTitle(title).WithContent(data.Message).Queue();
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					_toastManager.CreateToast().WithTitle(title).WithContent(data.Message).Queue();
+				});
 				//await SukiToastManager.ShowToast(this, title, data.Message, duration);
 				context.SetOutput(true);
 			});

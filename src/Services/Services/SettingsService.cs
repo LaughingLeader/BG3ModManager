@@ -87,17 +87,6 @@ public class SettingsService : ReactiveObject, ISettingsService
 					if (ignoredMod.Author.IsValid()) mod.Author = ignoredMod.Author;
 					if (ignoredMod.Version != null) mod.Version = new LarianVersion(ignoredMod.Version.Value);
 					if (ignoredMod.Tags.IsValid()) mod.AddTags(ignoredMod.Tags.Split(';'));
-
-					if (ignoredMod.Targets.IsValid())
-					{
-						mod.Targets = ignoredMod.Targets;
-
-						mod.Modes.Clear();
-						foreach (var t in ignoredMod.Targets.Split(';'))
-						{
-							mod.Modes.Add(t);
-						}
-					}
 				}
 
 				foreach (var uuid in ignoredModsData.IgnoreDependencies)

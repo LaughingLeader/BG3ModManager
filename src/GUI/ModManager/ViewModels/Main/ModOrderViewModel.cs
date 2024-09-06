@@ -929,7 +929,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 							//Update the campaign's saved dependencies
 							SelectedGameMasterCampaign.Dependencies.Clear();
-							SelectedGameMasterCampaign.Dependencies.AddRange(finalOrder.Select(x => DivinityModDependencyData.FromModData(x)));
+							SelectedGameMasterCampaign.Dependencies.AddRange(finalOrder.Select(x => ModuleShortDesc.FromModData(x)));
 
 							List<string> orderList = [];
 							if (SelectedAdventureMod != null) orderList.Add(SelectedAdventureMod.UUID);

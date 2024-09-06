@@ -114,6 +114,16 @@ public static partial class DivinityModDataLoader
 		return fallbackValue;
 	}
 
+	private static ulong GetAttributeValueWithId(XElement node, string id, ulong fallbackValue = 0ul)
+	{
+		var attValue = node.Descendants("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
+		if (attValue != null && ulong.TryParse(attValue, out var value))
+		{
+			return value;
+		}
+		return fallbackValue;
+	}
+
 	private static bool TryGetAttribute(XElement node, string id, out string value, string fallbackValue = "")
 	{
 		var att = node.Attributes().FirstOrDefault(a => a.Name == id);
@@ -221,22 +231,6 @@ public static partial class DivinityModDataLoader
 				var name = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Name", ""));
 				var description = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Description", ""));
 				var author = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Author", ""));
-				/*
-				if (DivinityApp.MODS_GiftBag.Any(x => x.UUID == uuid))
-				{
-					name = UnescapeXml(GetAttributeWithId(moduleInfoNode, "DisplayName", name));
-					description = UnescapeXml(GetAttributeWithId(moduleInfoNode, "DescriptionName", description));
-					author = "Larian Studios";
-				}
-				*/
-
-				ulong publishHandle = 0;
-				var publishHandleStr = GetAttributeWithId(moduleInfoNode, "PublishHandle", "");
-
-				if (!String.IsNullOrWhiteSpace(publishHandleStr) && ulong.TryParse(publishHandleStr, out var publishHandleResult))
-				{
-					publishHandle = publishHandleResult;
-				}
 
 				DivinityModData modData = new()
 				{
@@ -248,7 +242,8 @@ public static partial class DivinityModDataLoader
 					Folder = GetAttributeWithId(moduleInfoNode, "Folder", ""),
 					Description = description,
 					MD5 = GetAttributeWithId(moduleInfoNode, "MD5", ""),
-					PublishHandle = publishHandle,
+					PublishHandle = GetAttributeValueWithId(moduleInfoNode, "PublishHandle", 0ul),
+					FileSize = GetAttributeValueWithId(moduleInfoNode, "FileSize", 0ul),
 					ModType = GetAttributeWithId(moduleInfoNode, "Type", ""),
 					HeaderVersion = new LarianVersion(headerMajor, headerMinor, headerRevision, headerBuild)
 				};
@@ -258,25 +253,59 @@ public static partial class DivinityModDataLoader
 				{
 					modData.AddTags(tagsText.Split(';'));
 				}
-				//var dependenciesNodes = xDoc.SelectNodes("//node[@id='ModuleShortDesc']");
-				var dependenciesNodes = xDoc.Descendants("node").Where(n => n.Attribute("id")?.Value == "ModuleShortDesc");
 
-				if (dependenciesNodes != null)
+				var dependenciesRoot = xDoc.Descendants("node").FirstOrDefault(x => x.Attribute("id")?.Value == "Dependencies");
+
+				if(dependenciesRoot != null)
 				{
-					foreach (var node in dependenciesNodes)
+					var dependenciesNodes = dependenciesRoot.Descendants("node").Where(n => n.Attribute("id")?.Value == "ModuleShortDesc");
+
+					if (dependenciesNodes != null)
 					{
-						DivinityModDependencyData dependencyMod = new()
+						foreach (var node in dependenciesNodes)
 						{
-							UUID = GetAttributeWithId(node, "UUID", ""),
-							Name = UnescapeXml(GetAttributeWithId(node, "Name", "")),
-							Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
-							Folder = GetAttributeWithId(node, "Folder", ""),
-							MD5 = GetAttributeWithId(node, "MD5", "")
-						};
-						//DivinityApp.LogMessage($"Added dependency to {modData.Name} - {dependencyMod.ToString()}");
-						if (dependencyMod.UUID != "")
+							ModuleShortDesc entryMod = new()
+							{
+								Folder = GetAttributeWithId(node, "Folder", ""),
+								MD5 = GetAttributeWithId(node, "MD5", ""),
+								Name = UnescapeXml(GetAttributeWithId(node, "Name", "")),
+								PublishHandle = GetAttributeValueWithId(moduleInfoNode, "PublishHandle", 0ul),
+								UUID = GetAttributeWithId(node, "UUID", ""),
+								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
+							};
+
+							if (!String.IsNullOrEmpty(entryMod.UUID))
+							{
+								modData.Dependencies.Add(entryMod);
+							}
+						}
+					}
+				}
+
+				var conflictsRoot = xDoc.Descendants("node").FirstOrDefault(x => x.Attribute("id")?.Value == "Conflicts");
+
+				if (conflictsRoot != null)
+				{
+					var conflictsNodes = conflictsRoot.Descendants("node").Where(n => n.Attribute("id")?.Value == "ModuleShortDesc");
+
+					if (conflictsNodes != null)
+					{
+						foreach (var node in conflictsNodes)
 						{
-							modData.Dependencies.Add(dependencyMod);
+							ModuleShortDesc entryMod = new()
+							{
+								Folder = GetAttributeWithId(node, "Folder", ""),
+								MD5 = GetAttributeWithId(node, "MD5", ""),
+								Name = UnescapeXml(GetAttributeWithId(node, "Name", "")),
+								PublishHandle = GetAttributeValueWithId(moduleInfoNode, "PublishHandle", 0ul),
+								UUID = GetAttributeWithId(node, "UUID", ""),
+								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
+							};
+
+							if (!String.IsNullOrEmpty(entryMod.UUID))
+							{
+								modData.Conflicts.Add(entryMod);
+							}
 						}
 					}
 				}
@@ -289,19 +318,6 @@ public static partial class DivinityModDataLoader
 					//DivinityApp.LogMessage($"{modData.Folder} PublishVersion is {publishVersion.Version}");
 				}
 
-				var targets = moduleInfoNode.Descendants("node").Where(n => n.Attribute("id")?.Value == "Target");
-				if (targets != null)
-				{
-					foreach (var node in targets)
-					{
-						var target = GetAttributeWithId(node, "Object", "");
-						if (!String.IsNullOrWhiteSpace(target))
-						{
-							modData.Modes.Add(target);
-						}
-					}
-					modData.Targets = String.Join(", ", modData.Modes);
-				}
 				return modData;
 			}
 			else
@@ -318,8 +334,8 @@ public static partial class DivinityModDataLoader
 
 	private static async Task TryLoadConfigFiles(VFS vfs, DivinityModData modData, string modsFolder, CancellationToken token)
 	{
-		Stream extenderConfigStream = null;
-		Stream modManagerConfigStream = null;
+		Stream? extenderConfigStream = null;
+		Stream? modManagerConfigStream = null;
 
 		try
 		{

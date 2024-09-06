@@ -23,7 +23,7 @@ public class DivinitySerializedModData : IDivinityModData
 	[DataMember] public string? Targets { get; set; }
 
 	[DataMember] public DivinityModScriptExtenderConfig ScriptExtenderData { get; set; }
-	[DataMember] public List<DivinityModDependencyData> Dependencies { get; set; }
+	[DataMember] public List<ModuleShortDesc> Dependencies { get; set; }
 
 	[DataMember] public string? MD5 { get; set; }
 

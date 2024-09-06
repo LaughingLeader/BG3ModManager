@@ -28,14 +28,14 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public string? MD5 { get; set; }
 	[Reactive, DataMember] public LarianVersion Version { get; set; }
 	[Reactive, DataMember] public ulong PublishHandle { get; set; }
+	[Reactive, DataMember] public ulong FileSize { get; set; }
 	[Reactive] public LarianVersion HeaderVersion { get; set; }
 	[Reactive] public LarianVersion PublishVersion { get; set; }
 	public List<string> Tags { get; set; } = [];
 
-	public ObservableCollectionExtended<string> Modes { get; private set; } = [];
+	public SourceList<ModuleShortDesc> Dependencies { get; }
+	public SourceList<ModuleShortDesc> Conflicts { get; }
 
-	public string? Targets { get; set; }
-	public SourceList<DivinityModDependencyData> Dependencies { get; set; } = new SourceList<DivinityModDependencyData>();
 	#endregion
 
 	[Reactive] public DateTimeOffset? LastModified { get; set; }
@@ -96,8 +96,8 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public DivinityModScriptExtenderConfig ScriptExtenderData { get; set; }
 
 
-	protected ReadOnlyObservableCollection<DivinityModDependencyData> _displayedDependencies;
-	public ReadOnlyObservableCollection<DivinityModDependencyData> DisplayedDependencies => _displayedDependencies;
+	protected ReadOnlyObservableCollection<ModuleShortDesc> _displayedDependencies;
+	public ReadOnlyObservableCollection<ModuleShortDesc> DisplayedDependencies => _displayedDependencies;
 
 	[ObservableAsProperty] public bool HasToolTip { get; }
 	[ObservableAsProperty] public int TotalDependencies { get; }
@@ -590,13 +590,17 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		Folder = "";
 		UUID = "";
 		Name = "";
-		PublishHandle = 0;
+		PublishHandle = 0ul;
+		FileSize = 0ul;
 
 		HelpText = "";
-		Targets = "";
 		Index = -1;
 		CanDrag = true;
 		IsVisible = true;
+
+		Dependencies = new();
+		Conflicts = new();
+		Tags = [];
 
 		WorkshopData = new SteamWorkshopModData();
 		NexusModsData = new NexusModsModData();
@@ -731,9 +735,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 			Description = mod.Description,
 			MD5 = mod.MD5,
 			ModType = mod.ModType,
-			Tags = mod.Tags.ToList(),
-			Targets = mod.Targets,
+			Tags = mod.Tags.ToList()
 		};
+		cloneMod.Conflicts.AddRange(mod.Conflicts.Items);
 		cloneMod.Dependencies.AddRange(mod.Dependencies.Items);
 		cloneMod.NexusModsData.Update(mod.NexusModsData);
 		cloneMod.WorkshopData.Update(mod.WorkshopData);

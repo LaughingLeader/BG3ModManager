@@ -10,7 +10,7 @@ namespace ModManager;
 
 [JsonSerializable(typeof(DivinityLoadOrder))]
 [JsonSerializable(typeof(DivinityModData))]
-[JsonSerializable(typeof(DivinityModDependencyData))]
+[JsonSerializable(typeof(ModuleShortDesc))]
 [JsonSerializable(typeof(DivinityModScriptExtenderConfig))]
 [JsonSerializable(typeof(DivinitySerializedModData))]
 [JsonSerializable(typeof(GitHubModsCachedData))]
