@@ -231,8 +231,9 @@ public static partial class DivinityModDataLoader
 				*/
 
 				ulong publishHandle = 0;
+				var publishHandleStr = GetAttributeWithId(moduleInfoNode, "PublishHandle", "");
 
-				if (TryGetAttribute(moduleInfoNode, "PublishHandle", out var publishHandleStr) && !String.IsNullOrWhiteSpace(publishHandleStr) && ulong.TryParse(publishHandleStr, out var publishHandleResult))
+				if (!String.IsNullOrWhiteSpace(publishHandleStr) && ulong.TryParse(publishHandleStr, out var publishHandleResult))
 				{
 					publishHandle = publishHandleResult;
 				}
