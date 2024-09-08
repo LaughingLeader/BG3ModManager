@@ -16,6 +16,10 @@ namespace ModManager.Models.Mod;
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
 public class DivinityModData : ReactiveObject, IDivinityModData
 {
+	private static readonly SortExpressionComparer<ModuleShortDesc> _moduleSort = SortExpressionComparer<ModuleShortDesc>
+			.Ascending(p => !DivinityApp.IgnoredMods.Any(x => x.UUID == p.UUID)).
+			ThenByAscending(p => p.Name);
+
 	[Reactive] public string? FilePath { get; set; }
 
 	#region meta.lsx Properties
@@ -99,9 +103,16 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	protected ReadOnlyObservableCollection<ModuleShortDesc> _displayedDependencies;
 	public ReadOnlyObservableCollection<ModuleShortDesc> DisplayedDependencies => _displayedDependencies;
 
-	[ObservableAsProperty] public bool HasToolTip { get; }
+	protected ReadOnlyObservableCollection<ModuleShortDesc> _displayedConflicts;
+	public ReadOnlyObservableCollection<ModuleShortDesc>DisplayedConflicts => _displayedConflicts;
+
 	[ObservableAsProperty] public int TotalDependencies { get; }
 	[ObservableAsProperty] public bool HasDependencies { get; }
+
+	[ObservableAsProperty] public int TotalConflicts { get; }
+	[ObservableAsProperty] public bool HasConflicts { get; }
+
+	[ObservableAsProperty] public bool HasToolTip { get; }
 
 	[Reactive] public bool HasScriptExtenderSettings { get; set; }
 
@@ -127,7 +138,6 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[ObservableAsProperty] public string? Notes { get; }
 	[ObservableAsProperty] public bool DescriptionVisibility { get; }
 	[ObservableAsProperty] public bool AuthorVisibility { get; }
-	[ObservableAsProperty] public bool DependencyVisibility { get; }
 	[ObservableAsProperty] public bool OpenGitHubLinkVisibility { get; }
 	[ObservableAsProperty] public bool OpenNexusModsLinkVisibility { get; }
 	[ObservableAsProperty] public bool OpenWorkshopLinkVisibility { get; }
@@ -643,9 +653,13 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 		var dependenciesChanged = Dependencies.CountChanged;
 		dependenciesChanged.ToUIProperty(this, x => x.TotalDependencies);
-		dependenciesChanged.Select(x => x > 0).ToUIProperty(this, x => x.HasDependencies);
-		dependenciesChanged.Select(x => PropertyConverters.BoolToVisibility(x > 0)).ToUIProperty(this, x => x.DependencyVisibility);
-		Dependencies.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out _displayedDependencies).Subscribe();
+		dependenciesChanged.Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasDependencies);
+		Dependencies.Connect().ObserveOn(RxApp.MainThreadScheduler).Sort(_moduleSort).Bind(out _displayedDependencies).Subscribe();
+
+		var conflictsChanged = Conflicts.CountChanged;
+		conflictsChanged.ToUIProperty(this, x => x.TotalConflicts);
+		conflictsChanged.Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasConflicts);
+		Conflicts.Connect().ObserveOn(RxApp.MainThreadScheduler).Sort(_moduleSort).Bind(out _displayedConflicts).Subscribe();
 
 		this.WhenAnyValue(x => x.IsActive, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod, x => x.ForceAllowInLoadOrder).Subscribe((b) =>
 		{
