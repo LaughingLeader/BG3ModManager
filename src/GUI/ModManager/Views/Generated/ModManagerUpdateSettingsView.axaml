@@ -11,7 +11,7 @@
 	d:DesignHeight="900"
     d:DesignWidth="1600"
 	mc:Ignorable="d">
-	<controls:AutoGrid RowCount="7" RowHeight="auto">
+	<controls:AutoGrid RowCount="8" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
@@ -26,11 +26,14 @@
 		<TextBlock Classes="left" x:Name="UpdateNexusModsTextBlock" Text="Update NexusMods Mods" ToolTip.Tip="Automatically check for updates for mods configured with NexusMods releases" />
 		<CheckBox Classes="right" IsChecked ="{Binding UpdateNexusMods}" ToolTip.Tip="{Binding ElementName=UpdateNexusModsTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="UpdateSteamWorkshopModsTextBlock" Text="Update Steam Workshop Mods" ToolTip.Tip="Automatically check for updates for mods configured with Steam Workshop releases" />
-		<CheckBox Classes="right" IsChecked ="{Binding UpdateSteamWorkshopMods}" ToolTip.Tip="{Binding ElementName=UpdateSteamWorkshopModsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Classes="left" x:Name="UpdateModioModsTextBlock" Text="Update Mod.io Mods" ToolTip.Tip="Automatically check for updates for mods configured with Mod.io releases" />
+		<CheckBox Classes="right" IsChecked ="{Binding UpdateModioMods}" ToolTip.Tip="{Binding ElementName=UpdateModioModsTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="NexusModsAPIKeyTextBlock" Text="NexusMods API Key" ToolTip.Tip="Your NexusMods API key, which will allow the mod manager to fetch mod updates/information" />
 		<TextBox Classes="compact" Text="{Binding NexusModsAPIKey}" ToolTip.Tip="{Binding ElementName=NexusModsAPIKeyTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="ModioAPIKeyTextBlock" Text="Mod.io API Key" ToolTip.Tip="Your Mod.io Web API key, which will allow the mod manager to fetch mod updates/information from Mod.io" />
+		<TextBox Classes="compact" Text="{Binding ModioAPIKey}" ToolTip.Tip="{Binding ElementName=ModioAPIKeyTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="MinimumUpdateTimePeriodTextBlock" Text="Minimum Update Time Period" ToolTip.Tip="Prevent checking for updates for individual mods until this amount of time has passed since the last check
 This is to prevent hitting API limits too quickly" />

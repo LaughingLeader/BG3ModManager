@@ -27,7 +27,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	public RxCommandUnit DeleteSelectedModsCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> OpenSteamWorkshopPageCommand { get; }
+	public ReactiveCommand<DivinityModData?, Unit> OpenModioPageCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenSteamWorkshopPageInSteamCommand { get; }
 	public ReactiveCommand<object?, Unit> OpenURLCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
@@ -134,20 +134,10 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private static void OpenSteamWorkshopPage(DivinityModData? mod)
+	private static void OpenModioPage(DivinityModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
-		var url = mod.GetURL(ModSourceType.STEAM);
-		if (!string.IsNullOrEmpty(url))
-		{
-			FileUtils.TryOpenPath(url);
-		}
-	}
-
-	private static void OpenSteamWorkshopPageInSteam(DivinityModData? mod)
-	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
-		var url = mod.GetURL(ModSourceType.STEAM, true);
+		var url = mod.GetURL(ModSourceType.MODIO);
 		if (!string.IsNullOrEmpty(url))
 		{
 			FileUtils.TryOpenPath(url);
@@ -221,8 +211,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		OpenURLCommand = ReactiveCommand.Create<object?>(x => OpenURL(x?.ToString()), canExecuteCommands);
 		OpenGitHubPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenGitHubPage, canExecuteCommands);
 		OpenNexusModsPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenNexusModsPage, canExecuteCommands);
-		OpenSteamWorkshopPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenSteamWorkshopPage, canExecuteCommands);
-		OpenSteamWorkshopPageInSteamCommand = ReactiveCommand.Create<DivinityModData?>(OpenSteamWorkshopPageInSteam, canExecuteCommands);
+		OpenModioPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenModioPage, canExecuteCommands);
 		ToggleForceAllowInLoadOrderCommand = ReactiveCommand.Create<DivinityModData?>(ToggleForceAllowInLoadOrder, canExecuteCommands);
 		CopyModAsDependencyCommand = ReactiveCommand.Create<DivinityModData?>(CopyModAsDependency, canExecuteCommands);
 		OpenModPropertiesCommand = ReactiveCommand.Create<DivinityModData?>(OpenModProperties, canExecuteCommands);

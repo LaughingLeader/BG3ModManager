@@ -1,10 +1,9 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using ModManager.Extensions;
 using ModManager.Models.GitHub;
+using ModManager.Models.Modio;
 using ModManager.Models.NexusMods;
-using ModManager.Models.Steam;
 using ModManager.Util;
 
 using System.Globalization;
@@ -19,8 +18,6 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	private static readonly SortExpressionComparer<ModuleShortDesc> _moduleSort = SortExpressionComparer<ModuleShortDesc>
 			.Ascending(p => !DivinityApp.IgnoredMods.Any(x => x.UUID == p.UUID)).
 			ThenByAscending(p => p.Name);
-
-	[Reactive] public string? FilePath { get; set; }
 
 	#region meta.lsx Properties
 	[Reactive, DataMember] public string? UUID { get; set; }
@@ -77,21 +74,6 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 	[Reactive] public int Index { get; set; }
 
-	public string? OutputPakName
-	{
-		get
-		{
-			if (!Folder.Contains(UUID))
-			{
-				return Path.ChangeExtension($"{Folder}_{UUID}", "pak");
-			}
-			else
-			{
-				return Path.ChangeExtension($"{FileName}", "pak");
-			}
-		}
-	}
-
 	[Reactive] public DivinityExtenderModStatus ExtenderModStatus { get; set; }
 	[Reactive] public DivinityOsirisModStatus OsirisModStatus { get; set; }
 
@@ -122,6 +104,24 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
+
+	public string? OutputPakName
+	{
+		get
+		{
+			if (!string.IsNullOrEmpty(UUID) && Folder?.Contains(UUID) == false)
+			{
+				return $"{Folder}_{UUID}.pak";
+			}
+			else if (!string.IsNullOrEmpty(FileName))
+			{
+				return $"{FileName}.pak";
+			}
+			return "";
+		}
+	}
+
+	[Reactive] public string? FilePath { get; set; }
 
 	//These properties may be accessed from code, so they need BindTo in order to be updated as soon as possible.
 	[Reactive] public string? FileName { get; private set; }
@@ -158,7 +158,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 	[Reactive] public bool GitHubEnabled { get; set; }
 	[Reactive] public bool NexusModsEnabled { get; set; }
-	[Reactive] public bool SteamWorkshopEnabled { get; set; }
+	[Reactive] public bool ModioEnabled { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
 	[Reactive] public bool DeveloperMode { get; set; }
 	[Reactive] public string? SelectedColor { get; set; }
@@ -167,11 +167,11 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 	public HashSet<string> Files { get; set; }
 
-	[Reactive] public SteamWorkshopModData WorkshopData { get; set; }
+	[Reactive] public ModioModData ModioData { get; set; }
 	[Reactive] public NexusModsModData NexusModsData { get; set; }
 	[Reactive] public GitHubModData GitHubData { get; set; }
 
-	private static string GetDisplayName(ValueTuple<string, string, string, string, bool, bool> x)
+	private static string GetDisplayName(ValueTuple<string?, string?, string?, string?, bool, bool> x)
 	{
 		var name = x.Item1;
 		var fileName = x.Item2;
@@ -183,9 +183,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		{
 			if (!isEditorMod)
 			{
-				return fileName;
+				if (!string.IsNullOrEmpty(fileName)) return fileName;
 			}
-			else
+			else if(!string.IsNullOrEmpty(folder))
 			{
 				return folder + " [Editor Project]";
 			}
@@ -196,8 +196,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 			{
 				return "Main";
 			}
-			return name;
+			if (!string.IsNullOrEmpty(name)) return name;
 		}
+		return "";
 	}
 
 	public virtual string GetHelpText()
@@ -346,17 +347,10 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	{
 		switch (modSourceType)
 		{
-			case ModSourceType.STEAM:
-				if (WorkshopData.IsEnabled)
+			case ModSourceType.MODIO:
+				if (ModioData.IsEnabled)
 				{
-					if (!asProtocol)
-					{
-						return $"https://steamcommunity.com/sharedfiles/filedetails/?id={WorkshopData.ModId}";
-					}
-					else
-					{
-						return $"steam://url/CommunityFilePage/{WorkshopData.ModId}";
-					}
+					return string.Format(DivinityApp.NEXUSMODS_MOD_URL, ModioData.Data.NameId);
 				}
 				break;
 			case ModSourceType.NEXUSMODS:
@@ -378,10 +372,10 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	public List<string> GetAllURLs(bool asProtocol = false)
 	{
 		var urls = new List<string>();
-		var steamUrl = GetURL(ModSourceType.STEAM, asProtocol);
-		if (!string.IsNullOrEmpty(steamUrl))
+		var modioUrl = GetURL(ModSourceType.MODIO, asProtocol);
+		if (!string.IsNullOrEmpty(modioUrl))
 		{
-			urls.Add(steamUrl);
+			urls.Add(modioUrl);
 		}
 		var nexusUrl = GetURL(ModSourceType.NEXUSMODS, asProtocol);
 		if (!string.IsNullOrEmpty(nexusUrl))
@@ -438,9 +432,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		};
 	}
 
-	private static bool CanOpenWorkshopBoolCheck(bool enabled, bool isHidden, bool isLarianMod, long workshopID)
+	private static bool CanOpenModioBoolCheck(bool enabled, bool isHidden, bool isLarianMod, string? modioId)
 	{
-		return enabled && !isHidden & !isLarianMod & workshopID > DivinityApp.WORKSHOP_MOD_ID_START;
+		return enabled && !isHidden & !isLarianMod & !string.IsNullOrEmpty(modioId);
 	}
 
 	private static string NexusModsInfoToTooltip(DateTime createdDate, DateTime updatedDate, long endorsements)
@@ -486,7 +480,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 					this.WhenAnyValue(x => x.UUID).BindTo(ModManagerConfig, x => x.Id).DisposeWith(_modConfigDisposables);
 
 					this.WhenAnyValue(x => x.NexusModsData.ModId).BindTo(this, x => x.ModManagerConfig.NexusModsId).DisposeWith(_modConfigDisposables);
-					this.WhenAnyValue(x => x.WorkshopData.ModId).BindTo(this, x => x.ModManagerConfig.SteamWorkshopId).DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.ModioData.ModId).BindTo(this, x => x.ModManagerConfig.ModioId).DisposeWith(_modConfigDisposables);
 					this.WhenAnyValue(x => x.GitHubData.Url).BindTo(this, x => x.ModManagerConfig.GitHub).DisposeWith(_modConfigDisposables);
 				}
 			}
@@ -509,11 +503,11 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		}
 
 		if (config.NexusModsId > DivinityApp.NEXUSMODS_MOD_ID_START) NexusModsData.ModId = config.NexusModsId;
-		if (config.SteamWorkshopId > DivinityApp.WORKSHOP_MOD_ID_START) WorkshopData.ModId = config.SteamWorkshopId;
+		if (!string.IsNullOrEmpty(config.ModioId)) ModioData.ModId = config.ModioId;
 		if (!string.IsNullOrWhiteSpace(config.GitHub)) GitHubData.Url = config.GitHub;
 	}
 
-	private static string GetAuthor(ValueTuple<string, string, string, bool> x)
+	private static string GetAuthor(ValueTuple<string?, string?, string?, bool> x)
 	{
 		var metaAuthor = x.Item1;
 		var nexusAuthor = x.Item2;
@@ -529,7 +523,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		return string.Empty;
 	}
 
-	private static bool CanAddToLoadOrderCheck(ValueTuple<string, bool, bool, bool, bool> x)
+	private static bool CanAddToLoadOrderCheck(ValueTuple<string?, bool, bool, bool, bool> x)
 	{
 		//x => x.ModType, x => x.IsHidden, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod, x => x.ForceAllowInLoadOrder
 		var modType = x.Item1;
@@ -612,7 +606,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		Conflicts = new();
 		Tags = [];
 
-		WorkshopData = new SteamWorkshopModData();
+		ModioData = new ModioModData();
 		NexusModsData = new NexusModsModData();
 		GitHubData = new GitHubModData();
 
@@ -648,7 +642,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		this.WhenAnyValue(x => x.NexusModsEnabled, x => x.NexusModsData.ModId, (b, id) => b && id >= DivinityApp.NEXUSMODS_MOD_ID_START)
 			.ToUIProperty(this, x => x.OpenNexusModsLinkVisibility);
 
-		this.WhenAnyValue(x => x.SteamWorkshopEnabled, x => x.IsHidden, x => x.IsLarianMod, x => x.WorkshopData.ModId, CanOpenWorkshopBoolCheck)
+		this.WhenAnyValue(x => x.ModioEnabled, x => x.IsHidden, x => x.IsLarianMod, x => x.ModioData.ModId, CanOpenModioBoolCheck)
 			.ToUIProperty(this, x => x.OpenWorkshopLinkVisibility);
 
 		var dependenciesChanged = Dependencies.CountChanged;
@@ -754,7 +748,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		cloneMod.Conflicts.AddRange(mod.Conflicts.Items);
 		cloneMod.Dependencies.AddRange(mod.Dependencies.Items);
 		cloneMod.NexusModsData.Update(mod.NexusModsData);
-		cloneMod.WorkshopData.Update(mod.WorkshopData);
+		cloneMod.ModioData.Update(mod.ModioData.Data);
 		cloneMod.GitHubData.Update(mod.GitHubData);
 		cloneMod.ApplyModConfig(mod.ModManagerConfig);
 		return cloneMod;

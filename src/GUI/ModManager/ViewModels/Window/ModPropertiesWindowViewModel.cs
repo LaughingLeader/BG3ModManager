@@ -17,7 +17,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 	[Reactive] public string? Notes { get; set; }
 	[Reactive] public string? GitHub { get; set; }
 	[Reactive] public long NexusModsId { get; set; }
-	[Reactive] public long SteamWorkshopId { get; set; }
+	[Reactive] public string? ModioId { get; set; }
 
 	[ObservableAsProperty] public string? ModFileName { get; }
 	[ObservableAsProperty] public string? ModName { get; }
@@ -50,14 +50,14 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 			{
 				GitHub = mod.ModManagerConfig.GitHub;
 				NexusModsId = mod.ModManagerConfig.NexusModsId;
-				SteamWorkshopId = mod.ModManagerConfig.SteamWorkshopId;
+				ModioId = mod.ModManagerConfig.ModioId;
 				Notes = mod.ModManagerConfig.Notes;
 			}
 			else
 			{
 				GitHub = mod.GitHubData.Url;
 				NexusModsId = mod.NexusModsData.ModId;
-				SteamWorkshopId = mod.WorkshopData.ModId;
+				ModioId = mod.ModioData.ModId;
 				Notes = "";
 			}
 		}
@@ -76,7 +76,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 
 		Mod.ModManagerConfig.GitHub = GitHub;
 		Mod.ModManagerConfig.NexusModsId = NexusModsId;
-		Mod.ModManagerConfig.SteamWorkshopId = SteamWorkshopId;
+		Mod.ModManagerConfig.ModioId = ModioId;
 		Mod.ModManagerConfig.Notes = Notes;
 		Mod.ApplyModConfig(Mod.ModManagerConfig);
 
@@ -147,7 +147,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 		{
 			nameof(GitHub),
 			nameof(NexusModsId),
-			nameof(SteamWorkshopId),
+			nameof(ModioId),
 			nameof(Notes),
 		};
 

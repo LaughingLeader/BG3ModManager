@@ -121,10 +121,6 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public bool DisableMissingModWarnings { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Disable Checking for Steam Workshop Tags", "The mod manager will try and find mod tags from the workshop by default")]
-	[DataMember, Reactive] public bool DisableWorkshopTagCheck { get; set; }
-
-	[DefaultValue(false)]
 	[Reactive] public bool DisplayFileNames { get; set; }
 
 	[DefaultValue(false)]

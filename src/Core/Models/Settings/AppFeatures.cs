@@ -7,7 +7,7 @@ public class AppFeatures : ReactiveObject
 	[Reactive] public bool ScriptExtender { get; set; }
 	[Reactive] public bool GitHub { get; set; }
 	[Reactive] public bool NexusMods { get; set; }
-	[Reactive] public bool SteamWorkshop { get; set; }
+	[Reactive] public bool Modio { get; set; }
 
 	private static readonly List<PropertyInfo> _props = typeof(AppFeatures)
 		.GetRuntimeProperties()
@@ -30,7 +30,6 @@ public class AppFeatures : ReactiveObject
 		ScriptExtender = true;
 		GitHub = true;
 		NexusMods = true;
-		//TODO - Waiting on the workshop to be a thing
-		SteamWorkshop = false;
+		Modio = true;
 	}
 }

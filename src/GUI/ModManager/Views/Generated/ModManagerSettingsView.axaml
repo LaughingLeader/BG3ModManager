@@ -11,7 +11,7 @@
 	d:DesignHeight="900"
     d:DesignWidth="1600"
 	mc:Ignorable="d">
-	<controls:AutoGrid RowCount="18" RowHeight="auto">
+	<controls:AutoGrid RowCount="17" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
@@ -73,9 +73,6 @@ This folder is used when exporting load orders, loading profiles, and loading mo
 		
 		<TextBlock Classes="left" x:Name="DisableMissingModWarningsTextBlock" Text="Disable Missing Mod Warnings" ToolTip.Tip="If a load order is missing mods, no warnings will be displayed" />
 		<CheckBox Classes="right" IsChecked ="{Binding DisableMissingModWarnings}" ToolTip.Tip="{Binding ElementName=DisableMissingModWarningsTextBlock, Path=(ToolTip.Tip)}"/>
-		
-		<TextBlock Classes="left" x:Name="DisableWorkshopTagCheckTextBlock" Text="Disable Checking for Steam Workshop Tags" ToolTip.Tip="The mod manager will try and find mod tags from the workshop by default" />
-		<CheckBox Classes="right" IsChecked ="{Binding DisableWorkshopTagCheck}" ToolTip.Tip="{Binding ElementName=DisableWorkshopTagCheckTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="SaveWindowLocationTextBlock" Text="Save Window Location" ToolTip.Tip="Save and restore the window location when the application starts." />
 		<CheckBox Classes="right" IsChecked ="{Binding SaveWindowLocation}" ToolTip.Tip="{Binding ElementName=SaveWindowLocationTextBlock, Path=(ToolTip.Tip)}"/>

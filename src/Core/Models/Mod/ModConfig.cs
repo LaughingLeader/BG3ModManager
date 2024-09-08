@@ -19,7 +19,7 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 
 	[Reactive, DataMember] public string? GitHub { get; set; }
 	[Reactive, DataMember] public long NexusModsId { get; set; }
-	[Reactive, DataMember] public long SteamWorkshopId { get; set; }
+	[Reactive, DataMember] public string? ModioId { get; set; }
 
 	[ObservableAsProperty] public string? GitHubAuthor { get; }
 	[ObservableAsProperty] public string? GitHubRepository { get; }

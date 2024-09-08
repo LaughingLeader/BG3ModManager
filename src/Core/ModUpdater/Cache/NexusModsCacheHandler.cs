@@ -11,10 +11,6 @@ public class NexusModsCacheHandler : ReactiveObject, IExternalModCacheHandler<Ne
 	[Reactive] public bool IsEnabled { get; set; }
 	public NexusModsCachedData CacheData { get; set; }
 
-	public string? APIKey { get; set; }
-	public string? AppName { get; set; }
-	public string? AppVersion { get; set; }
-
 	public NexusModsCacheHandler(JsonSerializerOptions serializerSettings)
 	{
 		SerializerSettings = serializerSettings;

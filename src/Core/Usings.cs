@@ -20,3 +20,5 @@ global using System.Text.Json.Serialization;
 global using Splat;
 
 global using RxCommandUnit = ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>;
+global using ModioMod = Modio.Models.Mod;
+global using ModioDownload = Modio.Models.Download;

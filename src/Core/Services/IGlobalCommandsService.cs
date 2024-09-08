@@ -12,7 +12,7 @@ public interface IGlobalCommandsService
 	RxCommandUnit DeleteSelectedModsCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> OpenSteamWorkshopPageCommand { get; }
+	ReactiveCommand<DivinityModData?, Unit> OpenModioPageCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenSteamWorkshopPageInSteamCommand { get; }
 	ReactiveCommand<object?, Unit> OpenURLCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }

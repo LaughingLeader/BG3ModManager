@@ -60,7 +60,9 @@ public static class DivinityApp
 
 	public const string URL_NEXUSMODS = $"https://www.nexusmods.com/{NEXUSMODS_GAME_DOMAIN}";
 
-	public const long WORKSHOP_MOD_ID_START = 4; // id 5 and up seems to work, while 0-3 are disabled / hidden
+	public const string MODIO_GAME_DOMAIN = "baldursgate3";
+	public const long MODIO_GAME_ID = 6715;
+	public const string MODIO_MOD_URL = "https://mod.io/g/baldursgate3/m/{0}";
 
 	public const string EXTENDER_REPO_URL = "Norbyte/bg3se";
 	public const string EXTENDER_LATEST_URL = "https://github.com/Norbyte/bg3se/releases/latest";

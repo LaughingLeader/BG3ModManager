@@ -7,3 +7,6 @@
 [submodule "SukiUI"]
 	path = External/SukiUI
 	url = https://github.com/LaughingLeader/SukiUI
+[submodule "modio.net"]
+	path = External/modio.net
+	url = https://github.com/nickelc/modio.net

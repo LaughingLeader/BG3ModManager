@@ -41,8 +41,6 @@ namespace ModManager.Views.Generated
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
         internal global::Avalonia.Controls.TextBlock DisableMissingModWarningsTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::Avalonia.Controls.TextBlock DisableWorkshopTagCheckTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
         internal global::Avalonia.Controls.TextBlock SaveWindowLocationTextBlock;
 
         /// <summary>
@@ -76,7 +74,6 @@ namespace ModManager.Views.Generated
             ShiftListFocusOnSwapTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ShiftListFocusOnSwapTextBlock");
             ActionOnGameLaunchTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ActionOnGameLaunchTextBlock");
             DisableMissingModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableMissingModWarningsTextBlock");
-            DisableWorkshopTagCheckTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableWorkshopTagCheckTextBlock");
             SaveWindowLocationTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SaveWindowLocationTextBlock");
         }
     }

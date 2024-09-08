@@ -32,8 +32,8 @@ public class GitHubModData : ReactiveObject
 		LatestRelease = new GitHubLatestReleaseData();
 
 		var parseGitHubUrl = this.WhenAnyValue(x => x.Url).Select(ModConfig.GitHubUrlToParts);
-		parseGitHubUrl.Select(x => x.Item1).ToPropertyEx(this, x => x.Author, String.Empty, false, RxApp.MainThreadScheduler);
-		parseGitHubUrl.Select(x => x.Item2).ToPropertyEx(this, x => x.Repository, String.Empty, false, RxApp.MainThreadScheduler);
+		parseGitHubUrl.Select(x => x.Item1).ToUIPropertyImmediate(this, x => x.Author);
+		parseGitHubUrl.Select(x => x.Item2).ToUIPropertyImmediate(this, x => x.Repository);
 
 		this.WhenAnyValue(x => x.Url, url => !String.IsNullOrEmpty(url)).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.IsEnabled);
 	}

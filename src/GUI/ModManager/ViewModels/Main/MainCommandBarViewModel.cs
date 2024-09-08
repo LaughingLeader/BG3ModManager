@@ -85,7 +85,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 		CheckForGitHubModUpdatesCommand = ReactiveCommand.Create(main.RefreshGitHubModsUpdatesBackground, main.WhenAnyValue(x => x.GitHubModSupportEnabled).AllTrue(canExecuteCommands));
 		CheckForNexusModsUpdatesCommand = ReactiveCommand.Create(main.RefreshNexusModsUpdatesBackground, main.WhenAnyValue(x => x.NexusModsSupportEnabled).AllTrue(canExecuteCommands));
-		CheckForSteamWorkshopUpdatesCommand = ReactiveCommand.Create(main.RefreshSteamWorkshopUpdatesBackground, main.WhenAnyValue(x => x.SteamWorkshopSupportEnabled).AllTrue(canExecuteCommands));
+		CheckForSteamWorkshopUpdatesCommand = ReactiveCommand.Create(main.RefreshModioUpdatesBackground, main.WhenAnyValue(x => x.ModioSupportEnabled).AllTrue(canExecuteCommands));
 
 		ExportOrderCommand = ReactiveCommand.CreateFromTask(modOrder.ExportLoadOrderAsync, canExecuteCommands);
 		ExportModsToZipCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsync, canExecuteCommands);
