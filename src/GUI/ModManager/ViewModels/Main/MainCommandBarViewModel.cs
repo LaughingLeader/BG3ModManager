@@ -1,4 +1,10 @@
-﻿using ModManager.Util;
+﻿using DynamicData;
+using DynamicData.Binding;
+
+using ModManager.Models.Menu;
+using ModManager.Util;
+
+using System.Collections.ObjectModel;
 
 namespace ModManager.ViewModels.Main;
 
@@ -11,11 +17,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Check For App Updates", Key.U)]
 	public RxCommandUnit? CheckForAppUpdatesCommand { get; set; }
 
+	public RxCommandUnit? CheckAllModUpdatesCommand { get; set; }
 	public RxCommandUnit? CheckForGitHubModUpdatesCommand { get; set; }
-
 	public RxCommandUnit? CheckForNexusModsUpdatesCommand { get; set; }
-
-	public RxCommandUnit? CheckForSteamWorkshopUpdatesCommand { get; set; }
+	public RxCommandUnit? CheckForModioUpdatesCommand { get; set; }
 
 	[Keybinding("Export Order to Archive As...", Key.R, KeyModifiers.Control | KeyModifiers.Shift, "Export all active mods to an archive file of a chosen type", "File")]
 	public RxCommandUnit? ExportModsToZipAsCommand { get; set; }
@@ -65,6 +70,11 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Toggle Updates View", Key.U, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
 	public RxCommandUnit? ToggleUpdatesViewCommand { get; set; }
 
+	private ObservableCollectionExtended<IMenuEntry> _menuEntries;
+
+	private ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
+	public ReadOnlyObservableCollection<IMenuEntry> MenuEntries => _uiMenuEntries;
+
 	public void CreateCommands(MainWindowViewModel main, ModOrderViewModel modOrder)
 	{
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
@@ -81,11 +91,12 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			main.SaveSettings();
 		}, canExecuteCommands);
 
-		var x = main.WhenAnyValue(x => x.GitHubModSupportEnabled).CombineLatest(canExecuteCommands).Select(x => x.First);
+		var anyDownloadAllowed = main.WhenAnyValue(x => x.GitHubModSupportEnabled, x => x.NexusModsSupportEnabled, x => x.ModioSupportEnabled).Select(x => x.Item1 || x.Item2 || x.Item3);
 
+		CheckAllModUpdatesCommand = ReactiveCommand.Create(main.RefreshAllModUpdatesBackground, anyDownloadAllowed.AllTrue(canExecuteCommands));
 		CheckForGitHubModUpdatesCommand = ReactiveCommand.Create(main.RefreshGitHubModsUpdatesBackground, main.WhenAnyValue(x => x.GitHubModSupportEnabled).AllTrue(canExecuteCommands));
 		CheckForNexusModsUpdatesCommand = ReactiveCommand.Create(main.RefreshNexusModsUpdatesBackground, main.WhenAnyValue(x => x.NexusModsSupportEnabled).AllTrue(canExecuteCommands));
-		CheckForSteamWorkshopUpdatesCommand = ReactiveCommand.Create(main.RefreshModioUpdatesBackground, main.WhenAnyValue(x => x.ModioSupportEnabled).AllTrue(canExecuteCommands));
+		CheckForModioUpdatesCommand = ReactiveCommand.Create(main.RefreshModioUpdatesBackground, main.WhenAnyValue(x => x.ModioSupportEnabled).AllTrue(canExecuteCommands));
 
 		ExportOrderCommand = ReactiveCommand.CreateFromTask(modOrder.ExportLoadOrderAsync, canExecuteCommands);
 		ExportModsToZipCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsync, canExecuteCommands);
@@ -124,6 +135,108 @@ public partial class MainCommandBarViewModel : ReactiveObject
 				main.Views.SwitchToModOrderView();
 			}
 		}, canToggleUpdatesView);
+
+		_menuEntries = [
+			new MenuEntry("File"){
+				Children = [
+					new MenuEntry("Import Mods..."),
+					new MenuEntry("Import Nexus Mods Data from Archives..."),
+					new MenuSeparator(),
+					new MenuEntry("Save Order", SaveOrderCommand),
+					new MenuEntry("Save Order As...", SaveOrderAsCommand),
+					new MenuSeparator(),
+					new MenuEntry("Add New Order", AddNewOrderCommand),
+					new MenuSeparator(),
+					new MenuEntry("Import Order from Save..."),
+					new MenuEntry("Import Order from Save As New Order..."),
+					new MenuEntry("Import Order from File..."),
+					new MenuEntry("Import Order & Mods from Archive..."),
+					new MenuSeparator(),
+					new MenuEntry("Export Order to Game"),
+					new MenuEntry("Export Order to Text File..."),
+					new MenuEntry("Export Order to Archive (.zip)"),
+					new MenuEntry("Export Order to Archive As..."),
+					new MenuSeparator(),
+					new MenuEntry("Reload All Mods"),
+					new MenuEntry("Refresh Mod Updates"),
+				]},
+			new MenuEntry("Edit"){
+				Children = [
+					new MenuEntry("Moved Selected Mods to Opposite List"),
+					new MenuEntry("Focus Active Mods List"),
+					new MenuEntry("Focus Inactive Mods List"),
+					new MenuEntry("Go to Other List"),
+					new MenuEntry("Move to Top of Active List"),
+					new MenuEntry("Move to Bottom of Active List"),
+					new MenuSeparator(),
+					new MenuEntry("Toggle Focus Filter for Current List"),
+					new MenuEntry("Show File Names for Mods"),
+					new MenuSeparator(),
+					new MenuEntry("Delete Selected Mods..."),
+				]},
+			new MenuEntry("Settings"){
+				Children = [
+					new MenuEntry("Open Preferences"),
+					new MenuEntry("Open Keyboard Shortcuts"),
+					new MenuEntry("Toggle Light/Dark Mode"),
+				]},
+			new MenuEntry("View"){
+				Children = [
+					new MenuEntry("Toggle Updates View", ToggleUpdatesViewCommand),
+					new MenuEntry("Toggle Version Generator Window"),
+				]},
+			new MenuEntry("Go"){
+				Children = [
+					new MenuEntry("Launch Game", LaunchGameCommand),
+					new MenuSeparator(),
+					new MenuEntry("Open Nexus Mods Page...", OpenNexusModsCommand),
+					new MenuEntry("Open Steam Page...", OpenSteamPageCommand),
+					new MenuSeparator(),
+					new MenuEntry("Open Mods Folder", OpenModsFolderCommand),
+					new MenuEntry("Open Game Folder"),
+					new MenuEntry("Open Saves Folder"),
+					new MenuEntry("Open Extender Data Folder"),
+					new MenuSeparator(),
+					new MenuEntry("Open Repository Page...", OpenGitHubRepoCommand),
+				]},
+			new MenuEntry("Download"){
+				Children = [
+					new MenuEntry("Download & Extract the Script Extender..."),
+					new MenuEntry(@"Download nxm:\\ Link..."),
+					new MenuEntry(@"Open Collection Downloader Window"),
+					new MenuSeparator(),
+					new MenuEntry(@"Check For Mod Updates...", CheckAllModUpdatesCommand){
+					Children = [
+						new MenuEntry("All", CheckAllModUpdatesCommand),
+						new MenuSeparator(),
+						new MenuEntry("GitHub", CheckForGitHubModUpdatesCommand),
+						new MenuEntry("Nexus Mods", CheckForNexusModsUpdatesCommand),
+						new MenuEntry("Mod.io", CheckForModioUpdatesCommand),
+					]},
+				]},
+			new MenuEntry("Tools"){
+				Children = [
+					new MenuEntry("Extract Selected Mods To..."){
+					Children = [
+						new MenuEntry("All Selected Mods"),
+						new MenuSeparator(),
+						new MenuEntry("Selected Active Mods"),
+						new MenuEntry("Selected Inactive Mods"),
+					]},
+					new MenuSeparator(),
+					new MenuEntry(@"Speak Active Order"),
+				]},
+			new MenuEntry("Help"){
+				Children = [
+					new MenuEntry("About"),
+					new MenuSeparator(),
+					new MenuEntry("Check for Updates..."),
+					new MenuSeparator(),
+					new MenuEntry("Donate a Coffee..."),
+				]},
+		];
+
+		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
 
 		this.RegisterKeybindings();
 	}
