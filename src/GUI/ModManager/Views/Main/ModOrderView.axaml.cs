@@ -7,5 +7,9 @@ public partial class ModOrderView : ReactiveUserControl<ModOrderViewModel>
 	public ModOrderView()
 	{
 		InitializeComponent();
+
+#if DEBUG
+		this.DesignSetup();
+#endif
 	}
 }

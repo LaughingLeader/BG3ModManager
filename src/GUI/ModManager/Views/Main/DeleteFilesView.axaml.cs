@@ -7,5 +7,9 @@ public partial class DeleteFilesView : ReactiveUserControl<DeleteFilesViewModel>
 	public DeleteFilesView()
 	{
 		InitializeComponent();
+
+#if DEBUG
+		this.DesignSetup();
+#endif
 	}
 }

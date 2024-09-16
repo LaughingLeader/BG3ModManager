@@ -1,4 +1,5 @@
 using Avalonia.Input;
+using Avalonia.Media;
 
 using ModManager.ViewModels.Main;
 
@@ -9,6 +10,10 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 	public MainCommandBar()
 	{
 		InitializeComponent();
+
+#if DEBUG
+		this.DesignSetup();
+#endif
 
 		//TODO See if there's a way to fix FAComboBox staying "pressed" when opening a context menu
 

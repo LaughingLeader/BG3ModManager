@@ -7,5 +7,9 @@ public partial class ModUpdatesView : ReactiveUserControl<ModUpdatesViewModel>
 	public ModUpdatesView()
 	{
 		InitializeComponent();
+
+#if DEBUG
+		this.DesignSetup();
+#endif
 	}
 }
