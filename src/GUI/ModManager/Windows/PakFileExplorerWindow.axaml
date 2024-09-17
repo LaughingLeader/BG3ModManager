@@ -1,0 +1,68 @@
+<Window x:Class="ModManager.Windows.PakFileExplorerWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mv="using:ModManager.Models.View"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:vm="using:ModManager.ViewModels.Window"
+    Title="{Binding Title}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:PakFileExplorerWindowViewModel"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    mc:Ignorable="d">
+	<Design.DataContext>
+		<vm:DesignPakFileExplorerWindowViewModel />
+	</Design.DataContext>
+	<Window.Resources>
+		<MenuFlyout x:Key="FileContextMenu" x:DataType="mv:PakFileEntry">
+			<MenuItem x:Name="CopyToButton"
+			    CommandParameter="{Binding FilePath}"
+			    Header="Extract To..."
+			    Icon="{icons:MaterialIconExt Kind=Download}" />
+
+			<MenuItem x:Name="CopyPathButton"
+			    CommandParameter="{Binding FilePath}"
+			    Header="Copy Path to Clipboard..."
+			    Icon="{icons:MaterialIconExt Kind=ClipboardAdd}" />
+		</MenuFlyout>
+	</Window.Resources>
+	<Grid Margin="4">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<TextBox Text="{Binding PakFilePath, Mode=TwoWay}" />
+			<Button Grid.Column="1" Command="{Binding OpenFileBrowserCommand}" Content="..." />
+		</Grid>
+		<TreeView x:Name="FilesTreeView"
+		    Grid.Row="1"
+		    Background="Transparent"
+		    Focusable="True"
+		    ItemsSource="{Binding Entries}"
+		    SelectedItem="{Binding SelectedItem}"
+		    SelectedItems="{Binding SelectedItems}"
+		    SelectionMode="Multiple">
+			<TreeView.Styles>
+				<Style x:DataType="mv:TreeViewEntry" Selector="TreeViewItem">
+					<Setter Property="IsSelected" Value="{Binding IsSelected}" />
+					<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+					<Setter Property="ContextFlyout" Value="{StaticResource FileContextMenu}" />
+				</Style>
+			</TreeView.Styles>
+			<TreeView.DataTemplates>
+				<TreeDataTemplate DataType="mv:PakFileEntry" ItemsSource="{Binding Children}">
+					<TextBlock Text="{Binding FileName}" ToolTip.Tip="{Binding FilePath}" />
+				</TreeDataTemplate>
+			</TreeView.DataTemplates>
+		</TreeView>
+	</Grid>
+</Window>

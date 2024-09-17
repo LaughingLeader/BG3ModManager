@@ -57,7 +57,7 @@ public class ModImportService(IDialogService _dialogService)
 		return ext == ".pak" || _archiveFormats.Contains(ext) || _compressedFormats.Contains(ext);
 	}
 
-	public static string GetInitialStartingDirectory(string prioritizePath = "")
+	public static string GetInitialStartingDirectory(string? prioritizePath = null)
 	{
 		var directory = prioritizePath;
 
