@@ -6,8 +6,10 @@ using LSLib.LS;
 using ModManager.Helpers;
 using ModManager.Models.View;
 using ModManager.Services;
+using ModManager.Windows;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,12 +17,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ModManager.ViewModels.Window;
-public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
+public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableViewModel
 {
-	#region IClosableViewModel
-	[Reactive] public bool IsVisible { get; set; }
-	public RxCommandUnit CloseCommand { get; }
-	#endregion
+	private readonly IDialogService _dialogService;
 
 	[Reactive] public string Title { get; set; }
 	[Reactive] public string? PakFilePath { get; set; }
@@ -34,8 +33,8 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 	public PakFileEntry? SelectedItem { get; set; }
 
 	public RxCommandUnit OpenFileBrowserCommand { get; }
-
-	private IDisposable? _loadPakTask;
+	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
+	public ReactiveCommand<PakFileEntry, Unit> ExtractPakFilesCommand { get; }
 
 	private static void AddFileToTree(string filePath, Dictionary<string, PakFileEntry> directories)
 	{
@@ -47,8 +46,6 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 		{
 			immediateParentDirectory = immediateParentDirectory.Replace(Path.DirectorySeparatorChar, '/');
 
-			DivinityApp.Log($"[{filePath}] immediateParentDirectory({immediateParentDirectory})");
-
 			if (directories.TryGetValue(immediateParentDirectory, out var parent))
 			{
 				parentDirectory = parent;
@@ -57,15 +54,11 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 			{
 				var fileDirs = immediateParentDirectory.Split('/');
 
-				DivinityApp.Log($"fileDirs({string.Join(';', fileDirs)})");
-
 				var nextFullDirPath = "";
 				foreach (var dir in fileDirs)
 				{
 					if (nextFullDirPath != "") nextFullDirPath += "/";
 					nextFullDirPath += dir;
-
-					DivinityApp.Log($"nextFullDirPath({nextFullDirPath})");
 
 					if (parentDirectory == null)
 					{
@@ -76,7 +69,6 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 						else
 						{
 							parentDirectory = new PakFileEntry(nextFullDirPath, true);
-							DivinityApp.Log($"Adding directory ({nextFullDirPath}) to root");
 							directories.Add(nextFullDirPath, parentDirectory);
 						}
 					}
@@ -90,7 +82,6 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 						else
 						{
 							subDirectory = new PakFileEntry(nextFullDirPath, true);
-							DivinityApp.Log($"Adding directory ({nextFullDirPath}) to ({parentDirectory.FileName})");
 							parentDirectory.Children.Add(subDirectory);
 							parentDirectory = subDirectory;
 						}
@@ -101,17 +92,15 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 
 		if(parentDirectory != null)
 		{
-			DivinityApp.Log($"Adding file({filePath}) to ({parentDirectory.FilePath})");
 			parentDirectory.Children.Add(new PakFileEntry(filePath));
 		}
 		else
 		{
-			DivinityApp.Log($"Adding file({filePath}) to root");
 			directories.Add(filePath, new PakFileEntry(filePath));
 		}
 	}
 
-	private async Task LoadPakAsync(IScheduler sch, CancellationToken token)
+	private async Task LoadPakAsync(CancellationToken token)
 	{
 		var path = PakFilePath!;
 
@@ -129,33 +118,120 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 			}
 		}
 
-#if DEBUG
-		DivinityApp.Log($"Directories:\n{string.Join("\n", directories)}");
-		foreach(var entry in directories.Values)
-		{
-			entry.PrintStructure();
-		}
-#endif
-
 		await Observable.Start(() =>
 		{
 			_files.AddOrUpdate(directories.Values);
 		}, RxApp.MainThreadScheduler);
 	}
 
+	private IDisposable? _loadPakTask;
+	private IDisposable? _extractPakTask;
+
 	private void OnPakPathChanged(string path)
 	{
+		_loadPakTask?.Dispose();
+
 		_files.Clear();
 
-		_loadPakTask?.Dispose();
-		_loadPakTask = RxApp.TaskpoolScheduler.ScheduleAsync(LoadPakAsync);
+		if(File.Exists(path))
+		{
+			_loadPakTask = RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
+			{
+				await LoadPakAsync(t);
+			});
+		}
+	}
+
+	private static void BuildFileHash(ref HashSet<string> output, PakFileEntry file)
+	{
+		if(file.IsDirectory)
+		{
+			foreach(var child in file.Subfiles)
+			{
+				BuildFileHash(ref output, child);
+			}
+		}
+		else
+		{
+			output.Add(file.FilePath);
+		}
+	}
+
+	private async Task ExtractPakFilesAsync(IEnumerable<PakFileEntry> pakFiles, CancellationToken token)
+	{
+		var settings = AppServices.Settings;
+		var pathways = AppServices.Pathways.Data;
+
+		var dialogResult = await _dialogService.OpenFolderAsync(new OpenFolderBrowserDialogRequest(
+			"Extract File(s) To...",
+			ModImportService.GetInitialStartingDirectory(settings.ManagerSettings.LastExtractOutputPath),
+			"",
+			AppServices.Get<PakFileExplorerWindow>()
+		));
+
+		if (dialogResult.Success)
+		{
+			var extractToDirectory = dialogResult.File!;
+
+			if (settings.ManagerSettings.LastExtractOutputPath != extractToDirectory)
+			{
+				settings.ManagerSettings.LastExtractOutputPath = extractToDirectory;
+				pathways.LastSaveFilePath = extractToDirectory;
+				settings.ManagerSettings.Save(out _);
+			}
+
+			if (File.Exists(PakFilePath))
+			{
+				var fileMap = new HashSet<string>();
+
+				foreach (var file in pakFiles)
+				{
+					BuildFileHash(ref fileMap, file);
+				}
+
+				var pr = new PackageReader();
+				using var pak = pr.Read(PakFilePath);
+
+				var files = new ConcurrentBag<PackagedFileInfo>();
+				foreach(var file in pak.Files)
+				{
+					if (token.IsCancellationRequested) return;
+
+					if (file.IsDeletion()) continue;
+
+					if (fileMap.Contains(file.Name))
+					{
+						files.Add(file);
+					}
+				}
+
+				var opts = new ParallelOptions()
+				{
+					CancellationToken = token,
+					MaxDegreeOfParallelism = AppServices.Get<IEnvironmentService>().ProcessorCount
+				};
+
+				await Parallel.ForEachAsync(files, opts, async (f, t) =>
+				{
+					var outputPath = Path.Combine(extractToDirectory, f.Name);
+					if(Path.GetDirectoryName(outputPath) is string parentFolder)
+					{
+						Directory.CreateDirectory(parentFolder);
+					}
+					using var inStream = f.CreateContentReader();
+					using var outStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read, 32000, true);
+					await inStream.CopyToAsync(outStream, 32000, token);
+				});
+			}
+		}
 	}
 
 	private static readonly IComparer<PakFileEntry> _fileSort = new NaturalFileSortComparer(StringComparison.OrdinalIgnoreCase);
 
-	public PakFileExplorerWindowViewModel()
+	public PakFileExplorerWindowViewModel(IDialogService? dialogService = null, IGlobalCommandsService? commands = null)
 	{
-		CloseCommand = this.CreateCloseCommand();
+		_dialogService = dialogService ?? AppServices.Get<IDialogService>();
+		commands ??= AppServices.Get<IGlobalCommandsService>();
 
 		_files.Connect().ObserveOn(RxApp.MainThreadScheduler)
 			.SortAndBind(out _entries, _fileSort, new SortAndBindOptions { UseBinarySearch = true })
@@ -165,7 +241,14 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 
 		Title = "Pak File Explorer";
 
-		var dialogService = AppServices.Get<IDialogService>();
+		if(commands != null)
+		{
+			CopyToClipboardCommand = commands.CopyToClipboardCommand;
+		}
+		else
+		{
+			CopyToClipboardCommand = ReactiveCommand.Create<string?>(str => { });
+		}
 
 		OpenFileBrowserCommand = ReactiveCommand.CreateFromTask(async () =>
 		{
@@ -177,7 +260,8 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 				var dialogResult = await dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 					"Open Pak File...",
 					ModImportService.GetInitialStartingDirectory(settings.ManagerSettings.LastImportDirectoryPath),
-					[CommonFileTypes.ModPak]
+					[CommonFileTypes.ModPak],
+					window: AppServices.Get<PakFileExplorerWindow>()
 				));
 
 				if(dialogResult.Success)
@@ -196,9 +280,24 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 			}
 		});
 
+		var hasFilesSelected = SelectedItems.ToObservableChangeSet().CountChanged().Select(x => SelectedItems.Count > 0).ObserveOn(RxApp.MainThreadScheduler);
+
+		ExtractPakFilesCommand = ReactiveCommand.Create<PakFileEntry>(pakFile =>
+		{
+			_extractPakTask?.Dispose();
+			var files = SelectedItems.ToList();
+			if(files.Count > 0)
+			{
+				_extractPakTask = RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
+				{
+					await ExtractPakFilesAsync(files, t);
+				});
+			}
+		}, hasFilesSelected);
+
 		this.WhenAnyValue(x => x.PakFilePath)
 			.WhereNotNull()
-			.Where(x => !String.IsNullOrEmpty(x) && File.Exists(x))
+			.Where(x => !string.IsNullOrEmpty(x) && File.Exists(x))
 			.ObserveOn(RxApp.MainThreadScheduler)
 			.Subscribe(OnPakPathChanged);
 	}

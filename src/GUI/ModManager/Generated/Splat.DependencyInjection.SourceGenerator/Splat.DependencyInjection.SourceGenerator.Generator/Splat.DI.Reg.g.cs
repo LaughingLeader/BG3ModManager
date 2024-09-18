@@ -102,7 +102,7 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.ExportOrderToArchiveViewModel));
             }
             {
-                global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel>(() => new global::ModManager.ViewModels.Window.PakFileExplorerWindowViewModel());
+                global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel>(() => new global::ModManager.ViewModels.Window.PakFileExplorerWindowViewModel((global::ModManager.IDialogService)resolver.GetService(typeof(global::ModManager.IDialogService)), (global::ModManager.IGlobalCommandsService)resolver.GetService(typeof(global::ModManager.IGlobalCommandsService))));
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Window.PakFileExplorerWindowViewModel));
             }

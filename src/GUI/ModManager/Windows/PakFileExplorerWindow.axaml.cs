@@ -23,7 +23,12 @@ public partial class PakFileExplorerWindow : ReactiveWindow<PakFileExplorerWindo
 		{
 			if (ViewModel != null)
 			{
-				d(this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible));
+				var commands = AppServices.Commands;
+
+				this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible);
+
+				this.BindCommand(ViewModel, x => x.ExtractPakFilesCommand, view => view.CopyToButton);
+				this.BindCommand(ViewModel, x => x.CopyToClipboardCommand, view => view.CopyPathButton);
 			}
 		});
 	}

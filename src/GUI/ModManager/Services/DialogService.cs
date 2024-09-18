@@ -15,7 +15,16 @@ public class DialogService : IDialogService
 
 	public async Task<OpenFileBrowserDialogResults> OpenFolderAsync(OpenFolderBrowserDialogRequest context)
 	{
-		var provider = _window.StorageProvider;
+		IStorageProvider? provider = null;
+
+		if (context.TargetWindow is Window window)
+		{
+			provider = window.StorageProvider;
+		}
+		else
+		{
+			provider = _window.StorageProvider;
+		}
 
 		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
 
@@ -26,7 +35,7 @@ public class DialogService : IDialogService
 			AllowMultiple = context.MultiSelect
 		};
 
-		var files = await _window.StorageProvider.OpenFolderPickerAsync(opts);
+		var files = await provider.OpenFolderPickerAsync(opts);
 
 		if (files != null && files.Count > 0)
 		{
@@ -38,7 +47,16 @@ public class DialogService : IDialogService
 
 	public async Task<OpenFileBrowserDialogResults> OpenFileAsync(OpenFileBrowserDialogRequest context)
 	{
-		var provider = _window.StorageProvider;
+		IStorageProvider? provider = null;
+
+		if(context.TargetWindow is Window window)
+		{
+			provider = window.StorageProvider;
+		}
+		else
+		{
+			provider = _window.StorageProvider;
+		}
 
 		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
 
@@ -54,7 +72,7 @@ public class DialogService : IDialogService
 			opts.FileTypeFilter = context.FileTypes.Select(x => x.ToFilePickerType()).ToImmutableList();
 		}
 
-		var files = await _window.StorageProvider.OpenFilePickerAsync(opts);
+		var files = await provider.OpenFilePickerAsync(opts);
 
 		if (files != null && files.Count > 0)
 		{
@@ -66,7 +84,16 @@ public class DialogService : IDialogService
 
 	public async Task<OpenFileBrowserDialogResults> SaveFileAsync(OpenFileBrowserDialogRequest context)
 	{
-		var provider = _window.StorageProvider;
+		IStorageProvider? provider = null;
+
+		if (context.TargetWindow is Window window)
+		{
+			provider = window.StorageProvider;
+		}
+		else
+		{
+			provider = _window.StorageProvider;
+		}
 
 		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
 
@@ -83,7 +110,7 @@ public class DialogService : IDialogService
 			opts.DefaultExtension = context.FileTypes.FirstOrDefault().Extensions.FirstOrDefault();
 		}
 
-		var file = await _window.StorageProvider.SaveFilePickerAsync(opts);
+		var file = await provider.SaveFilePickerAsync(opts);
 
 		if (file != null)
 		{

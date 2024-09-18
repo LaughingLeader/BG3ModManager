@@ -288,7 +288,7 @@ public static class FileUtils
 		}
 	}
 
-	public static async Task<bool> ExtractPackageAsync(string pakPath, string outputDirectory, CancellationToken token)
+	public static async Task<bool> ExtractPackageAsync(string pakPath, string outputDirectory, CancellationToken token, Func<PackagedFileInfo, bool>? filter = null)
 	{
 		var task = await Task.Run(async () =>
 		{
@@ -298,7 +298,7 @@ public static class FileUtils
 				try
 				{
 					var packager = new Packager();
-					packager.UncompressPackage(pakPath, outputDirectory, null);
+					packager.UncompressPackage(pakPath, outputDirectory, filter);
 					return true;
 				}
 				catch (Exception) { return false; }

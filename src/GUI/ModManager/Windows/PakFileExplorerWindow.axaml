@@ -23,7 +23,7 @@
 	<Window.Resources>
 		<MenuFlyout x:Key="FileContextMenu" x:DataType="mv:PakFileEntry">
 			<MenuItem x:Name="CopyToButton"
-			    CommandParameter="{Binding FilePath}"
+			    CommandParameter="{Binding}"
 			    Header="Extract To..."
 			    Icon="{icons:MaterialIconExt Kind=Download}" />
 
