@@ -1,12 +1,48 @@
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
 
+using DynamicData.Binding;
+
+using ModManager.Models.Menu;
 using ModManager.ViewModels.Main;
 
 namespace ModManager.Views.Main;
 
 public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewModel>
 {
+	private void AddMenuItem(IMenuEntry entry, ItemCollection target)
+	{
+		if(entry is MenuEntry menuEntry)
+		{
+			var menuItem = new MenuItem()
+			{
+				Command = menuEntry.Command,
+			};
+			if(menuEntry.DisplayName.StartsWith("_"))
+			{
+				menuItem.Header = new AccessText() { Text = menuEntry.DisplayName };
+			}
+			else
+			{
+				menuItem.Header = new TextBlock() { Text = menuEntry.DisplayName };
+			}
+			ToolTip.SetTip(menuItem, menuEntry.ToolTip);
+			target.Add(menuItem);
+			if(menuEntry.Children != null)
+			{
+				foreach(var child in menuEntry.Children)
+				{
+					AddMenuItem(child, menuItem.Items);
+				}
+			}
+		}
+		else if(entry is MenuSeparator)
+		{
+			target.Add(new Separator());
+		}
+	}
+
 	public MainCommandBar()
 	{
 		InitializeComponent();
@@ -36,5 +72,19 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 				OrdersComboBox.IsDropDownOpen = false;
 			}
 		});*/
+
+		this.WhenActivated(d =>
+		{
+			if (ViewModel != null)
+			{
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					foreach (var entry in ViewModel.MenuEntries)
+					{
+						AddMenuItem(entry, TopMenu.Items);
+					}
+				});
+			}
+		});
 	}
 }

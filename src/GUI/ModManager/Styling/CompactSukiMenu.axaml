@@ -8,6 +8,7 @@
 				<MenuItem Header="Save" />
 			</MenuItem>
 			<MenuItem Header="Edit" />
+			<MenuItem Header="Tools" />
 		</Menu>
 	</Design.PreviewWith>
 	<ControlTheme x:Key="SukiCompactTopLevelMenuItem" TargetType="MenuItem">
@@ -37,8 +38,7 @@
 						<Popup Name="PART_Popup"
 						    ClipToBounds="True"
 						    IsLightDismissEnabled="True"
-						    IsOpen="{TemplateBinding IsSubMenuOpen,
-						                             Mode=TwoWay}"
+						    IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}"
 						    Opacity="0"
 						    OverlayInputPassThroughElement="{Binding $parent[Menu]}"
 						    Placement="BottomEdgeAlignedLeft">

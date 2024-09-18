@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:menuModel="using:ModManager.Models.Menu"
     xmlns:vm="using:ModManager.ViewModels.Main"
     d:DesignHeight="240"
     d:DesignWidth="1600"
@@ -24,20 +25,43 @@
 			<Setter Property="AutoScrollToSelectedItem" Value="False" />
 		</Style>
 
+		<!--<Style x:DataType="menuModel:MenuEntry" Selector="MenuItem">
+			<Setter Property="Header" Value="{Binding DisplayName}" />
+			<Setter Property="Command" Value="{Binding Command}" />
+			<Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
+			<Setter Property="ItemsSource" Value="{Binding Children}" />
+		</Style>-->
+
+		<!--<Style x:DataType="menuModel:MenuEntry" Selector="MenuItem.SubItems MenuItem">
+			<Setter Property="Header" Value="{Binding DisplayName}" />
+			<Setter Property="Command" Value="{Binding Command}" />
+			<Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
+			<Setter Property="ItemsSource" Value="{Binding Children}" />
+		</Style>-->
 	</UserControl.Styles>
+	<UserControl.DataTemplates>
+		<!--<DataTemplate DataType="menuModel:MenuEntry">
+			<AccessText Text="{Binding DisplayName}" ToolTip.Tip="{Binding ToolTip}" />
+		</DataTemplate>-->
+		<!--<MenuItem Command="{Binding Command}"
+			    Header="{Binding DisplayName}"
+			    ItemsSource="{Binding Children}"
+			    ToolTip.Tip="{Binding ToolTip}">
+			</MenuItem>-->
+		<!--<DataTemplate DataType="menuModel:MenuSeparator">
+			<Separator />
+		</DataTemplate>-->
+		<!--<Menu.ItemContainerTheme>
+			<ControlTheme x:DataType="menuModel:MenuEntry" BasedOn="{StaticResource SukiCompactTopLevelMenuItem}" TargetType="MenuItem" />
+			<ControlTheme x:DataType="menuModel:MenuSeparator" BasedOn="{StaticResource {x:Type Separator}}" TargetType="Separator" />
+		</Menu.ItemContainerTheme>-->
+	</UserControl.DataTemplates>
 	<Grid RowDefinitions="auto,1,*">
-		<Menu DockPanel.Dock="Top" Theme="{StaticResource CompactSukiMenuStyle}">
-			<MenuItem Header="File">
-				<MenuItem Header="Save" />
-			</MenuItem>
-			<MenuItem Header="Edit" />
-			<MenuItem Header="Settings" />
-			<MenuItem Header="View" />
-			<MenuItem Header="Go" />
-			<MenuItem Header="Download" />
-			<MenuItem Header="Tools" />
-			<MenuItem Header="Help" />
-		</Menu>
+		<!--<Menu x:Name="TopMenu"
+		    DockPanel.Dock="Top"
+		    ItemsSource="{Binding MenuEntries}"
+		    Theme="{StaticResource CompactSukiMenuStyle}" />-->
+		<Menu x:Name="TopMenu" DockPanel.Dock="Top" Theme="{StaticResource CompactSukiMenuStyle}" />
 		<Separator Grid.Row="1"
 		    Margin="0"
 		    HorizontalAlignment="Stretch"

@@ -1517,8 +1517,6 @@ Directory the zip will be extracted to:
 		ViewModelLocator.CommandBar.CreateCommands(this, ViewModelLocator.ModOrder);
 
 		LoadInitial();
-
-		AppServices.Get<SettingsWindow>()?.Show(window);
 	}
 
 	public void LoadInitial()

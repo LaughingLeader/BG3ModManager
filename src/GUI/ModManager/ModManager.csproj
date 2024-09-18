@@ -19,31 +19,31 @@
 
 	<ItemGroup>
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.0-beta1" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.0-beta2" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.2.0-beta1" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.2.0-beta1" />
-		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.0-beta1" />
-		<PackageReference Include="Avalonia.ReactiveUI" Version="11.2.0-beta1" />
+		<PackageReference Include="Avalonia" Version="11.2.0-beta2" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.2.0-beta2" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.0-beta2" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="11.2.0-beta2" />
 		<PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.1.0" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0-beta1" />
-		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.1.0" />
-		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.1.0" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.1.0.1" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0-beta2" />
+		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.1.0.4" />
+		<PackageReference Include="Avalonia.Xaml.Interactions" Version="11.1.0.4" />
 		<PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.10" />
 		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
 		<PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
 		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
 		<PackageReference Include="DynamicData" Version="9.0.4" />
-		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
+		<PackageReference Include="Humanizer.Core" Version="3.0.0-beta.54" />
 		<PackageReference Include="Onova" Version="2.6.12" />
-		<PackageReference Include="ReactiveUI" Version="20.1.1" />
+		<PackageReference Include="ReactiveUI" Version="20.1.52" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
 		<PackageReference Include="ReactiveUI.Validation" Version="4.0.9" />
-		<PackageReference Include="SharpCompress" Version="0.37.2" />
-		<PackageReference Include="Splat" Version="15.1.1" />
+		<PackageReference Include="SharpCompress" Version="0.38.0" />
+		<PackageReference Include="Splat" Version="15.2.22" />
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" Version="1.2.3" />
 	</ItemGroup>
 

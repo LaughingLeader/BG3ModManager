@@ -3,6 +3,7 @@ using DynamicData.Binding;
 
 using ModManager.Models.Menu;
 using ModManager.Util;
+using ModManager.Windows;
 
 using System.Collections.ObjectModel;
 
@@ -70,7 +71,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Toggle Updates View", Key.U, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
 	public RxCommandUnit? ToggleUpdatesViewCommand { get; set; }
 
-	private ObservableCollectionExtended<IMenuEntry> _menuEntries;
+	[Keybinding("Toggle Pak File Explorer Window", Key.P, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
+	public RxCommandUnit? TogglePakFileExplorerWindowCommand { get; set; }
+
+	private ObservableCollectionExtended<IMenuEntry> _menuEntries = [];
 
 	private ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
 	public ReadOnlyObservableCollection<IMenuEntry> MenuEntries => _uiMenuEntries;
@@ -136,8 +140,21 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			}
 		}, canToggleUpdatesView);
 
-		_menuEntries = [
-			new MenuEntry("File"){
+		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(() =>
+		{
+			var window = AppServices.Get<PakFileExplorerWindow>();
+			if (window.IsVisible)
+			{
+				window.Hide();
+			}
+			else
+			{
+				window.Show();
+			}
+		});
+
+		_menuEntries.AddRange([
+			new MenuEntry("_File"){
 				Children = [
 					new MenuEntry("Import Mods..."),
 					new MenuEntry("Import Nexus Mods Data from Archives..."),
@@ -160,7 +177,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					new MenuEntry("Reload All Mods"),
 					new MenuEntry("Refresh Mod Updates"),
 				]},
-			new MenuEntry("Edit"){
+			new MenuEntry("_Edit"){
 				Children = [
 					new MenuEntry("Moved Selected Mods to Opposite List"),
 					new MenuEntry("Focus Active Mods List"),
@@ -174,18 +191,19 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					new MenuSeparator(),
 					new MenuEntry("Delete Selected Mods..."),
 				]},
-			new MenuEntry("Settings"){
+			new MenuEntry("_Settings"){
 				Children = [
 					new MenuEntry("Open Preferences"),
 					new MenuEntry("Open Keyboard Shortcuts"),
 					new MenuEntry("Toggle Light/Dark Mode"),
 				]},
-			new MenuEntry("View"){
+			new MenuEntry("_View"){
 				Children = [
 					new MenuEntry("Toggle Updates View", ToggleUpdatesViewCommand),
 					new MenuEntry("Toggle Version Generator Window"),
+					new MenuEntry("Toggle Pak File Explorer Window", TogglePakFileExplorerWindowCommand),
 				]},
-			new MenuEntry("Go"){
+			new MenuEntry("_Go"){
 				Children = [
 					new MenuEntry("Launch Game", LaunchGameCommand),
 					new MenuSeparator(),
@@ -199,7 +217,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					new MenuSeparator(),
 					new MenuEntry("Open Repository Page...", OpenGitHubRepoCommand),
 				]},
-			new MenuEntry("Download"){
+			new MenuEntry("_Download"){
 				Children = [
 					new MenuEntry("Download & Extract the Script Extender..."),
 					new MenuEntry(@"Download nxm:\\ Link..."),
@@ -214,7 +232,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 						new MenuEntry("Mod.io", CheckForModioUpdatesCommand),
 					]},
 				]},
-			new MenuEntry("Tools"){
+			new MenuEntry("_Tools"){
 				Children = [
 					new MenuEntry("Extract Selected Mods To..."){
 					Children = [
@@ -226,7 +244,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					new MenuSeparator(),
 					new MenuEntry(@"Speak Active Order"),
 				]},
-			new MenuEntry("Help"){
+			new MenuEntry("_Help"){
 				Children = [
 					new MenuEntry("About"),
 					new MenuSeparator(),
@@ -234,15 +252,13 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					new MenuSeparator(),
 					new MenuEntry("Donate a Coffee..."),
 				]},
-		];
-
-		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
+		]);
 
 		this.RegisterKeybindings();
 	}
 
 	public MainCommandBarViewModel()
 	{
-		
+		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
 	}
 }

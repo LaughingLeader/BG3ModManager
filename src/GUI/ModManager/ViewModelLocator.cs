@@ -1,5 +1,6 @@
 ﻿using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.ViewModels.Window;
 
 namespace ModManager;
 
@@ -24,4 +25,6 @@ public static class ViewModelLocator
 	public static ExportOrderToArchiveViewModel ExportOrderToArchive => AppServices.Get<ExportOrderToArchiveViewModel>()!;
 	public static MessageBoxViewModel MessageBox => AppServices.Get<MessageBoxViewModel>()!;
 	public static IProgressBarViewModel Progress => AppServices.Get<IProgressBarViewModel>()!;
+
+	public static PakFileExplorerWindowViewModel PakFileExplorer => AppServices.Get<PakFileExplorerWindowViewModel>()!;
 }

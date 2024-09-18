@@ -24,8 +24,6 @@ public partial class PakFileExplorerWindow : ReactiveWindow<PakFileExplorerWindo
 			if (ViewModel != null)
 			{
 				d(this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible));
-
-
 			}
 		});
 	}

@@ -12,7 +12,10 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:PakFileExplorerWindowViewModel"
+    Background="Black"
+    Focusable="True"
     Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    Topmost="False"
     mc:Ignorable="d">
 	<Design.DataContext>
 		<vm:DesignPakFileExplorerWindowViewModel />
@@ -30,39 +33,55 @@
 			    Icon="{icons:MaterialIconExt Kind=ClipboardAdd}" />
 		</MenuFlyout>
 	</Window.Resources>
-	<Grid Margin="4">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<TextBox Text="{Binding PakFilePath, Mode=TwoWay}" />
-			<Button Grid.Column="1" Command="{Binding OpenFileBrowserCommand}" Content="..." />
+	<Panel>
+		<Grid Margin="4">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<Grid Margin="4">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<controls:EnhancedTextBox Text="{Binding PakFilePath, Mode=TwoWay}" />
+				<Button Grid.Column="1"
+				    Height="32"
+				    Command="{Binding OpenFileBrowserCommand}"
+				    Content="..." />
+			</Grid>
+			<TreeView x:Name="FilesTreeView"
+			    Grid.Row="1"
+			    Background="Transparent"
+			    Focusable="True"
+			    Grid.IsSharedSizeScope="True"
+			    ItemsSource="{Binding Entries}"
+			    SelectedItem="{Binding SelectedItem}"
+			    SelectedItems="{Binding SelectedItems}"
+			    SelectionMode="Multiple">
+				<TreeView.Styles>
+					<Style x:DataType="mv:PakFileEntry" Selector="TreeViewItem">
+						<Setter Property="IsSelected" Value="{Binding IsSelected}" />
+						<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+						<Setter Property="ContextFlyout" Value="{StaticResource FileContextMenu}" />
+					</Style>
+				</TreeView.Styles>
+				<TreeView.DataTemplates>
+					<TreeDataTemplate DataType="mv:PakFileEntry" ItemsSource="{Binding Subfiles}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="auto" SharedSizeGroup="Icons" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<icons:MaterialIcon Grid.Column="0" Kind="{Binding Icon}" />
+							<TextBlock Grid.Column="1"
+							    Margin="4,0,0,0"
+							    Text="{Binding FileName}"
+							    ToolTip.Tip="{Binding FilePath}" />
+						</Grid>
+					</TreeDataTemplate>
+				</TreeView.DataTemplates>
+			</TreeView>
 		</Grid>
-		<TreeView x:Name="FilesTreeView"
-		    Grid.Row="1"
-		    Background="Transparent"
-		    Focusable="True"
-		    ItemsSource="{Binding Entries}"
-		    SelectedItem="{Binding SelectedItem}"
-		    SelectedItems="{Binding SelectedItems}"
-		    SelectionMode="Multiple">
-			<TreeView.Styles>
-				<Style x:DataType="mv:TreeViewEntry" Selector="TreeViewItem">
-					<Setter Property="IsSelected" Value="{Binding IsSelected}" />
-					<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
-					<Setter Property="ContextFlyout" Value="{StaticResource FileContextMenu}" />
-				</Style>
-			</TreeView.Styles>
-			<TreeView.DataTemplates>
-				<TreeDataTemplate DataType="mv:PakFileEntry" ItemsSource="{Binding Children}">
-					<TextBlock Text="{Binding FileName}" ToolTip.Tip="{Binding FilePath}" />
-				</TreeDataTemplate>
-			</TreeView.DataTemplates>
-		</TreeView>
-	</Grid>
+	</Panel>
 </Window>

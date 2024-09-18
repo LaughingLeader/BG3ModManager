@@ -102,6 +102,11 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.ExportOrderToArchiveViewModel));
             }
             {
+                global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel>(() => new global::ModManager.ViewModels.Window.PakFileExplorerWindowViewModel());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.Window.PakFileExplorerWindowViewModel>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Window.PakFileExplorerWindowViewModel));
+            }
+            {
                 global::System.Lazy<ModManager.ViewModels.Settings.KeybindingsViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Settings.KeybindingsViewModel>(() => new global::ModManager.ViewModels.Settings.KeybindingsViewModel());
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.Settings.KeybindingsViewModel>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Settings.KeybindingsViewModel));
@@ -150,6 +155,11 @@ namespace Splat
                 global::System.Lazy<ModManager.Windows.ModPropertiesWindow> lazy = new global::System.Lazy<ModManager.Windows.ModPropertiesWindow>(() => new global::ModManager.Windows.ModPropertiesWindow());
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Windows.ModPropertiesWindow>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.ModPropertiesWindow));
+            }
+            {
+                global::System.Lazy<ModManager.Windows.PakFileExplorerWindow> lazy = new global::System.Lazy<ModManager.Windows.PakFileExplorerWindow>(() => new global::ModManager.Windows.PakFileExplorerWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Windows.PakFileExplorerWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.PakFileExplorerWindow));
             }
             {
                 global::System.Lazy<ModManager.Services.WindowManagerService> lazy = new global::System.Lazy<ModManager.Services.WindowManagerService>(() => new global::ModManager.Services.WindowManagerService((global::ModManager.Windows.MainWindow)resolver.GetService(typeof(global::ModManager.Windows.MainWindow))));

@@ -1,9 +1,6 @@
 ﻿using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 
-using Humanizer;
-using Humanizer.Localisation;
-
 namespace ModManager.Controls;
 
 [TemplatePart("PART_Days", typeof(NumericUpDown))]

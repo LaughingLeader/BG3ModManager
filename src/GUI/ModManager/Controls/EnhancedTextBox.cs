@@ -1,4 +1,6 @@
-﻿namespace ModManager.Controls;
+﻿using Avalonia.LogicalTree;
+
+namespace ModManager.Controls;
 public class EnhancedTextBox : TextBox
 {
 	protected override Type StyleKeyOverride => typeof(TextBox);
@@ -24,6 +26,21 @@ public class EnhancedTextBox : TextBox
 	public EnhancedTextBox() : base()
 	{
 		PropertyChanged += EnhancedTextBox_PropertyChanged;
+
+		KeyDown += EnhancedTextBox_KeyDown;
+	}
+
+	private void EnhancedTextBox_KeyDown(object? sender, KeyEventArgs e)
+	{
+		if (!IsFocused) return;
+
+		if(e.Key == Key.Escape || ((e.Key == Key.Enter || e.Key == Key.Return) && !AcceptsReturn))
+		{
+			if(this.GetLogicalParent<Window>() is Window window)
+			{
+				window.FocusManager?.ClearFocus();
+			}
+		}
 	}
 
 	private void EnhancedTextBox_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

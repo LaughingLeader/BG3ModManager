@@ -15,11 +15,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ModManager.ViewModels.Window;
-public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
+public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 {
-	#region IClosableViewModel/IRoutableViewModel
-	public string UrlPathSegment => "pakfileexplorer";
-	public IScreen HostScreen { get; }
+	#region IClosableViewModel
 	[Reactive] public bool IsVisible { get; set; }
 	public RxCommandUnit CloseCommand { get; }
 	#endregion
@@ -39,26 +37,77 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 
 	private IDisposable? _loadPakTask;
 
-	private static void AddFileToTree(string filePath, List<PakFileEntry> files, HashSet<string> directoryNames)
+	private static void AddFileToTree(string filePath, Dictionary<string, PakFileEntry> directories)
 	{
-		var directoryName = Path.GetDirectoryName(filePath);
-		if (string.IsNullOrEmpty(directoryName))
+		var immediateParentDirectory = Path.GetDirectoryName(filePath);
+
+		PakFileEntry? parentDirectory = null;
+
+		if(!string.IsNullOrEmpty(immediateParentDirectory))
 		{
-			files.Add(new PakFileEntry(filePath));
+			immediateParentDirectory = immediateParentDirectory.Replace(Path.DirectorySeparatorChar, '/');
+
+			DivinityApp.Log($"[{filePath}] immediateParentDirectory({immediateParentDirectory})");
+
+			if (directories.TryGetValue(immediateParentDirectory, out var parent))
+			{
+				parentDirectory = parent;
+			}
+			else
+			{
+				var fileDirs = immediateParentDirectory.Split('/');
+
+				DivinityApp.Log($"fileDirs({string.Join(';', fileDirs)})");
+
+				var nextFullDirPath = "";
+				foreach (var dir in fileDirs)
+				{
+					if (nextFullDirPath != "") nextFullDirPath += "/";
+					nextFullDirPath += dir;
+
+					DivinityApp.Log($"nextFullDirPath({nextFullDirPath})");
+
+					if (parentDirectory == null)
+					{
+						if (directories.TryGetValue(nextFullDirPath, out var nextDir))
+						{
+							parentDirectory = nextDir;
+						}
+						else
+						{
+							parentDirectory = new PakFileEntry(nextFullDirPath, true);
+							DivinityApp.Log($"Adding directory ({nextFullDirPath}) to root");
+							directories.Add(nextFullDirPath, parentDirectory);
+						}
+					}
+					else
+					{
+						var subDirectory = parentDirectory.Children.Cast<PakFileEntry>().FirstOrDefault(x => x.FilePath == nextFullDirPath);
+						if (subDirectory != null)
+						{
+							parentDirectory = subDirectory;
+						}
+						else
+						{
+							subDirectory = new PakFileEntry(nextFullDirPath, true);
+							DivinityApp.Log($"Adding directory ({nextFullDirPath}) to ({parentDirectory.FileName})");
+							parentDirectory.Children.Add(subDirectory);
+							parentDirectory = subDirectory;
+						}
+					}
+				}
+			}
+		}
+
+		if(parentDirectory != null)
+		{
+			DivinityApp.Log($"Adding file({filePath}) to ({parentDirectory.FilePath})");
+			parentDirectory.Children.Add(new PakFileEntry(filePath));
 		}
 		else
 		{
-			// we are adding a directory
-			var firstDir = directoryName.Split(Path.DirectorySeparatorChar)[0];
-
-			if (!directoryNames.Contains(firstDir))
-			{
-				files.Add(new PakFileEntry(filePath, true));
-				directoryNames.Add(firstDir);
-			}
-
-			var subPath = filePath.Substring(firstDir.Length + 1);
-			AddFileToTree(subPath, files, directoryNames);
+			DivinityApp.Log($"Adding file({filePath}) to root");
+			directories.Add(filePath, new PakFileEntry(filePath));
 		}
 	}
 
@@ -69,22 +118,20 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 		var pr = new PackageReader();
 		using var pak = pr.Read(path);
 
-		var directories = new HashSet<string>();
-		var files = new List<PakFileEntry>();
+		var directories = new Dictionary<string, PakFileEntry>();
 
 		if(pak != null && pak.Files != null)
 		{
 			foreach(var file in pak.Files)
 			{
 				if (token.IsCancellationRequested) return;
-
-				AddFileToTree(file.Name, files, directories);
+				AddFileToTree(file.Name, directories);
 			}
 		}
 
 #if DEBUG
 		DivinityApp.Log($"Directories:\n{string.Join("\n", directories)}");
-		foreach(var entry in files)
+		foreach(var entry in directories.Values)
 		{
 			entry.PrintStructure();
 		}
@@ -92,7 +139,7 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 
 		await Observable.Start(() =>
 		{
-			_files.AddOrUpdate(files);
+			_files.AddOrUpdate(directories.Values);
 		}, RxApp.MainThreadScheduler);
 	}
 
@@ -106,12 +153,10 @@ public class PakFileExplorerWindowViewModel : ReactiveObject, IClosableViewModel
 
 	private static readonly IComparer<PakFileEntry> _fileSort = new NaturalFileSortComparer(StringComparison.OrdinalIgnoreCase);
 
-	public PakFileExplorerWindowViewModel(IScreen? host = null)
+	public PakFileExplorerWindowViewModel()
 	{
-		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 		CloseCommand = this.CreateCloseCommand();
 
-		
 		_files.Connect().ObserveOn(RxApp.MainThreadScheduler)
 			.SortAndBind(out _entries, _fileSort, new SortAndBindOptions { UseBinarySearch = true })
 			.DisposeMany().Subscribe();

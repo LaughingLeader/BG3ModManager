@@ -27,5 +27,6 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_SaveOrderAsCommand", "Save Order As...", SaveOrderAsCommand, Avalonia.Input.Key.S, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_SaveSettingsSilentlyCommand", "Save Settings", SaveSettingsSilentlyCommand, Avalonia.Input.Key.S, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleUpdatesViewCommand", "Toggle Updates View", ToggleUpdatesViewCommand, Avalonia.Input.Key.U, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_TogglePakFileExplorerWindowCommand", "Toggle Pak File Explorer Window", TogglePakFileExplorerWindowCommand, Avalonia.Input.Key.P, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 	}
 }

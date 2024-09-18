@@ -2,6 +2,7 @@
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
 using ModManager.ViewModels.Settings;
+using ModManager.ViewModels.Window;
 using ModManager.Views;
 using ModManager.Views.Main;
 using ModManager.Windows;
@@ -56,6 +57,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ExportOrderToArchiveViewModel>();
+		SplatRegistrations.RegisterLazySingleton<PakFileExplorerWindowViewModel>();
 
 		SplatRegistrations.RegisterLazySingleton<KeybindingsViewModel>();
 
@@ -71,12 +73,12 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<SettingsWindow>();
 		SplatRegistrations.RegisterLazySingleton<ModPropertiesWindow>();
+		SplatRegistrations.RegisterLazySingleton<PakFileExplorerWindow>();
 		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
 		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindow>();
 		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindow>();
-		SplatRegistrations.RegisterLazySingleton<SettingsWindow>();
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindow>();
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
 

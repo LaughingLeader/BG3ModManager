@@ -1,7 +1,6 @@
 ﻿using DynamicData.Binding;
 
 using Humanizer;
-using Humanizer.Localisation;
 
 using LSLib.LS.Stats;
 using LSLib.LS.Story.GoalParser;
