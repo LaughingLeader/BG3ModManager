@@ -149,6 +149,8 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 			IsInitialized = true;
 		}, RxApp.MainThreadScheduler);
+
+		RxApp.MainThreadScheduler.Schedule(ViewModelLocator.ModOrder.LoadCurrentProfile);
 	}
 
 	private async Task DownloadScriptExtenderAsync(CancellationToken token)
