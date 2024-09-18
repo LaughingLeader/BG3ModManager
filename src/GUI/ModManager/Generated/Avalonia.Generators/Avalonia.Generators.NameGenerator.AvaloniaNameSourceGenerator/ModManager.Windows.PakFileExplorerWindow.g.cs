@@ -13,7 +13,7 @@ namespace ModManager.Windows
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
         internal global::Avalonia.Controls.MenuItem CopyPathButton;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
-        internal global::Avalonia.Controls.TreeView FilesTreeView;
+        internal global::Avalonia.Controls.TreeDataGrid FilesTreeView;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -40,7 +40,7 @@ namespace ModManager.Windows
             var __thisNameScope__ = this.FindNameScope();
             CopyToButton = __thisNameScope__?.Find<global::Avalonia.Controls.MenuItem>("CopyToButton");
             CopyPathButton = __thisNameScope__?.Find<global::Avalonia.Controls.MenuItem>("CopyPathButton");
-            FilesTreeView = __thisNameScope__?.Find<global::Avalonia.Controls.TreeView>("FilesTreeView");
+            FilesTreeView = __thisNameScope__?.Find<global::Avalonia.Controls.TreeDataGrid>("FilesTreeView");
         }
     }
 }

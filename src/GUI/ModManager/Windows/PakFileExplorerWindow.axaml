@@ -34,7 +34,7 @@
 		</MenuFlyout>
 	</Window.Resources>
 	<Panel>
-		<Grid Margin="4">
+		<Grid Margin="4" Grid.IsSharedSizeScope="True">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
@@ -50,7 +50,32 @@
 				    Command="{Binding OpenFileBrowserCommand}"
 				    Content="..." />
 			</Grid>
-			<TreeView x:Name="FilesTreeView"
+			<TreeDataGrid x:Name="FilesTreeView"
+			    Grid.Row="1"
+			    AutoDragDropRows="False"
+			    Background="Transparent"
+			    DragDrop.AllowDrop="False"
+			    Focusable="True"
+			    Source="{Binding FileTreeSource}">
+				<TreeDataGrid.Resources>
+					<DataTemplate x:Key="FileNameWithIconCell" x:DataType="mv:PakFileEntry">
+						<Grid ContextFlyout="{StaticResource FileContextMenu}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="auto" SharedSizeGroup="Icons" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<icons:MaterialIcon Grid.Column="0" VerticalAlignment="Center" Kind="{Binding Icon}" />
+							<TextBlock Grid.Column="1"
+							    Margin="4,0,0,0"
+							    VerticalAlignment="Center"
+							    Text="{Binding FileName}"
+							    TextAlignment="Left"
+							    ToolTip.Tip="{Binding FilePath}" />
+						</Grid>
+					</DataTemplate>
+				</TreeDataGrid.Resources>
+			</TreeDataGrid>
+			<!--<TreeView x:Name="FilesTreeView"
 			    Grid.Row="1"
 			    Background="Transparent"
 			    Focusable="True"
@@ -81,7 +106,7 @@
 						</Grid>
 					</TreeDataTemplate>
 				</TreeView.DataTemplates>
-			</TreeView>
+			</TreeView>-->
 		</Grid>
 	</Panel>
 </Window>

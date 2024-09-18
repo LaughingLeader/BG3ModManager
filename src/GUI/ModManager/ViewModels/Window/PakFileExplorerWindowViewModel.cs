@@ -1,4 +1,7 @@
-﻿using DynamicData;
+﻿using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Selection;
+
+using DynamicData;
 using DynamicData.Binding;
 
 using LSLib.LS;
@@ -26,9 +29,8 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 	private SourceCache<PakFileEntry, string> _files = new(x => x.FilePath);
 	protected SourceCache<PakFileEntry, string> Files => _files;
+	public HierarchicalTreeDataGridSource<PakFileEntry> FileTreeSource { get; }
 
-	private readonly ReadOnlyObservableCollection<PakFileEntry> _entries;
-	public ReadOnlyObservableCollection<PakFileEntry> Entries => _entries;
 	public ObservableCollectionExtended<PakFileEntry> SelectedItems { get; }
 	public PakFileEntry? SelectedItem { get; set; }
 
@@ -36,8 +38,10 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
 	public ReactiveCommand<PakFileEntry, Unit> ExtractPakFilesCommand { get; }
 
-	private static void AddFileToTree(string filePath, ConcurrentDictionary<string, PakFileEntry> directories)
+	private static void AddFileToTree(PackagedFileInfo pakFile, ConcurrentDictionary<string, PakFileEntry> directories)
 	{
+		var filePath = pakFile.Name;
+
 		var immediateParentDirectory = Path.GetDirectoryName(filePath);
 
 		PakFileEntry? parentDirectory = null;
@@ -91,7 +95,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 		if(parentDirectory != null)
 		{
-			parentDirectory.AddChild(new PakFileEntry(filePath));
+			parentDirectory.AddChild(new PakFileEntry(filePath, false, pakFile.UncompressedSize));
 		}
 		else
 		{
@@ -124,7 +128,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 			//await Task.Run(() => AddFileToTree(file.Name, directories), t);
 			try
 			{
-				AddFileToTree(file.Name, directories);
+				AddFileToTree(file, directories);
 			}
 			catch(Exception ex)
 			{
@@ -249,11 +253,36 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 		_dialogService = dialogService ?? AppServices.Get<IDialogService>();
 		commands ??= AppServices.Get<IGlobalCommandsService>();
 
-		_files.Connect().ObserveOn(RxApp.MainThreadScheduler)
-			.SortAndBind(out _entries, _fileSort, new SortAndBindOptions { UseBinarySearch = true })
-			.DisposeMany().Subscribe();
+		ObservableCollectionExtended<PakFileEntry> readOnlyFiles = [];
+		Files.Connect()
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.SortAndBind(readOnlyFiles, _fileSort, new SortAndBindOptions { UseBinarySearch = true })
+			.DisposeMany()
+			.Subscribe();
+
+		FileTreeSource = new HierarchicalTreeDataGridSource<PakFileEntry>(readOnlyFiles)
+		{
+			Columns =
+			{
+				new HierarchicalExpanderColumn<PakFileEntry>(
+					//new TextColumn<PakFileEntry, string>("Name", x => x.FileName, GridLength.Star),
+					new TemplateColumn<PakFileEntry>("Name", "FileNameWithIconCell", null, GridLength.Star),
+					x => x.Subfiles, x => x.Subfiles != null && x.Subfiles.Count > 0, x => x.IsExpanded),
+				new TextColumn<PakFileEntry, string>("Size", x => x.Size, GridLength.Auto),
+			},
+		};
 
 		SelectedItems = [];
+
+		FileTreeSource.RowSelection!.SelectionChanged += (o, e) =>
+		{
+			SelectedItems.Clear();
+			if(FileTreeSource.RowSelection!.SelectedItems != null && FileTreeSource.RowSelection!.SelectedItems.Count > 0)
+			{
+				SelectedItems.AddRange(FileTreeSource.RowSelection!.SelectedItems);
+			}
+			SelectedItem = FileTreeSource.RowSelection!.SelectedItem;
+		};
 
 		Title = "Pak File Explorer";
 
@@ -323,23 +352,25 @@ public class DesignPakFileExplorerWindowViewModel : PakFileExplorerWindowViewMod
 {
 	public DesignPakFileExplorerWindowViewModel() : base()
 	{
+		var random = new Random();
+
 		var directory1 = new PakFileEntry("Directory1");
 		for (var i = 0; i < 20; i++)
 		{
-			directory1.AddChild(new PakFileEntry($"Directory1\\File_{i}"));
+			directory1.AddChild(new PakFileEntry($"Directory1\\File_{i}", false, random.NextDouble() * (random.NextInt64(1024, 6464) ^ 2)));
 		}
 
 		var directory2 = new PakFileEntry("Directory2");
 		for (var i = 0; i < 20; i++)
 		{
-			directory2.AddChild(new PakFileEntry($"Directory2\\File_{i}"));
+			directory2.AddChild(new PakFileEntry($"Directory2\\File_{i}", false, random.NextDouble() * (random.NextInt64(1024, 6464) ^ 2)));
 		}
 
 		Files.AddOrUpdate([directory1, directory2]);
 
 		for (var i = 0; i < 20; i++)
 		{
-			Files.AddOrUpdate(new PakFileEntry($"File_{i}"));
+			Files.AddOrUpdate(new PakFileEntry($"File_{i}", false, random.NextDouble() * (random.NextInt64(1024, 6464) ^ 2)));
 		}
 	}
 }

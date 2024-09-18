@@ -1,6 +1,8 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
+using Humanizer;
+
 using Material.Icons;
 
 using ModManager.Helpers;
@@ -11,9 +13,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace ModManager.Models.View;
 public class PakFileEntry : ReactiveObject, IFileModel
 {
-	[Reactive] public bool IsExpanded { get; set; }
-	[Reactive] public bool IsSelected { get; set; }
-
 	private readonly SourceCache<PakFileEntry, string> _children = new(x => x.FilePath);
 
 	private readonly ReadOnlyObservableCollection<PakFileEntry> _uiSubfiles;
@@ -34,9 +33,15 @@ public class PakFileEntry : ReactiveObject, IFileModel
 		return false;
 	}
 
+	[Reactive] public bool IsExpanded { get; set; }
+	[Reactive] public bool IsSelected { get; set; }
+
+	[ObservableAsProperty] public string Size { get; }
+
 	public string FilePath { get; }
 	public string FileName { get; }
 	public bool IsDirectory { get; }
+	[Reactive] public double SizeOnDisk { get; set; }
 	public MaterialIconKind Icon { get; }
 
 	public void PrintStructure(int indent = 0)
@@ -54,11 +59,14 @@ public class PakFileEntry : ReactiveObject, IFileModel
 
 	private static readonly IComparer<PakFileEntry> _fileSort = new NaturalFileSortComparer(StringComparison.OrdinalIgnoreCase);
 
-	public PakFileEntry(string filePath, bool isDirectory = false) : base()
+	public PakFileEntry(string filePath, bool isDirectory = false, double size = 0) : base()
 	{
+		SizeOnDisk = size;
 		FilePath = filePath;
 		FileName = Path.GetFileName(filePath).Replace(Path.DirectorySeparatorChar, '/');
 		IsDirectory = isDirectory;
+
+		this.WhenAnyValue(x => x.SizeOnDisk).Select(x => x > 0 ? x.Bytes().Humanize() : string.Empty).ToUIProperty(this, x => x.Size);
 
 		_children.Connect().ObserveOn(RxApp.MainThreadScheduler).SortAndBind(out _uiSubfiles, _fileSort).DisposeMany().Subscribe();
 
