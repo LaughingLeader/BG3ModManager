@@ -28,6 +28,7 @@
 		<PackageReference Include="ReactiveUI" Version="20.1.1" />
 		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
 		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
+		<PackageReference Include="DynamicData" Version="9.0.4" />
 		<PackageReference Include="SharpCompress" Version="0.37.2" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
