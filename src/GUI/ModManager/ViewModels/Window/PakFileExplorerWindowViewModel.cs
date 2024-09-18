@@ -36,7 +36,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
 	public ReactiveCommand<PakFileEntry, Unit> ExtractPakFilesCommand { get; }
 
-	private static void AddFileToTree(string filePath, Dictionary<string, PakFileEntry> directories)
+	private static void AddFileToTree(string filePath, ConcurrentDictionary<string, PakFileEntry> directories)
 	{
 		var immediateParentDirectory = Path.GetDirectoryName(filePath);
 
@@ -69,20 +69,19 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 						else
 						{
 							parentDirectory = new PakFileEntry(nextFullDirPath, true);
-							directories.Add(nextFullDirPath, parentDirectory);
+							directories.TryAdd(nextFullDirPath, parentDirectory);
 						}
 					}
 					else
 					{
-						var subDirectory = parentDirectory.Children.Cast<PakFileEntry>().FirstOrDefault(x => x.FilePath == nextFullDirPath);
-						if (subDirectory != null)
+						if(parentDirectory.TryGetChild(nextFullDirPath, out var subDirectory))
 						{
 							parentDirectory = subDirectory;
 						}
 						else
 						{
 							subDirectory = new PakFileEntry(nextFullDirPath, true);
-							parentDirectory.Children.Add(subDirectory);
+							parentDirectory.AddChild(subDirectory);
 							parentDirectory = subDirectory;
 						}
 					}
@@ -92,11 +91,11 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 		if(parentDirectory != null)
 		{
-			parentDirectory.Children.Add(new PakFileEntry(filePath));
+			parentDirectory.AddChild(new PakFileEntry(filePath));
 		}
 		else
 		{
-			directories.Add(filePath, new PakFileEntry(filePath));
+			directories.TryAdd(filePath, new PakFileEntry(filePath));
 		}
 	}
 
@@ -104,19 +103,36 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 	{
 		var path = PakFilePath!;
 
+		DivinityApp.Log($"Loading pak... {path}");
+
 		var pr = new PackageReader();
 		using var pak = pr.Read(path);
 
-		var directories = new Dictionary<string, PakFileEntry>();
+		var directories = new ConcurrentDictionary<string, PakFileEntry>();
 
-		if(pak != null && pak.Files != null)
+		DivinityApp.Log("Building file tree");
+
+		var opts = new ParallelOptions()
 		{
-			foreach(var file in pak.Files)
+			CancellationToken = token,
+			MaxDegreeOfParallelism = AppServices.Get<IEnvironmentService>().ProcessorCount
+		};
+
+		await Parallel.ForEachAsync(pak.Files, opts, async (file, t) =>
+		{
+			if (t.IsCancellationRequested) return;
+			//await Task.Run(() => AddFileToTree(file.Name, directories), t);
+			try
 			{
-				if (token.IsCancellationRequested) return;
 				AddFileToTree(file.Name, directories);
 			}
-		}
+			catch(Exception ex)
+			{
+				DivinityApp.Log($"{ex}");
+			}
+		});
+
+		DivinityApp.Log("Finished parsing pak files. Adding to tree.");
 
 		await Observable.Start(() =>
 		{
@@ -310,13 +326,13 @@ public class DesignPakFileExplorerWindowViewModel : PakFileExplorerWindowViewMod
 		var directory1 = new PakFileEntry("Directory1");
 		for (var i = 0; i < 20; i++)
 		{
-			directory1.Children.Add(new PakFileEntry($"Directory1\\File_{i}"));
+			directory1.AddChild(new PakFileEntry($"Directory1\\File_{i}"));
 		}
 
 		var directory2 = new PakFileEntry("Directory2");
 		for (var i = 0; i < 20; i++)
 		{
-			directory2.Children.Add(new PakFileEntry($"Directory2\\File_{i}"));
+			directory2.AddChild(new PakFileEntry($"Directory2\\File_{i}"));
 		}
 
 		Files.AddOrUpdate([directory1, directory2]);

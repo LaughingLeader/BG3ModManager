@@ -6,20 +6,38 @@ using Material.Icons;
 using ModManager.Helpers;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ModManager.Models.View;
-public class PakFileEntry : TreeViewEntry, IFileModel
+public class PakFileEntry : ReactiveObject, IFileModel
 {
-	public override object ViewModel => this;
+	[Reactive] public bool IsExpanded { get; set; }
+	[Reactive] public bool IsSelected { get; set; }
+
+	private readonly SourceCache<PakFileEntry, string> _children = new(x => x.FilePath);
+
+	private readonly ReadOnlyObservableCollection<PakFileEntry> _uiSubfiles;
+	public ReadOnlyObservableCollection<PakFileEntry> Subfiles => _uiSubfiles;
+
+	public void AddChild(PakFileEntry child) => _children.AddOrUpdate(child);
+	public void AddChild(IEnumerable<PakFileEntry> children) => _children.AddOrUpdate(children);
+
+	public bool TryGetChild(string filePath, [NotNullWhen(true)] out PakFileEntry? child)
+	{
+		child = null;
+		var result = _children.Lookup(filePath);
+		if (result.HasValue)
+		{
+			child = result.Value;
+			return true;
+		}
+		return false;
+	}
 
 	public string FilePath { get; }
 	public string FileName { get; }
 	public bool IsDirectory { get; }
 	public MaterialIconKind Icon { get; }
-
-	private readonly ReadOnlyObservableCollection<PakFileEntry> _subfiles;
-
-	public ReadOnlyObservableCollection<PakFileEntry> Subfiles => _subfiles;
 
 	public void PrintStructure(int indent = 0)
 	{
@@ -28,7 +46,7 @@ public class PakFileEntry : TreeViewEntry, IFileModel
 			var ending = IsDirectory ? Path.DirectorySeparatorChar.ToString() : "*";
 			DivinityApp.Log($"{new string('\t', indent - 1)}{FileName}{ending}");
 		}
-		foreach(var child in Children.Cast<PakFileEntry>())
+		foreach(var child in Subfiles)
 		{
 			child.PrintStructure(indent + 1);
 		}
@@ -42,13 +60,7 @@ public class PakFileEntry : TreeViewEntry, IFileModel
 		FileName = Path.GetFileName(filePath).Replace(Path.DirectorySeparatorChar, '/');
 		IsDirectory = isDirectory;
 
-		this.Children.ToObservableChangeSet()
-			.Transform(x => (PakFileEntry)x)
-			.Sort(_fileSort)
-			.ObserveOn(RxApp.MainThreadScheduler)
-			.Bind(out _subfiles)
-			.DisposeMany()
-			.Subscribe();
+		_children.Connect().ObserveOn(RxApp.MainThreadScheduler).SortAndBind(out _uiSubfiles, _fileSort).DisposeMany().Subscribe();
 
 		if(isDirectory)
 		{

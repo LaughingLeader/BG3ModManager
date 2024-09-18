@@ -118,7 +118,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 				StatsValidatorFileResults fileResults = new() { FilePath = name };
 				foreach (var entry in fileGroup)
 				{
-					fileResults.Children.Add(new StatsValidatorErrorEntry(entry, GetLineText(name, entry, result.FileText)));
+					fileResults.AddChild(new StatsValidatorErrorEntry(entry, GetLineText(name, entry, result.FileText)));
 				}
 				Entries.Add(fileResults);
 			}

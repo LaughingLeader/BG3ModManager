@@ -26,7 +26,7 @@ public class StatsValidatorErrorEntry : TreeViewEntry
 		//TODO Highlight the text accoding to the StartColumn/EndColumn
 		if (!String.IsNullOrEmpty(lineText))
 		{
-			Children.Add(new StatsValidatorLineText
+			AddChild(new StatsValidatorLineText
 			{
 				Text = lineText,
 				Start = error.Location.StartColumn,
