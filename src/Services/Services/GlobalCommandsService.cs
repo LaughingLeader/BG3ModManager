@@ -28,7 +28,6 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	public ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> OpenModioPageCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> OpenSteamWorkshopPageInSteamCommand { get; }
 	public ReactiveCommand<object?, Unit> OpenURLCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
 	public ReactiveCommand<DivinityModData?, Unit> CopyModAsDependencyCommand { get; }
@@ -165,8 +164,9 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	private void ToggleNameDisplay(DivinityModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
-		var b = !mod.DisplayFileForName;
-		_interactions.ToggleModFileNameDisplay.Handle(b).Subscribe();
+		mod.DisplayFileForName = !mod.DisplayFileForName;
+		//var b = !mod.DisplayFileForName;
+		//_interactions.ToggleModFileNameDisplay.Handle(b).Subscribe();
 	}
 
 	private void DeleteMod(IModEntry? mod)
