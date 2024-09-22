@@ -107,6 +107,8 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 	public void RefreshStart()
 	{
+		_globalCommands.CanExecuteCommands = false;
+
 		Progress.Title = !IsInitialized ? "Loading..." : "Refreshing...";
 		IsRefreshing = true;
 		_manager.Refresh();
@@ -148,6 +150,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 			RefreshModUpdates();
 
 			IsInitialized = true;
+			_globalCommands.CanExecuteCommands = true;
 		}, RxApp.MainThreadScheduler);
 
 		//RxApp.MainThreadScheduler.Schedule(ViewModelLocator.ModOrder.LoadCurrentProfile);
