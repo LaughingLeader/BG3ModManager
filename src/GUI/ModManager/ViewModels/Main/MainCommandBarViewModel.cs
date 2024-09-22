@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
+using ModManager.Models;
 using ModManager.Models.Menu;
 using ModManager.Util;
 using ModManager.Windows;
@@ -78,6 +79,8 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 	private ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
 	public ReadOnlyObservableCollection<IMenuEntry> MenuEntries => _uiMenuEntries;
+
+	[Reactive] public ModOrderViewModel? ModOrder { get; set; }
 
 	public void CreateCommands(MainWindowViewModel main, ModOrderViewModel modOrder)
 	{

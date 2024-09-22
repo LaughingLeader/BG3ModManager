@@ -84,6 +84,35 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 						AddMenuItem(entry, TopMenu.Items);
 					}
 				});
+
+				//Temp fix for ComboBox selected items not updating from bindings
+
+				ViewModel.WhenAnyValue(x => x.ModOrder.SelectedProfile).Subscribe(x =>
+				{
+					if (x != null && ProfileComboBox.SelectedItem == null)
+					{
+						ProfileComboBox.SelectedItem = x;
+						ProfileComboBox.SelectedIndex = ViewModel.ModOrder.SelectedProfileIndex;
+					}
+				});
+
+				ViewModel.WhenAnyValue(x => x.ModOrder.SelectedModOrder).Subscribe(x =>
+				{
+					if (x != null && OrdersComboBox.SelectedItem == null)
+					{
+						OrdersComboBox.SelectedItem = x;
+						OrdersComboBox.SelectedIndex = ViewModel.ModOrder.SelectedModOrderIndex;
+					}
+				});
+
+				ViewModel.WhenAnyValue(x => x.ModOrder.SelectedAdventureMod).Subscribe(x =>
+				{
+					if (x != null && CampaignComboBox.SelectedItem == null)
+					{
+						CampaignComboBox.SelectedItem = x;
+						CampaignComboBox.SelectedIndex = ViewModel.ModOrder.SelectedAdventureModIndex;
+					}
+				});
 			}
 		});
 	}

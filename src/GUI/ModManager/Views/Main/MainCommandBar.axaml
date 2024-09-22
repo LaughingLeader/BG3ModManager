@@ -3,9 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:ModManager.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:m="using:ModManager.Models"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:menuModel="using:ModManager.Models.Menu"
+    xmlns:mod="using:ModManager.Models.Mod"
     xmlns:vm="using:ModManager.ViewModels.Main"
     d:DesignHeight="240"
     d:DesignWidth="1600"
@@ -70,16 +72,26 @@
 		<WrapPanel Grid.Row="2" Margin="12,0" VerticalAlignment="Top">
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
-				<ComboBox x:Name="ProfileComboBox" AutoScrollToSelectedItem="False" SelectedIndex="0">
-					<ComboBox.Items>
-						<ComboBoxItem Content="Public" />
-						<ComboBoxItem Content="Debug Client Profile 1" />
-					</ComboBox.Items>
+				<ComboBox x:Name="ProfileComboBox"
+				    MaxWidth="150"
+				    AutoScrollToSelectedItem="False"
+				    ItemsSource="{Binding ModOrder.Profiles}"
+				    SelectedIndex="{Binding ModOrder.SelectedProfileIndex, FallbackValue=0}"
+				    SelectedItem="{Binding ModOrder.SelectedProfile}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate DataType="m:DivinityProfileData">
+							<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
 				</ComboBox>
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
-				<controls:ComboBoxWithRightClick x:Name="OrdersComboBox" SelectedIndex="0">
+				<controls:ComboBoxWithRightClick x:Name="OrdersComboBox"
+				    MaxWidth="150"
+				    ItemsSource="{Binding ModOrder.ModOrderList}"
+				    SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
+				    SelectedItem="{Binding ModOrder.SelectedModOrder}">
 					<FlyoutBase.AttachedFlyout>
 						<Flyout Placement="Pointer" ShowMode="Transient">
 							<MenuItem Header="Rename" ToolTip.Tip="Toggle Renaming">
@@ -89,13 +101,11 @@
 							</MenuItem>
 						</Flyout>
 					</FlyoutBase.AttachedFlyout>
-					<controls:ComboBoxWithRightClick.Items>
-						<ComboBoxItem Content="Current" />
-						<ComboBoxItem Content="Item 2" />
-						<ComboBoxItem Content="Different Name" />
-						<ComboBoxItem Content="ComboBoxItem4" />
-						<ComboBoxItem Content="Item 5" />
-					</controls:ComboBoxWithRightClick.Items>
+					<ComboBox.ItemTemplate>
+						<DataTemplate DataType="m:DivinityLoadOrder">
+							<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
 				</controls:ComboBoxWithRightClick>
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
@@ -129,8 +139,15 @@
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Campaign" />
-				<ComboBox SelectedIndex="0">
-					<ComboBoxItem Content="Main" />
+				<ComboBox MaxWidth="150"
+				    ItemsSource="{Binding ModOrder.AdventureMods}"
+				    SelectedIndex="{Binding ModOrder.SelectedAdventureModIndex, FallbackValue=0}"
+				    SelectedItem="{Binding ModOrder.SelectedAdventureMod}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate DataType="mod:DivinityModData">
+							<TextBlock Text="{Binding DisplayName}" ToolTip.Tip="{Binding FilePath}" />
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
 				</ComboBox>
 			</StackPanel>
 			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
