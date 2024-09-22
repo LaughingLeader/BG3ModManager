@@ -236,6 +236,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	public void Clear()
 	{
+		_lastProfile = null;
+
 		profiles.Clear();
 		ExternalModOrders.Clear();
 		ModOrderList.Clear();
@@ -314,7 +316,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			DivinityApp.Log("Loading external load orders...");
 			main.Progress.WorkText = "Loading external load orders...";
-			var savedModOrderList = await RunTask(LoadExternalLoadOrdersAsync(), []);
+			var savedModOrderList = await LoadExternalLoadOrdersAsync();
 			main.Progress.IncreaseValue(taskStepAmount);
 
 			if (savedModOrderList.Count > 0)
@@ -323,7 +325,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				DivinityApp.Log("No saved orders found.");
+				DivinityApp.Log($"No saved orders found in {Settings.LoadOrderPath}");
 			}
 
 			DivinityApp.Log("Setting up mod lists...");
@@ -425,28 +427,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					}
 				}
 
-				DivinityApp.Log($"SelectedProfileIndex: {SelectedProfileIndex} | UUID({selectedProfileUUID}) Public({publicProfile?.UUID})");
-
-				if (lastActiveOrder != null && lastActiveOrder.Count > 0)
-				{
-					SelectedModOrder?.SetOrder(lastActiveOrder);
-				}
-
 				if (Profiles.ElementAtOrDefault(SelectedProfileIndex) is DivinityProfileData profile) SelectedProfile = profile;
 				if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is DivinityLoadOrder order) SelectedModOrder = order;
 				if (AdventureMods.ElementAtOrDefault(SelectedAdventureModIndex) is DivinityModData adventureMod) SelectedAdventureMod = adventureMod;
 
-				DivinityApp.Log($"SelectedProfile({SelectedProfileIndex}:{SelectedProfile?.FolderName}) | SelectedModOrder({SelectedModOrderIndex}:{SelectedModOrder?.Name}) SelectedAdventureMod({SelectedAdventureModIndex}:{SelectedAdventureMod?.Name})");
-
-				RxApp.MainThreadScheduler.Schedule(() =>
+				/*if (lastActiveOrder != null && lastActiveOrder.Count > 0)
 				{
-					this.RaisePropertyChanged(nameof(SelectedProfileIndex));
-					this.RaisePropertyChanged(nameof(SelectedModOrderIndex));
-					this.RaisePropertyChanged(nameof(SelectedAdventureModIndex));
-					this.RaisePropertyChanged(nameof(SelectedProfile));
-					this.RaisePropertyChanged(nameof(SelectedModOrder));
-					this.RaisePropertyChanged(nameof(SelectedAdventureMod));
-				});
+					SelectedModOrder?.SetOrder(lastActiveOrder);
+				}*/
+
+				DivinityApp.Log($"SelectedProfile({SelectedProfileIndex}:{SelectedProfile?.FolderName}) | SelectedModOrder({SelectedModOrderIndex}:{SelectedModOrder?.Name}) SelectedAdventureMod({SelectedAdventureModIndex}:{SelectedAdventureMod?.Name})");
 			});
 		}
 	}
@@ -810,6 +800,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return false;
 	}
 
+	private DivinityProfileData? _lastProfile;
+
 	public void BuildModOrderList(DivinityProfileData profile, int selectIndex = -1, string lastOrderName = "")
 	{
 		if (profile != null)
@@ -864,21 +856,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				if (selectIndex != -1)
 				{
 					if (selectIndex >= ModOrderList.Count) selectIndex = ModOrderList.Count - 1;
-					DivinityApp.Log($"Setting next order index to [{selectIndex}/{ModOrderList.Count - 1}].");
+					DivinityApp.Log($"Setting next order index to [{selectIndex}] ({ModOrderList.Count} total).");
 					try
 					{
 						SelectedModOrderIndex = selectIndex;
-						//var nextOrder = ModOrderList.ElementAtOrDefault(selectIndex);
+						if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is DivinityLoadOrder order) SelectedModOrder = order;
 
-						//LoadModOrder(nextOrder, missingMods);
-
-						/*if (nextOrder.IsModSettings && Settings.GameMasterModeEnabled && SelectedGameMasterCampaign != null)
+						if(SelectedModOrder != null)
 						{
-							LoadGameMasterCampaignModOrder(SelectedGameMasterCampaign);
+							LoadModOrder(SelectedModOrder, missingMods);
 						}
-						*/
-
-						//Settings.LastOrder = nextOrder?.Name ?? "";
 					}
 					catch (Exception ex)
 					{
@@ -1652,10 +1639,12 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			.WhereNotNull()
 			.ToUIPropertyImmediate(this, x => x.SelectedAdventureMod);*/
 
-		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
-		this.WhenAnyValue(x => x.SelectedModOrder).Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
+		var whenModOrder = this.WhenAnyValue(x => x.SelectedModOrder);
 
-		this.WhenAnyValue(x => x.SelectedModOrder).Buffer(2, 1).Subscribe(changes =>
+		whenModOrder.Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
+		whenModOrder.Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
+
+		whenModOrder.Buffer(2, 1).Subscribe(changes =>
 		{
 			if (changes[0] is { } previous && previous != null)
 			{
@@ -1667,41 +1656,34 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		IDisposable? _buildListTask = null;
 
-		this.WhenAnyValue(x => x.SelectedProfile)
-			.WhereNotNull()
+		this.WhenAnyValue(x => x.SelectedProfile, x => x.SelectedModOrder)
 			.ThrottleFirst(TimeSpan.FromMilliseconds(50))
 			.ObserveOn(RxApp.MainThreadScheduler)
-			.Subscribe(profile =>
+			.Subscribe(x =>
 		{
-			DivinityApp.Log($"[SelectedProfile({profile.Name})] IsRefreshing({IsRefreshing})");
-			if(!IsRefreshing)
+			var profile = x.Item1;
+			var order = x.Item2;
+
+			if(profile != null)
 			{
-				_buildListTask?.Dispose();
-				_buildListTask = RxApp.MainThreadScheduler.Schedule(() =>
+				if(profile != _lastProfile)
 				{
 					BuildModOrderList(profile, Math.Max(0, SelectedModOrderIndex));
-				});
-			}
-		});
-
-		this.WhenAnyValue(x => x.SelectedModOrder)
-			.WhereNotNull()
-			.ThrottleFirst(TimeSpan.FromMilliseconds(50))
-			.ObserveOn(RxApp.MainThreadScheduler)
-			.Subscribe(order =>
-		{
-			DivinityApp.Log($"[SelectedModOrder({order.Name})] IsRefreshing({IsRefreshing})");
-			if (!IsRefreshing && !order.IsLoaded)
-			{
-				if (LoadModOrder(order))
-				{
-					DivinityApp.Log($"Successfully loaded order {order.Name}.");
+					_lastProfile = profile;
 				}
-				else
+				else if (!IsLoadingOrder && order != null && !order.IsLoaded)
 				{
-					DivinityApp.Log($"Failed to load order {order.Name}.");
+					if (LoadModOrder(order))
+					{
+						DivinityApp.Log($"Successfully loaded order {order.Name}.");
+					}
+					else
+					{
+						DivinityApp.Log($"Failed to load order {order.Name}.");
+					}
 				}
 			}
+			
 		});
 
 		//this.WhenAnyValue(x => x.OverrideModsFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
