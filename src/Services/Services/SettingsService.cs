@@ -87,6 +87,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 					if (ignoredMod.Author.IsValid()) mod.Author = ignoredMod.Author;
 					if (ignoredMod.Version != null) mod.Version = new LarianVersion(ignoredMod.Version.Value);
 					if (ignoredMod.Tags.IsValid()) mod.AddTags(ignoredMod.Tags.Split(';'));
+					DivinityApp.IgnoredMods.Add(mod);
 				}
 
 				foreach (var uuid in ignoredModsData.IgnoreDependencies)
