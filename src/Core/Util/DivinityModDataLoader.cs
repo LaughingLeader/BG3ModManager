@@ -784,12 +784,12 @@ public static partial class DivinityModDataLoader
 					}
 				}
 
-				if (String.IsNullOrEmpty(name))
+				if (string.IsNullOrEmpty(name))
 				{
 					name = folderName;
 				}
 
-				if (String.IsNullOrEmpty(displayedName))
+				if (string.IsNullOrEmpty(displayedName))
 				{
 					displayedName = name;
 				}
@@ -1661,14 +1661,6 @@ public static partial class DivinityModDataLoader
 			using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
 			baseMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
 
-			foreach (var mod in DivinityApp.IgnoredMods)
-			{
-				if (!baseMods.Mods.ContainsKey(mod.UUID))
-				{
-					baseMods.Mods[mod.UUID] = mod;
-				}
-			}
-
 			DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{gameDataPath}'");
 
 			time = DateTimeOffset.Now;
@@ -1676,6 +1668,14 @@ public static partial class DivinityModDataLoader
 		else
 		{
 			baseMods = new ModDirectoryLoadingResults(gameDataPath);
+		}
+
+		foreach (var mod in DivinityApp.IgnoredMods)
+		{
+			if (!baseMods.Mods.ContainsKey(mod.UUID))
+			{
+				baseMods.Mods[mod.UUID] = mod;
+			}
 		}
 
 		using var userPakParser = new DirectoryPakParser(userModsPath, FileUtils.FlatSearchOptions, baseMods.Mods, []);
