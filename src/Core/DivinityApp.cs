@@ -3,6 +3,7 @@ using ModManager.Util;
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -118,16 +119,26 @@ public static class DivinityApp
 
 	public static DivinityGlobalEvents Events { get; private set; }
 
+	private static readonly Assembly? _exeAssembly;
+	private static readonly string? _exePath;
+	private static readonly string? _appDirectory;
+
 	static DivinityApp()
 	{
+		_exeAssembly = Assembly.GetEntryAssembly();
+		_exePath = _exeAssembly?.Location;
+		_appDirectory = Path.GetDirectoryName(_exeAssembly?.Location);
+
 		IgnoredMods = [];
 		IgnoredDependencyMods = [];
 		Events = new DivinityGlobalEvents();
+
+		//Process.GetCurrentProcess()?.MainModule?.FileName
 	}
 
 	public static event PropertyChangedEventHandler StaticPropertyChanged;
 
-	private static void NotifyStaticPropertyChanged([CallerMemberName] string name = null)
+	private static void NotifyStaticPropertyChanged([CallerMemberName] string? name = null)
 	{
 		StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(name));
 	}
@@ -189,10 +200,7 @@ public static class DivinityApp
 		//return false;
 	}
 
-	public static string GetAppDirectory()
-	{
-		return Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory);
-	}
+	public static string GetAppDirectory() => _appDirectory ?? Directory.GetCurrentDirectory();
 
 	public static string GetAppDirectory(params string[] joinPath)
 	{
@@ -201,7 +209,7 @@ public static class DivinityApp
 		return Path.Join(paths);
 	}
 
-	public static string? GetExePath() => Process.GetCurrentProcess()?.MainModule?.FileName;
+	public static string? GetExePath() => _exePath;
 	public static string GetToolboxPath() => GetAppDirectory("Tools", "Toolbox.exe");
 
 	[Obsolete("Use a direct service reference instead")]
