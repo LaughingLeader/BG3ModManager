@@ -10,3 +10,6 @@
 [submodule "modio.net"]
 	path = External/modio.net
 	url = https://github.com/nickelc/modio.net
+[submodule "Avalonia.Controls.TreeDataGrid"]
+	path = External/Avalonia.Controls.TreeDataGrid
+	url = https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid
