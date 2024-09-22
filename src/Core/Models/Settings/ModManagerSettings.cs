@@ -131,9 +131,6 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DefaultValue("")]
 	[DataMember, Reactive] public string? GameLaunchParams { get; set; }
 
-	[DefaultValue(false)]
-	[DataMember, Reactive] public bool GameMasterModeEnabled { get; set; }
-
 	[DataMember] public WindowSettings Window { get; set; }
 
 	[DefaultValue(false)]

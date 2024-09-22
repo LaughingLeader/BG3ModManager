@@ -51,7 +51,6 @@ public static class DivinityApp
 	public const string XML_MOD_SETTINGS_TEMPLATE = @"<?xml version=""1.0"" encoding=""UTF-8""?><save><version major=""4"" minor=""7"" revision=""1"" build=""3""/><region id=""ModuleSettings""><node id=""root""><children><node id=""Mods""><children>{0}</children></node></children></node></region></save>";
 
 	public const string MAIN_CAMPAIGN_UUID = "28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8";
-	public const string GAMEMASTER_UUID = "NotYetAvailableInBG3";
 
 	public const string NEXUSMODS_GAME_DOMAIN = "baldursgate3";
 	public const long NEXUSMODS_GAME_ID = 3474;
