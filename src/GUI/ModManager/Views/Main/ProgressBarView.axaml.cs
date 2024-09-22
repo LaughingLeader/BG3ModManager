@@ -29,13 +29,13 @@ public partial class ProgressBarView : ReactiveUserControl<ProgressBarViewModel>
 
 			ViewModel.WhenAnyValue(x => x.Title).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.TitleTextControl.Text);
 			ViewModel.WhenAnyValue(x => x.WorkText).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.WorkTextControl.Text);
-			var whenValue = ViewModel.WhenAnyValue(x => x.Value).ObserveOn(RxApp.MainThreadScheduler).Select(x => Math.Clamp(x, 0, 100));
+
+			var whenValue = ViewModel.WhenAnyValue(x => x.Value)
+			.Select(x => Math.Clamp(x, 0d, 100d))
+			.ObserveOn(RxApp.MainThreadScheduler);
+
 			whenValue.BindTo(this, x => x.ProgressBarControl.Value);
 			whenValue.Select(x => $"{x:0}%").BindTo(this, x => x.ProgressValueTextControl.Text);
-			whenValue.Subscribe(x =>
-			{
-				DivinityApp.Log($"Progress bar value: {x}");
-			});
 		});
 	}
 }

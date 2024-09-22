@@ -44,7 +44,8 @@
 			<suki:CircleProgressBar x:Name="ProgressBarControl"
 			    Width="130"
 			    Height="130"
-			    StrokeWidth="11">
+			    StrokeWidth="11"
+			    Value="0">
 				<TextBlock x:Name="ProgressValueTextControl" Margin="0,1,0,0" Classes="h3" />
 			</suki:CircleProgressBar>
 			<!--<suki:WaveProgress IsTextVisible="True" Value="{Binding UIValue}" />-->

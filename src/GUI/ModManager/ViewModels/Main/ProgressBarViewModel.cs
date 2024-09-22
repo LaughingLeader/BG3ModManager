@@ -53,7 +53,7 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 	private async Task<Unit> RunTaskAsync(Func<CancellationToken, Task> task)
 	{
 		await task(Token);
-		Value = 100;
+		Value = 100d;
 		return Unit.Default;
 	}
 
@@ -66,7 +66,7 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 			TokenSource?.Dispose();
 			TokenSource = new CancellationTokenSource();
 			CanCancel = canCancel;
-			Value = 0;
+			Value = 0d;
 
 			nextView = switchToViewOnFinish ?? await HostScreen.Router.CurrentViewModel;
 			await HostScreen.Router.Navigate.Execute(this);
