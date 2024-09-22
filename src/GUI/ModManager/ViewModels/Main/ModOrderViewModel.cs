@@ -5,6 +5,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 
+using ModManager.Controls.TreeDataGrid;
 using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.Mod;
@@ -38,9 +39,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	public MainCommandBarViewModel CommandBar { get; }
 
-	public DivinityPathwayData PathwayData => AppServices.Pathways.Data;
-	public ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
-	public AppSettings AppSettings => AppServices.Settings.AppSettings;
+	public static DivinityPathwayData PathwayData => AppServices.Pathways.Data;
+	public static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
+	public static AppSettings AppSettings => AppServices.Settings.AppSettings;
 
 	//public IModViewLayout Layout { get; set; }
 
@@ -1487,7 +1488,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				//Avalonia.Controls.Models.TreeDataGrid.
 				new TextColumn<IModEntry, int>("Index", x => x.Index, GridLength.Auto),
 				new HierarchicalExpanderColumn<IModEntry>(
-					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
+					//new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
+					new ModEntryColumn("Name", GridLength.Star),
 					x => x.Children, x => x.Children != null && x.Children.Count > 0, x => x.IsExpanded),
 				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
 				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
@@ -1500,7 +1502,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			Columns =
 			{
 				new HierarchicalExpanderColumn<IModEntry>(
-					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, GridLength.Star),
+					new ModEntryColumn("Name", GridLength.Star),
 					x => x.Children),
 				new TextColumn<IModEntry, string>("Version", x => x.Version, GridLength.Auto),
 				new TextColumn<IModEntry, string>("Author", x => x.Author, GridLength.Auto),
@@ -1513,7 +1515,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			Columns =
 			{
 				new HierarchicalExpanderColumn<IModEntry>(
-					new TextColumn<IModEntry, string>("Name", x => x.DisplayName, new GridLength(3d, GridUnitType.Star)),
+					new ModEntryColumn("Name", GridLength.Star),
 					x => x.Children),
 				new TextColumn<IModEntry, string>("Version", x => x.Version, new GridLength(80d)),
 				new TextColumn<IModEntry, string>("Author", x => x.Author, new GridLength(100d)),

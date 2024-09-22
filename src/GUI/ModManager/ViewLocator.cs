@@ -1,10 +1,12 @@
-﻿using ModManager.Models.Settings;
+﻿using ModManager.Models.Mod;
+using ModManager.Models.Settings;
 using ModManager.Models.View;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
 using ModManager.ViewModels.Settings;
 using ModManager.Views;
 using ModManager.Views.Main;
+using ModManager.Views.Mods;
 using ModManager.Views.Settings;
 using ModManager.Views.StatsValidator;
 
@@ -72,5 +74,8 @@ public class ViewLocator : IViewLocator
 		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>(resolver);
 		Register<StatsValidatorErrorEntry, StatsValidatorEntryView>(resolver);
 		Register<StatsValidatorLineText, StatsValidatorLineView>(resolver);
+
+		//Register<ModCategory, ModCategoryEntryView>(resolver);
+		//Register<DivinityModData, ModEntryView>(resolver);
 	}
 }

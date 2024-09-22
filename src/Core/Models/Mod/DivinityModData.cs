@@ -136,11 +136,14 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[ObservableAsProperty] public string? LastModifiedDateText { get; }
 	[ObservableAsProperty] public string? DisplayVersion { get; }
 	[ObservableAsProperty] public string? Notes { get; }
+	[ObservableAsProperty] public string ToggleModNameLabel { get; }
+	[ObservableAsProperty] public string ForceAllowInLoadOrderLabel { get; }
 	[ObservableAsProperty] public bool DescriptionVisibility { get; }
 	[ObservableAsProperty] public bool AuthorVisibility { get; }
 	[ObservableAsProperty] public bool OpenGitHubLinkVisibility { get; }
 	[ObservableAsProperty] public bool OpenNexusModsLinkVisibility { get; }
-	[ObservableAsProperty] public bool OpenWorkshopLinkVisibility { get; }
+	[ObservableAsProperty] public bool OpenModioLinkVisibility { get; }
+	[ObservableAsProperty] public bool HasExternalLinkVisibility { get; }
 	[ObservableAsProperty] public bool ToggleForceAllowInLoadOrderVisibility { get; }
 	[ObservableAsProperty] public bool ExtenderStatusVisibility { get; }
 	[ObservableAsProperty] public bool OsirisStatusVisibility { get; }
@@ -613,7 +616,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		this.WhenAnyValue(x => x.FilePath).Select(f => Path.GetFileName(f)).BindTo(this, x => x.FileName);
 		this.WhenAnyValue(x => x.Author, x => x.NexusModsData.Author, x => x.GitHubData.Author, x => x.IsLarianMod).Select(GetAuthor).BindTo(this, x => x.AuthorDisplayName);
 
-		this.WhenAnyValue(x => x.Name, x => x.FilePath, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName)
+		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName)
 			.Select(GetDisplayName).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.DisplayName);
 		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.DescriptionVisibility);
 
@@ -643,7 +646,11 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 			.ToUIProperty(this, x => x.OpenNexusModsLinkVisibility);
 
 		this.WhenAnyValue(x => x.ModioEnabled, x => x.IsHidden, x => x.IsLarianMod, x => x.ModioData.ModId, CanOpenModioBoolCheck)
-			.ToUIProperty(this, x => x.OpenWorkshopLinkVisibility);
+			.ToUIProperty(this, x => x.OpenModioLinkVisibility);
+
+		this.WhenAnyValue(x => x.OpenGitHubLinkVisibility, x => x.OpenNexusModsLinkVisibility, x => x.OpenModioLinkVisibility)
+			.Select(x => x.Item1 || x.Item2 || x.Item3)
+			.ToUIProperty(this, x => x.HasExternalLinkVisibility);
 
 		var dependenciesChanged = Dependencies.CountChanged;
 		dependenciesChanged.ToUIProperty(this, x => x.TotalDependencies);
@@ -704,6 +711,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 
 		this.WhenAnyValue(x => x.FilePath).Select(Validators.IsValid).ToUIProperty(this, x => x.HasFilePathVisibility);
 		this.WhenAnyValue(x => x.Version.Version).ToUIProperty(this, x => x.DisplayVersion, "0.0.0.0");
+
+		this.WhenAnyValue(x => x.DisplayFileForName).Select(x => x ? "Show Mod Display Name" : "Show File Name").ToUIProperty(this, x => x.ToggleModNameLabel);
+		this.WhenAnyValue(x => x.ForceAllowInLoadOrder).Select(x => x ? "Remove from Load Order" : "Allow in Load Order").ToUIProperty(this, x => x.ForceAllowInLoadOrderLabel);
 
 		SetIsBaseGameMod(false);
 	}

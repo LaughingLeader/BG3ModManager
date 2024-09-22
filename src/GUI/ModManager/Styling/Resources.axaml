@@ -2,7 +2,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:content="using:SukiUI.Content"
     xmlns:controls="using:ModManager.Controls"
+    xmlns:conv="using:ModManager.Converters"
+    xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:manager="using:ModManager"
+    xmlns:mod="using:ModManager.Models.Mod"
+    xmlns:modView="using:ModManager.Views.Mods"
     xmlns:theme="using:SukiUI.Theme">
+
+	<conv:ForceAllowInLoadOrderIconConverter x:Key="ForceAllowInLoadOrderIconConverter" />
+
 	<ControlTemplate x:Key="CompactTextBox" TargetType="TextBox">
 		<Border>
 			<Border Name="border"
@@ -58,4 +66,71 @@
 		    InputGesture="{x:Static controls:EnhancedTextBox.ClearGesture}"
 		    IsEnabled="{Binding $parent[controls:EnhancedTextBox].CanClear}" />
 	</MenuFlyout>
+
+	<MenuFlyout x:Key="ModContextFlyout" x:DataType="mod:DivinityModData" Placement="Bottom">
+		<MenuItem Command="{Binding Path=OpenInFileExplorerCommand, Source={x:Static manager:AppServices.Commands}}"
+		    CommandParameter="{Binding FilePath}"
+		    Header="Open in File Explorer..."
+		    Icon="{icons:MaterialIconExt Kind=OpenInApp}" />
+		<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}"
+		    CommandParameter="{Binding FilePath}"
+		    Header="Copy Path to Clipboard"
+		    Icon="{icons:MaterialIconExt Kind=Clipboard}" />
+
+		<Separator IsVisible="{Binding HasExternalLinkVisibility}" />
+		<MenuItem Command="{Binding Path=OpenGitHubPageCommand, Source={x:Static manager:AppServices.Commands}}"
+		    CommandParameter="{Binding}"
+		    Header="Open GitHub Page (Browser)..."
+		    IsVisible="{Binding OpenGitHubLinkVisibility}" />
+		<MenuItem Command="{Binding Path=OpenNexusModsPageCommand, Source={x:Static manager:AppServices.Commands}}"
+		    CommandParameter="{Binding}"
+		    Header="Open NexusMods Page (Browser)..."
+		    IsVisible="{Binding OpenNexusModsLinkVisibility}" />
+		<MenuItem Command="{Binding Path=OpenModioPageCommand, Source={x:Static manager:AppServices.Commands}}"
+		    CommandParameter="{Binding}"
+		    Header="Open Mod.io Page (Browser)..."
+		    IsVisible="{Binding OpenModioLinkVisibility}" />
+
+		<Separator IsVisible="{Binding ToggleForceAllowInLoadOrderVisibility}" />
+		<MenuItem Command="{Binding Path=ToggleForceAllowInLoadOrderCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" IsVisible="{Binding ToggleForceAllowInLoadOrderVisibility}">
+			<MenuItem.Header>
+				<TextBlock Text="{Binding ForceAllowInLoadOrderLabel}" />
+			</MenuItem.Header>
+			<MenuItem.Icon>
+				<icons:MaterialIcon Kind="{Binding ForceAllowInLoadOrder, Converter={StaticResource ForceAllowInLoadOrderIconConverter}}" />
+			</MenuItem.Icon>
+		</MenuItem>
+
+		<Separator />
+		<MenuItem Header="Delete..." Icon="{icons:MaterialIconExt Kind=Delete}">
+			<MenuItem Command="{Binding Path=DeleteModCommand, Source={x:Static manager:AppServices.Commands}}"
+			    CommandParameter="{Binding}"
+			    Header="Mod..."
+			    Icon="{icons:MaterialIconExt Kind=FileRemove}"
+			    IsEnabled="{Binding CanDelete}" />
+			<MenuItem Command="{Binding Path=DeleteSelectedModsCommand, Source={x:Static manager:AppServices.Commands}}"
+			    CommandParameter="{Binding}"
+			    Header="Selected Mods..."
+			    Icon="{icons:MaterialIconExt Kind=Files}" />
+		</MenuItem>
+
+		<Separator />
+		<MenuItem Command="{Binding Path=ToggleNameDisplayCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" Icon="{icons:MaterialIconExt Kind=Rename}">
+			<MenuItem.Header>
+				<TextBlock Text="{Binding ToggleModNameLabel}" />
+			</MenuItem.Header>
+		</MenuItem>
+	</MenuFlyout>
+
+	<DataTemplate x:Key="ModCategoryEntryTemplate" DataType="mod:ModCategory">
+		<modView:ModCategoryEntryView />
+	</DataTemplate>
+
+	<DataTemplate x:Key="ModCategoryEntryEditingTemplate" DataType="mod:ModCategory">
+		<modView:ModCategoryEntryEditingView />
+	</DataTemplate>
+
+	<DataTemplate x:Key="ModEntryTemplate" DataType="mod:ModEntry">
+		<modView:ModEntryView DataContext="{Binding Data}" />
+	</DataTemplate>
 </ResourceDictionary>

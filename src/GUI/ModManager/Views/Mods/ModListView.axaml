@@ -7,6 +7,7 @@
     xmlns:m="using:ModManager.Models.Mod"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mod="using:ModManager.Models.Mod"
     xmlns:rxui="http://reactiveui.net"
     xmlns:vm="using:ModManager.ViewModels.Mods"
     d:DesignHeight="800"
@@ -47,7 +48,6 @@
 			<Setter Property="ToolTip.ShowDelay" Value="500" />
 			<Setter Property="ToolTip.Tip" Value="Toggle Filter" />
 		</Style>
-
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*">
 		<Grid ColumnDefinitions="auto,auto,auto,*">

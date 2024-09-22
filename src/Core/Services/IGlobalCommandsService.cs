@@ -4,6 +4,8 @@ namespace ModManager;
 
 public interface IGlobalCommandsService
 {
+	bool CanExecuteCommands { get; set; }
+
 	ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> ToggleNameDisplayCommand { get; }
@@ -13,7 +15,6 @@ public interface IGlobalCommandsService
 	ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> OpenModioPageCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> OpenSteamWorkshopPageInSteamCommand { get; }
 	ReactiveCommand<object?, Unit> OpenURLCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
 	ReactiveCommand<DivinityModData?, Unit> CopyModAsDependencyCommand { get; }
