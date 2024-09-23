@@ -1,7 +1,10 @@
 ﻿using DynamicData;
 
+using Humanizer;
+
 using ModManager.Models.Mod;
 using ModManager.Util;
+using ModManager.Windows;
 
 using System.ComponentModel;
 
@@ -88,6 +91,8 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 	{
 		HasChanges = false;
 		Mod = null;
+
+
 	}
 
 	private static string ModToTitle(ValueTuple<bool, DivinityModData?> x)
@@ -97,7 +102,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 		result += mod != null ? $"{mod.Name} Properties" : "Mod Properties";
 		return result;
 	}
-	private static string GetModType(DivinityModData mod) => mod?.IsEditorMod == true ? "Editor Project" : "Pak";
+	private static string GetModType(DivinityModData mod) => mod?.IsEditorMod == true ? "Toolkit Project" : "Pak";
 	private static string GetModFilePath(DivinityModData mod) => StringUtils.ReplaceSpecialPathways(mod.FilePath);
 
 	private static string GetModSize(DivinityModData mod)
@@ -112,11 +117,13 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 				{
 					var dir = new DirectoryInfo(mod.FilePath);
 					var length = dir.EnumerateFiles("*.*", System.IO.SearchOption.AllDirectories).Sum(file => file.Length);
-					return StringUtils.BytesToString(length);
+					return ((double)length).Bytes().Humanize();
 				}
 				else
 				{
-					return StringUtils.BytesToString(new FileInfo(mod.FilePath).Length);
+					//return StringUtils.BytesToString(new FileInfo(mod.FilePath).Length);
+					var info = new FileInfo(mod.FilePath);
+					return ((double)info.Length).Bytes().Humanize();
 				}
 			}
 		}
