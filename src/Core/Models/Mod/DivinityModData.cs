@@ -190,7 +190,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 			}
 			else if(!string.IsNullOrEmpty(folder))
 			{
-				return folder + " [Editor Project]";
+				return folder + " [Toolkit Project]";
 			}
 		}
 		else

@@ -641,7 +641,7 @@
 					<StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
 						<TextBlock HorizontalAlignment="Right"
 						    Foreground="Lime"
-						    Text="(Editor Project)"
+						    Text="(Toolkit Project)"
 						    Visibility="{Binding IsEditorMod, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
 						<TextBlock HorizontalAlignment="Right"
 						    Foreground="Orange"
