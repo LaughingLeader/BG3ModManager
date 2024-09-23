@@ -11,6 +11,7 @@
     Width="419"
     Height="550"
     x:DataType="vm:ModPropertiesWindowViewModel"
+    ShowInTaskbar="False"
     mc:Ignorable="d">
 	<Design.DataContext>
 		<vm:DesignModPropertiesWindowViewModel />
