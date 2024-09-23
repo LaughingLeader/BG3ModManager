@@ -12,19 +12,22 @@ public partial class ModPropertiesWindow : ReactiveWindow<ModPropertiesWindowVie
 	{
 		InitializeComponent();
 
+		if (!Design.IsDesignMode)
+		{
+			ViewModel = AppServices.Get<ModPropertiesWindowViewModel>();
+		}
+
 		this.WhenActivated(d =>
 		{
 			if(ViewModel != null)
 			{
-				d(this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible));
+				this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible);
 
-				d(this.OneWayBind(ViewModel, x => x.IsEditorMod, x => x.ModTypeIconControl.Kind, 
-					b => b ? MaterialIconKind.Folder : MaterialIconKind.File));
+				this.OneWayBind(ViewModel, x => x.IsEditorMod, x => x.ModTypeIconControl.Kind,
+					b => b ? MaterialIconKind.Folder : MaterialIconKind.File);
 
-				d(ViewModel.OKCommand.CombineLatest(ViewModel.CancelCommand).Subscribe(_ =>
-				{
-					Hide();
-				}));
+				ViewModel.OKCommand.Subscribe(x => Hide());
+				ViewModel.CancelCommand.Subscribe(x => Hide());
 			}
 		});
 	}
