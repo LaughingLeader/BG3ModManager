@@ -120,6 +120,12 @@
 				<TextBlock Text="{Binding ToggleModNameLabel}" />
 			</MenuItem.Header>
 		</MenuItem>
+
+		<Separator />
+		<MenuItem Command="{Binding Path=OpenModPropertiesCommand, Source={x:Static manager:AppServices.Commands}}"
+		    CommandParameter="{Binding}"
+		    Header="Properties"
+		    Icon="{icons:MaterialIconExt Kind=FileEdit}" />
 	</MenuFlyout>
 
 	<DataTemplate x:Key="ModCategoryEntryTemplate" DataType="mod:ModCategory">

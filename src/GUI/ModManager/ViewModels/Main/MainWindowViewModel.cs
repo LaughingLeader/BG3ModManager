@@ -1999,6 +1999,21 @@ Directory the zip will be extracted to:
 			interaction.SetOutput(result);
 		});
 
+		_interactions.OpenModProperties.RegisterHandler(interaction =>
+		{
+			var modPropertiesWindow = AppServices.Get<ModPropertiesWindow>();
+			if(modPropertiesWindow?.ViewModel != null)
+			{
+				modPropertiesWindow.ViewModel.SetMod(interaction.Input);
+				if (!modPropertiesWindow.IsVisible) modPropertiesWindow.Show(Window);
+				interaction.SetOutput(true);
+			}
+			else
+			{
+				interaction.SetOutput(false);
+			}
+		});
+
 		Views = new ViewManager(Router);
 
 		Views.WhenAnyValue(x => x.CurrentView).Subscribe(vm =>
