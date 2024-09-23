@@ -126,9 +126,9 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		});
 
 
-		if (parseLooseMetaFiles)
+		if (parseLooseMetaFiles && Path.Combine(directoryPath, "Mods") is var modProjectDirectory && Directory.Exists(modProjectDirectory))
 		{
-			var metaFiles = Directory.EnumerateFiles(directoryPath, "meta.lsx", FileUtils.RecursiveOptions);
+			var metaFiles = Directory.EnumerateFiles(modProjectDirectory, "meta.lsx", FileUtils.RecursiveOptions);
 			await Parallel.ForEachAsync(metaFiles, opts, async (metaFilePath, t) =>
 			{
 				var mod = await DivinityModDataLoader.GetModDataFromMeta(metaFilePath, t);
