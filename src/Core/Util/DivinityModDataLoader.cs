@@ -93,7 +93,7 @@ public static partial class DivinityModDataLoader
 	/// <returns></returns>
 	private static string GetAttributeWithId(XElement node, string id, string fallbackValue = "")
 	{
-		var att = node.Descendants("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
+		var att = node.Elements("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
 		if (att != null)
 		{
 			return att;
@@ -105,7 +105,7 @@ public static partial class DivinityModDataLoader
 	{
 		foreach (var id in ids)
 		{
-			var att = node.Descendants("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
+			var att = node.Elements("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
 			if (att != null)
 			{
 				return att;
@@ -116,7 +116,7 @@ public static partial class DivinityModDataLoader
 
 	private static ulong GetAttributeValueWithId(XElement node, string id, ulong fallbackValue = 0ul)
 	{
-		var attValue = node.Descendants("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
+		var attValue = node.Elements("attribute").FirstOrDefault(a => a.Attribute("id")?.Value == id)?.Attribute("value")?.Value;
 		if (attValue != null && ulong.TryParse(attValue, out var value))
 		{
 			return value;
@@ -186,7 +186,7 @@ public static partial class DivinityModDataLoader
 		return str;
 	}
 
-	private static DivinityModData ParseMetaFile(string metaContents)
+	private static DivinityModData? ParseMetaFile(string metaContents, string? filePath = null)
 	{
 		try
 		{
@@ -244,9 +244,16 @@ public static partial class DivinityModDataLoader
 					MD5 = GetAttributeWithId(moduleInfoNode, "MD5", ""),
 					PublishHandle = GetAttributeValueWithId(moduleInfoNode, "PublishHandle", 0ul),
 					FileSize = GetAttributeValueWithId(moduleInfoNode, "FileSize", 0ul),
-					ModType = GetAttributeWithId(moduleInfoNode, "Type", ""),
+					ModType = "Add-on",
 					HeaderVersion = new LarianVersion(headerMajor, headerMinor, headerRevision, headerBuild)
 				};
+
+				//Patch 7 removed the "Type" attribute
+
+				if(uuid == DivinityApp.MAIN_CAMPAIGN_UUID)
+				{
+					modData.ModType = "Adventure";
+				}
 
 				var tagsText = GetAttributeWithId(moduleInfoNode, "Tags", "");
 				if (!String.IsNullOrWhiteSpace(tagsText))
@@ -322,7 +329,7 @@ public static partial class DivinityModDataLoader
 			}
 			else
 			{
-				DivinityApp.Log($"**[ERROR] ModuleInfo node not found for meta.lsx: {metaContents}");
+				DivinityApp.Log($"**[ERROR] ModuleInfo node not found for meta.lsx in mod ({filePath}):\n{metaContents}");
 			}
 		}
 		catch (Exception ex)
@@ -402,7 +409,7 @@ public static partial class DivinityModDataLoader
 		using var stream = file.CreateContentReader();
 		using var sr = new StreamReader(stream);
 		var text = await sr.ReadToEndAsync();
-		return ParseMetaFile(text);
+		return ParseMetaFile(text, file.Name);
 	}
 
 	public static async Task<DivinityModData?> GetModDataFromMeta(string filePath, CancellationToken token)
@@ -413,7 +420,7 @@ public static partial class DivinityModDataLoader
 			var contents = Encoding.UTF8.GetString(fileBytes);
 			if (contents.IsValid())
 			{
-				return ParseMetaFile(contents);
+				return ParseMetaFile(contents, filePath);
 			}
 		}
 		return null;
@@ -1587,7 +1594,7 @@ public static partial class DivinityModDataLoader
 		{
 			using var sr = new StreamReader(stream);
 			var text = await sr.ReadToEndAsync(token);
-			var modData = ParseMetaFile(text);
+			var modData = ParseMetaFile(text, modInfo.Meta);
 			if (modData != null)
 			{
 				var filePath = modInfo.PackagePath;
