@@ -361,17 +361,23 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					}
 				}
 
-				if (modManager.AdventureMods.Count > 0)
+				if (AdventureMods.Count > 0)
 				{
-					var defaultAdventureIndex = modManager.AdventureMods.IndexOf(modManager.AdventureMods.FirstOrDefault(x => x.UUID == DivinityApp.MAIN_CAMPAIGN_UUID));
+					var defaultAdventureIndex = 0;
+
+					if (AdventureMods.FirstOrDefault(x => x.UUID == DivinityApp.MAIN_CAMPAIGN_UUID) is DivinityModData gustavDev)
+					{
+						defaultAdventureIndex = AdventureMods.IndexOf(gustavDev);
+					}
+
 					if (defaultAdventureIndex == -1) defaultAdventureIndex = 0;
 					if (lastAdventureMod != null)
 					{
 						DivinityApp.Log($"Setting selected adventure mod.");
-						var nextAdventureMod = modManager.AdventureMods.FirstOrDefault(x => x.UUID == lastAdventureMod);
+						var nextAdventureMod = AdventureMods.FirstOrDefault(x => x.UUID == lastAdventureMod);
 						if (nextAdventureMod != null)
 						{
-							SelectedAdventureModIndex = modManager.AdventureMods.IndexOf(nextAdventureMod);
+							SelectedAdventureModIndex = AdventureMods.IndexOf(nextAdventureMod);
 						}
 						else
 						{
