@@ -1,16 +1,10 @@
 ﻿using LSLib.LS;
-using LSLib.LS.Stats;
+using LSLib.Stats;
 
 using ModManager.Models.Mod;
 
-using ReactiveUI;
-
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace ModManager.Services;
@@ -18,6 +12,7 @@ public class StatsValidatorService : IStatsValidatorService
 {
 	private readonly IFileSystemService _fs;
 
+	private readonly StatDefinitionRepository _definitions;
 	private readonly StatLoadingContext _context;
 	private readonly StatLoader _loader;
 	private readonly VFS _vfs;
@@ -103,25 +98,23 @@ public class StatsValidatorService : IStatsValidatorService
 
 		_modHelper.Discover();
 
-		var definitions = new StatDefinitionRepository();
 		try
 		{
 			if (_modResources.Mods.TryGetValue("Shared", out var shared))
 			{
-				definitions.LoadEnumerations(_vfs.Open(shared.ValueListsFile));
-				definitions.LoadDefinitions(_vfs.Open(shared.ModifiersFile));
+				_definitions.LoadEnumerations(_vfs.Open(shared.ValueListsFile));
+				_definitions.LoadDefinitions(_vfs.Open(shared.ModifiersFile));
 			}
 			else
 			{
 				throw new Exception("The 'Shared' base mod appears to be missing. This is not normal.");
 			}
+			_definitions.LoadLSLibDefinitionsEmbedded();
 		}
 		catch (Exception ex)
 		{
 			DivinityApp.Log($"Error loading definitions:\n{ex}");
 		}
-
-		_context.Definitions = definitions;
 
 		foreach (var dependency in _baseDependencies)
 		{
@@ -203,7 +196,8 @@ public class StatsValidatorService : IStatsValidatorService
 	{
 		_fs = fileSystemService;
 
-		_context = new StatLoadingContext();
+		_definitions = new StatDefinitionRepository();
+		_context = new StatLoadingContext(_definitions);
 		_loader = new StatLoader(_context);
 
 		_vfs = new VFS();

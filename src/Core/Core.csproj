@@ -20,6 +20,7 @@
 		<ProjectReference Include="..\..\External\modio.net\Modio\Modio.csproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
 		<ProjectReference Include="..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\..\External\lslib\LSLibStats\LSLibStats.csproj" />
 	</ItemGroup>
 	
 	<ItemGroup>

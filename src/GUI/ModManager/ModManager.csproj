@@ -10,6 +10,7 @@
 		<ProjectReference Include="..\..\..\External\Avalonia.Controls.TreeDataGrid\src\Avalonia.Controls.TreeDataGrid\Avalonia.Controls.TreeDataGrid.csproj" />
 		<ProjectReference Include="..\..\..\External\lslib\LSLibNative\LSLibNative.vcxproj" />
 		<ProjectReference Include="..\..\..\External\lslib\LSLib\LSLib.csproj" />
+		<ProjectReference Include="..\..\..\External\lslib\LSLibStats\LSLibStats.csproj" />
 		<ProjectReference Include="..\..\..\External\NexusModsNET\NexusModsNET\NexusModsNET.csproj" />
 		<ProjectReference Include="..\..\..\External\modio.net\Modio\Modio.csproj" />
 		<ProjectReference Include="..\..\..\External\SukiUI\SukiUI\SukiUI.csproj" ExcludeAssets="contentFiles" />

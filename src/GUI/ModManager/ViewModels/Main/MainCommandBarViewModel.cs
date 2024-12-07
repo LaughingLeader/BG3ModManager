@@ -75,6 +75,9 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Toggle Pak File Explorer Window", Key.P, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
 	public RxCommandUnit? TogglePakFileExplorerWindowCommand { get; set; }
 
+	[Keybinding("Toggle Stats Validator Window", Key.OemBackslash, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
+	public RxCommandUnit? ToggleStatsValidatorWindowCommand { get; set; }
+
 	private ObservableCollectionExtended<IMenuEntry> _menuEntries = [];
 
 	private ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
@@ -145,7 +148,20 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(() =>
 		{
-			var window = AppServices.Get<PakFileExplorerWindow>();
+			var window = AppServices.Get<PakFileExplorerWindow>()!;
+			if (window.IsVisible)
+			{
+				window.Hide();
+			}
+			else
+			{
+				window.Show();
+			}
+		});
+
+		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(() =>
+		{
+			var window = AppServices.Get<StatsValidatorWindow>()!;
 			if (window.IsVisible)
 			{
 				window.Hide();
@@ -205,6 +221,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					new MenuEntry("Toggle Updates View", ToggleUpdatesViewCommand),
 					new MenuEntry("Toggle Version Generator Window"),
 					new MenuEntry("Toggle Pak File Explorer Window", TogglePakFileExplorerWindowCommand),
+					new MenuEntry("Toggle Stats Validator Window", ToggleStatsValidatorWindowCommand),
 				]},
 			new MenuEntry("_Go"){
 				Children = [

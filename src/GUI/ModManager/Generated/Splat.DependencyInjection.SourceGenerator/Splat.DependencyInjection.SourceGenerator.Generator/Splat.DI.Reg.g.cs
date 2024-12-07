@@ -162,6 +162,11 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.PakFileExplorerWindow));
             }
             {
+                global::System.Lazy<ModManager.Windows.StatsValidatorWindow> lazy = new global::System.Lazy<ModManager.Windows.StatsValidatorWindow>(() => new global::ModManager.Windows.StatsValidatorWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Windows.StatsValidatorWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.StatsValidatorWindow));
+            }
+            {
                 global::System.Lazy<ModManager.Services.WindowManagerService> lazy = new global::System.Lazy<ModManager.Services.WindowManagerService>(() => new global::ModManager.Services.WindowManagerService((global::ModManager.Windows.MainWindow)resolver.GetService(typeof(global::ModManager.Windows.MainWindow))));
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Services.WindowManagerService>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Services.WindowManagerService));

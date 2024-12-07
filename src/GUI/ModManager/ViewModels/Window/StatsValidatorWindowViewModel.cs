@@ -2,13 +2,14 @@
 
 using Humanizer;
 
-using LSLib.LS.Stats;
+using LSLib.Stats;
 using LSLib.LS.Story.GoalParser;
 
 using ModManager.Models.Mod;
 using ModManager.Models.View;
 
 using System.Globalization;
+using LSLib.Parser;
 
 namespace ModManager.ViewModels;
 public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel

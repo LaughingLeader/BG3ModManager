@@ -1,4 +1,4 @@
-﻿using LSLib.LS.Stats;
+﻿using LSLib.Stats;
 
 using ModManager.Models.Mod;
 

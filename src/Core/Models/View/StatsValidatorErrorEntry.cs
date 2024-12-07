@@ -1,4 +1,4 @@
-﻿using LSLib.LS.Stats;
+﻿using LSLib.Stats;
 
 namespace ModManager.Models.View;
 public class StatsValidatorErrorEntry : TreeViewEntry
@@ -13,7 +13,7 @@ public class StatsValidatorErrorEntry : TreeViewEntry
 
 	[ObservableAsProperty] public bool IsError { get; }
 
-	private static string FormatMessage(StatLoadingError message) => $"{message.Location.StartLine}: {message.Message} [{message.Code}]";
+	private static string FormatMessage(StatLoadingError message) => $"{message.Location?.StartLine}: {message.Message} [{message.Code}]";
 
 	public StatsValidatorErrorEntry(StatLoadingError error, string lineText = "")
 	{
@@ -24,7 +24,7 @@ public class StatsValidatorErrorEntry : TreeViewEntry
 		this.WhenAnyValue(x => x.Code, code => code == DiagnosticCode.StatSyntaxError).ToUIProperty(this, x => x.IsError);
 		LineText = lineText;
 		//TODO Highlight the text accoding to the StartColumn/EndColumn
-		if (!String.IsNullOrEmpty(lineText))
+		if (!String.IsNullOrEmpty(lineText) && error.Location != null)
 		{
 			AddChild(new StatsValidatorLineText
 			{

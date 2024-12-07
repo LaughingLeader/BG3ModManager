@@ -1,5 +1,5 @@
 ﻿using LSLib.LS;
-using LSLib.LS.Stats;
+using LSLib.Stats;
 
 using ModManager.Models.Mod;
 
@@ -70,7 +70,8 @@ public static class ModUtils
 
 	public static async Task<ValidateModStatsResults> ValidateStatsAsync(IEnumerable<DivinityModData> mods, string gameDataPath, CancellationToken token)
 	{
-		var context = new StatLoadingContext();
+		var definitions = new StatDefinitionRepository();
+		var context = new StatLoadingContext(definitions);
 		var loader = new StatLoader(context);
 
 		var time = DateTimeOffset.Now;
@@ -107,7 +108,6 @@ public static class ModUtils
 
 		modHelper.Discover();
 
-		var definitions = new StatDefinitionRepository();
 		try
 		{
 			if (modResources.Mods.TryGetValue("Shared", out var shared))
@@ -119,6 +119,7 @@ public static class ModUtils
 			{
 				throw new Exception("The 'Shared' base mod appears to be missing. This is not normal.");
 			}
+			definitions.LoadLSLibDefinitionsEmbedded();
 		}
 		catch (Exception ex)
 		{

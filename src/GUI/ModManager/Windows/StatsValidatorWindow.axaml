@@ -1,0 +1,123 @@
+﻿<Window x:Class="ModManager.Windows.StatsValidatorWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:genview="using:ModManager.Views.Generated"
+    xmlns:m="using:ModManager.Models.View"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:view="using:ModManager.Views.Settings"
+    xmlns:vm="using:ModManager.ViewModels"
+    Title="Stats Validator"
+    Width="800"
+    Height="450"
+    x:DataType="vm:StatsValidatorWindowViewModel"
+    Focusable="True"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    Topmost="False"
+    mc:Ignorable="d">
+	<Panel>
+
+		<suki:SukiBackground IsHitTestVisible="False" />
+		<Grid>
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<Grid Margin="4" Background="{DynamicResource SukiGlassCardBackground}">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Button x:Name="ValidateButton"
+					    HorizontalAlignment="Center"
+					    VerticalAlignment="Center"
+					    Classes="icon"
+					    Command="{Binding ValidateCommand}"
+					    CommandParameter="{Binding Mod}"
+					    ToolTip.Tip="Validate Again">
+						<materialIcons:MaterialIcon Foreground="Red" Kind="Refresh" />
+					</Button>
+				</Grid>
+
+				<Border Grid.Row="1"
+				    Background="Black"
+				    BorderBrush="LightGray"
+				    BorderThickness="1">
+					<controls:AutoGrid RowCount="3" RowHeight="auto">
+						<controls:AutoGrid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+						</controls:AutoGrid.ColumnDefinitions>
+
+						<Border HorizontalAlignment="Stretch">
+							<StackPanel Orientation="Vertical">
+								<TextBlock x:Name="TitleTextBlock"
+								    FontSize="24"
+								    Text="Results"
+								    TextAlignment="Center"
+								    TextWrapping="Wrap" />
+								<TextBlock x:Name="TimeTakenTextControl"
+								    FontSize="12"
+								    IsVisible="{Binding HasTimeTakenText}"
+								    TextAlignment="Center"
+								    TextWrapping="Wrap">
+									<Run Text="Time Taken:" />
+									<Run Foreground="Orange" Text="{Binding TimeTakenText}" />
+								</TextBlock>
+							</StackPanel>
+						</Border>
+
+						<TextBlock Margin="8" FontSize="16" Text="{Binding OutputText}" />
+
+						<TreeView x:Name="EntriesTreeView"
+						    Margin="8,0,8,0"
+						    ItemsSource="{Binding Entries}"
+						    SelectionMode="Single">
+							<TreeView.Styles>
+								<Style x:DataType="m:TreeViewEntry" Selector="TreeViewItem">
+									<Setter Property="IsSelected" Value="{Binding IsSelected}" />
+									<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+								</Style>
+							</TreeView.Styles>
+							<TreeView.ItemTemplate>
+								<DataTemplate>
+									<rxui:ViewModelViewHost HorizontalAlignment="Stretch"
+									    VerticalAlignment="Stretch"
+									    HorizontalContentAlignment="Stretch"
+									    VerticalContentAlignment="Stretch"
+									    ViewModel="{Binding ViewModel}" />
+								</DataTemplate>
+							</TreeView.ItemTemplate>
+						</TreeView>
+					</controls:AutoGrid>
+				</Border>
+			</Grid>
+			<Border x:Name="LockScreen"
+			    HorizontalAlignment="Stretch"
+			    VerticalAlignment="Stretch"
+			    Background="Black"
+			    IsVisible="{Binding LockScreenVisibility, FallbackValue=False}"
+			    Opacity="0.75">
+				<ContentControl>
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+						<TextBlock Margin="8" FontSize="32" Text="Validating..." />
+						<suki:CircleProgressBar x:Name="ProgressBarControl"
+						    Width="32"
+						    Height="32"
+						    IsIndeterminate="True" />
+						<Button x:Name="CancelButton"
+						    Margin="8"
+						    Command="{Binding CancelValidateCommand}"
+						    Content="Cancel" />
+					</StackPanel>
+				</ContentControl>
+			</Border>
+		</Grid>
+	</Panel>
+</Window>
