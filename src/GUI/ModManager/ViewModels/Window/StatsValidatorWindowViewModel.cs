@@ -166,6 +166,8 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 			.TakeUntil(CancelValidateCommand);
 	}
 
+	public async Task StartValidationAsync(ValidateModStatsRequest data) => await StartValidationAsyncImpl(data);
+
 	private static string TimeTakenToText(TimeSpan time)
 	{
 		if (time == TimeSpan.Zero) return string.Empty;
@@ -192,11 +194,5 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
 		ValidateCommand.IsExecuting.ToUIProperty(this, x => x.LockScreenVisibility);
-
-		_interactions.ValidateModStats.RegisterHandler(async context =>
-		{
-			context.SetOutput(true);
-			await StartValidationAsyncImpl(context.Input);
-		});
 	}
 }

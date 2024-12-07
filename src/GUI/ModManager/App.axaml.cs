@@ -1,6 +1,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
+using ModManager.Services;
 using ModManager.Windows;
 
 namespace ModManager;
@@ -37,6 +38,8 @@ public partial class App : Application
 
 			Locator.CurrentMutable.InitializeSplat();
 			Locator.CurrentMutable.InitializeReactiveUI();
+
+			Locator.CurrentMutable.RegisterConstant(new WindowManagerService(mainWindow, AppServices.Interactions));
 
 			RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
 		}

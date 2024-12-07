@@ -3,6 +3,7 @@
     xmlns:content="using:SukiUI.Content"
     xmlns:controls="using:ModManager.Controls"
     xmlns:conv="using:ModManager.Converters"
+    xmlns:core="clr-namespace:ModManager;assembly=ModManager.Core"
     xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:manager="using:ModManager"
     xmlns:mod="using:ModManager.Models.Mod"
@@ -119,6 +120,27 @@
 			<MenuItem.Header>
 				<TextBlock Text="{Binding ToggleModNameLabel}" />
 			</MenuItem.Header>
+		</MenuItem>
+
+		<Separator IsVisible="{Binding Source={x:Static core:DivinityApp.DeveloperModeEnabled}}" />
+		<MenuItem Header="Mod Developer..." IsVisible="{Binding Source={x:Static core:DivinityApp.DeveloperModeEnabled}}">
+			<MenuItem.Icon>
+				<icons:MaterialIcon Foreground="Lime" Kind="WrenchCog" />
+			</MenuItem.Icon>
+			<MenuItem.Items>
+				<MenuItem Header="Copy to Clipboard..." Icon="{icons:MaterialIconExt Kind=Clipboard}">
+					<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding UUID}" Header="UUID" />
+					<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding Folder}" Header="Folder" />
+					<MenuItem Command="{Binding Path=CopyModAsDependencyCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" Header="As ModuleShortDesc" />
+				</MenuItem>
+				<Separator />
+				<!--  Fixed RelativeSource Ancestor ItemsControl binding error by setting a style  -->
+				<MenuItem Command="{Binding Path=ValidateStatsCommand, Source={x:Static manager:AppServices.Commands}}"
+				    CommandParameter="{Binding}"
+				    Header="Validate Stats"
+				    Icon="{icons:MaterialIconExt Kind=FileCheck}"
+				    ToolTip.Tip="Run lslib's stats validator on this specific mod" />
+			</MenuItem.Items>
 		</MenuItem>
 
 		<Separator />

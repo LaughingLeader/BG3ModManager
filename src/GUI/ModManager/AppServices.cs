@@ -87,8 +87,6 @@ public static class AppServices
 
 		//SplatRegistrations.RegisterLazySingleton<MainWindow>();
 
-		SplatRegistrations.RegisterLazySingleton<WindowManagerService>();
-
 		SplatRegistrations.SetupIOC();
 	}
 

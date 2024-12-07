@@ -1,6 +1,7 @@
 ﻿
 using Avalonia.Styling;
 
+using ModManager.ViewModels;
 using ModManager.Windows;
 
 using SukiUI;
@@ -77,7 +78,7 @@ public class WindowManagerService
 		//}
 	}
 
-	public WindowManagerService(MainWindow main)
+	public WindowManagerService(MainWindow main, IInteractionsService interactions)
 	{
 		MainWindow = main;
 
@@ -121,6 +122,38 @@ public class WindowManagerService
 			App.Current.RequestedThemeVariant = themeVariant;
 			SukiTheme.GetInstance().ChangeBaseTheme(themeVariant);
 			UpdateColorScheme(themeVariant);
+		});
+
+		interactions.ValidateModStats.RegisterHandler(async context =>
+		{
+			var vm = AppServices.Get<StatsValidatorWindowViewModel>();
+			if(vm != null)
+			{
+				context.SetOutput(true);
+				await vm.StartValidationAsync(context.Input);
+			}
+			else
+			{
+				context.SetOutput(false);
+			}
+		});
+
+		interactions.OpenValidateStatsResults.RegisterHandler(context =>
+		{
+			var window = AppServices.Get<StatsValidatorWindow>();
+			if (window != null)
+			{
+				context.SetOutput(true);
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					window.ViewModel?.Load(context.Input);
+					if (!window.IsVisible) window.Show(MainWindow);
+				});
+			}
+			else
+			{
+				context.SetOutput(false);
+			}
 		});
 	}
 }
