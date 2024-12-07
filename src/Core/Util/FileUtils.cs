@@ -159,15 +159,8 @@ public static class FileUtils
 			}
 
 			DivinityApp.Log($"Writing package '{outputPath}'.");
-			using var writer = new PackageWriter(build, outputPath);
+			using var writer = PackageWriterFactory.Create(build, outputPath);
 			writer.Write();
-			/*await Observable.Start(() =>
-			{
-				using var writer = new PackageWriter(build, outputPath);
-				writer.Write();
-			}, RxApp.MainThreadScheduler);*/
-			//using var writer = new PackageWriter(build, outputPath);
-			//await WritePackageAsync(writer, outputPath, token);
 			return true;
 		}
 		catch (Exception ex)
