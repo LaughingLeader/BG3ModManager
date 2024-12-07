@@ -137,19 +137,6 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 			TokenSource?.Cancel();
 			Finish();
 		});
-
-		/*var lastMessage = "";
-		this.WhenAnyValue(x => x.WorkText, x => x.Value).Subscribe((ob) =>
-		{
-			if(AppServices.Settings.ManagerSettings.DebugModeEnabled)
-			{
-				if (!String.IsNullOrEmpty(ob.Item1) && lastMessage != ob.Item1)
-				{
-					DivinityApp.Log($"[{ob.Item2:P0}] {ob.Item1}");
-					lastMessage = ob.Item1;
-				}
-			}
-		});*/
 	}
 }
 

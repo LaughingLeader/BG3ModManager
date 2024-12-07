@@ -10,15 +10,6 @@ public static class ModelExtensions
 {
 	public static void SetToDefault(this ReactiveObject model)
 	{
-		/*PropertyInfo[] props = model.GetType().GetProperties();
-		foreach (PropertyInfo prop in props)
-		{
-			var d = prop.GetCustomAttribute<DefaultValueAttribute>();
-			if (d != null && prop.GetValue(model) != d.Value)
-			{
-				prop.SetValue(model, d.Value);
-			}
-		}*/
 		var props = TypeDescriptor.GetProperties(model.GetType());
 		foreach (PropertyDescriptor pr in props)
 		{
