@@ -21,10 +21,10 @@ public static partial class DivinityModDataLoader
 	private static readonly StringComparison SCOMP = StringComparison.OrdinalIgnoreCase;
 	private static readonly string[] LarianFileTypes = [".lsb", ".lsf", ".lsx", ".lsj"];
 
-	public static readonly ulong HEADER_MAJOR = 4;
-	public static readonly ulong HEADER_MINOR = 6;
-	public static readonly ulong HEADER_REVISION = 0;
-	public static readonly ulong HEADER_BUILD = 1;
+	private static readonly ulong HEADER_MAJOR = 4;
+	private static readonly ulong HEADER_MINOR = 7;
+	private static readonly ulong HEADER_REVISION = 1;
+	private static readonly ulong HEADER_BUILD = 3;
 
 	private static readonly string[] VersionAttributes = ["Version64", "Version"];
 
@@ -32,10 +32,8 @@ public static partial class DivinityModDataLoader
 	private static readonly HashSet<string> _allPaksNames = [];
 
 	private static readonly ResourceLoadParameters _loadParams = ResourceLoadParameters.FromGameVersion(Game.BaldursGate3);
-	private static readonly ResourceLoadParameters _modSettingsParams = new()
-	{
-		ByteSwapGuids = false
-	};
+	private static readonly ResourceLoadParameters _modSettingsParams = new() { ByteSwapGuids = false };
+	private static readonly NodeSerializationSettings _lsfSerializationSettings = new() { ByteSwapGuids = true, DefaultByteSwapGuids = true };
 
 	[GeneratedRegex("^(Mods|Public|Generated)/(.+?)/.+$")]
 	private static partial Regex ModFolderPattern();
@@ -48,6 +46,9 @@ public static partial class DivinityModDataLoader
 
 	[GeneratedRegex("value=\"(.*?)\"")]
 	private static partial Regex XamlValuePattern();
+
+	[GeneratedRegex(@".*PlayerProfiles\\(.*?)\\Savegames.*")]
+	private static partial Regex PlayerProfilePathPattern();
 
 	private static readonly Regex _multiPartPakPatternNoExtension = MultiPartPakPattern();
 	private static readonly Regex _modMetaPattern = ModMetaPattern();
@@ -72,12 +73,12 @@ public static partial class DivinityModDataLoader
 
 	public static bool IgnoreModByFolder(string folder)
 	{
-		return DivinityApp.IgnoredMods.Any(m => m.Folder.Equals(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)), SCOMP));
+		return DivinityApp.IgnoredMods.Any(m => m.Folder?.Equals(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)), SCOMP) == true);
 	}
 
 	public static string MakeSafeFilename(string filename, char replaceChar)
 	{
-		foreach (var c in System.IO.Path.GetInvalidFileNameChars())
+		foreach (var c in Path.GetInvalidFileNameChars())
 		{
 			filename = filename.Replace(c, replaceChar);
 		}
@@ -778,15 +779,15 @@ public static partial class DivinityModDataLoader
 					{
 						if (region.Attributes.TryGetValue("PlayerProfileName", out var profileNameAtt))
 						{
-							name = (string)profileNameAtt.Value;
+							name = profileNameAtt.AsString(_lsfSerializationSettings);
 						}
 						if (region.Attributes.TryGetValue("PlayerProfileDisplayName", out var profileDisplayNameAtt))
 						{
-							displayedName = (string)profileDisplayNameAtt.Value;
+							displayedName = profileDisplayNameAtt.AsString(_lsfSerializationSettings);
 						}
 						if (region.Attributes.TryGetValue("PlayerProfileID", out var profileIdAtt))
 						{
-							profileUUID = (string)profileIdAtt.Value;
+							profileUUID = profileIdAtt.AsString(_lsfSerializationSettings);
 						}
 					}
 				}
@@ -943,8 +944,7 @@ public static partial class DivinityModDataLoader
 
 				if (region.Attributes.TryGetValue("ActiveProfile", out var att))
 				{
-					DivinityApp.Log($"ActiveProfile | '{att.Value}'");
-					activeProfileUUID = (string)att.Value;
+					activeProfileUUID = att.AsString(_lsfSerializationSettings);
 				}
 			}
 		}
@@ -1366,12 +1366,9 @@ public static partial class DivinityModDataLoader
 		return String.Format(DivinityApp.XML_MOD_SETTINGS_TEMPLATE, modShortDescText);
 	}
 
-	public static string CreateHandle()
-	{
-		return Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
-	}
+	public static string CreateHandle() => Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
 
-	private static Node FindNode(Node node, string name)
+	private static Node? FindNode(Node node, string name)
 	{
 		if (node.Name.Equals(name, SCOMP))
 		{
@@ -1383,7 +1380,7 @@ public static partial class DivinityModDataLoader
 		}
 	}
 
-	private static Node FindNode(Dictionary<string, List<Node>> children, string name)
+	private static Node? FindNode(Dictionary<string, List<Node>> children, string name)
 	{
 		foreach (var kvp in children)
 		{
@@ -1404,7 +1401,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static Node FindNode(Region region, string name)
+	private static Node? FindNode(Region region, string name)
 	{
 		foreach (var kvp in region.Children)
 		{
@@ -1423,7 +1420,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static Node FindNode(Resource resource, string name)
+	private static Node? FindNode(Resource resource, string name)
 	{
 		foreach (var region in resource.Regions.Values)
 		{
@@ -1437,7 +1434,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static DivinityLoadOrder GetLoadOrderFromSave(string file, string ordersFolder = "")
+	public static DivinityLoadOrder? GetLoadOrderFromSave(string file, string ordersFolder = "")
 	{
 		try
 		{
@@ -1449,7 +1446,7 @@ public static partial class DivinityModDataLoader
 				return null;
 			}
 
-			Resource resource = null;
+			Resource? resource = null;
 
 			var rsrcStream = PackagedFileInfo.CreateContentReader();
 			try
@@ -1473,8 +1470,7 @@ public static partial class DivinityModDataLoader
 					{
 						var fileName = Path.GetFileNameWithoutExtension(file);
 						var orderName = fileName;
-						var re = new Regex(@".*PlayerProfiles\\(.*?)\\Savegames.*");
-						var match = re.Match(Path.GetFullPath(file));
+						var match = PlayerProfilePathPattern().Match(Path.GetFullPath(file));
 						if (match.Success)
 						{
 							orderName = $"{match.Groups[1].Value}_{fileName}";
@@ -1488,15 +1484,15 @@ public static partial class DivinityModDataLoader
 						foreach (var c in modList)
 						{
 							var name = "";
-							string uuid = null;
+							string? uuid = null;
 							if (c.Attributes.TryGetValue("UUID", out var idAtt))
 							{
-								uuid = (string)idAtt.Value;
+								uuid = idAtt.AsString(_lsfSerializationSettings);
 							}
 
 							if (c.Attributes.TryGetValue("Name", out var nameAtt))
 							{
-								name = (string)nameAtt.Value;
+								name = nameAtt.AsString(_lsfSerializationSettings);
 							}
 
 							if (uuid != null && !IgnoreMod(uuid))
