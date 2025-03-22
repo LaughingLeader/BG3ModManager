@@ -16,6 +16,7 @@ public class FileSystemService(IFileSystem fileSystemService) : IFileSystemServi
 	public IFileStreamFactory FileStream => _fileSystem.FileStream;
 	public IFileSystemWatcherFactory FileSystemWatcher => _fileSystem.FileSystemWatcher;
 	public IPath Path => _fileSystem.Path;
+	public IFileVersionInfoFactory FileVersionInfo => fileSystemService.FileVersionInfo;
 
 	/// <inheritdoc />
 	public virtual void EnsureDirectoryExists(string path)

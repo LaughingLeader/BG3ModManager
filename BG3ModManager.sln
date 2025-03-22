@@ -23,6 +23,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{84149593-A52D-4981-94AD-B3150F153735}"
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.build.props = src\Directory.build.props
+		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{9EA7F551-AFBF-4BB0-A060-7204B4944537}"

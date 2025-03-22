@@ -1,0 +1,49 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageVersion Include="Avalonia" Version="11.2.5" />
+		<PackageVersion Include="Avalonia.Desktop" Version="11.2.5" />
+		<PackageVersion Include="Avalonia.Diagnostics" Version="11.2.5" />
+		<PackageVersion Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+		<PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.5" />
+		<PackageVersion Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
+		<PackageVersion Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
+		<PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+		<PackageVersion Include="Avalonia.Xaml.Behaviors" Version="11.2.0.14" />
+		<PackageVersion Include="Avalonia.Xaml.Interactions" Version="11.2.0.14" />
+		<PackageVersion Include="Material.Icons.Avalonia" Version="2.3.1" />
+		<PackageVersion Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
+
+		<PackageVersion Include="DynamicData" Version="9.2.1" />
+		<PackageVersion Include="ReactiveUI" Version="20.2.45" />
+		<PackageVersion Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageVersion Include="ReactiveUI.Validation" Version="4.1.1" />
+		<PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
+		<PackageVersion Include="Splat" Version="15.3.1" />
+		<PackageVersion Include="Splat.DependencyInjection.SourceGenerator" Version="1.2.3" />
+
+		<PackageVersion Include="SharpCompress" Version="0.39.0" />
+
+		<PackageVersion Include="Humanizer.Core" Version="3.0.0-beta.54" />
+		<PackageVersion Include="Onova" Version="2.6.12" />
+		<PackageVersion Include="Octokit" Version="14.0.0" />
+		<PackageVersion Include="Gameloop.Vdf" Version="0.6.2" />
+		<PackageVersion Include="TextCopy" Version="6.2.1" />
+
+		<PackageVersion Include="PowerArgs" Version="4.0.3" />
+
+		<PackageVersion Include="System.Net.Http" Version="4.3.4" />
+		<PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
+		<PackageVersion Include="System.IO.Abstractions" Version="22.0.12" />
+		<PackageVersion Include="System.Reactive" Version="6.0.1" />
+
+		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" />
+		<PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+		
+		<PackageVersion Include="xunit" Version="2.9.3" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+	</ItemGroup>
+</Project>

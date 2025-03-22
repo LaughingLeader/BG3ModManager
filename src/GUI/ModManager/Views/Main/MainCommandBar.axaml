@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:menuModel="using:ModManager.Models.Menu"
     xmlns:mod="using:ModManager.Models.Mod"
+    xmlns:sukiControls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
     xmlns:vm="using:ModManager.ViewModels.Main"
     d:DesignHeight="240"
     d:DesignWidth="1600"
@@ -25,6 +26,18 @@
 		<Style Selector="ComboBox">
 			<Setter Property="Margin" Value="2" />
 			<Setter Property="AutoScrollToSelectedItem" Value="False" />
+		</Style>
+
+		<Style Selector="ComboBoxItem">
+			<Setter Property="Background" Value="Red" />
+		</Style>
+
+		<Style Selector="ComboBoxItem /template/ ContentPresenter">
+			<Setter Property="Background" Value="Red" />
+		</Style>
+
+		<Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
+			<Setter Property="Background" Value="Red" />
 		</Style>
 
 		<!--<Style x:DataType="menuModel:MenuEntry" Selector="MenuItem">
@@ -69,123 +82,129 @@
 		    HorizontalAlignment="Stretch"
 		    VerticalAlignment="Stretch"
 		    Background="LightGray" />
-		<WrapPanel Grid.Row="2" Margin="12,0" VerticalAlignment="Top">
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
-				<ComboBox x:Name="ProfileComboBox"
-				    MaxWidth="150"
-				    AutoScrollToSelectedItem="False"
-				    ItemsSource="{Binding ModOrder.Profiles}"
-				    SelectedIndex="{Binding ModOrder.SelectedProfileIndex, FallbackValue=0}"
-				    SelectedItem="{Binding ModOrder.SelectedProfile}">
-					<ComboBox.ItemTemplate>
-						<DataTemplate DataType="m:DivinityProfileData">
-							<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
-				<controls:ComboBoxWithRightClick x:Name="OrdersComboBox"
-				    MaxWidth="150"
-				    ItemsSource="{Binding ModOrder.ModOrderList}"
-				    SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
-				    SelectedItem="{Binding ModOrder.SelectedModOrder}">
-					<FlyoutBase.AttachedFlyout>
-						<Flyout Placement="Pointer" ShowMode="Transient">
-							<MenuItem Header="Rename" ToolTip.Tip="Toggle Renaming">
-								<MenuItem.Icon>
-									<materialIcons:MaterialIcon Kind="Rename" />
-								</MenuItem.Icon>
-							</MenuItem>
-						</Flyout>
-					</FlyoutBase.AttachedFlyout>
-					<ComboBox.ItemTemplate>
-						<DataTemplate DataType="m:DivinityLoadOrder">
-							<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</controls:ComboBoxWithRightClick>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<Button Command="{Binding SaveOrderCommand}" ToolTip.Tip="Save Order">
-					<materialIcons:MaterialIcon Foreground="LightGreen" Kind="ContentSave" />
-				</Button>
-				<Button Command="{Binding SaveOrderAsCommand}" ToolTip.Tip="Save Order As...">
-					<materialIcons:MaterialIcon Kind="ContentSaveEdit" />
-				</Button>
-				<Button Command="{Binding AddNewOrderCommand}" ToolTip.Tip="Add New Order">
-					<materialIcons:MaterialIcon Foreground="OrangeRed" Kind="Add" />
-				</Button>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Export" />
-				<Button Command="{Binding ExportOrderCommand}" ToolTip.Tip="Export Order to Game">
-					<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="Export" />
-				</Button>
-				<Button Command="{Binding ExportModsToZipCommand}" ToolTip.Tip="Export Active Mods to Zip">
-					<materialIcons:MaterialIcon Kind="FolderZip" />
-				</Button>
-				<Button Command="{Binding ExportModsToZipAsCommand}" ToolTip.Tip="Export Active Mods to Zip As...">
-					<materialIcons:MaterialIcon Kind="ArchiveEdit" />
-				</Button>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Refresh" />
-				<Button Command="{Binding RefreshCommand}" ToolTip.Tip="Refresh Mods">
-					<materialIcons:MaterialIcon Foreground="Red" Kind="Refresh" />
-				</Button>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Campaign" />
-				<ComboBox MaxWidth="150"
-				    ItemsSource="{Binding ModOrder.AdventureMods}"
-				    SelectedIndex="{Binding ModOrder.SelectedAdventureModIndex, FallbackValue=0}"
-				    SelectedItem="{Binding ModOrder.SelectedAdventureMod}">
-					<ComboBox.ItemTemplate>
-						<DataTemplate DataType="mod:DivinityModData">
-							<TextBlock Text="{Binding DisplayName}" ToolTip.Tip="{Binding FilePath}" />
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Shortcuts" />
-				<Button Command="{Binding OpenModsFolderCommand}" ToolTip.Tip="Open Mods Folder...">
-					<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="FolderOpen" />
-				</Button>
-				<Button Command="{Binding LaunchGameCommand}" ToolTip.Tip="Launch Game...">
-					<materialIcons:MaterialIcon Foreground="Red" Kind="Launch" />
-				</Button>
-				<ComboBox x:Name="CampaignComboBox"
-				    AutoScrollToSelectedItem="False"
-				    SelectedIndex="0"
-				    ToolTip.Tip="When launching the game, performed this action on this window">
-					<ComboBoxItem Content="None" />
-					<ComboBoxItem Content="Minimize" />
-					<ComboBoxItem Content="Close" />
-				</ComboBox>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Links" />
-				<Button Command="{Binding OpenSteamPageCommand}" ToolTip.Tip="Open Steam Page...">
-					<materialIcons:MaterialIcon Kind="Switch" />
-				</Button>
-				<Button Command="{Binding OpenNexusModsCommand}" ToolTip.Tip="Open Nexus Mods...">
-					<materialIcons:MaterialIcon Kind="OpenInBrowser" />
-				</Button>
-			</StackPanel>
-			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-				<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Support" />
-				<Button Command="{Binding OpenDonationPageCommand}" ToolTip.Tip="Donate a Coffee">
-					<materialIcons:MaterialIcon Kind="Donate" />
-				</Button>
-				<Button Command="{Binding OpenGitHubRepoCommand}" ToolTip.Tip="Open Program Site (GitHub)...">
-					<materialIcons:MaterialIcon Kind="Github" />
-				</Button>
-			</StackPanel>
-		</WrapPanel>
+		<Border Grid.Row="2"
+		    Margin="0"
+		    Padding="0"
+		    VerticalAlignment="Top"
+		    Background="{DynamicResource SukiGlassCardBackground}">
+			<WrapPanel Margin="12,0">
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
+					<ComboBox x:Name="ProfileComboBox"
+					    MaxWidth="150"
+					    AutoScrollToSelectedItem="False"
+					    ItemsSource="{Binding ModOrder.Profiles}"
+					    SelectedIndex="{Binding ModOrder.SelectedProfileIndex, FallbackValue=0}"
+					    SelectedItem="{Binding ModOrder.SelectedProfile}">
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="m:DivinityProfileData">
+								<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
+					<controls:ComboBoxWithRightClick x:Name="OrdersComboBox"
+					    MaxWidth="150"
+					    ItemsSource="{Binding ModOrder.ModOrderList}"
+					    SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
+					    SelectedItem="{Binding ModOrder.SelectedModOrder}">
+						<FlyoutBase.AttachedFlyout>
+							<Flyout Placement="Pointer" ShowMode="Transient">
+								<MenuItem Header="Rename" ToolTip.Tip="Toggle Renaming">
+									<MenuItem.Icon>
+										<materialIcons:MaterialIcon Kind="Rename" />
+									</MenuItem.Icon>
+								</MenuItem>
+							</Flyout>
+						</FlyoutBase.AttachedFlyout>
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="m:DivinityLoadOrder">
+								<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</controls:ComboBoxWithRightClick>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<Button Command="{Binding SaveOrderCommand}" ToolTip.Tip="Save Order">
+						<materialIcons:MaterialIcon Foreground="LightGreen" Kind="ContentSave" />
+					</Button>
+					<Button Command="{Binding SaveOrderAsCommand}" ToolTip.Tip="Save Order As...">
+						<materialIcons:MaterialIcon Kind="ContentSaveEdit" />
+					</Button>
+					<Button Command="{Binding AddNewOrderCommand}" ToolTip.Tip="Add New Order">
+						<materialIcons:MaterialIcon Foreground="OrangeRed" Kind="Add" />
+					</Button>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Export" />
+					<Button Command="{Binding ExportOrderCommand}" ToolTip.Tip="Export Order to Game">
+						<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="Export" />
+					</Button>
+					<Button Command="{Binding ExportModsToZipCommand}" ToolTip.Tip="Export Active Mods to Zip">
+						<materialIcons:MaterialIcon Kind="FolderZip" />
+					</Button>
+					<Button Command="{Binding ExportModsToZipAsCommand}" ToolTip.Tip="Export Active Mods to Zip As...">
+						<materialIcons:MaterialIcon Kind="ArchiveEdit" />
+					</Button>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Refresh" />
+					<Button Command="{Binding RefreshCommand}" ToolTip.Tip="Refresh Mods">
+						<materialIcons:MaterialIcon Foreground="Red" Kind="Refresh" />
+					</Button>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Campaign" />
+					<ComboBox MaxWidth="150"
+					    ItemsSource="{Binding ModOrder.AdventureMods}"
+					    SelectedIndex="{Binding ModOrder.SelectedAdventureModIndex, FallbackValue=0}"
+					    SelectedItem="{Binding ModOrder.SelectedAdventureMod}">
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="mod:DivinityModData">
+								<TextBlock Text="{Binding DisplayName}" ToolTip.Tip="{Binding FilePath}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Shortcuts" />
+					<Button Command="{Binding OpenModsFolderCommand}" ToolTip.Tip="Open Mods Folder...">
+						<materialIcons:MaterialIcon Foreground="RoyalBlue" Kind="FolderOpen" />
+					</Button>
+					<Button Command="{Binding LaunchGameCommand}" ToolTip.Tip="Launch Game...">
+						<materialIcons:MaterialIcon Foreground="Red" Kind="Launch" />
+					</Button>
+					<ComboBox x:Name="CampaignComboBox"
+					    AutoScrollToSelectedItem="False"
+					    SelectedIndex="0"
+					    ToolTip.Tip="When launching the game, performed this action on this window">
+						<ComboBoxItem Content="None" />
+						<ComboBoxItem Content="Minimize" />
+						<ComboBoxItem Content="Close" />
+					</ComboBox>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Links" />
+					<Button Command="{Binding OpenSteamPageCommand}" ToolTip.Tip="Open Steam Page...">
+						<materialIcons:MaterialIcon Kind="Switch" />
+					</Button>
+					<Button Command="{Binding OpenNexusModsCommand}" ToolTip.Tip="Open Nexus Mods...">
+						<materialIcons:MaterialIcon Kind="OpenInBrowser" />
+					</Button>
+				</StackPanel>
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Support" />
+					<Button Command="{Binding OpenDonationPageCommand}" ToolTip.Tip="Donate a Coffee">
+						<materialIcons:MaterialIcon Kind="Donate" />
+					</Button>
+					<Button Command="{Binding OpenGitHubRepoCommand}" ToolTip.Tip="Open Program Site (GitHub)...">
+						<materialIcons:MaterialIcon Kind="Github" />
+					</Button>
+				</StackPanel>
+			</WrapPanel>
+		</Border>
 	</Grid>
 
 </UserControl>

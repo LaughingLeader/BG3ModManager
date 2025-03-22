@@ -8,15 +8,15 @@ namespace ModManager.Windows
 {
     partial class SettingsWindow
     {
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Generated.ModManagerSettingsView GeneralSettingsView;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Generated.ModManagerUpdateSettingsView UpdateSettingsView;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Generated.ScriptExtenderSettingsView ExtenderSettingsView;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Generated.ScriptExtenderUpdateConfigView ExtenderUpdateSettingsView;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Settings.KeybindingsView KeybindingsView;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace ModManager.Windows
         /// <param name="loadXaml">Should the XAML be loaded into the component.</param>
         /// <param name="attachDevTools">Should the dev tools be attached.</param>
 
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.0.0")]
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public void InitializeComponent(bool loadXaml = true, bool attachDevTools = true)
         {

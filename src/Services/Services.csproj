@@ -7,16 +7,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="all" />
-		<PackageReference Include="System.Reactive" Version="6.0.1" />
-		<PackageReference Include="ReactiveUI" Version="20.1.1" />
-		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
-		<PackageReference Include="ReactiveUI.Validation" Version="4.0.9" />
-		<PackageReference Include="DynamicData" Version="9.0.4" />
-		<PackageReference Include="Splat" Version="15.1.1" />
-		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" Version="1.2.3" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-		<PackageReference Include="System.IO.Abstractions" Version="21.0.29" />
-		<PackageReference Include="TextCopy" Version="6.2.1" />
+		<PackageReference Include="ConfigureAwait.Fody" PrivateAssets="all" />
+		<PackageReference Include="System.Reactive"  />
+		<PackageReference Include="ReactiveUI" />
+		<PackageReference Include="ReactiveUI.Fody" />
+		<PackageReference Include="ReactiveUI.Validation" />
+		<PackageReference Include="DynamicData" />
+		<PackageReference Include="Splat" />
+		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+		<PackageReference Include="System.IO.Abstractions" />
+		<PackageReference Include="TextCopy" />
 	</ItemGroup>
 
 	<ItemGroup>
