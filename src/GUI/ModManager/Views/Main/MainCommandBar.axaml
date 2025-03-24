@@ -14,7 +14,9 @@
 	d:DesignWidth="1600"
 	x:DataType="vm:MainCommandBarViewModel"
 	mc:Ignorable="d">
-	<UserControl.Resources />
+	<Design.DataContext>
+		<vm:DesignMainCommandBarViewModel />
+	</Design.DataContext>
 	<UserControl.Styles>
 		<Style Selector="Button">
 			<Setter Property="Padding" Value="0" />
@@ -23,12 +25,12 @@
 			<Setter Property="Height" Value="24" />
 		</Style>
 
-		<Style Selector="ComboBox">
+		<Style Selector="controls|ComboBoxWithRightClick">
 			<Setter Property="Margin" Value="2" />
 			<Setter Property="AutoScrollToSelectedItem" Value="False" />
 		</Style>
 
-		<Style Selector="ComboBoxItem">
+		<!--<Style Selector="ComboBoxItem">
 			<Setter Property="Background" Value="Red" />
 		</Style>
 
@@ -38,7 +40,7 @@
 
 		<Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
 			<Setter Property="Background" Value="Red" />
-		</Style>
+		</Style>-->
 
 		<!--<Style Selector="Button:pointerover > materialIcons|MaterialIcon">
 			<Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
@@ -61,6 +63,28 @@
 			<Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
 			<Setter Property="ItemsSource" Value="{Binding Children}" />
 		</Style>-->
+
+		<Style Selector="ComboBox.highlight">
+			<Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
+				<Setter Property="Foreground" Value="Red" />
+			</Style>
+
+			<!--<Style Selector="^:pointerover">
+				<Style Selector="^ /template/ sukiControls|GlassCard#border > Grid">
+					<Setter Property="Background" Value="Red" />
+				</Style>
+				<Style Selector="^ /template/ sukiControls|GlassCard#border">
+					<Setter Property="Background" Value="Red" />
+				</Style>
+				<Style Selector="^ /template/ ToggleButton">
+					<Setter Property="Background" Value="Red" />
+				</Style>
+			</Style>-->
+
+			<Style Selector="^ /template/ sukiControls|GlassCard#border">
+				<Setter Property="BorderBrush" Value="LimeGreen" />
+			</Style>
+		</Style>
 	</UserControl.Styles>
 	<UserControl.DataTemplates>
 		<!--<DataTemplate DataType="menuModel:MenuEntry">
@@ -94,7 +118,7 @@
 			Margin="0"
 			Padding="0"
 			VerticalAlignment="Top"
-			Background="{DynamicResource SukiGlassCardBackground}">
+			Background="Transparent">
 			<WrapPanel Margin="12,0">
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
@@ -115,6 +139,7 @@
 					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
 					<controls:ComboBoxWithRightClick x:Name="OrdersComboBox"
 						MaxWidth="150"
+						Classes="highlight"
 						ItemsSource="{Binding ModOrder.ModOrderList}"
 						SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
 						SelectedItem="{Binding ModOrder.SelectedModOrder}">

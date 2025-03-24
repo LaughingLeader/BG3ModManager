@@ -87,7 +87,9 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 
 				//Temp fix for ComboBox selected items not updating from bindings
 
-				ViewModel.WhenAnyValue(x => x.ModOrder.SelectedProfile).Subscribe(x =>
+				var whenModOrder = ViewModel.WhenAnyValue(x => x.ModOrder).WhereNotNull();
+
+				whenModOrder.Select(x => x.SelectedProfile).Subscribe(x =>
 				{
 					if (x != null && ProfileComboBox.SelectedItem == null)
 					{
@@ -96,7 +98,7 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 					}
 				});
 
-				ViewModel.WhenAnyValue(x => x.ModOrder.SelectedModOrder).Subscribe(x =>
+				whenModOrder.Select(x => x.SelectedModOrder).Subscribe(x =>
 				{
 					if (x != null && OrdersComboBox.SelectedItem == null)
 					{
@@ -105,7 +107,7 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 					}
 				});
 
-				ViewModel.WhenAnyValue(x => x.ModOrder.SelectedAdventureMod).Subscribe(x =>
+				whenModOrder.Select(x => x.SelectedAdventureMod).Subscribe(x =>
 				{
 					if (x != null && CampaignComboBox.SelectedItem == null)
 					{

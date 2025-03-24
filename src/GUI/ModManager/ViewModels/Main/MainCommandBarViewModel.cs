@@ -78,12 +78,12 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Toggle Stats Validator Window", Key.OemBackslash, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
 	public RxCommandUnit? ToggleStatsValidatorWindowCommand { get; set; }
 
-	private ObservableCollectionExtended<IMenuEntry> _menuEntries = [];
+	private readonly ObservableCollectionExtended<IMenuEntry> _menuEntries = [];
 
-	private ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
+	private readonly ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
 	public ReadOnlyObservableCollection<IMenuEntry> MenuEntries => _uiMenuEntries;
 
-	[Reactive] public ModOrderViewModel? ModOrder { get; set; }
+	[Reactive] public IModOrderViewModel? ModOrder { get; set; }
 
 	public void CreateCommands(MainWindowViewModel main, ModOrderViewModel modOrder)
 	{
@@ -280,5 +280,13 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public MainCommandBarViewModel()
 	{
 		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
+	}
+}
+
+public class DesignMainCommandBarViewModel : MainCommandBarViewModel
+{
+	public DesignMainCommandBarViewModel() : base()
+	{
+		ModOrder = new DesignModOrderViewModel();
 	}
 }

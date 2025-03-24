@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using TextCopy;
 
 namespace ModManager.ViewModels.Main;
+
 public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderViewModel
 {
 	public string UrlPathSegment => "modorder";
@@ -65,7 +66,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public ModListViewModel ActiveModsView { get; }
 	public ModListViewModel OverrideModsView { get; }
 	public ModListViewModel InactiveModsView { get; }
-
 
 	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
 	public List<DivinityLoadOrder> ExternalModOrders { get; }
@@ -1749,5 +1749,74 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		});
 
 		//SetupKeys(host.Keys, host, canExecuteCommands);
+	}
+}
+
+public class DesignModOrderViewModel : IModOrderViewModel
+{
+	public ObservableCollectionExtended<IModEntry> ActiveMods { get; }
+	public ObservableCollectionExtended<IModEntry> InactiveMods { get; }
+
+	private ObservableCollectionExtended<DivinityModData> _testAdventureMods = [];
+	private readonly ReadOnlyObservableCollection<DivinityModData> _adventureMods;
+	public ReadOnlyObservableCollection<DivinityModData> AdventureMods => _adventureMods;
+
+	private ObservableCollectionExtended<DivinityProfileData> _testProfiles = [];
+
+	private readonly ReadOnlyObservableCollection<DivinityProfileData> _profiles;
+	public ReadOnlyObservableCollection<DivinityProfileData> Profiles => _profiles;
+	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
+	public bool IsLocked { get; }
+
+	public int SelectedProfileIndex { get; set; }
+	public int SelectedModOrderIndex { get; set; }
+	public int SelectedAdventureModIndex { get; set; }
+
+	public DivinityProfileData? SelectedProfile { get; set; }
+	public DivinityLoadOrder? SelectedModOrder { get; set; }
+	public DivinityModData? SelectedAdventureMod { get; set; }
+
+	public void AddActiveMod(IModEntry mod) => throw new NotImplementedException();
+	public void ClearMissingMods() => throw new NotImplementedException();
+	public void DeleteMod(IModEntry mod) => throw new NotImplementedException();
+	public void DeleteSelectedMods(IModEntry contextMenuMod) => throw new NotImplementedException();
+	public void RemoveActiveMod(IModEntry mod) => throw new NotImplementedException();
+
+	public DesignModOrderViewModel()
+	{
+		ActiveMods = [];
+		InactiveMods = [];
+		ModOrderList = [];
+
+		_testAdventureMods.ToObservableChangeSet().Bind(out _adventureMods).Subscribe();
+
+		_testProfiles.ToObservableChangeSet().Bind(out _profiles).Subscribe();
+		_testProfiles.Add(new DivinityProfileData()
+		{
+			Name = "Public",
+			FolderName = "Public",
+			ProfileName = "Public",
+			UUID = "Test",
+			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\PlayerProfiles\\Public\\profile8.lsf"
+		});
+
+		ModOrderList.Add(new DivinityLoadOrder()
+		{
+			Name = "Current",
+			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\PlayerProfiles\\Public\\modsettings.lsx"
+		});
+
+		_testAdventureMods.Add(new DivinityModData()
+		{
+			Name = "Main"
+		});
+
+		SelectedProfile = _testProfiles[0];
+		SelectedModOrder = ModOrderList[0];
+		SelectedAdventureMod = _testAdventureMods[0];
+
+		SelectedProfileIndex = 0;
+		SelectedModOrderIndex = 0;
+		SelectedAdventureModIndex = 0;
 	}
 }
