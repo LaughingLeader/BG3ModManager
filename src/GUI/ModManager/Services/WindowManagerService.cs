@@ -78,6 +78,41 @@ public class WindowManagerService
 		//}
 	}
 
+	public void RestoreSavedWindowPosition()
+	{
+		var window = MainWindow;
+		var settings = AppServices.Settings.ManagerSettings;
+		if (settings.SaveWindowLocation)
+		{
+			var windowSettings = settings.Window;
+			window.WindowStartupLocation = WindowStartupLocation.Manual;
+
+			var screens = window.Screens.All;
+			var screenCount = screens.Count;
+			if (screenCount > 0)
+			{
+				var screen = window.Screens.Primary;
+				if (windowSettings.Screen > -1 && windowSettings.Screen < screenCount - 1)
+				{
+					screen = screens[windowSettings.Screen];
+				}
+
+				if (screen != null)
+				{
+					var x = Math.Max(screen.Bounds.X, Math.Min(screen.Bounds.Right, screen.Bounds.X + windowSettings.X));
+					var y = Math.Max(screen.Bounds.Y, Math.Min(screen.Bounds.Bottom, screen.Bounds.Y + windowSettings.Y));
+
+					window.Position = new PixelPoint((int)x, (int)y);
+				}
+			}
+
+			if (windowSettings.Maximized)
+			{
+				window.WindowState = WindowState.Maximized;
+			}
+		}
+	}
+
 	public WindowManagerService(MainWindow main, IInteractionsService interactions)
 	{
 		MainWindow = main;

@@ -1494,30 +1494,7 @@ Directory the zip will be extracted to:
 		//if (Settings.CheckForUpdates) CheckForUpdates();
 		SaveSettings();
 
-		//TODO Implement cross-platform equivalent
-		/*if (Settings.SaveWindowLocation)
-		{
-			var win = Settings.Window;
-			Window.WindowStartupLocation = WindowStartupLocation.Manual;
-
-			var screens = System.Windows.Forms.Screen.AllScreens;
-			var screen = screens.FirstOrDefault();
-			if (screen != null)
-			{
-				if (win.Screen > -1 && win.Screen < screens.Length - 1)
-				{
-					screen = screens[win.Screen];
-				}
-
-				Window.Left = Math.Max(screen.WorkingArea.Left, Math.Min(screen.WorkingArea.Right, screen.WorkingArea.Left + win.X));
-				Window.Top = Math.Max(screen.WorkingArea.Top, Math.Min(screen.WorkingArea.Bottom, screen.WorkingArea.Top + win.Y));
-			}
-
-			if (win.Maximized)
-			{
-				Window.WindowState = WindowState.Maximized;
-			}
-		}*/
+		AppServices.Get<WindowManagerService>().RestoreSavedWindowPosition();
 
 		ViewModelLocator.CommandBar.CreateCommands(this, ViewModelLocator.ModOrder);
 
