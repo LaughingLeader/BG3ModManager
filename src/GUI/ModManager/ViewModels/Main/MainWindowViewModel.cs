@@ -1755,16 +1755,6 @@ Directory the zip will be extracted to:
 			.BindTo(this, x => x.IsLocked);
 		this.WhenAnyValue(x => x.IsLocked, x => x.IsInitialized, (b1, b2) => !b1 && b2).BindTo(this, x => x.AllowDrop);
 
-		interactionsService.ShowAlert.RegisterHandler(input =>
-		{
-			return Observable.Start(() =>
-			{
-				var data = input.Input;
-				//ShowAlert(data.Message, data.AlertType, data.Timeout);
-				input.SetOutput(true);
-			}, RxApp.MainThreadScheduler);
-		});
-
 		interactionsService.DeleteMods.RegisterHandler(input =>
 		{
 			return Observable.Start(() =>

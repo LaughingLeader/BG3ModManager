@@ -762,7 +762,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				await Observable.Start(() =>
 				{
-					AppServices.Commands.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15);
+					AppServices.Commands.ShowAlert($"Exported load order to '{StringUtils.ReplaceSpecialPathways(outputPath)}'", AlertType.Success, 15, "Order Exported");
 
 					if (DivinityModDataLoader.ExportedSelectedProfile(PathwayData.AppDataProfilesPath, SelectedProfile.UUID))
 					{
@@ -799,10 +799,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 		else
 		{
-			await Observable.Start(() =>
-			{
-				AppServices.Commands.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
-			}, RxApp.MainThreadScheduler);
+			AppServices.Commands.ShowAlert("SelectedProfile or SelectedModOrder is null! Failed to export mod order", AlertType.Danger);
 		}
 		return false;
 	}

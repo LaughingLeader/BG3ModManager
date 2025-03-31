@@ -15,20 +15,20 @@ namespace ModManager.Windows;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
 	private readonly ISukiToastManager _toastManager = new SukiToastManager();
-	private readonly ISukiDialogManager _dialogManagerManager = new SukiDialogManager();
+	private readonly ISukiDialogManager _dialogManager = new SukiDialogManager();
 
 	public void ShowSukiDialog(object? content, bool showCardBehind = true, bool allowBackgroundClose = false)
 	{
 		if (content is string message)
 		{
 			var dialogContent = new TextBlock { Text = message };
-			var dialog = _dialogManagerManager.CreateDialog().WithContent(dialogContent);
+			var dialog = _dialogManager.CreateDialog().WithContent(dialogContent);
 			dialog.SetCanDismissWithBackgroundClick(allowBackgroundClose);
 			dialog.TryShow();
 		}
 		else if (content is ReactiveObject viewModel)
 		{
-			var dialog = _dialogManagerManager.CreateDialog().WithViewModel(x =>
+			var dialog = _dialogManager.CreateDialog().WithViewModel(x =>
 			{
 				x.CanDismissWithBackgroundClick = allowBackgroundClose;
 				return viewModel;
@@ -49,12 +49,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
 		this.WhenActivated(d =>
 		{
-			
-			var sukiHost = this.FindDescendantOfType<SukiDialogHost>();
-			if (sukiHost != null)
-			{
-				sukiHost.GetObservable(SukiDialogHost.IsDialogOpenProperty).BindTo(ViewModelLocator.MessageBox, x => x.IsVisible);
-			}
+			DialogHost.Manager = _dialogManager;
+			DialogHost.GetObservable(SukiDialogHost.IsDialogOpenProperty).BindTo(ViewModelLocator.MessageBox, x => x.IsVisible);
+			ToastHost.Manager = _toastManager;
 
 			this.OneWayBind(ViewModel, x => x.Router, x => x.ViewHost.Router);
 
@@ -90,29 +87,24 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 			{
 				var data = context.Input;
 				var title = data.Title;
-				var duration = data.Timeout <= 0 ? TimeSpan.FromSeconds(30) : TimeSpan.FromSeconds(data.Timeout);
+				var duration = data.Timeout <= 0 ? TimeSpan.FromSeconds(10) : TimeSpan.FromSeconds(data.Timeout);
 				if (!title.IsValid())
 				{
-					switch (data.AlertType)
+					title = data.AlertType switch
 					{
-						case AlertType.Danger:
-							title = "Error";
-							break;
-						case AlertType.Warning:
-							title = "Warning";
-							break;
-						case AlertType.Info:
-							title = "Information";
-							break;
-						default:
-							title = string.Empty;
-							break;
-					}
-
+						AlertType.Danger => "Error",
+						AlertType.Warning => "Warning",
+						AlertType.Info => "Info",
+						AlertType.Success => "Success",
+						_ => string.Empty,
+					};
 				}
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					_toastManager.CreateToast().WithTitle(title).WithContent(data.Message).Queue();
+					var toast = _toastManager.CreateToast().WithTitle(title).WithContent(data.Message);
+					toast.SetCanDismissByClicking(true);
+					toast.Delay(duration, _toastManager.Dismiss);
+					toast.Queue();
 				});
 				//await SukiToastManager.ShowToast(this, title, data.Message, duration);
 				context.SetOutput(true);

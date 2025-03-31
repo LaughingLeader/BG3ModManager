@@ -1,22 +1,18 @@
 <Window x:Class="ModManager.Windows.MainWindow"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:rxui="http://reactiveui.net"
-    xmlns:suki="using:SukiUI.Controls"
-    xmlns:vm="using:ModManager.ViewModels.Main"
-    Title="{Binding Title}"
-    Width="1600"
-    Height="800"
-    x:DataType="vm:MainWindowViewModel"
-    Focusable="True"
-    Icon="avares://ModManager/Assets/BG3ModManager.ico"
-    mc:Ignorable="d">
-	<suki:SukiWindow.Hosts>
-		<suki:SukiToastHost Name="ToastHost" MaxToasts="4" Position="BottomRight" />
-		<suki:SukiDialogHost Name="DialogHost" />
-	</suki:SukiWindow.Hosts>
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:rxui="http://reactiveui.net"
+	xmlns:suki="using:SukiUI.Controls"
+	xmlns:vm="using:ModManager.ViewModels.Main"
+	Title="{Binding Title}"
+	Width="1600"
+	Height="800"
+	x:DataType="vm:MainWindowViewModel"
+	Focusable="True"
+	Icon="avares://ModManager/Assets/BG3ModManager.ico"
+	mc:Ignorable="d">
 	<!--<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -29,11 +25,17 @@
 		<Image Width="16" Height="16" Source="avares://ModManager/Assets/BG3ModManager.ico" />
 	</Window.LogoContent>-->
 
-	<Panel>
-		<suki:SukiBackground IsHitTestVisible="False" />
-		<rxui:RoutedViewHost x:Name="ViewHost"
-		    HorizontalContentAlignment="Stretch"
-		    VerticalContentAlignment="Stretch"
-		    Router="{Binding Router}" />
-	</Panel>
+	<VisualLayerManager Name="PART_VisualLayerManager" IsHitTestVisible="True">
+		<VisualLayerManager.ChromeOverlayLayer>
+			<suki:SukiToastHost Name="ToastHost" MaxToasts="4" Position="BottomLeft" />
+			<suki:SukiDialogHost Name="DialogHost" />
+		</VisualLayerManager.ChromeOverlayLayer>
+		<Panel>
+			<suki:SukiBackground IsHitTestVisible="False" />
+			<rxui:RoutedViewHost x:Name="ViewHost"
+				HorizontalContentAlignment="Stretch"
+				VerticalContentAlignment="Stretch"
+				Router="{Binding Router}" />
+		</Panel>
+	</VisualLayerManager>
 </Window>
