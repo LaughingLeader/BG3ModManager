@@ -94,19 +94,19 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 					{
 						AlertType.Danger => "Error",
 						AlertType.Warning => "Warning",
-						AlertType.Info => "Info",
 						AlertType.Success => "Success",
-						_ => string.Empty,
+						AlertType.Info => "Info",
+						_ => "Info",
 					};
 				}
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-					var toast = _toastManager.CreateToast().WithTitle(title).WithContent(data.Message);
-					toast.SetCanDismissByClicking(true);
-					toast.Delay(duration, _toastManager.Dismiss);
-					toast.Queue();
+					var toastBuilder = _toastManager.CreateToast().WithTitle(title).WithContent(data.Message);
+					toastBuilder.SetCanDismissByClicking(true);
+					toastBuilder.Delay(duration, _toastManager.Dismiss);
+					toastBuilder.SetType(data.AlertType.ToNotificationType());
+					toastBuilder.Queue();
 				});
-				//await SukiToastManager.ShowToast(this, title, data.Message, duration);
 				context.SetOutput(true);
 			});
 		});
