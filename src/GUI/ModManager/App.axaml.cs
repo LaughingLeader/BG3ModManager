@@ -27,7 +27,6 @@ public partial class App : Application
 			return;
 		}
 #endif
-
 		var desktop = DesktopLifetime;
 		if (desktop != null)
 		{

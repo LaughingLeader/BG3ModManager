@@ -1,4 +1,5 @@
 ﻿using SukiUI.Controls;
+using SukiUI.Dialogs;
 
 using System.Reactive.Subjects;
 
@@ -8,6 +9,7 @@ public class MessageBoxViewModel : ReactiveObject
 	[Reactive] public string? Title { get; set; }
 	[Reactive] public string? Message { get; set; }
 	[Reactive] public bool IsVisible { get; set; }
+	[Reactive] public ISukiDialog? Dialog { get; set; }
 
 	private readonly Subject<bool> Result = new();
 
@@ -34,6 +36,7 @@ public class MessageBoxViewModel : ReactiveObject
 	private void Close(bool result)
 	{
 		Result.OnNext(result);
+		Dialog?.Dismiss();
 	}
 
 	private static string MessageBoxTypeToConfirmationText(InteractionMessageBoxType type)

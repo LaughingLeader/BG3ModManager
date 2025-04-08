@@ -1,12 +1,11 @@
 <Application x:Class="ModManager.App"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ModManager"
-    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-    xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
-    RequestedThemeVariant="Dark">
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="using:ModManager"
+	xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
+	RequestedThemeVariant="Dark">
 	<!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
-
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -57,10 +56,10 @@
 				<Setter Property="Template">
 					<ControlTemplate>
 						<Border Width="{TemplateBinding Width}"
-						    Height="{TemplateBinding Height}"
-						    HorizontalAlignment="Center"
-						    VerticalAlignment="Center"
-						    Background="Transparent">
+							Height="{TemplateBinding Height}"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							Background="Transparent">
 							<materialIcons:MaterialIcon HorizontalAlignment="Center" VerticalAlignment="Center" Kind="ChevronRight" />
 						</Border>
 					</ControlTemplate>

@@ -32,7 +32,10 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<ModImportService>();
 		SplatRegistrations.RegisterLazySingleton<IDialogService, DialogService>();
 		SplatRegistrations.RegisterLazySingleton<AppKeysService>();
-		resolver.RegisterConstant<IViewLocator>(new ViewLocator());
+
+		var viewLocator = new ViewLocator();
+		resolver.RegisterConstant<IViewLocator>(viewLocator);
+		App.Current.DataTemplates.Add(viewLocator);
 
 		//SplatRegistrations.Register<ModListDropHandler>();
 		//SplatRegistrations.Register<ModListDragHandler>();

@@ -1,4 +1,6 @@
-﻿using ModManager.Models.Mod;
+﻿using Avalonia.Controls.Templates;
+
+using ModManager.Models.Mod;
 using ModManager.Models.Settings;
 using ModManager.Models.View;
 using ModManager.ViewModels;
@@ -17,7 +19,7 @@ public class ViewLocatorErrorView : TextBlock, IViewFor
 	public object? ViewModel { get; set; }
 }
 
-public class ViewLocator : IViewLocator
+public class ViewLocator : IViewLocator, IDataTemplate
 {
 	private static readonly Type _viewForType = typeof(IViewFor<>);
 
@@ -77,5 +79,22 @@ public class ViewLocator : IViewLocator
 
 		//Register<ModCategory, ModCategoryEntryView>(resolver);
 		//Register<DivinityModData, ModEntryView>(resolver);
+	}
+
+	//IDataTemplate
+	public bool SupportsRecycling => false;
+
+	public Control Build(object? data)
+	{
+		if (ResolveView(data) is Control control)
+		{
+			return control;
+		}
+		return new TextBlock { Text = "No view found for: " + data?.GetType().FullName};
+	}
+
+	public bool Match(object? data)
+	{
+		return data is ReactiveObject;
 	}
 }
