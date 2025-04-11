@@ -1,25 +1,25 @@
 <Window x:Class="ModManager.Windows.SettingsWindow"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:ModManager.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:genview="using:ModManager.Views.Generated"
-    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
-    xmlns:view="using:ModManager.Views.Settings"
-    xmlns:vm="using:ModManager.ViewModels"
-    Title="SettingsWindow"
-    Width="800"
-    Height="450"
-    x:DataType="vm:SettingsWindowViewModel"
-    Focusable="True"
-    Icon="avares://ModManager/Assets/BG3ModManager.ico"
-    Topmost="False"
-    mc:Ignorable="d">
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:ModManager.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:genview="using:ModManager.Views.Generated"
+	xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+	xmlns:view="using:ModManager.Views.Settings"
+	xmlns:vm="using:ModManager.ViewModels"
+	Title="SettingsWindow"
+	Width="800"
+	Height="450"
+	x:DataType="vm:SettingsWindowViewModel"
+	Focusable="True"
+	Icon="avares://ModManager/Assets/BG3ModManager.ico"
+	Topmost="False"
+	mc:Ignorable="d">
 	<Panel>
 		<suki:SukiBackground IsHitTestVisible="False" />
-		<TabControl Margin="48">
+		<TabControl x:Name="SettingsTabControl" Margin="48" SelectedIndex="{Binding SelectedTabIndex}">
 			<TabItem Header="General" ToolTip.Tip="Mod Manager Settings (Data/settings.json)">
 				<genview:ModManagerSettingsView x:Name="GeneralSettingsView" />
 			</TabItem>

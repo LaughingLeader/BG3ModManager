@@ -78,6 +78,15 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Toggle Stats Validator Window", Key.OemBackslash, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
 	public RxCommandUnit? ToggleStatsValidatorWindowCommand { get; set; }
 
+	[Keybinding("Toggle Settings Window", Key.OemComma, KeyModifiers.Control)]
+	public ReactiveCommand<Unit,bool>? ToggleSettingsWindowCommand { get; set; }
+
+	[Keybinding("Toggle Keybindings Window", Key.OemComma, KeyModifiers.Control | KeyModifiers.Alt)]
+	public RxCommandUnit? ToggleKeybindingsCommand { get; set; }
+
+	[Keybinding("Toggle Dark/Light Mode", Key.OemComma, KeyModifiers.Control | KeyModifiers.Alt)]
+	public RxCommandUnit? ToggleThemeModeCommand { get; set; }
+
 	private readonly ObservableCollectionExtended<IMenuEntry> _menuEntries = [];
 
 	private readonly ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
@@ -172,6 +181,38 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			}
 		});
 
+		ToggleSettingsWindowCommand = ReactiveCommand.Create(() =>
+		{
+			var window = AppServices.Get<SettingsWindow>()!;
+			if (window.IsVisible)
+			{
+				window.Hide();
+				return false;
+			}
+			else
+			{
+				window.Show();
+				return true;
+			}
+		});
+
+		ToggleKeybindingsCommand = ReactiveCommand.Create(() =>
+		{
+			ToggleSettingsWindowCommand.Execute().Subscribe(isVisible =>
+			{
+				if (isVisible)
+				{
+					var vm = AppServices.Get<SettingsWindowViewModel>();
+					vm.SelectedTabIndex = SettingsWindowTab.Keybindings;
+				}
+			});
+		});
+
+		ToggleThemeModeCommand = ReactiveCommand.Create(() =>
+		{
+			AppServices.Settings.ManagerSettings.DarkThemeEnabled = !AppServices.Settings.ManagerSettings.DarkThemeEnabled;
+		});
+
 		_menuEntries.AddRange([
 			new MenuEntry("_File"){
 				Children = [
@@ -212,9 +253,9 @@ public partial class MainCommandBarViewModel : ReactiveObject
 				]},
 			new MenuEntry("_Settings"){
 				Children = [
-					new MenuEntry("Open Preferences"),
-					new MenuEntry("Open Keyboard Shortcuts"),
-					new MenuEntry("Toggle Light/Dark Mode"),
+					new MenuEntry("Toggle Settings Window", ToggleSettingsWindowCommand),
+					new MenuEntry("Toggle Keybindings Window", ToggleKeybindingsCommand),
+					new MenuEntry("Toggle Dark/Light Mode", ToggleThemeModeCommand),
 				]},
 			new MenuEntry("_View"){
 				Children = [

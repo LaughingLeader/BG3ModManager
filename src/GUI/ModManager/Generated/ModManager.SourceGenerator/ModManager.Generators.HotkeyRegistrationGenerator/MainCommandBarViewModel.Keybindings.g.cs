@@ -29,5 +29,8 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleUpdatesViewCommand", "Toggle Updates View", ToggleUpdatesViewCommand, Avalonia.Input.Key.U, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_TogglePakFileExplorerWindowCommand", "Toggle Pak File Explorer Window", TogglePakFileExplorerWindowCommand, Avalonia.Input.Key.P, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleStatsValidatorWindowCommand", "Toggle Stats Validator Window", ToggleStatsValidatorWindowCommand, Avalonia.Input.Key.OemBackslash, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleSettingsWindowCommand", "Toggle Settings Window", ToggleSettingsWindowCommand, Avalonia.Input.Key.OemComma, Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleKeybindingsCommand", "Toggle Keybindings Window", ToggleKeybindingsCommand, Avalonia.Input.Key.OemComma, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleThemeModeCommand", "Toggle Dark/Light Mode", ToggleThemeModeCommand, Avalonia.Input.Key.OemComma, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 	}
 }

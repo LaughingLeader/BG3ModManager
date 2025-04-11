@@ -9,6 +9,8 @@ namespace ModManager.Windows
     partial class SettingsWindow
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.TabControl SettingsTabControl;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Generated.ModManagerSettingsView GeneralSettingsView;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Generated.ModManagerUpdateSettingsView UpdateSettingsView;
@@ -42,6 +44,7 @@ namespace ModManager.Windows
 #endif
 
             var __thisNameScope__ = this.FindNameScope();
+            SettingsTabControl = __thisNameScope__?.Find<global::Avalonia.Controls.TabControl>("SettingsTabControl");
             GeneralSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ModManagerSettingsView>("GeneralSettingsView");
             UpdateSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ModManagerUpdateSettingsView>("UpdateSettingsView");
             ExtenderSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ScriptExtenderSettingsView>("ExtenderSettingsView");

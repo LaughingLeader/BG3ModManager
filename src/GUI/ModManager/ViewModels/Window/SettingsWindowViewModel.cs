@@ -335,6 +335,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		_interactions = interactions;
 
 		TargetVersion = _emptyVersion;
+		SelectedTabIndex = SettingsWindowTab.Default;
 
 		if (HostScreen is MainWindowViewModel main)
 		{
