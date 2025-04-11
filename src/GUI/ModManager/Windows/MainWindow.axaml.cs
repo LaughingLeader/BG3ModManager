@@ -2,6 +2,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 
+using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
 
 using ReactiveUI;
@@ -31,7 +32,12 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 			var dialog = _dialogManager.CreateDialog().WithViewModel(x =>
 			{
 				x.CanDismissWithBackgroundClick = allowBackgroundClose;
-				return viewModel;
+				x.ViewModel = content;
+				if (content is MessageBoxViewModel messageBox)
+				{
+					messageBox.Dialog = x;
+				}
+				return content;
 			});
 			dialog.TryShow();
 		}
