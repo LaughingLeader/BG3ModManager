@@ -578,7 +578,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	#region Load Orders
 
-	private async Task<List<DivinityLoadOrder>> LoadExternalLoadOrdersAsync()
+	private static async Task<List<DivinityLoadOrder>> LoadExternalLoadOrdersAsync()
 	{
 		try
 		{
@@ -586,6 +586,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			if (String.IsNullOrWhiteSpace(loadOrderDirectory))
 			{
 				loadOrderDirectory = DivinityApp.GetAppDirectory("Orders");
+			}
+			else if (!Path.IsPathRooted(loadOrderDirectory))
+			{
+				loadOrderDirectory = DivinityApp.GetAppDirectory(loadOrderDirectory);
 			}
 			else if (Uri.IsWellFormedUriString(loadOrderDirectory, UriKind.Relative))
 			{

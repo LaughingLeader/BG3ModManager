@@ -42,12 +42,13 @@ public static class AppServices
 		//SplatRegistrations.Register<ModListDragHandler>();
 
 		SplatRegistrations.RegisterLazySingleton<MainWindowViewModel>();
-
 		resolver.RegisterLazySingleton<IScreen>(() => ViewModelLocator.Main);
 
-		SplatRegistrations.RegisterLazySingleton<MainCommandBarViewModel>();
-		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
+
+		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder));
+
+		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<IProgressBarViewModel, ProgressBarViewModel>();
 
