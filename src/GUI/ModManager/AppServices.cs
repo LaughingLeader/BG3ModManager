@@ -22,6 +22,7 @@ public static class AppServices
 	public static IGlobalCommandsService Commands => Get<IGlobalCommandsService>()!;
 	public static IInteractionsService Interactions => Get<IInteractionsService>()!;
 	public static IDialogService Dialog => Get<IDialogService>()!;
+	public static IScreenReaderService ScreenReader => Get<IScreenReaderService>()!;
 
 	static AppServices()
 	{
@@ -46,7 +47,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
 
-		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder));
+		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter));
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();

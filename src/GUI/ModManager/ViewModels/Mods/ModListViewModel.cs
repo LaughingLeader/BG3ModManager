@@ -35,8 +35,16 @@ public partial class ModListViewModel : ReactiveObject
 	[Reactive] public int TotalModsHidden { get; private set; }
 	[Reactive] public int TotalModsSelected { get; private set; }
 
+	[Reactive] public bool IsFocused { get; set; }
+	[Reactive] public bool IsKeyboardFocusWithin { get; set; }
+
+	[Reactive] public IModEntry? SelectedItem { get; set; }
+
 	[ObservableAsProperty] public string? FilterPlaceholderText { get; }
 	[ObservableAsProperty] public string? FilterResultText { get; }
+	[ObservableAsProperty] public bool HasAnyFocus { get; }
+
+	public RxCommandUnit FocusCommand { get; }
 
 	public void FilterMods(string? searchText)
 	{
@@ -180,7 +188,16 @@ public partial class ModListViewModel : ReactiveObject
 
 	private void UpdateSelection(TreeSelectionModelSelectionChangedEventArgs<IModEntry> e)
 	{
-		foreach(var item in e.SelectedItems)
+		if(e.SelectedItems.Count > 0)
+		{
+			SelectedItem = e.SelectedItems[0];
+		}
+		else
+		{
+			SelectedItem = null;
+		}
+
+		foreach (var item in e.SelectedItems)
 		{
 			if (item != null) item.IsSelected = true;
 		}
@@ -231,6 +248,10 @@ public partial class ModListViewModel : ReactiveObject
 			.Subscribe(FilterMods);
 
 		this.WhenAnyValue(x => x.Title).Select(x => $"Filter {x}").ToUIProperty(this, x => x.FilterPlaceholderText);
+
+		this.WhenAnyValue(x => x.IsFocused, x => x.IsKeyboardFocusWithin).Select(x => x.Item1 || x.Item2).ToUIPropertyImmediate(this, x => x.HasAnyFocus);
+
+		FocusCommand = ReactiveCommand.Create(() => { });
 	}
 }
 

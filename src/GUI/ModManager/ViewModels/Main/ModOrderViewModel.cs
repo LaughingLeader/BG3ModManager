@@ -113,7 +113,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public ReactiveCommand<object, Unit> ToggleOrderRenamingCommand { get; set; }
 	public RxCommandUnit FocusFilterCommand { get; set; }
 	public RxCommandUnit CopyOrderToClipboardCommand { get; }
-	public RxCommandUnit ExportOrderAsListCommand { get; }
 	public ReactiveCommand<DivinityLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
 	public RxCommandUnit OpenGameMasterCampaignInFileExplorerCommand { get; private set; }
 	public RxCommandUnit CopyGameMasterCampaignPathToClipboardCommand { get; private set; }
@@ -1241,7 +1240,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return true;
 	}
 
-	private async Task ExportLoadOrderToTextFileAs()
+	public async Task ExportLoadOrderToTextFileAs()
 	{
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
@@ -1303,7 +1302,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private async Task<DivinityLoadOrder?> ImportOrderFromSave()
+	public async Task<DivinityLoadOrder?> ImportOrderFromSave()
 	{
 		var startPath = "";
 		if (SelectedProfile != null)
@@ -1346,7 +1345,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return null;
 	}
 
-	private async Task ImportOrderFromSaveAsNew()
+	public async Task ImportOrderFromSaveAsNew()
 	{
 		var order = await ImportOrderFromSave();
 		if (order != null)
@@ -1355,7 +1354,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private async Task ImportOrderFromSaveToCurrent()
+	public async Task ImportOrderFromSaveToCurrent()
 	{
 		var order = await ImportOrderFromSave();
 		if (order != null)
@@ -1380,7 +1379,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private async Task ImportOrderFromFile()
+	public async Task ImportOrderFromFile()
 	{
 		var result = await _dialogs.OpenFileAsync(new(
 			"Load Mod Order From File...",
@@ -1438,8 +1437,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IInteractionsService interactionsService,
 		IGlobalCommandsService globalCommands,
 		IDialogService dialogService,
-		ModImportService modImportService,
-		MainCommandBarViewModel commandBar
+		ModImportService modImportService
 		)
 	{
 		ModManager = modManagerService;
@@ -1447,9 +1445,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		_interactions = interactionsService;
 		_globalCommands = globalCommands;
 		_dialogs = dialogService;
-
-		CommandBar = commandBar;
-		CommandBar.ModOrder = this;
 
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;
@@ -1593,8 +1588,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				AppServices.Commands.ShowAlert($"Error copying order to clipboard: {ex}", AlertType.Danger, 15);
 			}
 		}, RxApp.MainThreadScheduler));
-
-		ExportOrderAsListCommand = ReactiveCommand.CreateFromTask(ExportLoadOrderToTextFileAs, this.WhenAnyValue(x => x.TotalActiveMods, x => x > 0));
 
 		whenProfile.Subscribe(profile =>
 		{

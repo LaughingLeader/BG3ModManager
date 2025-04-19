@@ -31,7 +31,7 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 			throw new InvalidOperationException("Items does not implement IList<T>.");
 	}
 
-	private static void DragDropRows(
+	public static void DragDropRows(
 			HierarchicalTreeDataGridSource<IModEntry> source,
 			HierarchicalTreeDataGridSource<IModEntry> target,
 			IEnumerable<IndexPath> indexes,
@@ -85,7 +85,7 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 		}
 	}
 
-	private static TreeDataGridRowDropPosition GetDropPosition(bool allowInside, DragEventArgs e, TreeDataGridRow row)
+	public static TreeDataGridRowDropPosition GetDropPosition(bool allowInside, DragEventArgs e, TreeDataGridRow row)
 	{
 		var rowY = e.GetPosition(row).Y / row.Bounds.Height;
 
@@ -205,6 +205,9 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 					}
 				}));
 
+				ModsTreeDataGrid.GetObservable(IsFocusedProperty).BindTo(ViewModel, x => x.IsFocused);
+				ModsTreeDataGrid.GetObservable(IsKeyboardFocusWithinProperty).BindTo(ViewModel, x => x.IsKeyboardFocusWithin);
+
 				d(Observable.FromEvent<EventHandler<TreeDataGridRowDragEventArgs>, TreeDataGridRowDragEventArgs>(
 					h => (sender, e) => h(e),
 					h => ModsTreeDataGrid.RowDragOver += h,
@@ -251,6 +254,11 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 						//var index = ModsTreeDataGrid.Rows!.RowIndexToModelIndex(e.Index);
 						mod.Index = e.Index;
 					}
+				}));
+
+				d(ViewModel.FocusCommand.Subscribe(e =>
+				{
+					ModsTreeDataGrid.Focus(NavigationMethod.Pointer);
 				}));
 			}
 		});

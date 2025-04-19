@@ -3,7 +3,12 @@ using DynamicData.Binding;
 
 using ModManager.Models;
 using ModManager.Models.Menu;
+using ModManager.Models.Mod;
+using ModManager.Services;
 using ModManager.Util;
+using ModManager.ViewModels.Mods;
+using ModManager.Views.Main;
+using ModManager.Views.Mods;
 using ModManager.Windows;
 
 using System.Collections.ObjectModel;
@@ -123,7 +128,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? ExportOrderToGameCommand { get; set; }
 
 	[Keybinding("Export Order to Text File...", Key.E, KeyModifiers.Control | KeyModifiers.Shift, "", "File")]
-	public RxCommandUnit? ExportOrderToListCommand { get; set; }
+	public RxCommandUnit? ExportOrderToTextFileCommand { get; set; }
 
 	[Keybinding("Export Order to Archive (.zip)", Key.R, KeyModifiers.Control, "", "File")]
 	public RxCommandUnit? ExportOrderToZipCommand { get; set; }
@@ -230,12 +235,15 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
 	}
 
-	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder) : this()
+	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter) : this()
 	{
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
 
 		var isModOrderView = main.WhenAnyValue(x => x.Router.CurrentViewModel, vm => vm == modOrder);
 		var canExecuteModOrderCommands = canExecuteCommands.CombineLatest(isModOrderView).Select(x => x.First && x.Second);
+
+		var hasActiveMods = modOrder.WhenAnyValue(x => x.TotalActiveMods, x => x > 0);
+		var canExecuteHasActive = canExecuteModOrderCommands.CombineLatest(hasActiveMods).Select(x => x.First && x.Second);
 
 		AddNewOrderCommand = ReactiveCommand.Create(() => modOrder.AddNewModOrder(), canExecuteModOrderCommands);
 
@@ -302,7 +310,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			{
 				window.Show();
 			}
-		});
+		}, canExecuteCommands);
 
 		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(() =>
 		{
@@ -315,7 +323,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			{
 				window.Show();
 			}
-		});
+		}, canExecuteCommands);
 
 		ToggleSettingsWindowCommand = ReactiveCommand.Create(() =>
 		{
@@ -330,7 +338,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 				window.Show();
 				return true;
 			}
-		});
+		}, canExecuteCommands);
 
 		ToggleKeybindingsCommand = ReactiveCommand.Create(() =>
 		{
@@ -342,12 +350,115 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					vm.SelectedTabIndex = SettingsWindowTab.Keybindings;
 				}
 			});
-		});
+		}, canExecuteCommands);
 
 		ToggleThemeModeCommand = ReactiveCommand.Create(() =>
 		{
 			AppServices.Settings.ManagerSettings.DarkThemeEnabled = !AppServices.Settings.ManagerSettings.DarkThemeEnabled;
-		});
+		}, canExecuteCommands);
+
+		ImportModCommand = ReactiveCommand.CreateFromTask(modImporter.OpenModImportDialog, canExecuteCommands);
+		ImportNexusModsIdsCommand = ReactiveCommand.CreateFromTask(modImporter.OpenModIdsImportDialog, canExecuteCommands);
+
+		ImportOrderFromSaveCommand = ReactiveCommand.CreateFromTask(modOrder.ImportOrderFromSaveToCurrent, canExecuteCommands);
+		ImportOrderFromSaveAsNewCommand = ReactiveCommand.CreateFromTask(modOrder.ImportOrderFromSaveAsNew, canExecuteCommands);
+		ImportOrderFromFileCommand = ReactiveCommand.CreateFromTask(modOrder.ImportOrderFromFile, canExecuteCommands);
+		ImportOrderFromZipFileCommand = ReactiveCommand.CreateFromTask(modImporter.ImportOrderFromArchive, canExecuteCommands);
+
+		ExportOrderToTextFileCommand = ReactiveCommand.CreateFromTask(modOrder.ExportLoadOrderToTextFileAs, canExecuteHasActive);
+		ExportOrderToZipCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsync, canExecuteHasActive);
+		ExportOrderToArchiveAsCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsAsync, canExecuteHasActive);
+
+		//TODO
+		ReloadModsCommand = ReactiveCommand.Create(() => { }, canExecuteModOrderCommands);
+
+		MoveSelectedModsCommand = ReactiveCommand.Create(() =>
+		{
+			DivinityApp.IsKeyboardNavigating = true;
+
+			ObservableCollectionExtended<IModEntry>? sourceCollection = null;
+			ModListViewModel? sourceList = null;
+			ModListViewModel? targetList = null;
+			string? targetListName = null;
+			
+			if(modOrder.ActiveModsView.HasAnyFocus)
+			{
+				sourceCollection = modOrder.ActiveMods;
+				sourceList = modOrder.ActiveModsView;
+				targetList = modOrder.InactiveModsView;
+				targetListName = "inactive";
+			}
+			else if(modOrder.InactiveModsView.HasAnyFocus)
+			{
+				sourceCollection = modOrder.InactiveMods;
+				sourceList = modOrder.InactiveModsView;
+				targetList = modOrder.ActiveModsView;
+				targetListName = "active";
+			}
+
+			if (sourceCollection != null && sourceList != null && targetList != null && targetListName != null)
+			{
+				var selectedMods = sourceCollection.Where(x => x.IsSelected).ToList();
+
+				if (selectedMods.Count <= 0) return;
+
+				var selectedMod = selectedMods[0];
+				var nextSelectedIndex = sourceCollection.IndexOf(selectedMod);
+
+				foreach (var mod in selectedMods)
+				{
+					if (mod != null) mod.PreserveSelection = true;
+				}
+
+				var targetIndex = targetList.Mods.RowSelection.SelectedIndex;
+				//Clear the previous selection, so only the dropped items are selected
+				targetList.Mods.RowSelection!.Clear();
+
+				ModListView.DragDropRows(sourceList.Mods, targetList.Mods,
+					sourceList.Mods.RowSelection!.SelectedIndexes,
+					targetIndex,
+					TreeDataGridRowDropPosition.After, DragDropEffects.Move);
+
+				string countSuffix = selectedMods.Count > 1 ? "mods" : "mod";
+				string text = $"Moved {selectedMods.Count} {countSuffix} to the {targetListName} mods list.";
+				if (DivinityApp.IsScreenReaderActive()) AppServices.ScreenReader.Speak(text);
+				AppServices.Commands.ShowAlert(text, AlertType.Info, 10);
+				modOrder.CanMoveSelectedMods = false;
+
+				if (main.Settings.ShiftListFocusOnSwap)
+				{
+					targetList.FocusCommand.Execute().Subscribe();
+				}
+			}
+		}, canExecuteModOrderCommands);
+
+		FocusActiveModsCommand = ReactiveCommand.Create(() =>
+		{
+			DivinityApp.IsKeyboardNavigating = true;
+
+			var modOrderView = AppServices.Get<ModOrderView>()!;
+			modOrderView.ActiveModsList.Focus();
+
+			if(modOrder.ActiveModsView.TotalModsSelected == 0)
+			{
+				modOrderView.ActiveModsList.ModsTreeDataGrid.RowSelection?.Select(0);
+			}
+			//TODO FocusSelectedItem?
+		}, canExecuteModOrderCommands);
+
+		FocusInactiveModsCommand = ReactiveCommand.Create(() =>
+		{
+			DivinityApp.IsKeyboardNavigating = true;
+
+			var modOrderView = AppServices.Get<ModOrderView>()!;
+			modOrderView.InactiveModsList.Focus();
+
+			if (modOrder.InactiveModsView.TotalModsSelected == 0)
+			{
+				modOrderView.InactiveModsList.ModsTreeDataGrid.RowSelection?.Select(0);
+			}
+			//TODO FocusSelectedItem?
+		}, canExecuteModOrderCommands);
 
 		var keybindings = this.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetCustomAttribute<KeybindingAttribute>());
 
@@ -369,7 +480,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					MenuEntry.FromKeybinding(ImportOrderFromZipFileCommand, nameof(ImportOrderFromZipFileCommand), keybindings),
 					new MenuSeparator(),
 					MenuEntry.FromKeybinding(ExportOrderCommand, nameof(ExportOrderCommand), keybindings),
-					MenuEntry.FromKeybinding(ExportOrderToListCommand, nameof(ExportOrderToListCommand), keybindings),
+					MenuEntry.FromKeybinding(ExportOrderToTextFileCommand, nameof(ExportOrderToTextFileCommand), keybindings),
 					MenuEntry.FromKeybinding(ExportOrderToZipCommand, nameof(ExportOrderToZipCommand), keybindings),
 					MenuEntry.FromKeybinding(ExportOrderToArchiveAsCommand, nameof(ExportOrderToArchiveAsCommand), keybindings),
 					new MenuSeparator(),
