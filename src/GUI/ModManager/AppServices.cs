@@ -16,6 +16,7 @@ public static class AppServices
 	public static IModManagerService Mods => Get<IModManagerService>()!;
 	public static IPathwaysService Pathways => Get<IPathwaysService>()!;
 	public static IModUpdaterService Updater => Get<IModUpdaterService>()!;
+	public static IAppUpdaterService AppUpdater => Get<IAppUpdaterService>()!;
 	public static ModImportService ModImporter => Get<ModImportService>()!;
 
 	public static IGlobalCommandsService Commands => Get<IGlobalCommandsService>()!;

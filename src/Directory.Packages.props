@@ -25,9 +25,10 @@
 		<PackageVersion Include="Splat.DependencyInjection.SourceGenerator" Version="1.2.3" />
 
 		<PackageVersion Include="SharpCompress" Version="0.39.0" />
+		
+		<PackageVersion Include="AutoUpdateViaGitHubRelease" Version="0.1.64" />
 
 		<PackageVersion Include="Humanizer.Core" Version="3.0.0-beta.54" />
-		<PackageVersion Include="Onova" Version="2.6.12" />
 		<PackageVersion Include="Octokit" Version="14.0.0" />
 		<PackageVersion Include="Gameloop.Vdf" Version="0.6.2" />
 		<PackageVersion Include="TextCopy" Version="6.2.1" />

@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{943120CC-2315-475E-9597-7136811228E6}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbox", "src\Toolbox\Toolbox.csproj", "{2F2EF4FE-7254-425A-8DE9-47457CC057C6}"

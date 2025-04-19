@@ -2,9 +2,7 @@
 
 using ModManager.Util;
 
-using Onova;
-using Onova.Models;
-using Onova.Services;
+using AutoUpdateViaGitHubRelease;
 
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -19,8 +17,6 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 	[Reactive] public bool IsVisible { get; set; }
 	public RxCommandUnit CloseCommand { get; }
 	#endregion
-
-	public CheckForUpdatesResult? UpdateArgs { get; set; }
 
 	[Reactive] public bool CanConfirm { get; set; }
 	[Reactive] public bool CanSkip { get; set; }
@@ -37,13 +33,15 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 
 	private static readonly Regex RemoveEmptyLinesPattern = RemoveEmptyLinesRe();
 
-	private readonly UpdateManager _updateManager;
+	private bool _openAfterUpdateCheck = false;
 
-	private async Task CheckArgsAsync(IScheduler scheduler, CancellationToken token)
+	private async Task CheckForUpdatesAsync(IScheduler scheduler, CancellationToken token)
 	{
 		string markdownText;
 
 		markdownText = await WebHelper.DownloadUrlAsStringAsync(DivinityApp.URL_CHANGELOG_RAW, CancellationToken.None);
+		var updater = AppServices.AppUpdater;
+		var result = await updater.CheckForUpdatesAsync();
 
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
@@ -53,44 +51,42 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 				UpdateChangelogView = markdownText;
 			}
 
-			var env = AppServices.Get<IEnvironmentService>()!;
-
-			if (UpdateArgs?.CanUpdate == true)
+			if (result.IsAvailable)
 			{
-				UpdateDescription = $"{env.AppFriendlyName} {UpdateArgs.LastVersion} is now available.{Environment.NewLine}You have version {env.AppVersion} installed.";
+				UpdateDescription = $"{updater.AppTitle} {result.Version} is now available.{Environment.NewLine}You have version {updater.CurrentVersion} installed.";
 
 				CanConfirm = true;
 				SkipButtonText = "Skip";
 				CanSkip = true;
+				IsVisible = true;
 			}
 			else
 			{
-				UpdateDescription = $"{env.AppFriendlyName} is up-to-date.";
+				UpdateDescription = $"{updater.AppTitle} is up-to-date.";
 				CanConfirm = false;
 				CanSkip = true;
 				SkipButtonText = "Close";
+				if(_openAfterUpdateCheck)
+				{
+					IsVisible = true;
+				}
 			}
-
-			IsVisible = true;
+			_openAfterUpdateCheck = false;
 		});
 	}
 
-	public void CheckArgsAndOpen(CheckForUpdatesResult? args)
+	public void ScheduleUpdateCheck(bool openWindowAfterwards = false)
 	{
-		UpdateArgs = args;
-		RxApp.TaskpoolScheduler.ScheduleAsync(CheckArgsAsync);
+		_openAfterUpdateCheck = openWindowAfterwards;
+		RxApp.TaskpoolScheduler.ScheduleAsync(CheckForUpdatesAsync);
 	}
 
 	private async Task RunUpdateAsync(CancellationToken token)
 	{
-		if (UpdateArgs?.LastVersion != null)
+		var result = await AppServices.AppUpdater.DownloadAndInstallUpdateAsync();
+		if(result && Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 		{
-			await _updateManager.PrepareUpdateAsync(UpdateArgs.LastVersion, null, token);
-			_updateManager.LaunchUpdater(UpdateArgs.LastVersion);
-			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-			{
-				desktop.Shutdown();
-			}
+			desktop.Shutdown();
 		}
 	}
 
@@ -101,11 +97,6 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 
 		CanSkip = true;
 		SkipButtonText = "Close";
-
-		_updateManager = new UpdateManager(
-			new GithubPackageResolver(Locator.Current.GetService<HttpClient>()!,
-			DivinityApp.GITHUB_USER, DivinityApp.GITHUB_REPO, DivinityApp.GITHUB_RELEASE_ASSET),
-			new ZipPackageExtractor());
 
 		var canConfirm = this.WhenAnyValue(x => x.CanConfirm);
 		ConfirmCommand = ReactiveCommand.CreateFromTask(RunUpdateAsync, canConfirm, RxApp.MainThreadScheduler);

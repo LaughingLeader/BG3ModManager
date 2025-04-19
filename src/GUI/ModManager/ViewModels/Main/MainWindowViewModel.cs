@@ -149,6 +149,11 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 			RefreshModUpdates();
 
+			if(!IsInitialized)
+			{
+				CheckForUpdates(false, true);
+			}
+
 			IsInitialized = true;
 			_globalCommands.CanExecuteCommands = true;
 		}, RxApp.MainThreadScheduler);
@@ -1400,74 +1405,23 @@ Directory the zip will be extracted to:
 		}
 	}
 
-	/*public void CheckForUpdates(bool force = false)
+	public void CheckForUpdates(bool force = false, bool skipTimeCheck = false)
 	{
-		AutoUpdater.ReportErrors = true;
+		var appUpdateVM = ViewModelLocator.AppUpdate;
+
 		Settings.LastUpdateCheck = DateTimeOffset.Now.ToUnixTimeSeconds();
 		if (!force)
 		{
-			if (Settings.LastUpdateCheck == -1 || (DateTimeOffset.Now.ToUnixTimeSeconds() - Settings.LastUpdateCheck >= 43200))
+			if (skipTimeCheck || Settings.LastUpdateCheck == -1 || (DateTimeOffset.Now.ToUnixTimeSeconds() - Settings.LastUpdateCheck >= 43200))
 			{
-				try
-				{
-					AutoUpdater.Start(DivinityApp.URL_UPDATE);
-				}
-				catch (Exception ex)
-				{
-					DivinityApp.Log($"Error running AutoUpdater:\n{ex}");
-				}
+				appUpdateVM.ScheduleUpdateCheck();
 			}
 		}
 		else
 		{
-			AutoUpdater.Start(DivinityApp.URL_UPDATE);
+			appUpdateVM.ScheduleUpdateCheck(true);
 		}
-	}*/
-
-	private bool _userInvokedUpdate = false;
-
-	/*private void OnAppUpdate(UpdateInfoEventArgs e)
-	{
-		if (_userInvokedUpdate)
-		{
-			if (e.Error == null)
-			{
-				if (e.IsUpdateAvailable)
-				{
-					ShowAlert("Update found!", AlertType.Success, 10);
-				}
-				else
-				{
-					ShowAlert("Already up-to-date", AlertType.Info, 10);
-				}
-			}
-			else
-			{
-				ShowAlert($"Error occurred when checking for updates: {e.Error.Message}", AlertType.Danger, 30);
-			}
-		}
-
-		if (e.Error == null)
-		{
-			if (_userInvokedUpdate || e.IsUpdateAvailable)
-			{
-				App.WM.AppUpdate.Window.ViewModel.CheckArgsAndOpen(e);
-			}
-		}
-		else
-		{
-			if (e.Error is System.Net.WebException)
-			{
-				App.WM.Main.Window.DisplayError("Update Check Failed", "There was a problem reaching the update server. Please check your internet connection and try again later.", false);
-			}
-			else
-			{
-				App.WM.Main.Window.DisplayError($"Error occurred while checking for updates:\n{e.Error}");
-			}
-		}
-
-		_userInvokedUpdate = false;
-	}*/
+	}
 
 	public async Task OnViewActivated(MainWindow window)
 	{
@@ -1490,8 +1444,6 @@ Directory the zip will be extracted to:
 		InitSettingsBindings();
 
 		await LoadSettings();
-		//Keys.LoadKeybindings(this);
-		//if (Settings.CheckForUpdates) CheckForUpdates();
 		SaveSettings();
 
 		AppServices.Get<WindowManagerService>().RestoreSavedWindowPosition();
@@ -1776,6 +1728,8 @@ Directory the zip will be extracted to:
 		Version = environmentService.AppVersion.ToString();
 		Title = $"{environmentService.AppProductName} {Version}";
 		DivinityApp.Log($"{Title} initializing...");
+
+		AppServices.AppUpdater.Configure(DivinityApp.GITHUB_USER, DivinityApp.GITHUB_REPO, DivinityApp.GITHUB_RELEASE_ASSET);
 
 		_nexusMods.WhenLimitsChange.Throttle(TimeSpan.FromMilliseconds(50)).Select(NexusModsLimitToText).ToUIProperty(this, x => x.NexusModsLimitsText);
 		var whenNexusModsAvatar = _nexusMods.WhenAnyValue(x => x.ProfileAvatarUrl);

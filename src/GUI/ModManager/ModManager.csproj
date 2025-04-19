@@ -39,7 +39,6 @@
 		<PackageReference Include="ConfigureAwait.Fody" PrivateAssets="all" />
 		<PackageReference Include="DynamicData" />
 		<PackageReference Include="Humanizer.Core" />
-		<PackageReference Include="Onova" />
 		<PackageReference Include="ReactiveUI" />
 		<PackageReference Include="ReactiveUI.Fody" />
 		<PackageReference Include="ReactiveUI.Validation" />
