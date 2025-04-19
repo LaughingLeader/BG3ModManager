@@ -1,5 +1,7 @@
 ﻿using LSLib.LS;
 
+using ModManager.Services;
+
 using System.Diagnostics;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -378,6 +380,10 @@ public static class FileUtils
 		{
 			if (!String.IsNullOrEmpty(path))
 			{
+				if(Locator.Current.GetService<IFileSystemService>() is IFileSystemService fs && !fs.Path.IsPathRooted(path))
+				{
+					path = DivinityApp.GetAppDirectory(path);
+				}
 				Process.Start(new ProcessStartInfo(path) { UseShellExecute = true, Arguments = args });
 			}
 		}
