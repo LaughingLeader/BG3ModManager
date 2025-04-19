@@ -43,10 +43,7 @@ public class MenuEntry : ReactiveObject, IMenuEntry
 				entry.Children = children;
 			}
 		}
-		else
-		{
-			throw new ArgumentException($"Property '{propertyName}' is invalid or is missing a KeybindingAttribute.", "propertyName");
-		}
+		throw new ArgumentException($"Property '{propertyName}' is invalid or is missing a KeybindingAttribute.", nameof(propertyName));
 	}
 
 	public override string ToString() => DisplayName ?? "";
