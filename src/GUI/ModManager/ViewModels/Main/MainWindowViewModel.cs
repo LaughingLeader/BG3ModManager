@@ -1448,8 +1448,6 @@ Directory the zip will be extracted to:
 
 		AppServices.Get<WindowManagerService>().RestoreSavedWindowPosition();
 
-		ViewModelLocator.CommandBar.CreateCommands(this, ViewModelLocator.ModOrder);
-
 		LoadInitial();
 	}
 

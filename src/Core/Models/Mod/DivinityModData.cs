@@ -686,9 +686,8 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		this.WhenAnyValue(x => x.IsForceLoadedMergedMod, x => x.IsEditorMod, x => x.IsForceLoaded, x => x.ForceAllowInLoadOrder, x => x.IsActive)
 			.ObserveOn(RxApp.MainThreadScheduler).Subscribe(UpdateColors);
 
-		// If a screen reader is active, don't bother making tooltips for the mod item entry
 		this.WhenAnyValue(x => x.Description, x => x.HasDependencies, x => x.UUID).
-			Select(x => !DivinityApp.IsScreenReaderActive() && (!string.IsNullOrEmpty(x.Item1) || x.Item2 || !string.IsNullOrEmpty(x.Item3)))
+			Select(x => !string.IsNullOrEmpty(x.Item1) || x.Item2 || !string.IsNullOrEmpty(x.Item3))
 			.ToUIProperty(this, x => x.HasToolTip, true);
 
 		this.WhenAnyValue(x => x.IsEditorMod, x => x.IsHidden, x => x.FilePath,

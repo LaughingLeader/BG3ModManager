@@ -13,3 +13,6 @@
 [submodule "Avalonia.Controls.TreeDataGrid"]
 	path = External/Avalonia.Controls.TreeDataGrid
 	url = https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid
+[submodule "CrossSpeak"]
+	path = External/CrossSpeak
+	url = https://github.com/LaughingLeader/CrossSpeak

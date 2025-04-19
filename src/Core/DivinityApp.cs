@@ -1,4 +1,5 @@
 ﻿using ModManager.Models.Mod;
+using ModManager.Services;
 using ModManager.Util;
 
 using System.ComponentModel;
@@ -183,16 +184,9 @@ public static class DivinityApp
 		LogMethod($"[{Path.GetFileName(path)}:{mName}({line})] {msg}");
 	}
 
-	[DllImport("user32.dll")]
-	static extern bool SystemParametersInfo(int iAction, int iParam, out bool bActive, int iUpdate);
-
 	public static bool IsScreenReaderActive()
 	{
-		var iAction = 70; // SPI_GETSCREENREADER constant;
-		var iParam = 0;
-		var iUpdate = 0;
-		var bReturn = SystemParametersInfo(iAction, iParam, out var bActive, iUpdate);
-		return bReturn && bActive;
+		return Locator.Current.GetService<IScreenReaderService>()?.IsScreenReaderActive() == true;
 		//if (AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged) || AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
 		//{
 		//	return true;

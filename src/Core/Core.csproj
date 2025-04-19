@@ -5,6 +5,7 @@
 
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<DefineConstants Condition="'$(UseWPF)' == 'true' ">WPF</DefineConstants>
 

@@ -53,6 +53,8 @@ public static class SplatContainerExtensions
 
 		SplatRegistrations.RegisterLazySingleton<IStatsValidatorService, StatsValidatorService>();
 
+		SplatRegistrations.RegisterLazySingleton<IScreenReaderService, ScreenReaderService>();
+
 		SplatRegistrations.SetupIOC();
 
 		return services;

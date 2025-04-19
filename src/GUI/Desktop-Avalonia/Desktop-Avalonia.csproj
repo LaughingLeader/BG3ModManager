@@ -35,4 +35,35 @@
 	<ItemGroup>
 		<PackageReference Include="Avalonia.Desktop" />
 	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
+		<DisableCrossSpeakLib>True</DisableCrossSpeakLib>
+		<PreBuildEvent>rd /s /q $(TargetDir)_Lib</PreBuildEvent>
+	</PropertyGroup>
+
+	<Target Name="CrossSpeakLibraryFiles" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
+		<ItemGroup>
+			<LibFiles Include="$(SolutionDir)\External\CrossSpeak\CrossSpeak\lib\windows\*.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(LibFiles)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+	</Target>
+
+	<Target Name="SetupLibFolder" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
+		<ItemGroup>
+			<DeleteDebug Include="$(OutputPath)*.pdb" />
+			<MoveToLibFolder Include="$(OutputPath)*.dll;$(OutputPath)*.xml;$(OutputPath)\runtimes\win-x64\native\WebView2Loader.dll" Exclude="$(OutputPath)BG3ModManager.dll;$(OutputPath)WinRT.Runtime.dll" />
+		</ItemGroup>
+		<Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+		<Delete Files="@(DeleteDebug)" ContinueOnError="true" TreatErrorsAsWarnings="true">
+			<Output TaskParameter="DeletedFiles" ItemName="DeletedList" />
+		</Delete>
+		<RemoveDir Directories="$(OutputPath)de;$(OutputPath)en;$(OutputPath)es;$(OutputPath)fr;$(OutputPath)it;$(OutputPath)ja;$(OutputPath)ko;$(OutputPath)ru;$(OutputPath)zh-Hans;$(OutputPath)zh-Hant;$(OutputPath)cs-CZ;$(OutputPath)hu;$(OutputPath)ja-JP;$(OutputPath)pt-BR;$(OutputPath)ro;$(OutputPath)sv;$(OutputPath)ar;$(OutputPath)cs;$(OutputPath)da;$(OutputPath)lv;$(OutputPath)nl;$(OutputPath)pl;$(OutputPath)pt;$(OutputPath)sk;$(OutputPath)th;$(OutputPath)tr;$(OutputPath)zh;$(OutputPath)zh-TW;$(OutputPath)runtimes;$(OutputPath)_Logs;$(OutputPath)Data" ContinueOnError="true" />
+	</Target>
+
+	<Target Name="RunBuildRelease" AfterTargets="SetupLibFolder" Condition="'$(Configuration)' == 'Publish'">
+		<GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+			<Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
+		</GetAssemblyIdentity>
+		<Exec Command="python &quot;BuildRelease.py&quot; &quot;%(AssemblyVersion.Version)&quot;" WorkingDirectory="$(SolutionDir)" />
+	</Target>
 </Project>
