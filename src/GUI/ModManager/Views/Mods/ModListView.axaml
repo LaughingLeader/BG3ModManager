@@ -1,21 +1,21 @@
 <rxui:ReactiveUserControl x:Class="ModManager.Views.Mods.ModListView"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:ModManager.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-    xmlns:m="using:ModManager.Models.Mod"
-    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mod="using:ModManager.Models.Mod"
-    xmlns:rxui="http://reactiveui.net"
-    xmlns:vm="using:ModManager.ViewModels.Mods"
-    d:DesignHeight="800"
-    d:DesignWidth="700"
-    x:DataType="vm:ModListViewModel"
-    x:TypeArguments="vm:ModListViewModel"
-    Background="Transparent"
-    mc:Ignorable="d">
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:ModManager.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+	xmlns:m="using:ModManager.Models.Mod"
+	xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mod="using:ModManager.Models.Mod"
+	xmlns:rxui="http://reactiveui.net"
+	xmlns:vm="using:ModManager.ViewModels.Mods"
+	d:DesignHeight="800"
+	d:DesignWidth="700"
+	x:DataType="vm:ModListViewModel"
+	x:TypeArguments="vm:ModListViewModel"
+	Background="Transparent"
+	mc:Ignorable="d">
 	<Design.DataContext>
 		<vm:DesignModListViewModel />
 	</Design.DataContext>
@@ -52,41 +52,42 @@
 	<Grid RowDefinitions="auto,*">
 		<Grid ColumnDefinitions="auto,auto,auto,*">
 			<TextBlock Padding="4"
-			    VerticalAlignment="Center"
-			    Classes="Title"
-			    Text="{Binding Title}"
-			    TextAlignment="Left" />
+				VerticalAlignment="Center"
+				Classes="Title"
+				Text="{Binding Title}"
+				TextAlignment="Left" />
 			<Expander x:Name="FilterExpander"
-			    Grid.Column="1"
-			    Margin="0"
-			    VerticalAlignment="Center"
-			    ExpandDirection="Right"
-			    Theme="{StaticResource FilterButtonExpander}">
+				Grid.Column="1"
+				Margin="0"
+				VerticalAlignment="Center"
+				BorderThickness="0"
+				ExpandDirection="Right"
+				Theme="{StaticResource FilterButtonExpander}">
 				<controls:EnhancedTextBox x:Name="FilterTextBox"
-				    Width="200"
-				    Margin="0"
-				    Padding="0"
-				    VerticalContentAlignment="Center"
-				    AcceptsReturn="False"
-				    AcceptsTab="False"
-				    ContextFlyout="{StaticResource EnhancedTextBoxContextFlyout}"
-				    MaxLines="1"
-				    TextAlignment="Left"
-				    UseFloatingWatermark="False"
-				    Watermark="{Binding FilterPlaceholderText}" />
+					Width="200"
+					Margin="0"
+					Padding="0"
+					VerticalContentAlignment="Center"
+					AcceptsReturn="False"
+					AcceptsTab="False"
+					ContextFlyout="{StaticResource EnhancedTextBoxContextFlyout}"
+					MaxLines="1"
+					TextAlignment="Left"
+					UseFloatingWatermark="False"
+					Watermark="{Binding FilterPlaceholderText}" />
 			</Expander>
 
 			<TextBlock Grid.Column="2"
-			    Margin="4,0,0,0"
-			    HorizontalAlignment="Left"
-			    VerticalAlignment="Center"
-			    Text="{Binding FilterResultText}" />
+				Margin="4,0,0,0"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Center"
+				Text="{Binding FilterResultText}" />
 		</Grid>
 		<TreeDataGrid x:Name="ModsTreeDataGrid"
-		    Grid.Row="1"
-		    AutoDragDropRows="True"
-		    Background="Transparent"
-		    Focusable="True"
-		    Source="{Binding Mods}" />
+			Grid.Row="1"
+			AutoDragDropRows="True"
+			Background="Transparent"
+			Focusable="True"
+			Source="{Binding Mods}" />
 	</Grid>
 </rxui:ReactiveUserControl>
