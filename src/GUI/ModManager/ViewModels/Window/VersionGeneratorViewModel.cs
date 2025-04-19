@@ -1,5 +1,8 @@
 ﻿using ModManager.Models;
 
+using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata.Ecma335;
+
 namespace ModManager.ViewModels;
 
 public class VersionGeneratorViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
@@ -12,11 +15,14 @@ public class VersionGeneratorViewModel : ReactiveObject, IClosableViewModel, IRo
 	#endregion
 
 	[Reactive] public LarianVersion Version { get; set; }
+
+	[Range(long.MinValue, long.MaxValue, ErrorMessage = "Numbers only")]
 	[Reactive] public string? Text { get; set; }
 
 	public RxCommandUnit CopyCommand { get; }
 	public RxCommandUnit ResetCommand { get; }
 	public RxCommandUnit UpdateVersionFromTextCommand { get; }
+	public ReactiveCommand<ShowAlertRequest, ShowAlertRequest> ShowAlertCommand { get; }
 
 	public VersionGeneratorViewModel(IGlobalCommandsService globalCommands, IScreen? host = null)
 	{
@@ -25,16 +31,19 @@ public class VersionGeneratorViewModel : ReactiveObject, IClosableViewModel, IRo
 
 		Version = new LarianVersion(36028797018963968);
 
+		ShowAlertCommand = ReactiveCommand.Create<ShowAlertRequest, ShowAlertRequest>(request => request);
+
 		CopyCommand = ReactiveCommand.Create(() =>
 		{
 			globalCommands.CopyToClipboardCommand.Execute(Version.VersionInt.ToString()).Subscribe();
-			globalCommands.ShowAlert($"Copied {Version.VersionInt} to the clipboard.", AlertType.Success, 20);
+			ShowAlertCommand.Execute(new ShowAlertRequest($"Copied {Version.VersionInt} to the clipboard.", AlertType.Success, 5)).Subscribe();
 		});
 
 		ResetCommand = ReactiveCommand.Create(() =>
 		{
 			Version.VersionInt = 36028797018963968;
-			globalCommands.ShowAlert("Reset version number.", AlertType.Warning, 20);
+			Text = "36028797018963968";
+			ShowAlertCommand.Execute(new ShowAlertRequest("Reset version number.", AlertType.Info, 2)).Subscribe();
 		});
 
 		UpdateVersionFromTextCommand = ReactiveCommand.Create(() =>

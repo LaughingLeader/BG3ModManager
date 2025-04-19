@@ -27,7 +27,7 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Main.MainWindowViewModel));
             }
             {
-                global::System.Lazy<ModManager.ViewModels.Main.ModOrderViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Main.ModOrderViewModel>(() => new global::ModManager.ViewModels.Main.ModOrderViewModel((global::ModManager.ViewModels.Main.MainWindowViewModel)resolver.GetService(typeof(global::ModManager.ViewModels.Main.MainWindowViewModel)), (global::ModManager.IModManagerService)resolver.GetService(typeof(global::ModManager.IModManagerService)), (global::ModManager.IFileWatcherService)resolver.GetService(typeof(global::ModManager.IFileWatcherService)), (global::ModManager.IInteractionsService)resolver.GetService(typeof(global::ModManager.IInteractionsService)), (global::ModManager.IGlobalCommandsService)resolver.GetService(typeof(global::ModManager.IGlobalCommandsService)), (global::ModManager.IDialogService)resolver.GetService(typeof(global::ModManager.IDialogService)), (global::ModManager.Services.ModImportService)resolver.GetService(typeof(global::ModManager.Services.ModImportService)), (global::ModManager.ViewModels.Main.MainCommandBarViewModel)resolver.GetService(typeof(global::ModManager.ViewModels.Main.MainCommandBarViewModel))));
+                global::System.Lazy<ModManager.ViewModels.Main.ModOrderViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Main.ModOrderViewModel>(() => new global::ModManager.ViewModels.Main.ModOrderViewModel((global::ModManager.ViewModels.Main.MainWindowViewModel)resolver.GetService(typeof(global::ModManager.ViewModels.Main.MainWindowViewModel)), (global::ModManager.IModManagerService)resolver.GetService(typeof(global::ModManager.IModManagerService)), (global::ModManager.IFileWatcherService)resolver.GetService(typeof(global::ModManager.IFileWatcherService)), (global::ModManager.IInteractionsService)resolver.GetService(typeof(global::ModManager.IInteractionsService)), (global::ModManager.IGlobalCommandsService)resolver.GetService(typeof(global::ModManager.IGlobalCommandsService)), (global::ModManager.IDialogService)resolver.GetService(typeof(global::ModManager.IDialogService)), (global::ModManager.Services.IFileSystemService)resolver.GetService(typeof(global::ModManager.Services.IFileSystemService)), (global::ModManager.Services.ModImportService)resolver.GetService(typeof(global::ModManager.Services.ModImportService))));
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.Main.ModOrderViewModel>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Main.ModOrderViewModel));
             }
@@ -160,6 +160,11 @@ namespace Splat
                 global::System.Lazy<ModManager.Windows.StatsValidatorWindow> lazy = new global::System.Lazy<ModManager.Windows.StatsValidatorWindow>(() => new global::ModManager.Windows.StatsValidatorWindow());
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Windows.StatsValidatorWindow>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Windows.StatsValidatorWindow));
+            }
+            {
+                global::System.Lazy<ModManager.VersionGeneratorWindow> lazy = new global::System.Lazy<ModManager.VersionGeneratorWindow>(() => new global::ModManager.VersionGeneratorWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.VersionGeneratorWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.VersionGeneratorWindow));
             }
         }
     }

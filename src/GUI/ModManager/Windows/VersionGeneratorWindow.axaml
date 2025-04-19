@@ -1,0 +1,99 @@
+<Window x:Class="ModManager.VersionGeneratorWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:vm="using:ModManager.ViewModels"
+    Title="Version Generator"
+    Width="800"
+    Height="500"
+    x:DataType="vm:VersionGeneratorViewModel"
+    Focusable="True"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    Topmost="False"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+	<Window.Styles>
+		<Style Selector="NumericUpDown">
+			<Setter Property="FormatString" Value="N0" />
+			<Setter Property="ParsingNumberStyle" Value="Integer" />
+			<Setter Property="Increment" Value="1" />
+			<Setter Property="ClipValueToMinMax" Value="True" />
+		</Style>
+	</Window.Styles>
+	<VisualLayerManager Name="PART_VisualLayerManager" IsHitTestVisible="True">
+		<VisualLayerManager.ChromeOverlayLayer>
+			<suki:SukiToastHost Name="ToastHost" MaxToasts="4" Position="BottomLeft" />
+		</VisualLayerManager.ChromeOverlayLayer>
+		<Panel>
+			<suki:SukiBackground IsHitTestVisible="False" />
+			<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+					<StackPanel Margin="2">
+						<TextBlock Padding="2" Text="Major" TextAlignment="Center" />
+						<NumericUpDown x:Name="MajorUpDown"
+						    Maximum="127"
+						    Minimum="0"
+						    Value="{Binding Version.Major}" />
+					</StackPanel>
+					<StackPanel Margin="2">
+						<TextBlock Padding="2" Text="Minor" TextAlignment="Center" />
+						<NumericUpDown x:Name="MinorUpDown"
+						    Maximum="127"
+						    Minimum="0"
+						    Value="{Binding Version.Minor}" />
+					</StackPanel>
+					<StackPanel Margin="2">
+						<TextBlock Padding="2" Text="Revision" TextAlignment="Center" />
+						<NumericUpDown x:Name="RevisionUpDown"
+						    Maximum="65536"
+						    Minimum="0"
+						    Value="{Binding Version.Revision}" />
+					</StackPanel>
+					<StackPanel Margin="2">
+						<TextBlock Padding="2" Text="Build" TextAlignment="Center" />
+						<NumericUpDown x:Name="BuildUpDown"
+						    Maximum="2147483647"
+						    Minimum="0"
+						    Value="{Binding Version.Build}" />
+					</StackPanel>
+				</StackPanel>
+				<Grid Grid.Row="1"
+				    Margin="24"
+				    HorizontalAlignment="Stretch"
+				    VerticalAlignment="Center">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<TextBlock Padding="8"
+					    VerticalAlignment="Center"
+					    Text="Version Number"
+					    TextAlignment="Center" />
+					<controls:EnhancedTextBox x:Name="VersionNumberTextBox"
+					    Grid.Row="1"
+					    Width="248"
+					    Margin="48,0"
+					    Text="{Binding Text}" />
+				</Grid>
+				<StackPanel Grid.Row="2"
+				    Margin="10"
+				    HorizontalAlignment="Center"
+				    VerticalAlignment="Center"
+				    Orientation="Horizontal">
+					<Button x:Name="CopyButton" Command="{Binding CopyCommand}" Content="Copy" />
+					<Button x:Name="ResetButton" Command="{Binding ResetCommand}" Content="Reset" />
+				</StackPanel>
+			</Grid>
+		</Panel>
+	</VisualLayerManager>
+</Window>

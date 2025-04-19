@@ -47,7 +47,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
 
-		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter));
+		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter, Get<IFileSystemService>()));
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();
@@ -81,12 +81,12 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<ModPropertiesWindow>();
 		SplatRegistrations.RegisterLazySingleton<PakFileExplorerWindow>();
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindow>();
+		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
 		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
 		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindow>();
 		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindow>();
-		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesConfirmationView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesLayout>();*/
