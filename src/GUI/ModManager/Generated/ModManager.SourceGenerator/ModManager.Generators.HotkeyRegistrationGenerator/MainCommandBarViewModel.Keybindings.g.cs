@@ -11,6 +11,10 @@ public partial class MainCommandBarViewModel
 		if (keys == null) throw new Exception("Failed to get AppKeysService - Is it registered?");
 		keys.RegisterCommand("MainCommandBarViewModel_AddNewOrderCommand", "Add New Order", AddNewOrderCommand, Avalonia.Input.Key.M);
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForAppUpdatesCommand", "Check For App Updates", CheckForAppUpdatesCommand, Avalonia.Input.Key.U);
+		keys.RegisterCommand("MainCommandBarViewModel_CheckAllModUpdatesCommand", "Check for All Mod Updates", CheckAllModUpdatesCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_CheckForGitHubModUpdatesCommand", "Check for Github Mod Updates", CheckForGitHubModUpdatesCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_CheckForNexusModsUpdatesCommand", "Check for Nexus Mod Updates", CheckForNexusModsUpdatesCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_CheckForModioUpdatesCommand", "Check for Mod.io Updates", CheckForModioUpdatesCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportModsToZipAsCommand", "Export Order to Archive As...", ExportModsToZipAsCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportModsToZipCommand", "Export Order to Archive (.zip)", ExportModsToZipCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderCommand", "Export Order to Game", ExportOrderCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.Control);
@@ -32,6 +36,8 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleStatsValidatorWindowCommand", "Toggle Stats Validator Window", ToggleStatsValidatorWindowCommand, Avalonia.Input.Key.OemBackslash, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleSettingsWindowCommand", "Toggle Settings Window", ToggleSettingsWindowCommand, Avalonia.Input.Key.OemComma, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleKeybindingsCommand", "Toggle Keybindings Window", ToggleKeybindingsCommand, Avalonia.Input.Key.OemComma, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleVersionGeneratorWindowCommand", "Toggle Version Generator Window", ToggleVersionGeneratorWindowCommand, Avalonia.Input.Key.G, Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleAboutWindowCommand", "About", ToggleAboutWindowCommand, Avalonia.Input.Key.F1);
 		keys.RegisterCommand("MainCommandBarViewModel_ToggleThemeModeCommand", "Toggle Dark/Light Mode", ToggleThemeModeCommand, Avalonia.Input.Key.OemComma, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ImportModCommand", "Import Mods...", ImportModCommand, Avalonia.Input.Key.O, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ImportNexusModsIdsCommand", "Import Nexus Mods Data from Archives...", ImportNexusModsIdsCommand);
@@ -43,7 +49,7 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_ImportOrderFromFileCommand", "Import Order from File...", ImportOrderFromFileCommand, Avalonia.Input.Key.O, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ImportOrderFromZipFileCommand", "Import Order & Mods from Archive...", ImportOrderFromZipFileCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToGameCommand", "Export Order to Game", ExportOrderToGameCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.Control);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToListCommand", "Export Order to Text File...", ExportOrderToListCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
+		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToTextFileCommand", "Export Order to Text File...", ExportOrderToTextFileCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToZipCommand", "Export Order to Archive (.zip)", ExportOrderToZipCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToArchiveAsCommand", "Export Order to Archive As...", ExportOrderToArchiveAsCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_MoveSelectedModsCommand", "Moved Selected Mods to Opposite List", MoveSelectedModsCommand, Avalonia.Input.Key.Return);
@@ -68,12 +74,10 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_ExtractSelectedActiveModsCommand", "Extract Selected Active Mods To...", ExtractSelectedActiveModsCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExtractSelectedInactiveModsCommand", "Extract Selected Inactive Mods To...", ExtractSelectedInactiveModsCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExtractSelectedAdventureCommand", "Extract Active Adventure Mod To...", ExtractSelectedAdventureCommand);
-		keys.RegisterCommand("MainCommandBarViewModel_ToggleVersionGeneratorWindowCommand", "Toggle Version Generator Window", ToggleVersionGeneratorWindowCommand, Avalonia.Input.Key.G, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_SpeakActiveModOrderCommand", "Speak Active Order", SpeakActiveModOrderCommand, Avalonia.Input.Key.Home, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_StopSpeakingCommand", "Stop Speaking", StopSpeakingCommand, Avalonia.Input.Key.Home, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForUpdatesCommand", "Check for Updates...", CheckForUpdatesCommand, Avalonia.Input.Key.F7);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenDonationLinkCommand", "Donate a Coffee...", OpenDonationLinkCommand, Avalonia.Input.Key.F10);
-		keys.RegisterCommand("MainCommandBarViewModel_OpenAboutWindowCommand", "About", OpenAboutWindowCommand, Avalonia.Input.Key.F1);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenRepositoryPageCommand", "Open Repository Page...", OpenRepositoryPageCommand, Avalonia.Input.Key.F11);
 	}
 }

@@ -89,6 +89,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[Reactive] public DivinityModData? SelectedAdventureMod { get; set; }
 
 	[ObservableAsProperty] public string SelectedModOrderName { get; }
+	[ObservableAsProperty] public string? SelectedProfilePath { get; }
+	[ObservableAsProperty] public string? SelectedProfileSavesPath { get; }
 
 	[ObservableAsProperty] public bool AdventureModBoxVisibility { get; }
 	[ObservableAsProperty] public bool LogFolderShortcutButtonVisibility { get; }
@@ -96,6 +98,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	[ObservableAsProperty] public bool HasProfile { get; }
 	[ObservableAsProperty] public bool IsBaseLoadOrder { get; }
+	[ObservableAsProperty] public bool HasSelectedMods { get; }
 
 	[ObservableAsProperty] public string ActiveSelectedText { get; }
 	[ObservableAsProperty] public string InactiveSelectedText { get; }
@@ -1437,6 +1440,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IInteractionsService interactionsService,
 		IGlobalCommandsService globalCommands,
 		IDialogService dialogService,
+		IFileSystemService fileSystemService,
 		ModImportService modImportService
 		)
 	{
@@ -1540,6 +1544,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
 		var hasNonNullProfile = whenProfile.Select(x => x != null);
 		hasNonNullProfile.ToUIProperty(this, x => x.HasProfile);
+		whenProfile.WhereNotNull().Select(x => x.FilePath).ToUIProperty(this, x => x.SelectedProfilePath);
+		whenProfile.WhereNotNull().Select(x => fileSystemService.Path.Join(x.FilePath, "Savegames", "Story")).ToUIProperty(this, x => x.SelectedProfileSavesPath);
 
 		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
 		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);

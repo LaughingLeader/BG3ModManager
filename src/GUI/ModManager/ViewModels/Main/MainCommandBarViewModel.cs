@@ -25,9 +25,16 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Check For App Updates", Key.U)]
 	public RxCommandUnit? CheckForAppUpdatesCommand { get; set; }
 
+	[Keybinding("Check for All Mod Updates", Key.None, KeyModifiers.None, "Check all sources of mod updates (GitHub, Nexus, etc.)", "Download")]
 	public RxCommandUnit? CheckAllModUpdatesCommand { get; set; }
+
+	[Keybinding("Check for Github Mod Updates", Key.None, KeyModifiers.None, "", "Download")]
 	public RxCommandUnit? CheckForGitHubModUpdatesCommand { get; set; }
+
+	[Keybinding("Check for Nexus Mod Updates", Key.None, KeyModifiers.None, "", "Download")]
 	public RxCommandUnit? CheckForNexusModsUpdatesCommand { get; set; }
+
+	[Keybinding("Check for Mod.io Updates", Key.None, KeyModifiers.None, "", "Download")]
 	public RxCommandUnit? CheckForModioUpdatesCommand { get; set; }
 
 	[Keybinding("Export Order to Archive As...", Key.R, KeyModifiers.Control | KeyModifiers.Shift, "Export all active mods to an archive file of a chosen type", "File")]
@@ -82,16 +89,22 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? ToggleUpdatesViewCommand { get; set; }
 
 	[Keybinding("Toggle Pak File Explorer Window", Key.P, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
-	public RxCommandUnit? TogglePakFileExplorerWindowCommand { get; set; }
+	public ReactiveCommand<Unit, bool>? TogglePakFileExplorerWindowCommand { get; set; }
 
 	[Keybinding("Toggle Stats Validator Window", Key.OemBackslash, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
-	public RxCommandUnit? ToggleStatsValidatorWindowCommand { get; set; }
+	public ReactiveCommand<Unit, bool>? ToggleStatsValidatorWindowCommand { get; set; }
 
 	[Keybinding("Toggle Settings Window", Key.OemComma, KeyModifiers.Control)]
 	public ReactiveCommand<Unit,bool>? ToggleSettingsWindowCommand { get; set; }
 
 	[Keybinding("Toggle Keybindings Window", Key.OemComma, KeyModifiers.Control | KeyModifiers.Alt)]
-	public RxCommandUnit? ToggleKeybindingsCommand { get; set; }
+	public ReactiveCommand<Unit, bool>? ToggleKeybindingsCommand { get; set; }
+
+	[Keybinding("Toggle Version Generator Window", Key.G, KeyModifiers.Control, "A tool for mod authors to generate version numbers for a mod's meta.lsx", "Tools")]
+	public ReactiveCommand<Unit, bool>? ToggleVersionGeneratorWindowCommand { get; set; }
+
+	[Keybinding("About", Key.F1, KeyModifiers.None, "", "Help")]
+	public RxCommandUnit? ToggleAboutWindowCommand { get; set; }
 
 	[Keybinding("Toggle Dark/Light Mode", Key.OemComma, KeyModifiers.Control | KeyModifiers.Alt)]
 	public RxCommandUnit? ToggleThemeModeCommand { get; set; }
@@ -202,9 +215,6 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Extract Active Adventure Mod To...", Key.None, KeyModifiers.None, "", "Tools")]
 	public RxCommandUnit? ExtractSelectedAdventureCommand { get; set; }
 
-	[Keybinding("Toggle Version Generator Window", Key.G, KeyModifiers.Control, "A tool for mod authors to generate version numbers for a mod's meta.lsx", "Tools")]
-	public RxCommandUnit? ToggleVersionGeneratorWindowCommand { get; set; }
-
 	[Keybinding("Speak Active Order", Key.Home, KeyModifiers.Control, "", "Tools")]
 	public RxCommandUnit? SpeakActiveModOrderCommand { get; set; }
 
@@ -216,9 +226,6 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 	[Keybinding("Donate a Coffee...", Key.F10, KeyModifiers.None, "", "Help")]
 	public RxCommandUnit? OpenDonationLinkCommand { get; set; }
-
-	[Keybinding("About", Key.F1, KeyModifiers.None, "", "Help")]
-	public RxCommandUnit? OpenAboutWindowCommand { get; set; }
 
 	[Keybinding("Open Repository Page...", Key.F11, KeyModifiers.None, "", "Help")]
 	public RxCommandUnit? OpenRepositoryPageCommand { get; set; }
@@ -235,15 +242,56 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
 	}
 
-	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter) : this()
+	private static bool ToggleWindow<T>() where T : Avalonia.Controls.Window
 	{
+		var window = AppServices.Get<T>();
+		if(window != null)
+		{
+			if (window.IsVisible)
+			{
+				window.Hide();
+				return false;
+			}
+			else
+			{
+				window.Show();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static void NotImplemented()
+	{
+		throw new NotImplementedException();
+	}
+
+	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs) : this()
+	{
+		ModOrder = modOrder;
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
 
-		var isModOrderView = main.WhenAnyValue(x => x.Router.CurrentViewModel, vm => vm == modOrder);
-		var canExecuteModOrderCommands = canExecuteCommands.CombineLatest(isModOrderView).Select(x => x.First && x.Second);
+		var isModOrderView = main.WhenAnyValue(x => x.Views.CurrentView, x => x == modOrder);
+		var canExecuteModOrderCommands = canExecuteCommands.CombineLatest(isModOrderView).AllTrue();
 
 		var hasActiveMods = modOrder.WhenAnyValue(x => x.TotalActiveMods, x => x > 0);
-		var canExecuteHasActive = canExecuteModOrderCommands.CombineLatest(hasActiveMods).Select(x => x.First && x.Second);
+		var canExecuteHasActive = canExecuteModOrderCommands.CombineLatest(hasActiveMods).AllTrue();
+		modOrder.WhenAnyValue(x => x.TotalActiveMods).Subscribe(x =>
+		{
+			DivinityApp.Log($"Total: {x}");
+		});
+		main.WhenAnyValue(x => x.Views.CurrentView).Subscribe(x =>
+		{
+			DivinityApp.Log($"CurrentViewModel: {x}");
+		});
+		canExecuteModOrderCommands.Subscribe(x =>
+		{
+			DivinityApp.Log($"canExecuteModOrderCommands: {x}");
+		});
+		canExecuteHasActive.Subscribe(x =>
+		{
+			DivinityApp.Log($"canExecuteHasActive: {x}");
+		});
 
 		AddNewOrderCommand = ReactiveCommand.Create(() => modOrder.AddNewModOrder(), canExecuteModOrderCommands);
 
@@ -270,6 +318,25 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		OpenGitHubRepoCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_REPO), canExecuteCommands);
 		OpenDonationPageCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_DONATION), canExecuteCommands);
 		OpenModsFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(main.PathwayData.AppDataModsPath), canExecuteCommands);
+		OpenGameFolderCommand = ReactiveCommand.Create(() =>
+		{
+			var fs = AppServices.Get<IFileSystemService>()!;
+			if(fs.File.Exists(main.Settings.GameExecutablePath))
+			{
+				FileUtils.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath));
+			}
+		}, canExecuteCommands);
+		//Savegames\Story
+		var canOpenProfileSaves = modOrder.WhenAnyValue(x => x.SelectedProfileSavesPath, fs.Directory.Exists).CombineLatest(canExecuteCommands).AllTrue();
+		OpenSavesFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(modOrder.SelectedProfileSavesPath), canOpenProfileSaves);
+
+		var canOpenExtenderDirectory = main.PathwayData.WhenAnyValue(x => x.AppDataGameFolder).Select(x => fs.Directory.Exists(fs.Path.Join(x, "Script Extender")));
+		OpenExtenderDataFolderCommand = ReactiveCommand.Create(() =>
+		{
+			var extenderDirectory = fs.Path.Join(main.PathwayData.AppDataGameFolder, "Script Extender");
+			FileUtils.TryOpenPath(extenderDirectory);
+		}, canOpenExtenderDirectory);
+
 		OpenNexusModsCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_NEXUSMODS), canExecuteCommands);
 		OpenSteamPageCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_STEAM), canExecuteCommands);
 
@@ -285,7 +352,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		SaveOrderAsCommand = ReactiveCommand.CreateFromTask(modOrder.SaveLoadOrderAs, canExecuteCommands);
 		SaveSettingsSilentlyCommand = ReactiveCommand.Create(main.SaveSettings, canExecuteCommands);
 
-		var canToggleUpdatesView = canExecuteCommands.CombineLatest(main.WhenAnyValue(x => x.ModUpdatesAvailable)).Select(x => x.First && x.Second);
+		var canToggleUpdatesView = canExecuteCommands.CombineLatest(main.WhenAnyValue(x => x.ModUpdatesAvailable)).AllTrue();
 
 		ToggleUpdatesViewCommand = ReactiveCommand.Create(() =>
 		{
@@ -299,57 +366,25 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			}
 		}, canToggleUpdatesView);
 
-		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(() =>
-		{
-			var window = AppServices.Get<PakFileExplorerWindow>()!;
-			if (window.IsVisible)
-			{
-				window.Hide();
-			}
-			else
-			{
-				window.Show();
-			}
-		}, canExecuteCommands);
-
-		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(() =>
-		{
-			var window = AppServices.Get<StatsValidatorWindow>()!;
-			if (window.IsVisible)
-			{
-				window.Hide();
-			}
-			else
-			{
-				window.Show();
-			}
-		}, canExecuteCommands);
-
-		ToggleSettingsWindowCommand = ReactiveCommand.Create(() =>
-		{
-			var window = AppServices.Get<SettingsWindow>()!;
-			if (window.IsVisible)
-			{
-				window.Hide();
-				return false;
-			}
-			else
-			{
-				window.Show();
-				return true;
-			}
-		}, canExecuteCommands);
+		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(() => ToggleWindow<PakFileExplorerWindow>(), canExecuteCommands);
+		ToggleVersionGeneratorWindowCommand = ReactiveCommand.Create(() => ToggleWindow<VersionGeneratorWindow>(), canExecuteCommands);
+		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(() => ToggleWindow<StatsValidatorWindow>(), canExecuteCommands);
+		ToggleSettingsWindowCommand = ReactiveCommand.Create(() => ToggleWindow<SettingsWindow>(), canExecuteCommands);
+		ToggleAboutWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 
 		ToggleKeybindingsCommand = ReactiveCommand.Create(() =>
 		{
+			var result = false;
 			ToggleSettingsWindowCommand.Execute().Subscribe(isVisible =>
 			{
 				if (isVisible)
 				{
 					var vm = AppServices.Get<SettingsWindowViewModel>();
 					vm.SelectedTabIndex = SettingsWindowTab.Keybindings;
+					result = true;
 				}
 			});
+			return result;
 		}, canExecuteCommands);
 
 		ToggleThemeModeCommand = ReactiveCommand.Create(() =>
@@ -437,9 +472,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			DivinityApp.IsKeyboardNavigating = true;
 
 			var modOrderView = AppServices.Get<ModOrderView>()!;
-			modOrderView.ActiveModsList.Focus();
 
-			if(modOrder.ActiveModsView.TotalModsSelected == 0)
+			modOrder.ActiveModsView.FocusCommand.Execute().Subscribe();
+
+			if (modOrder.ActiveModsView.TotalModsSelected == 0)
 			{
 				modOrderView.ActiveModsList.ModsTreeDataGrid.RowSelection?.Select(0);
 			}
@@ -451,7 +487,8 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			DivinityApp.IsKeyboardNavigating = true;
 
 			var modOrderView = AppServices.Get<ModOrderView>()!;
-			modOrderView.InactiveModsList.Focus();
+
+			modOrder.InactiveModsView.FocusCommand.Execute().Subscribe();
 
 			if (modOrder.InactiveModsView.TotalModsSelected == 0)
 			{
@@ -460,7 +497,106 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			//TODO FocusSelectedItem?
 		}, canExecuteModOrderCommands);
 
+		SwapListFocusCommand = ReactiveCommand.Create(() =>
+		{
+			DivinityApp.IsKeyboardNavigating = true;
+			if (modOrder.ActiveModsView.HasAnyFocus)
+			{
+				modOrder.InactiveModsView.FocusCommand.Execute().Subscribe();
+			}
+			else if (modOrder.InactiveModsView.HasAnyFocus)
+			{
+				modOrder.ActiveModsView.FocusCommand.Execute().Subscribe();
+			}
+		}, canExecuteModOrderCommands);
+
+		MoveToTopCommand = ReactiveCommand.Create(() =>
+		{
+			DivinityApp.IsKeyboardNavigating = true;
+			if (modOrder.ActiveModsView.HasAnyFocus)
+			{
+				modOrder.ActiveModsView.Mods.RowSelection.Select(0);
+			}
+			else if (modOrder.InactiveModsView.HasAnyFocus)
+			{
+				modOrder.InactiveModsView.Mods.RowSelection.Select(0);
+			}
+		}, canExecuteModOrderCommands);
+
+		MoveToBottomCommand = ReactiveCommand.Create(() =>
+		{
+			DivinityApp.IsKeyboardNavigating = true;
+			if (modOrder.ActiveModsView.HasAnyFocus)
+			{
+				modOrder.ActiveModsView.Mods.RowSelection.Select(modOrder.ActiveModsView.Mods.Rows.Count-1);
+			}
+			else if (modOrder.InactiveModsView.HasAnyFocus)
+			{
+				modOrder.InactiveModsView.Mods.RowSelection.Select(modOrder.InactiveModsView.Mods.Rows.Count - 1);
+			}
+		}, canExecuteModOrderCommands);
+
+		ToggleFilterFocusCommand = ReactiveCommand.Create(() =>
+		{
+			var modOrderView = AppServices.Get<ModOrderView>()!;
+
+			if (modOrder.ActiveModsView.HasAnyFocus)
+			{
+				if(!modOrderView.ActiveModsList.FilterTextBox.IsFocused)
+				{
+					modOrderView.ActiveModsList.FilterTextBox.Focus();
+				}
+				else
+				{
+					modOrder.ActiveModsView.FocusCommand.Execute().Subscribe();
+				}
+			}
+			else if (modOrder.InactiveModsView.HasAnyFocus)
+			{
+				if (!modOrderView.InactiveModsList.FilterTextBox.IsFocused)
+				{
+					modOrderView.InactiveModsList.FilterTextBox.Focus();
+				}
+				else
+				{
+					modOrder.InactiveModsView.FocusCommand.Execute().Subscribe();
+				}
+			}
+		}, canExecuteModOrderCommands);
+
+		ToggleFileNameDisplayCommand = ReactiveCommand.Create(() =>
+		{
+			main.Settings.DisplayFileNames = !main.Settings.DisplayFileNames;
+
+			foreach (var m in AppServices.Mods.AllMods)
+			{
+				m.DisplayFileForName = main.Settings.DisplayFileNames;
+			}
+		}, canExecuteModOrderCommands);
+
+		var totalActiveSelected = modOrder.ActiveModsView.WhenAnyValue(x => x.TotalModsSelected, count => count > 0);
+		var totalInactiveSelected = modOrder.InactiveModsView.WhenAnyValue(x => x.TotalModsSelected, count => count > 0);
+		var anySelected = totalActiveSelected.CombineLatest(totalInactiveSelected).Select(x => x.First || x.Second);
+		var canDeleteMods = canExecuteModOrderCommands.CombineLatest(anySelected).Select(x => x.First && x.Second);
+
+		DeleteSelectedModsCommand = ReactiveCommand.Create(() =>
+		{
+			AppServices.Commands.DeleteSelectedModsCommand.Execute().Subscribe();
+		}, canDeleteMods);
+
 		var keybindings = this.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetCustomAttribute<KeybindingAttribute>());
+
+		DownloadScriptExtenderCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		DownloadNXMLinkCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		OpenCollectionDownloaderWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		ExtractAllSelectedModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		ExtractSelectedActiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		ExtractSelectedInactiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		ExtractSelectedAdventureCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		SpeakActiveModOrderCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		StopSpeakingCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		CheckForUpdatesCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		OpenDonationLinkCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 
 		//MenuEntry.FromKeybinding(ImportNexusModsIdsCommand, nameof(ImportNexusModsIdsCommand), keybindings),
 		_menuEntries.AddRange([
@@ -534,13 +670,14 @@ public partial class MainCommandBarViewModel : ReactiveObject
 					MenuEntry.FromKeybinding(DownloadNXMLinkCommand, nameof(DownloadNXMLinkCommand), keybindings),
 					MenuEntry.FromKeybinding(OpenCollectionDownloaderWindowCommand, nameof(OpenCollectionDownloaderWindowCommand), keybindings),
 					new MenuSeparator(),
-					MenuEntry.FromKeybinding(CheckAllModUpdatesCommand, nameof(CheckAllModUpdatesCommand), keybindings, [
+					new MenuEntry("Check for Mod Updates..."){
+					Children = [
 						MenuEntry.FromKeybinding(CheckAllModUpdatesCommand, nameof(CheckAllModUpdatesCommand), keybindings),
 						new MenuSeparator(),
 						MenuEntry.FromKeybinding(CheckForGitHubModUpdatesCommand, nameof(CheckForGitHubModUpdatesCommand), keybindings),
 						MenuEntry.FromKeybinding(CheckForNexusModsUpdatesCommand, nameof(CheckForNexusModsUpdatesCommand), keybindings),
 						MenuEntry.FromKeybinding(CheckForModioUpdatesCommand, nameof(CheckForModioUpdatesCommand), keybindings)
-					]),
+					]},
 				]},
 			new MenuEntry("_Tools"){
 				Children = [
@@ -562,7 +699,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 				]},
 			new MenuEntry("_Help"){
 				Children = [
-					MenuEntry.FromKeybinding(OpenAboutWindowCommand, nameof(OpenAboutWindowCommand), keybindings),
+					MenuEntry.FromKeybinding(ToggleAboutWindowCommand, nameof(ToggleAboutWindowCommand), keybindings),
 					new MenuSeparator(),
 					MenuEntry.FromKeybinding(CheckForUpdatesCommand, nameof(CheckForUpdatesCommand), keybindings),
 					new MenuSeparator(),

@@ -38,7 +38,7 @@ public class EnhancedTextBox : TextBox
 		{
 			if(this.GetLogicalParent<Window>() is Window window)
 			{
-				window.FocusManager?.ClearFocus();
+				window.Focus(NavigationMethod.Tab);
 			}
 		}
 	}

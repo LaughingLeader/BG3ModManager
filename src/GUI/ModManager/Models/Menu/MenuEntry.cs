@@ -27,10 +27,10 @@ public class MenuEntry : ReactiveObject, IMenuEntry
 	}
 
 	public static MenuEntry FromKeybinding(ICommand command, string propertyName,
-		Dictionary<string,KeybindingAttribute> properties,
+		Dictionary<string,KeybindingAttribute?> properties,
 		ObservableCollectionExtended<IMenuEntry>? children = null)
 	{
-		if(properties.TryGetValue(propertyName, out var keybinding))
+		if(properties.TryGetValue(propertyName, out var keybinding) && keybinding != null)
 		{
 			var entry = new MenuEntry()
 			{
@@ -42,6 +42,7 @@ public class MenuEntry : ReactiveObject, IMenuEntry
 			{
 				entry.Children = children;
 			}
+			return entry;
 		}
 		throw new ArgumentException($"Property '{propertyName}' is invalid or is missing a KeybindingAttribute.", nameof(propertyName));
 	}
