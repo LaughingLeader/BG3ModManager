@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -23,6 +24,29 @@ public class MenuEntry : ReactiveObject, IMenuEntry
 		DisplayName = name;
 		Command = command;
 		ToolTip = tooltip;
+	}
+
+	public static MenuEntry FromKeybinding(ICommand command, string propertyName,
+		Dictionary<string,KeybindingAttribute> properties,
+		ObservableCollectionExtended<IMenuEntry>? children = null)
+	{
+		if(properties.TryGetValue(propertyName, out var keybinding))
+		{
+			var entry = new MenuEntry()
+			{
+				DisplayName = keybinding.DisplayName,
+				ToolTip = keybinding.ToolTip,
+				Command = command
+			};
+			if(children != null)
+			{
+				entry.Children = children;
+			}
+		}
+		else
+		{
+			throw new ArgumentException($"Property '{propertyName}' is invalid or is missing a KeybindingAttribute.", "propertyName");
+		}
 	}
 
 	public override string ToString() => DisplayName ?? "";
