@@ -1,4 +1,4 @@
-﻿
+
 using AutoUpdaterDotNET;
 
 using DivinityModManager.AppServices;
@@ -384,6 +384,11 @@ public class MainWindowViewModel : BaseHistoryViewModel, IActivatableViewModel, 
 					ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
 					HighlightExtenderDownload = false;
 					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+
+					Xceed.Wpf.Toolkit.MessageBox.Show(Window,
+						"The Script Extender has been successfully downloaded.\n\nPlease start the game once to complete the installation process.",
+						"Script Extender Installation",
+						MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, Window.MessageBoxStyle);
 				}
 				else
 				{
