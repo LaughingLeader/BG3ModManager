@@ -1,4 +1,4 @@
-﻿
+
 
 using DivinityModManager.Models.Github;
 using DivinityModManager.Models.NexusMods;
@@ -118,7 +118,7 @@ public class DivinityModData : DivinityBaseModData, ISelectable
 		}
 		else
 		{
-			result += "No installed extender version found";
+			result += "No installed Script Extender version found.\nIf you've already downloaded it, try opening the game once to complete the installation process.";
 		}
 		return result;
 	}
