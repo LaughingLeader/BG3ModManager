@@ -456,21 +456,21 @@ public class DivinityModData : DivinityBaseModData, ISelectable
 
 		this.WhenAnyValue(x => x.IsActive, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod,
 			x => x.ForceAllowInLoadOrder).Subscribe((b) =>
-		{
-			var isActive = b.Item1;
-			var isForceLoaded = b.Item2;
-			var isForceLoadedMergedMod = b.Item3;
-			var forceAllowInLoadOrder = b.Item4;
+			{
+				var isActive = b.Item1;
+				var isForceLoaded = b.Item2;
+				var isForceLoadedMergedMod = b.Item3;
+				var forceAllowInLoadOrder = b.Item4;
 
-			if (forceAllowInLoadOrder || isActive)
-			{
-				CanDrag = true;
-			}
-			else
-			{
-				CanDrag = !isForceLoaded || isForceLoadedMergedMod;
-			}
-		});
+				if (forceAllowInLoadOrder || isActive)
+				{
+					CanDrag = true;
+				}
+				else
+				{
+					CanDrag = !isForceLoaded || isForceLoadedMergedMod;
+				}
+			});
 
 		this.WhenAnyValue(x => x.IsForceLoaded, x => x.IsEditorMod).Subscribe((b) =>
 		{

@@ -320,6 +320,8 @@ public class MainWindowViewModel : BaseHistoryViewModel, IActivatableViewModel, 
 
 	public bool DebugMode { get; set; }
 
+	private bool _justDownloadedScriptExtender;
+
 	private void DownloadScriptExtender(string exeDir)
 	{
 		var isLoggingEnabled = Window.DebugLogListener != null;
@@ -337,8 +339,8 @@ public class MainWindowViewModel : BaseHistoryViewModel, IActivatableViewModel, 
 		RxApp.TaskpoolScheduler.ScheduleAsync(async (ctrl, t) =>
 		{
 			int successes = 0;
-			System.IO.Stream webStream = null;
-			System.IO.Stream unzippedEntryStream = null;
+			Stream webStream = null;
+			Stream unzippedEntryStream = null;
 			try
 			{
 				await SetMainProgressTextAsync($"Downloading {PathwayData.ScriptExtenderLatestReleaseUrl}...");
@@ -384,11 +386,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IActivatableViewModel, 
 					ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
 					HighlightExtenderDownload = false;
 					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
-
-					Xceed.Wpf.Toolkit.MessageBox.Show(Window,
-						"The Script Extender has been successfully downloaded.\n\nPlease start the game once to complete the installation process.",
-						"Script Extender Installation",
-						MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, Window.MessageBoxStyle);
+					_justDownloadedScriptExtender = true;
 				}
 				else
 				{
@@ -454,6 +452,7 @@ public class MainWindowViewModel : BaseHistoryViewModel, IActivatableViewModel, 
 					DivinityApp.Log($"Error running Toolbox.exe:\n{ex}");
 				}
 			}
+
 			if (IsInitialized && !IsRefreshing)
 			{
 				CheckExtenderInstalledVersion(t);
@@ -549,6 +548,8 @@ Directory the zip will be extracted to:
 		}
 	}
 
+	private IDisposable _warnExtenderUpdateFailureTask = null;
+
 	public bool CheckExtenderInstalledVersion(CancellationToken? t)
 	{
 		var extenderAppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DivinityApp.EXTENDER_APPDATA_DIRECTORY);
@@ -559,16 +560,16 @@ Directory the zip will be extracted to:
 				var name = Path.GetFileName(f);
 				return name.Equals(DivinityApp.EXTENDER_APPDATA_DLL, StringComparison.OrdinalIgnoreCase);
 			});
-			var isInstalled = false;
 			var fullExtenderVersion = "";
 			int majorVersion = -1;
 			var targetVersion = Settings.ExtenderUpdaterSettings.TargetVersion;
 
 			foreach (var f in files)
 			{
-				isInstalled = true;
 				try
 				{
+					if (t?.IsCancellationRequested == true) return false;
+
 					var extenderInfo = FileVersionInfo.GetVersionInfo(f);
 					if (extenderInfo != null)
 					{
@@ -594,7 +595,7 @@ Directory the zip will be extracted to:
 			if (majorVersion > -1)
 			{
 				DivinityApp.Log($"Script Extender version found ({majorVersion})");
-				Settings.ExtenderSettings.ExtenderIsAvailable = isInstalled;
+				Settings.ExtenderSettings.ExtenderIsAvailable = true;
 				Settings.ExtenderSettings.ExtenderVersion = fullExtenderVersion;
 				Settings.ExtenderSettings.ExtenderMajorVersion = majorVersion;
 				return true;
@@ -603,6 +604,19 @@ Directory the zip will be extracted to:
 		else
 		{
 			DivinityApp.Log($"Extender Local AppData folder not found at '{extenderAppDataDir}'. Skipping.");
+		}
+		//Recently downloaded DWrite.dll, but Toolbox may have failed to invoke an update
+		if (t?.IsCancellationRequested == false && _justDownloadedScriptExtender)
+		{
+			_warnExtenderUpdateFailureTask?.Dispose();
+			_warnExtenderUpdateFailureTask = RxApp.MainThreadScheduler.Schedule(() =>
+			{
+				_justDownloadedScriptExtender = false;
+				Xceed.Wpf.Toolkit.MessageBox.Show(Window,
+				"The Script Extender has been successfully downloaded.\n\nPlease start the game once to complete the installation process.",
+				"Script Extender Installation",
+				MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, Window.MessageBoxStyle);
+			});
 		}
 		return false;
 	}
