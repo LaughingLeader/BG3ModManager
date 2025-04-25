@@ -12,6 +12,10 @@ public interface IModEntry : ISelectable
 	string? Author { get; }
 	string? LastUpdated { get; }
 
+	string? SelectedColor { get; }
+	string? PointerOverColor { get; }
+	string? ListColor { get; }
+
 	int Index { get; set; }
 	bool IsActive { get; set; }
 	bool IsExpanded { get; set; }

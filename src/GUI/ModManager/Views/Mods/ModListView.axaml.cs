@@ -4,6 +4,7 @@ using Avalonia.Controls.Selection;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 
 using DynamicData;
 
@@ -180,6 +181,19 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 			Background = Brushes.Black;
 			return;
 		}
+
+		ModsTreeDataGrid.RowPrepared += (o, e) =>
+		{
+			e.Row.PointerEntered += (o2, e2) =>
+			{
+				var row = (TreeDataGridRow)o2;
+				DivinityApp.Log($"TreeDataGridRow.Background: {row.Background}");
+				if(row.FindDescendantOfType<TreeDataGridCellsPresenter>() is TreeDataGridCellsPresenter cellsPresenter)
+				{
+					DivinityApp.Log($"TreeDataGridRow.PART_CellsPresenter.Background: {cellsPresenter.Background}");
+				}
+			};
+		};
 
 		this.WhenActivated(d =>
 		{

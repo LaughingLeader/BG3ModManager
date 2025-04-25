@@ -22,6 +22,9 @@ public class ModEntry : ReactiveObject, IModEntry
 	[ObservableAsProperty] public string? Author { get; }
 	[ObservableAsProperty] public string? LastUpdated { get; }
 	[ObservableAsProperty] public bool CanDelete { get; }
+	[ObservableAsProperty] public string? SelectedColor { get; }
+	[ObservableAsProperty] public string? PointerOverColor { get; }
+	[ObservableAsProperty] public string? ListColor { get; }
 
 	public IObservableCollection<IModEntry>? Children => new ObservableCollectionExtended<IModEntry>();
 
@@ -39,6 +42,9 @@ public class ModEntry : ReactiveObject, IModEntry
 		whenMod.Select(x => x.DisplayName).ToUIProperty(this, x => x.DisplayName);
 		whenMod.Select(x => x.Version.Version).ToUIProperty(this, x => x.Version);
 		whenMod.Select(x => x.Author).ToUIProperty(this, x => x.Author);
+		whenMod.Select(x => x.ListColor).ToUIProperty(this, x => x.ListColor);
+		whenMod.Select(x => x.SelectedColor).ToUIProperty(this, x => x.SelectedColor);
+		whenMod.Select(x => x.PointerOverColor).ToUIProperty(this, x => x.PointerOverColor);
 		whenMod.Select(x => x.LastModified?.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture)).ToUIProperty(this, x => x.LastUpdated);
 
 		whenMod.Select(x => x.CanDelete).ToUIProperty(this, x => x.CanDelete);

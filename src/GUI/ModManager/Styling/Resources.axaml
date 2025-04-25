@@ -8,9 +8,11 @@
     xmlns:manager="using:ModManager"
     xmlns:mod="using:ModManager.Models.Mod"
     xmlns:modView="using:ModManager.Views.Mods"
+    xmlns:modconv="using:ModManager.Converters.Mod"
     xmlns:theme="using:SukiUI.Theme">
 
 	<conv:ForceAllowInLoadOrderIconConverter x:Key="ForceAllowInLoadOrderIconConverter" />
+	<modconv:ModBackgroundColorConverter x:Key="ModBackgroundColorConverter" />
 
 	<ControlTemplate x:Key="CompactTextBox" TargetType="TextBox">
 		<Border>

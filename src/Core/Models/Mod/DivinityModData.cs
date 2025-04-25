@@ -165,6 +165,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public bool CanDrag { get; set; }
 	[Reactive] public bool HasColorOverride { get; set; }
 	[Reactive] public string? SelectedColor { get; set; }
+	[Reactive] public string? PointerOverColor { get; set; }
 	[Reactive] public string? ListColor { get; set; }
 	[Reactive] public string? NameOverride { get; set; }
 
@@ -538,9 +539,11 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	//Green
 	private static readonly string EditorProjectBackgroundColor = "#0C00FF4D";
 	private static readonly string EditorProjectBackgroundSelectedColor = "#6400ED48";
+	private static readonly string EditorProjectBackgroundPointerOverColor = "#3200ED48";
 	//Brownish
 	private static readonly string ForceLoadedBackgroundColor = "#32C17200";
 	private static readonly string ForceLoadedBackgroundSelectedColor = "#64F38F00";
+	private static readonly string ForceLoadedBackgroundPointerOverColor = "#32F38F00";
 
 	private void UpdateColors(ValueTuple<bool, bool, bool, bool, bool> x)
 	{
@@ -553,15 +556,17 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		{
 			SelectedColor = EditorProjectBackgroundSelectedColor;
 			ListColor = EditorProjectBackgroundColor;
+			PointerOverColor = EditorProjectBackgroundPointerOverColor;
 		}
 		else if (isForceLoadedMergedMod || isForceLoadedMod && isActive)
 		{
 			SelectedColor = ForceLoadedBackgroundSelectedColor;
 			ListColor = ForceLoadedBackgroundColor;
+			PointerOverColor = ForceLoadedBackgroundPointerOverColor;
 		}
 		else
 		{
-			ListColor = SelectedColor = string.Empty;
+			ListColor = SelectedColor = PointerOverColor = string.Empty;
 		}
 	}
 

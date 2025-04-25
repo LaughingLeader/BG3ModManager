@@ -14,6 +14,9 @@ public class ModCategory : ReactiveObject, IModEntry
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
 	[Reactive] public bool PreserveSelection { get; set; }
+	[Reactive] public string? SelectedColor { get; set; }
+	[Reactive] public string? ListColor { get; set; }
+	[Reactive] public string? PointerOverColor { get; set; }
 
 	public string? Version => string.Empty;
 	public string? Author => string.Empty;
