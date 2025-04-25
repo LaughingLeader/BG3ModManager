@@ -99,6 +99,15 @@ public class SettingsService : ReactiveObject, ISettingsService
 					}
 				}
 
+				if(ignoredModsData.MainCampaign?.IsValid() == true)
+				{
+					var modManager = Locator.Current.GetService<IModManagerService>();
+					if (modManager != null)
+					{
+						modManager.MainCampaignGuid = ignoredModsData.MainCampaign;
+					}
+				}
+
 				//DivinityApp.LogMessage("Ignored mods:\n" + String.Join("\n", DivinityApp.IgnoredMods.Select(x => x.Name)));
 			}
 		}
