@@ -180,7 +180,10 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			{
 				var reader = new PackageReader();
 				var package = reader.Read(partition.Current);
-				_packages.Add(package);
+				if (package != null)
+				{
+					_packages.Add(package);
+				}
 			}
 		}
 	}
