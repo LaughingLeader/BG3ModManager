@@ -1,6 +1,10 @@
+using ModManager.Models.Settings;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Settings;
 using ModManager.Views.Generated;
+
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace ModManager.Windows;
 public partial class SettingsWindow : ReactiveWindow<SettingsWindowViewModel>
@@ -13,6 +17,19 @@ public partial class SettingsWindow : ReactiveWindow<SettingsWindowViewModel>
 			result = (SettingsWindowTab)index;
 		}
 		return result;
+	}
+
+	private static readonly Type _modManagerSettingsType = typeof(ModManagerSettings);
+
+	private static bool TryGetSettingsEntry(string propName, [NotNullWhen(true)] out SettingsEntryAttribute? attribute)
+	{
+		attribute = null;
+		if (_modManagerSettingsType.GetProperty(propName) is PropertyInfo prop && prop.GetCustomAttribute<SettingsEntryAttribute>() is SettingsEntryAttribute att)
+		{
+			attribute = att;
+			return true;
+		}
+		return false;
 	}
 
 	public SettingsWindow()
@@ -34,6 +51,20 @@ public partial class SettingsWindow : ReactiveWindow<SettingsWindowViewModel>
 				UpdateSettingsView.ViewModel = settings.UpdateSettings;
 				ExtenderSettingsView.ViewModel = settings.ExtenderSettings;
 				ExtenderUpdateSettingsView.ViewModel = settings.ExtenderUpdaterSettings;
+
+				if(TryGetSettingsEntry(nameof(ModManagerSettings.DebugModeEnabled), out var debugModeAttribute))
+				{
+					ModDeveloperModeTextBlock.Text = debugModeAttribute.DisplayName;
+					ToolTip.SetTip(ModDeveloperModeTextBlock, debugModeAttribute.ToolTip);
+					ToolTip.SetTip(ModDeveloperModeCheckBox, debugModeAttribute.ToolTip);
+				}
+
+				if(TryGetSettingsEntry(nameof(ModManagerSettings.LogEnabled), out var logAttribute))
+				{
+					LoggingTextBlock.Text = logAttribute.DisplayName;
+					ToolTip.SetTip(LoggingTextBlock, logAttribute.ToolTip);
+					ToolTip.SetTip(LoggingCheckBox, logAttribute.ToolTip);
+				}
 			}
 		});
 	}

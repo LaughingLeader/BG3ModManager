@@ -82,11 +82,6 @@ public readonly record struct SettingsEntryData
 			}
 		}
 
-		if(propertyName == "DebugModeEnabled")
-		{
-			System.Diagnostics.Trace.WriteLine(propertyName);
-		}
-
 		return new SettingsEntryData(propertyName, symbol.Type, name, tooltip, bindTo, bindVisibilityTo, disableAutoGen);
 	}
 }

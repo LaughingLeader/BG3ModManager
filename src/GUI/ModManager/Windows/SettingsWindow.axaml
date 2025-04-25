@@ -1,22 +1,23 @@
 <Window x:Class="ModManager.Windows.SettingsWindow"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:controls="using:ModManager.Controls"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:genview="using:ModManager.Views.Generated"
-	xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
-	xmlns:view="using:ModManager.Views.Settings"
-	xmlns:vm="using:ModManager.ViewModels"
-	Title="SettingsWindow"
-	Width="800"
-	Height="450"
-	x:DataType="vm:SettingsWindowViewModel"
-	Focusable="True"
-	Icon="avares://ModManager/Assets/BG3ModManager.ico"
-	Topmost="False"
-	mc:Ignorable="d">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:genview="using:ModManager.Views.Generated"
+    xmlns:local="using:ModManager.Windows"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:view="using:ModManager.Views.Settings"
+    xmlns:vm="using:ModManager.ViewModels"
+    Title="SettingsWindow"
+    Width="800"
+    Height="450"
+    x:DataType="vm:SettingsWindowViewModel"
+    Focusable="True"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    Topmost="False"
+    mc:Ignorable="d">
 	<Panel>
 		<suki:SukiBackground IsHitTestVisible="False" />
 		<TabControl x:Name="SettingsTabControl" Margin="48" SelectedIndex="{Binding SelectedTabIndex}">
@@ -34,6 +35,61 @@
 			</TabItem>
 			<TabItem Header="Keybindings" ToolTip.Tip="Keybinding Settings (Data/keybindings.json)">
 				<view:KeybindingsView x:Name="KeybindingsView" />
+			</TabItem>
+			<TabItem Header="Advanced" ToolTip.Tip="Advanced Mod Manager Settings (Data/settings.json)">
+				<controls:AutoGrid RowCount="4" RowHeight="auto">
+					<controls:AutoGrid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+					</controls:AutoGrid.ColumnDefinitions>
+
+					<TextBlock x:Name="ModDeveloperModeTextBlock" Classes="left" Text="Mod Developer Mode" />
+					<CheckBox x:Name="ModDeveloperModeCheckBox" Classes="right" IsChecked="{Binding Settings.DebugModeEnabled}" />
+
+					<TextBlock x:Name="LoggingTextBlock" Classes="left" Text="Enable Mod Manager Logs" />
+					<CheckBox x:Name="LoggingCheckBox" Classes="right" IsChecked="{Binding Settings.LogEnabled}" />
+
+					<Button x:Name="GameLaunchParamsMainButton"
+					    VerticalAlignment="Center"
+					    Content="Launch Params"
+					    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager">
+						<Button.Flyout>
+							<MenuFlyout ItemsSource="{Binding LaunchParams}" Placement="Pointer" ShowMode="Transient">
+								<MenuFlyout.ItemContainerTheme>
+									<ControlTheme x:DataType="vm:GameLaunchParamEntry" BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
+										<Setter Property="Header" Value="{Binding Name}" />
+										<Setter Property="ToolTip.Tip" Value="{Binding Description}" />
+										<Setter Property="ToolTip.ServiceEnabled" Value="{Binding HasToolTip}" />
+										<Setter Property="Command" Value="{Binding $parent[local:SettingsWindow].((vm:SettingsWindowViewModel)DataContext).AddLaunchParamCommand}" />
+										<Setter Property="CommandParameter" Value="{Binding Name}" />
+									</ControlTheme>
+								</MenuFlyout.ItemContainerTheme>
+							</MenuFlyout>
+						</Button.Flyout>
+					</Button>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<TextBox VerticalAlignment="Center"
+						    Text="{Binding Settings.GameLaunchParams}"
+						    TextWrapping="Wrap"
+						    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager" />
+						<Button Grid.Column="1"
+						    Command="{Binding ClearLaunchParamsCommand}"
+						    Content="{materialIcons:MaterialIconExt Kind=Close}"
+						    ToolTip.Tip="Clear current params" />
+					</Grid>
+
+					<TextBlock Text="Experimental" />
+					<Button x:Name="ClearCacheButton"
+					    HorizontalAlignment="Center"
+					    VerticalAlignment="Center"
+					    Command="{Binding ClearCacheCommand}"
+					    Content="Delete Cache"
+					    ToolTip.Tip="Delete the local mod cache, located in the mod manager's Data folder" />
+				</controls:AutoGrid>
 			</TabItem>
 		</TabControl>
 	</Panel>

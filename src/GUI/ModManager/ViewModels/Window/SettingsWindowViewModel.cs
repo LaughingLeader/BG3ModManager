@@ -277,7 +277,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 				case SettingsWindowTab.Update:
 				case SettingsWindowTab.Advanced:
 					//Handled in _main.SaveSettings
-					AppServices.Commands.ShowAlert("Saved settings.", AlertType.Success, 10);
+					AppServices.Commands.ShowAlert("Saved settings.", AlertType.Success, 1);
 					break;
 				case SettingsWindowTab.Extender:
 					ExportExtenderSettings();

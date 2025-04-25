@@ -20,6 +20,18 @@ namespace ModManager.Windows
         internal global::ModManager.Views.Generated.ScriptExtenderUpdateConfigView ExtenderUpdateSettingsView;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
         internal global::ModManager.Views.Settings.KeybindingsView KeybindingsView;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.TextBlock ModDeveloperModeTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.CheckBox ModDeveloperModeCheckBox;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.TextBlock LoggingTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.CheckBox LoggingCheckBox;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.Button GameLaunchParamsMainButton;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.5.0")]
+        internal global::Avalonia.Controls.Button ClearCacheButton;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -50,6 +62,12 @@ namespace ModManager.Windows
             ExtenderSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ScriptExtenderSettingsView>("ExtenderSettingsView");
             ExtenderUpdateSettingsView = __thisNameScope__?.Find<global::ModManager.Views.Generated.ScriptExtenderUpdateConfigView>("ExtenderUpdateSettingsView");
             KeybindingsView = __thisNameScope__?.Find<global::ModManager.Views.Settings.KeybindingsView>("KeybindingsView");
+            ModDeveloperModeTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ModDeveloperModeTextBlock");
+            ModDeveloperModeCheckBox = __thisNameScope__?.Find<global::Avalonia.Controls.CheckBox>("ModDeveloperModeCheckBox");
+            LoggingTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LoggingTextBlock");
+            LoggingCheckBox = __thisNameScope__?.Find<global::Avalonia.Controls.CheckBox>("LoggingCheckBox");
+            GameLaunchParamsMainButton = __thisNameScope__?.Find<global::Avalonia.Controls.Button>("GameLaunchParamsMainButton");
+            ClearCacheButton = __thisNameScope__?.Find<global::Avalonia.Controls.Button>("ClearCacheButton");
         }
     }
 }
