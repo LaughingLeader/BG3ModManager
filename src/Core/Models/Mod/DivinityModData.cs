@@ -163,10 +163,10 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public bool NexusModsEnabled { get; set; }
 	[Reactive] public bool ModioEnabled { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
-	[Reactive] public bool DeveloperMode { get; set; }
+	[Reactive] public bool HasColorOverride { get; set; }
 	[Reactive] public string? SelectedColor { get; set; }
 	[Reactive] public string? ListColor { get; set; }
-	[Reactive] public bool HasColorOverride { get; set; }
+	[Reactive] public string? NameOverride { get; set; }
 
 	public HashSet<string> Files { get; set; }
 
@@ -174,7 +174,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 	[Reactive] public NexusModsModData NexusModsData { get; set; }
 	[Reactive] public GitHubModData GitHubData { get; set; }
 
-	private static string GetDisplayName(ValueTuple<string?, string?, string?, string?, bool, bool> x)
+	private static string GetDisplayName(ValueTuple<string?, string?, string?, string?, bool, bool, string?> x)
 	{
 		var name = x.Item1;
 		var fileName = x.Item2;
@@ -182,6 +182,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		var uuid = x.Item4;
 		var isEditorMod = x.Item5;
 		var displayFileForName = x.Item6;
+		var nameOverride = x.Item7;
 		if (displayFileForName)
 		{
 			if (!isEditorMod)
@@ -195,11 +196,8 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		}
 		else
 		{
-			if (!DivinityApp.DeveloperModeEnabled && uuid == DivinityApp.MAIN_CAMPAIGN_UUID)
-			{
-				return "Main";
-			}
-			if (!string.IsNullOrEmpty(name)) return name;
+			if (nameOverride?.IsValid() == true) return nameOverride;
+			if (name?.IsValid() == true) return name;
 		}
 		return "";
 	}
@@ -616,7 +614,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		this.WhenAnyValue(x => x.FilePath).Select(f => Path.GetFileName(f)).BindTo(this, x => x.FileName);
 		this.WhenAnyValue(x => x.Author, x => x.NexusModsData.Author, x => x.GitHubData.Author, x => x.IsLarianMod).Select(GetAuthor).BindTo(this, x => x.AuthorDisplayName);
 
-		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName)
+		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName, x => x.NameOverride)
 			.Select(GetDisplayName).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.DisplayName);
 		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.DescriptionVisibility);
 

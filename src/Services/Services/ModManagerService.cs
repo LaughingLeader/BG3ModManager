@@ -33,6 +33,9 @@ public class ModManagerService : ReactiveObject, IModManagerService
 	public ReadOnlyObservableCollection<DivinityModData> UserMods => _userMods;
 	public ReadOnlyObservableCollection<DivinityModData> SelectedPakMods => _selectedPakMods;
 
+	//GustavX, as of patch 8
+	[Reactive] public string MainCampaignGuid { get; set; } = "cb555efe-2d9e-131f-8195-a89329d218ea";
+
 	[ObservableAsProperty] public int ActiveSelected { get; }
 	[ObservableAsProperty] public int InactiveSelected { get; }
 	[ObservableAsProperty] public int OverrideModsSelected { get; }
@@ -235,9 +238,9 @@ public class ModManagerService : ReactiveObject, IModManagerService
 			await _interactions.DeleteMods.Handle(new DeleteModsRequest(dupes.ToModInterface(), true));
 		}
 
-		var finalMods = allMods.OrderBy(m => m.Name).ToList();
-		DivinityApp.Log($"Loaded '{finalMods.Count}' mods.");
-		return finalMods;
+		//var finalMods = allMods.OrderBy(m => m.Name).ToList();
+		DivinityApp.Log($"Loaded '{allMods.Count}' mods.");
+		return allMods;
 	}
 
 	#endregion
@@ -254,7 +257,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 		_modsConnection.Filter(x => x.IsUserMod).Bind(out _userMods).Subscribe();
 		_modsConnection.AutoRefresh(x => x.CanAddToLoadOrder).Filter(x => x.CanAddToLoadOrder).Bind(out _addonMods).Subscribe();
-		_modsConnection.Filter(x => x.ModType == "Adventure" && (!x.IsHidden || x.UUID == DivinityApp.MAIN_CAMPAIGN_UUID)).Bind(out _adventureMods).Subscribe();
+		_modsConnection.Filter(x => x.ModType == "Adventure" && (!x.IsHidden || x.UUID == MainCampaignGuid)).Bind(out _adventureMods).Subscribe();
 
 		var forceLoadedObs = _modsConnection.AutoRefresh(x => x.ForceAllowInLoadOrder)
 			.Filter(x => x.IsForceLoaded && !x.IsForceLoadedMergedMod && !x.ForceAllowInLoadOrder)

@@ -292,6 +292,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var loadedMods = await ModManager.LoadModsAsync(Settings.GameDataPath, PathwayData.AppDataModsPath, token);
 			main.Progress.IncreaseValue(taskStepAmount);
 
+			var mainCampaign = loadedMods.FirstOrDefault(x => x.UUID == ModManager.MainCampaignGuid);
+			if (mainCampaign != null)
+			{
+				mainCampaign.ModType = "Adventure";
+				if(!Settings.DebugModeEnabled)
+				{
+					mainCampaign.NameOverride = "Main";
+				}
+			}
+
 			DivinityApp.Log("Loading profiles...");
 			main.Progress.WorkText = "Loading profiles...";
 			var loadedProfiles = await LoadProfilesAsync();
@@ -367,9 +377,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					var defaultAdventureIndex = 0;
 
-					if (AdventureMods.FirstOrDefault(x => x.UUID == DivinityApp.MAIN_CAMPAIGN_UUID) is DivinityModData gustavDev)
+					if (AdventureMods.FirstOrDefault(x => x.UUID == modManager.MainCampaignGuid) is DivinityModData mainCampaign)
 					{
-						defaultAdventureIndex = AdventureMods.IndexOf(gustavDev);
+						defaultAdventureIndex = AdventureMods.IndexOf(mainCampaign);
 					}
 
 					if (defaultAdventureIndex == -1) defaultAdventureIndex = 0;
@@ -1434,6 +1444,12 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
+	private static readonly HashSet<string> _migrateCampaigns = new HashSet<string>()
+	{
+		"991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1",
+		"28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8",
+	};
+
 	public ModOrderViewModel(MainWindowViewModel host,
 		IModManagerService modManagerService,
 		IFileWatcherService fileWatcherService,
@@ -1458,9 +1474,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		ModOrderList = [];
 		ExternalModOrders = [];
 
-		modManagerService.AdventureMods.ToObservableChangeSet()
-			.Filter(x => x.UUID == DivinityApp.MAIN_CAMPAIGN_UUID) // For now, only display GustaDev
-			.ObserveOn(RxApp.MainThreadScheduler).Bind(out _adventureMods).Subscribe();
+		modManagerService.AdventureMods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler).Bind(out _adventureMods).Subscribe();
 
 		modManagerService.ForceLoadedMods.ToObservableChangeSet().Transform(x => x.ToModInterface()).Bind(out _overrideMods).Subscribe();
 
@@ -1559,6 +1573,15 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			x => x.DebugModeEnabled)
 		.Select(PropertyConverters.BoolTupleToVisibility).ToUIProperty(this, x => x.LogFolderShortcutButtonVisibility);
 
+		host.Settings.WhenAnyValue(x => x.DebugModeEnabled).Select(b => !b ? "Main" : null).Subscribe(nameOverride =>
+		{
+			var mainCampaign = AdventureMods.FirstOrDefault(x => x.UUID == ModManager.MainCampaignGuid);
+			if (mainCampaign != null)
+			{
+				mainCampaign.NameOverride = nameOverride;
+			}
+		});
+
 		var whenGameExeProperties = host.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
 		whenGameExeProperties.Select(GetLaunchGameTooltip).ToUIProperty(this, x => x.OpenGameButtonToolTip, "Launch Game");
 
@@ -1600,10 +1623,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			if (profile != null && profile.ActiveMods != null && profile.ActiveMods.Count > 0)
 			{
 				var adventureModData = modManagerService.AdventureMods.FirstOrDefault(x => profile.ActiveMods.Any(y => y.UUID == x.UUID));
-				//Migrate old profiles from Gustav to GustavDev
-				if (adventureModData != null && adventureModData.UUID == "991c9c7a-fb80-40cb-8f0d-b92d4e80e9b1")
+				//Migrate old profiles from Gustav->GustavDev->GustavX (patch 8)
+				if (adventureModData?.UUID != null && _migrateCampaigns.Contains(adventureModData.UUID))
 				{
-					if (modManagerService.TryGetMod(DivinityApp.MAIN_CAMPAIGN_UUID, out var main))
+					if (modManagerService.TryGetMod(modManagerService.MainCampaignGuid, out var main))
 					{
 						adventureModData = main;
 					}

@@ -250,11 +250,10 @@ public static partial class DivinityModDataLoader
 				};
 
 				//Patch 7 removed the "Type" attribute
-
-				if(uuid == DivinityApp.MAIN_CAMPAIGN_UUID)
-				{
-					modData.ModType = "Adventure";
-				}
+				//if(uuid == DivinityApp.MAIN_CAMPAIGN_UUID)
+				//{
+				//	modData.ModType = "Adventure";
+				//}
 
 				var tagsText = GetAttributeWithId(moduleInfoNode, "Tags", "");
 				if (!String.IsNullOrWhiteSpace(tagsText))

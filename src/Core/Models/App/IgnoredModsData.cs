@@ -18,4 +18,5 @@ public class IgnoredModsData
 	public List<string> IgnoreDependencies { get; set; } = [];
 	public List<IgnoredModsEntry> Mods { get; set; } = [];
 	public List<string> IgnoreBuiltinPath { get; set; } = [];
+	public string? MainCampaign { get; set; }
 }

@@ -52,8 +52,6 @@ public static class DivinityApp
 	public const string XML_MODULE_SHORT_DESC_FORMATTED = "<node id=\"ModuleShortDesc\">\n\t<attribute id=\"Folder\" type=\"LSString\" value=\"{0}\"/>\n\t<attribute id=\"MD5\" type=\"LSString\" value=\"{1}\"/>\n\t<attribute id=\"Name\" type=\"LSString\" value=\"{2}\"/>\n\t<attribute id=\"PublishHandle\" type=\"uint64\" value=\"{5}\"/>\n\t<attribute id=\"UUID\" type=\"guid\" value=\"{3}\"/>\n\t<attribute id=\"Version64\" type=\"int64\" value=\"{4}\"/>\n</node>";
 	public const string XML_MOD_SETTINGS_TEMPLATE = @"<?xml version=""1.0"" encoding=""UTF-8""?><save><version major=""4"" minor=""7"" revision=""1"" build=""3""/><region id=""ModuleSettings""><node id=""root""><children><node id=""Mods""><children>{0}</children></node></children></node></region></save>";
 
-	public const string MAIN_CAMPAIGN_UUID = "28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8";
-
 	public const string NEXUSMODS_GAME_DOMAIN = "baldursgate3";
 	public const long NEXUSMODS_GAME_ID = 3474;
 	public const string NEXUSMODS_MOD_URL = "https://www.nexusmods.com/baldursgate3/mods/{0}";

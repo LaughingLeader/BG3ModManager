@@ -14,9 +14,11 @@ public interface IModManagerService
 	ReadOnlyObservableCollection<DivinityModData> ForceLoadedMods { get; }
 	ReadOnlyObservableCollection<DivinityModData> UserMods { get; }
 	ReadOnlyObservableCollection<DivinityModData> SelectedPakMods { get; }
-	[ObservableAsProperty] int ActiveSelected { get; }
-	[ObservableAsProperty] int InactiveSelected { get; }
-	[ObservableAsProperty] int OverrideModsSelected { get; }
+	string MainCampaignGuid { get; set; }
+
+	int ActiveSelected { get; }
+	int InactiveSelected { get; }
+	int OverrideModsSelected { get; }
 	IConnectableObservable<IChangeSet<DivinityModData, string>> ModsConnection { get; }
 	bool ModExists(string uuid);
 	void Add(DivinityModData mod);
