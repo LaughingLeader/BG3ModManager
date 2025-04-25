@@ -1,19 +1,26 @@
-<UserControl
-	x:Class="ModManager.Views.StatsValidator.StatsValidatorLineView"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:controls="clr-namespace:ModManager.Controls"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:vm="using:ModManager.Models.View"
-	d:DesignHeight="450"
-	d:DesignWidth="800"
-	x:DataType="vm:StatsValidatorLineText"
-	mc:Ignorable="d">
-	<controls:HighlightingTextBlock
-		x:Name="LineTextBlock"
-		Padding="4"
-		HighlightBackground="Transparent"
-		HighlightForeground="OrangeRed"
-		Text="{Binding Text}" />
+<UserControl x:Class="ModManager.Views.StatsValidator.StatsValidatorLineView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ModManager.Models.View"
+    d:DesignHeight="200"
+    d:DesignWidth="600"
+    x:DataType="vm:StatsValidatorLineText"
+    mc:Ignorable="d">
+	<Design.PreviewWith>
+		<Border Background="Black">
+			<controls:HighlightingTextBlock Padding="4"
+			    Foreground="Red"
+			    HighlightBackground="Transparent"
+			    HighlightForeground="OrangeRed"
+			    Text="Hellooooooooooo" />
+		</Border>
+	</Design.PreviewWith>
+	<controls:HighlightingTextBlock x:Name="LineTextBlock"
+	    Padding="4"
+	    HighlightBackground="Transparent"
+	    HighlightForeground="OrangeRed"
+	    Text="{Binding Text}" />
 </UserControl>

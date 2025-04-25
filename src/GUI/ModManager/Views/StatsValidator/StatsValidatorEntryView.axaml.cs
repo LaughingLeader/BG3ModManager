@@ -12,6 +12,10 @@ public partial class StatsValidatorEntryView : ReactiveUserControl<StatsValidato
 	{
 		InitializeComponent();
 
+#if DEBUG
+		this.DesignSetup();
+#endif
+
 		this.OneWayBind(ViewModel, vm => vm.IsError, view => view.TextControl.Foreground, ErrorToForeground);
 	}
 }

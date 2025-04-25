@@ -9,10 +9,10 @@ public partial class StatsValidatorWindow : ReactiveWindow<StatsValidatorWindowV
 	{
 		InitializeComponent();
 
+		ViewModel ??= AppServices.Get<StatsValidatorWindowViewModel>();
+
 		this.WhenActivated(d =>
 		{
-			ViewModel = AppServices.Get<StatsValidatorWindowViewModel>();
-
 			if (ViewModel != null)
 			{
 				d(this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible));

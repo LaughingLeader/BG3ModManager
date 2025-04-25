@@ -25,8 +25,8 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 	private readonly IStatsValidatorService _validator;
 
 	[Reactive] public DivinityModData? Mod { get; set; }
-	[Reactive] public string? OutputText { get; private set; }
-	[Reactive] public TimeSpan TimeTaken { get; private set; }
+	[Reactive] public string? OutputText { get; internal set; }
+	[Reactive] public TimeSpan TimeTaken { get; internal set; }
 
 	public ObservableCollectionExtended<StatsValidatorFileResults> Entries { get; }
 
@@ -174,13 +174,9 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 		return time.Humanize(1, CultureInfo.CurrentCulture, TimeUnit.Second, TimeUnit.Second).ApplyCase(LetterCasing.Title);
 	}
 
-	public StatsValidatorWindowViewModel(IInteractionsService interactions, IStatsValidatorService statsValidator, IScreen? host = null)
+	internal StatsValidatorWindowViewModel()
 	{
-		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 		CloseCommand = this.CreateCloseCommand();
-
-		_interactions = interactions;
-		_validator = statsValidator;
 
 		Entries = [];
 
@@ -194,5 +190,33 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
 		ValidateCommand.IsExecuting.ToUIProperty(this, x => x.LockScreenVisibility);
+	}
+
+	[DependencyInjectionConstructor]
+	public StatsValidatorWindowViewModel(IInteractionsService interactions, IStatsValidatorService statsValidator, IScreen? host = null) : this()
+	{
+		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
+		
+		_interactions = interactions;
+		_validator = statsValidator;
+	}
+}
+
+public class DesignStatsValidatorWindowViewModel : StatsValidatorWindowViewModel
+{
+	public DesignStatsValidatorWindowViewModel() : base()
+	{
+		for (var i = 0; i < 4; i++)
+		{
+			StatsValidatorFileResults fileResults = new() { FilePath = $"File{i}" };
+			for (var j = 0; i < 10; j++)
+			{
+				fileResults.AddChild(new StatsValidatorErrorEntry(new("", "", null, null), $"Test_{j}"));
+			}
+			Entries.Add(fileResults);
+		}
+
+		OutputText = "Test results!";
+		TimeTaken = TimeSpan.FromSeconds(30);
 	}
 }

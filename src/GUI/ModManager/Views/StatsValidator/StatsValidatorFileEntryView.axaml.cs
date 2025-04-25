@@ -25,6 +25,10 @@ public partial class StatsValidatorFileEntryView : ReactiveUserControl<StatsVali
 	{
 		InitializeComponent();
 
+#if DEBUG
+		this.DesignSetup();
+#endif
+
 		this.OneWayBind(ViewModel, vm => vm.HasErrors, x => x.TextControl.Foreground, ErrorToForeground);
 	}
 }

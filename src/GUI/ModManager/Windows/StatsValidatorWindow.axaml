@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="http://reactiveui.net"
     xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
-    xmlns:view="using:ModManager.Views.Settings"
+    xmlns:view="using:ModManager.Views.StatsValidator"
     xmlns:vm="using:ModManager.ViewModels"
     Title="Stats Validator"
     Width="800"
@@ -19,8 +19,10 @@
     Icon="avares://ModManager/Assets/BG3ModManager.ico"
     Topmost="False"
     mc:Ignorable="d">
+	<Design.DataContext>
+		<vm:DesignStatsValidatorWindowViewModel />
+	</Design.DataContext>
 	<Panel>
-
 		<suki:SukiBackground IsHitTestVisible="False" />
 		<Grid>
 			<Grid>
@@ -50,10 +52,12 @@
 				    Background="Black"
 				    BorderBrush="LightGray"
 				    BorderThickness="1">
-					<controls:AutoGrid RowCount="3" RowHeight="auto">
-						<controls:AutoGrid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-						</controls:AutoGrid.ColumnDefinitions>
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
 
 						<Border HorizontalAlignment="Stretch">
 							<StackPanel Orientation="Vertical">
@@ -73,9 +77,13 @@
 							</StackPanel>
 						</Border>
 
-						<TextBlock Margin="8" FontSize="16" Text="{Binding OutputText}" />
+						<TextBlock Grid.Row="1"
+						    Margin="8"
+						    FontSize="16"
+						    Text="{Binding OutputText}" />
 
 						<TreeView x:Name="EntriesTreeView"
+						    Grid.Row="2"
 						    Margin="8,0,8,0"
 						    ItemsSource="{Binding Entries}"
 						    SelectionMode="Single">
@@ -85,17 +93,30 @@
 									<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
 								</Style>
 							</TreeView.Styles>
-							<TreeView.ItemTemplate>
-								<DataTemplate>
-									<rxui:ViewModelViewHost HorizontalAlignment="Stretch"
+							<TreeView.DataTemplates>
+								<TreeDataTemplate DataType="m:StatsValidatorFileResults" ItemsSource="{Binding Children}">
+									<view:StatsValidatorFileEntryView ViewModel="{Binding ViewModel}" />
+								</TreeDataTemplate>
+
+								<TreeDataTemplate DataType="m:StatsValidatorErrorEntry" ItemsSource="{Binding Children}">
+									<view:StatsValidatorEntryView ViewModel="{Binding ViewModel}" />
+								</TreeDataTemplate>
+
+								<DataTemplate DataType="m:StatsValidatorLineText">
+									<!--<view:StatsValidatorLineView ViewModel="{Binding ViewModel}" />-->
+									<!--<controls:HighlightingTextBlock Padding="4"
+									    HighlightBackground="Transparent"
+									    HighlightForeground="OrangeRed"
+									    Text="{Binding Text}" />-->
+									<!--<TextBlock Text="{Binding Text}" />-->
+									<SelectableTextBlock HorizontalAlignment="Stretch"
 									    VerticalAlignment="Stretch"
-									    HorizontalContentAlignment="Stretch"
-									    VerticalContentAlignment="Stretch"
-									    ViewModel="{Binding ViewModel}" />
+									    Text="{Binding Text}"
+									    TextAlignment="Left" />
 								</DataTemplate>
-							</TreeView.ItemTemplate>
+							</TreeView.DataTemplates>
 						</TreeView>
-					</controls:AutoGrid>
+					</Grid>
 				</Border>
 			</Grid>
 			<Border x:Name="LockScreen"

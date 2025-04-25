@@ -149,7 +149,6 @@ public class HighlightingTextBlock : TemplatedControl
 		this.ObservableForProperty(x => x.HighlightForeground)
 		.CombineLatest(this.ObservableForProperty(x => x.HighlightBackground)).Subscribe(x => UpdateRunColors(x.First.Value, x.Second.Value));
 
-
 		this.ObservableForProperty(x => x.Text)
 		.CombineLatest(this.ObservableForProperty(x => x.HighlightStart), this.ObservableForProperty(x => x.HighlightEnd))
 		.Subscribe(x => ProcessTextChanged(x.First.Value, x.Second.Value, x.Third.Value));

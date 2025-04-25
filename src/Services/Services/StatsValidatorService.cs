@@ -77,14 +77,13 @@ public class StatsValidatorService : IStatsValidatorService
 		BufferSize = 128000,
 	};
 
-	private static async Task<FileText> GetFileTextAsync(VFS vfs, string path, CancellationToken token)
+	private async Task<FileText> GetFileTextAsync(VFS vfs, string path, string gameDataPath, CancellationToken token)
 	{
-		var file = vfs.FindVFSFile(path);
-		if (file != null)
+		if(vfs.TryOpen(path, out var stream))
 		{
-			using var stream = file.CreateContentReader();
 			using var sr = new StreamReader(stream, Encoding.UTF8, false, 128000);
 			var text = await sr.ReadToEndAsync(token);
+			await stream.DisposeAsync();
 			return new FileText(path, text.Split(Environment.NewLine, StringSplitOptions.None));
 		}
 		return new FileText(path, []);
@@ -184,7 +183,7 @@ public class StatsValidatorService : IStatsValidatorService
 		loader.ValidateEntries();
 
 		List<string> files = context.Errors.Select(x => x.Location?.FileName).Where(x => !String.IsNullOrEmpty(x)).Distinct().ToList()!;
-		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(validationVFS, x, token)).ToArray());
+		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(validationVFS, x, _gameDataPath, token)).ToArray());
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 
 		_modHelper.FS = _vfs;

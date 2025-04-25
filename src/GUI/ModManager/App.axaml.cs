@@ -30,6 +30,10 @@ public partial class App : Application
 		var desktop = DesktopLifetime;
 		if (desktop != null)
 		{
+			var viewLocator = new ViewLocator();
+			Locator.CurrentMutable.RegisterConstant<IViewLocator>(viewLocator);
+			DataTemplates.Add(viewLocator);
+
 			var mainWindow = new MainWindow();
 			desktop.MainWindow = mainWindow;
 			Locator.CurrentMutable.RegisterConstant(mainWindow);

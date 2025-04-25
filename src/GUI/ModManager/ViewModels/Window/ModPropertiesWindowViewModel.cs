@@ -115,8 +115,8 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 			{
 				if (mod.IsEditorMod)
 				{
-					var dir = new DirectoryInfo(mod.FilePath);
-					var length = dir.EnumerateFiles("*.*", System.IO.SearchOption.AllDirectories).Sum(file => file.Length);
+					var dir = new FileInfo(mod.FilePath).Directory!;
+					var length = dir.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
 					return ((double)length).Bytes().Humanize();
 				}
 				else

@@ -178,12 +178,12 @@ public class WindowManagerService
 			var window = AppServices.Get<StatsValidatorWindow>();
 			if (window != null)
 			{
-				context.SetOutput(true);
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					window.ViewModel?.Load(context.Input);
 					if (!window.IsVisible) window.Show(MainWindow);
 				});
+				context.SetOutput(true);
 			}
 			else
 			{

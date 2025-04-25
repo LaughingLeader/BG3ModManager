@@ -25,12 +25,14 @@ public class ViewLocator : IViewLocator, IDataTemplate
 
 	public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
 	{
+		DivinityApp.Log($"ViewLocator.ResolveView: {viewModel}|{contract}");
 		if (viewModel != null)
 		{
 			try
 			{
 				var viewType = _viewForType.MakeGenericType(viewModel.GetType());
 				var registered = Locator.Current.GetService(viewType, contract);
+				DivinityApp.Log($"ViewLocator.ResolveView: {viewModel}|{registered}");
 				if (registered is IViewFor view)
 				{
 					return view;
@@ -47,11 +49,6 @@ public class ViewLocator : IViewLocator, IDataTemplate
 	private static void RegisterConstant<TViewModel, TView>(IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>
 	{
 		resolver.RegisterLazySingleton<IViewFor<TViewModel>>(() => AppServices.Get<TView>());
-	}
-
-	private static void Register<TViewModel, TView>(IMutableDependencyResolver resolver) where TViewModel : ReactiveObject where TView : IViewFor<TViewModel>, new()
-	{
-		resolver.Register(() => new TView());
 	}
 
 	static ViewLocator()
@@ -73,12 +70,10 @@ public class ViewLocator : IViewLocator, IDataTemplate
 		//resolver.RegisterLazySingleton(() => (IViewFor<ScriptExtenderUpdateConfig>)AppServices.Settings.ManagerSettings.ExtenderUpdaterSettings);
 
 		//Register<DownloadActivityBarViewModel, DownloadActivityBar>(resolver);
-		Register<StatsValidatorFileResults, StatsValidatorFileEntryView>(resolver);
-		Register<StatsValidatorErrorEntry, StatsValidatorEntryView>(resolver);
-		Register<StatsValidatorLineText, StatsValidatorLineView>(resolver);
 
-		//Register<ModCategory, ModCategoryEntryView>(resolver);
-		//Register<DivinityModData, ModEntryView>(resolver);
+		resolver.Register(() => new StatsValidatorFileEntryView(), typeof(IViewFor<StatsValidatorFileResults>));
+		resolver.Register(() => new StatsValidatorEntryView(), typeof(IViewFor<StatsValidatorErrorEntry>));
+		resolver.Register(() => new StatsValidatorLineText(), typeof(IViewFor<StatsValidatorLineView>));
 	}
 
 	//IDataTemplate

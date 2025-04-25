@@ -7,5 +7,9 @@ public partial class StatsValidatorLineView : ReactiveUserControl<StatsValidator
 	public StatsValidatorLineView()
 	{
 		InitializeComponent();
+
+#if DEBUG
+		this.DesignSetup();
+#endif
 	}
 }
