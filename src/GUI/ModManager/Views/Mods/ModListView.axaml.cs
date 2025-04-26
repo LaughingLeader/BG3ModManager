@@ -172,6 +172,21 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 		DivinityApp.Log($"Error: {ex}");
 	}
 
+	private void OnPointerDown(object? sender, PointerPressedEventArgs e)
+	{
+		//Allow deselecting with just left click, if no modifiers are pressed and a single item is selected
+		if (e.KeyModifiers == KeyModifiers.None && sender is TreeDataGridRow row && row.IsSelected && ModsTreeDataGrid.RowSelection?.Count == 1)
+		{
+			ModsTreeDataGrid.RowSelection?.Deselect(row.RowIndex);
+			e.Handled = true;
+		}
+	}
+
+	private void OnRowPrepared(object? sender, TreeDataGridRowEventArgs e)
+	{
+		e.Row.PointerPressed += OnPointerDown;
+	}
+
 	public ModListView()
 	{
 		InitializeComponent();
@@ -182,18 +197,7 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 			return;
 		}
 
-		ModsTreeDataGrid.RowPrepared += (o, e) =>
-		{
-			e.Row.PointerEntered += (o2, e2) =>
-			{
-				var row = (TreeDataGridRow)o2;
-				DivinityApp.Log($"TreeDataGridRow.Background: {row.Background}");
-				if(row.FindDescendantOfType<TreeDataGridCellsPresenter>() is TreeDataGridCellsPresenter cellsPresenter)
-				{
-					DivinityApp.Log($"TreeDataGridRow.PART_CellsPresenter.Background: {cellsPresenter.Background}");
-				}
-			};
-		};
+		ModsTreeDataGrid.RowPrepared += OnRowPrepared;
 
 		this.WhenActivated(d =>
 		{
