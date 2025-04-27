@@ -36,6 +36,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private readonly IInteractionsService _interactions;
 	private readonly IGlobalCommandsService _globalCommands;
 	private readonly IDialogService _dialogs;
+	private readonly IFileSystemService _fs;
 
 	private readonly IFileWatcherWrapper _modSettingsWatcher;
 
@@ -339,7 +340,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 			else
 			{
-				DivinityApp.Log($"No saved orders found in {Settings.LoadOrderPath}");
+				DivinityApp.Log($"No saved orders found in {GetOrdersDirectory()}");
 			}
 
 			DivinityApp.Log("Setting up mod lists...");
@@ -595,22 +596,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	{
 		try
 		{
-			var loadOrderDirectory = Settings.LoadOrderPath;
-			if (String.IsNullOrWhiteSpace(loadOrderDirectory))
-			{
-				loadOrderDirectory = DivinityApp.GetAppDirectory("Orders");
-			}
-			else if (!Path.IsPathRooted(loadOrderDirectory))
-			{
-				loadOrderDirectory = DivinityApp.GetAppDirectory(loadOrderDirectory);
-			}
-			else if (Uri.IsWellFormedUriString(loadOrderDirectory, UriKind.Relative))
-			{
-				loadOrderDirectory = Path.GetFullPath(loadOrderDirectory);
-			}
-
-			DivinityApp.Log($"Attempting to load saved load orders from '{loadOrderDirectory}'.");
-			return await ModDataLoader.FindLoadOrderFilesInDirectoryAsync(loadOrderDirectory);
+			var ordersDirectory = GetOrdersDirectory();
+			DivinityApp.Log($"Attempting to load saved load orders from '{ordersDirectory}'.");
+			return await ModDataLoader.FindLoadOrderFilesInDirectoryAsync(ordersDirectory);
 		}
 		catch (Exception ex)
 		{
@@ -626,31 +614,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var result = false;
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
-			var outputDirectory = Settings.LoadOrderPath;
+			var outputDirectory = GetOrdersDirectory();
 
-			if (String.IsNullOrWhiteSpace(outputDirectory))
-			{
-				outputDirectory = AppDomain.CurrentDomain.BaseDirectory;
-			}
-
-			if (!Directory.Exists(outputDirectory))
-			{
-				Directory.CreateDirectory(outputDirectory);
-			}
+			if (!Directory.Exists(outputDirectory)) Directory.CreateDirectory(outputDirectory);
 
 			var outputPath = SelectedModOrder.FilePath;
 			var outputName = ModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
 
 			if (String.IsNullOrWhiteSpace(SelectedModOrder.FilePath))
 			{
-				var ordersDir = Settings.LoadOrderPath;
-				//Relative path
-				if (Settings.LoadOrderPath.IndexOf(@":\") == -1)
-				{
-					ordersDir = DivinityApp.GetAppDirectory(Settings.LoadOrderPath);
-					if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
-				}
-				SelectedModOrder.FilePath = Path.Join(ordersDir, outputName);
+				SelectedModOrder.FilePath = Path.Join(outputDirectory, outputName);
 				outputPath = SelectedModOrder.FilePath;
 			}
 
@@ -683,15 +656,34 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return result;
 	}
 
+	private static string GetOrdersDirectory()
+	{
+		var loadOrderDirectory = Settings.LoadOrderPath;
+		if (String.IsNullOrWhiteSpace(loadOrderDirectory))
+		{
+			loadOrderDirectory = DivinityApp.GetAppDirectory("Orders");
+		}
+		else if (!Path.IsPathRooted(loadOrderDirectory))
+		{
+			loadOrderDirectory = DivinityApp.GetAppDirectory(loadOrderDirectory);
+		}
+		else if (Uri.IsWellFormedUriString(loadOrderDirectory, UriKind.Relative))
+		{
+			loadOrderDirectory = Path.GetFullPath(loadOrderDirectory);
+		}
+		return loadOrderDirectory;
+	}
+
 	public async Task<bool> SaveLoadOrderAs()
 	{
-		var ordersDir = Settings.LoadOrderPath;
-		//Relative path
-		if (Settings.LoadOrderPath.IndexOf(@":\") == -1)
+		if (SelectedModOrder == null)
 		{
-			ordersDir = DivinityApp.GetAppDirectory(Settings.LoadOrderPath);
-			if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
+			DivinityApp.Log($"No current active order. How did we get here?");
+			return false;
 		}
+
+		var ordersDir = GetOrdersDirectory();
+		if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
 		var startDirectory = ModImportService.GetInitialStartingDirectory(ordersDir);
 
 		var outputPath = Path.Join(SelectedModOrder.Name + ".json");
@@ -1121,7 +1113,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				Name = $"New{ExternalModOrders.Count + 1}",
 				Order = ActiveMods.Where(x => x.EntryType == ModEntryType.Mod).Cast<ModEntry>().Select(m => m.Data.ToOrderEntry()).ToList()
 			};
-			newOrder.FilePath = Path.Join(Settings.LoadOrderPath, ModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
+			newOrder.FilePath = Path.Join(GetOrdersDirectory(), ModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
 		}
 		ExternalModOrders.Add(newOrder);
 		BuildModOrderList(SelectedProfile, ExternalModOrders.Count); // +1 due to Current being index 0
@@ -1343,7 +1335,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			PathwayData.LastSaveFilePath = Path.GetDirectoryName(result.File);
 			DivinityApp.Log($"Loading order from '{result.File}'.");
-			var newOrder = ModDataLoader.GetLoadOrderFromSave(result.File, Settings.LoadOrderPath);
+			var newOrder = ModDataLoader.GetLoadOrderFromSave(result.File, GetOrdersDirectory());
 			if (newOrder != null)
 			{
 				DivinityApp.Log($"Imported mod order: {String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
@@ -1466,6 +1458,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		_interactions = interactionsService;
 		_globalCommands = globalCommands;
 		_dialogs = dialogService;
+		_fs = fileSystemService;
 
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;
