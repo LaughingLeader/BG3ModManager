@@ -80,22 +80,22 @@
 		    Header="Copy Path to Clipboard"
 		    Icon="{icons:MaterialIconExt Kind=Clipboard}" />
 
-		<Separator IsVisible="{Binding HasExternalLinkVisibility}" />
+		<Separator IsVisible="{Binding HasAnyExternalLink}" />
 		<MenuItem Command="{Binding Path=OpenGitHubPageCommand, Source={x:Static manager:AppServices.Commands}}"
 		    CommandParameter="{Binding}"
 		    Header="Open GitHub Page (Browser)..."
-		    IsVisible="{Binding OpenGitHubLinkVisibility}" />
+		    IsVisible="{Binding HasGitHubLink}" />
 		<MenuItem Command="{Binding Path=OpenNexusModsPageCommand, Source={x:Static manager:AppServices.Commands}}"
 		    CommandParameter="{Binding}"
 		    Header="Open NexusMods Page (Browser)..."
-		    IsVisible="{Binding OpenNexusModsLinkVisibility}" />
+		    IsVisible="{Binding OpenNexusModsLink}" />
 		<MenuItem Command="{Binding Path=OpenModioPageCommand, Source={x:Static manager:AppServices.Commands}}"
 		    CommandParameter="{Binding}"
 		    Header="Open Mod.io Page (Browser)..."
-		    IsVisible="{Binding OpenModioLinkVisibility}" />
+		    IsVisible="{Binding HasModioLink}" />
 
-		<Separator IsVisible="{Binding ToggleForceAllowInLoadOrderVisibility}" />
-		<MenuItem Command="{Binding Path=ToggleForceAllowInLoadOrderCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" IsVisible="{Binding ToggleForceAllowInLoadOrderVisibility}">
+		<Separator IsVisible="{Binding CanForceAllowInLoadOrder}" />
+		<MenuItem Command="{Binding Path=ToggleForceAllowInLoadOrderCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" IsVisible="{Binding CanForceAllowInLoadOrder}">
 			<MenuItem.Header>
 				<TextBlock Text="{Binding ForceAllowInLoadOrderLabel}" />
 			</MenuItem.Header>

@@ -75,7 +75,7 @@ public class ModData : ReactiveObject, IModData
 
 	[Reactive] public int Index { get; set; }
 
-	[Reactive] public DivinityExtenderModStatus ExtenderModStatus { get; set; }
+	[Reactive] public ModExtenderStatus ExtenderModStatus { get; set; }
 	[Reactive] public DivinityOsirisModStatus OsirisModStatus { get; set; }
 
 	[Reactive] public int CurrentExtenderVersion { get; set; }
@@ -130,26 +130,31 @@ public class ModData : ReactiveObject, IModData
 
 	// This is a property instead of an ObservableAsProperty so the name is set immediately
 	[Reactive] public string? DisplayName { get; private set; }
+
+	[ObservableAsProperty] public string ForceAllowInLoadOrderLabel { get; }
+	[ObservableAsProperty] public string ToggleModNameLabel { get; }
+	[ObservableAsProperty] public string? DisplayVersion { get; }
+	[ObservableAsProperty] public string? LastModifiedDateText { get; }
+	[ObservableAsProperty] public string? Notes { get; }
+	[ObservableAsProperty] public string? OsirisStatusToolTipText { get; }
+	[ObservableAsProperty] public string? ScriptExtenderSupportToolTipText { get; }
+
 	[ObservableAsProperty] public bool CanAddToLoadOrder { get; }
 	[ObservableAsProperty] public bool CanDelete { get; }
-	[ObservableAsProperty] public string? ScriptExtenderSupportToolTipText { get; }
-	[ObservableAsProperty] public string? OsirisStatusToolTipText { get; }
-	[ObservableAsProperty] public string? LastModifiedDateText { get; }
-	[ObservableAsProperty] public string? DisplayVersion { get; }
-	[ObservableAsProperty] public string? Notes { get; }
-	[ObservableAsProperty] public string ToggleModNameLabel { get; }
-	[ObservableAsProperty] public string ForceAllowInLoadOrderLabel { get; }
-	[ObservableAsProperty] public bool DescriptionVisibility { get; }
-	[ObservableAsProperty] public bool AuthorVisibility { get; }
-	[ObservableAsProperty] public bool OpenGitHubLinkVisibility { get; }
-	[ObservableAsProperty] public bool OpenNexusModsLinkVisibility { get; }
-	[ObservableAsProperty] public bool OpenModioLinkVisibility { get; }
-	[ObservableAsProperty] public bool HasExternalLinkVisibility { get; }
-	[ObservableAsProperty] public bool ToggleForceAllowInLoadOrderVisibility { get; }
-	[ObservableAsProperty] public bool ExtenderStatusVisibility { get; }
-	[ObservableAsProperty] public bool OsirisStatusVisibility { get; }
-	[ObservableAsProperty] public bool NotesVisibility { get; }
-	[ObservableAsProperty] public bool HasFilePathVisibility { get; }
+	[ObservableAsProperty] public bool CanForceAllowInLoadOrder { get; }
+	[ObservableAsProperty] public bool HasAnyExternalLink { get; }
+	[ObservableAsProperty] public bool HasAuthor { get; }
+	[ObservableAsProperty] public bool HasDescription { get; }
+	[ObservableAsProperty] public bool HasExtenderStatus { get; }
+	[ObservableAsProperty] public bool HasFilePath { get; }
+	[ObservableAsProperty] public bool HasGitHubLink { get; }
+	[ObservableAsProperty] public bool HasModioLink { get; }
+	[ObservableAsProperty] public bool HasNexusModsLink { get; }
+	[ObservableAsProperty] public bool HasNotes { get; }
+	[ObservableAsProperty] public bool HasOsirisStatus { get; }
+
+
+	[ObservableAsProperty] public ScriptExtenderIconType ExtenderIcon { get; }
 
 	#region NexusMods Properties
 	[ObservableAsProperty] public bool NexusImageVisibility { get; }
@@ -209,80 +214,80 @@ public class ModData : ReactiveObject, IModData
 		return "";
 	}
 
-	private static string ExtenderStatusToToolTipText(DivinityExtenderModStatus status, int requiredVersion, int currentVersion)
+	private static string ExtenderStatusToToolTipText(ModExtenderStatus status, int requiredVersion, int currentVersion)
 	{
 		var result = "";
-		switch (status)
+
+		if (requiredVersion > -1)
 		{
-			case DivinityExtenderModStatus.REQUIRED:
-			case DivinityExtenderModStatus.REQUIRED_MISSING:
-			case DivinityExtenderModStatus.REQUIRED_DISABLED:
-			case DivinityExtenderModStatus.REQUIRED_OLD:
-			case DivinityExtenderModStatus.REQUIRED_MISSING_UPDATER:
-				if (status == DivinityExtenderModStatus.REQUIRED_MISSING)
-				{
-					result = "[MISSING] ";
-				}
-				else if (status == DivinityExtenderModStatus.REQUIRED_MISSING_UPDATER)
-				{
-					result = "[SE DISABLED] ";
-				}
-				else if (status == DivinityExtenderModStatus.REQUIRED_DISABLED)
-				{
-					result = "[EXTENDER DISABLED] ";
-				}
-				else if (status == DivinityExtenderModStatus.REQUIRED_OLD)
-				{
-					result = "[OLD] ";
-				}
-				if (requiredVersion > -1)
-				{
-					result += $"Requires Script Extender v{requiredVersion} or Higher";
-				}
-				else
-				{
-					result += "Requires the Script Extender";
-				}
-				if (status == DivinityExtenderModStatus.REQUIRED_DISABLED)
-				{
-					result += "\n(Enable Extensions in the Script Extender Settings)";
-				}
-				else if (status == DivinityExtenderModStatus.REQUIRED_MISSING_UPDATER)
-				{
-					result += "\n(Missing DWrite.dll)";
-				}
-				else if (status == DivinityExtenderModStatus.REQUIRED_OLD)
-				{
-					result += "\n(The installed SE version is older)";
-				}
-				break;
-			case DivinityExtenderModStatus.SUPPORTS:
-				if (requiredVersion > -1)
-				{
-					result = $"Uses Script Extender v{requiredVersion} or Higher (Optional)";
-				}
-				else
-				{
-					result = "Uses the Script Extender (Optional)";
-				}
-				break;
-			case DivinityExtenderModStatus.NONE:
-			default:
-				result = "";
-				break;
+			result += $"Requires Script Extender v{requiredVersion} or Higher";
 		}
+		else
+		{
+			result += "Requires the Script Extender";
+		}
+
+		if (status.HasFlag(ModExtenderStatus.DisabledFromConfig))
+		{
+			result += "\n(Enable Extensions in the Script Extender Settings)";
+		}
+		else if (status.HasFlag(ModExtenderStatus.MissingAppData))
+		{
+			result += $"\n(Missing %LOCALAPPDATA%\\..\\{DivinityApp.EXTENDER_APPDATA_DLL})";
+		}
+		else if (status.HasFlag(ModExtenderStatus.MissingUpdater))
+		{
+			result += $"\n(Missing {DivinityApp.EXTENDER_UPDATER_FILE})";
+		}
+		else if (status.HasFlag(ModExtenderStatus.MissingRequiredVersion))
+		{
+			result += "\n(The installed SE version is older)";
+		}
+
 		if (result != "")
 		{
 			result += Environment.NewLine;
 		}
+
 		if (currentVersion > -1)
 		{
-			result += $"Currently installed version is v{currentVersion}";
+			if (status.HasFlag(ModExtenderStatus.MissingUpdater))
+			{
+				result += $"You are missing the Script Extender updater (DWrite.dll), which is required";
+			}
+			else
+			{
+				result += $"Currently installed version is v{currentVersion}";
+			}
 		}
 		else
 		{
-			result += "No installed extender version found";
+			result += "No installed Script Extender version found\nIf you've already downloaded it, try opening the game once to complete the installation process";
 		}
+		return result;
+	}
+
+	private static ScriptExtenderIconType ExtenderModStatusToIcon(ModExtenderStatus status)
+	{
+		var result = ScriptExtenderIconType.None;
+
+		if (status.HasFlag(ModExtenderStatus.DisabledFromConfig) || status.HasFlag(ModExtenderStatus.MissingUpdater))
+		{
+			result = ScriptExtenderIconType.Missing;
+		}
+		else if (status.HasFlag(ModExtenderStatus.MissingRequiredVersion) || status.HasFlag(ModExtenderStatus.MissingAppData))
+		{
+			result = ScriptExtenderIconType.Warning;
+		}
+		else if (status.HasFlag(ModExtenderStatus.Supports))
+		{
+			result = ScriptExtenderIconType.FulfilledSupports;
+		}
+		else if (status.HasFlag(ModExtenderStatus.Fulfilled))
+		{
+			result = ScriptExtenderIconType.FulfilledRequired;
+		}
+
 		return result;
 	}
 
@@ -622,9 +627,9 @@ public class ModData : ReactiveObject, IModData
 
 		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName, x => x.NameOverride)
 			.Select(GetDisplayName).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.DisplayName);
-		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.DescriptionVisibility);
+		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.HasDescription);
 
-		this.WhenAnyValue(x => x.AuthorDisplayName).Select(Validators.IsValid).ToUIPropertyImmediate(this, x => x.AuthorVisibility);
+		this.WhenAnyValue(x => x.AuthorDisplayName).Select(Validators.IsValid).ToUIPropertyImmediate(this, x => x.HasAuthor);
 
 		this.WhenAnyValue(x => x.ModType, x => x.IsHidden, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod, x => x.ForceAllowInLoadOrder)
 			.Select(CanAddToLoadOrderCheck).ToUIPropertyImmediate(this, x => x.CanAddToLoadOrder, true);
@@ -641,20 +646,20 @@ public class ModData : ReactiveObject, IModData
 
 		this.WhenAnyValue(x => x.IsForceLoaded, x => x.HasMetadata, x => x.IsForceLoadedMergedMod)
 			.Select(b => b.Item1 && b.Item2 && !b.Item3)
-			.ToUIProperty(this, x => x.ToggleForceAllowInLoadOrderVisibility);
+			.ToUIProperty(this, x => x.CanForceAllowInLoadOrder);
 
 		this.WhenAnyValue(x => x.GitHubEnabled, x => x.GitHubData.IsEnabled, (b1, b2) => b1 && b2)
-			.ToUIProperty(this, x => x.OpenGitHubLinkVisibility);
+			.ToUIProperty(this, x => x.HasGitHubLink);
 
 		this.WhenAnyValue(x => x.NexusModsEnabled, x => x.NexusModsData.ModId, (b, id) => b && id >= DivinityApp.NEXUSMODS_MOD_ID_START)
-			.ToUIProperty(this, x => x.OpenNexusModsLinkVisibility);
+			.ToUIProperty(this, x => x.HasNexusModsLink);
 
 		this.WhenAnyValue(x => x.ModioEnabled, x => x.IsHidden, x => x.IsLarianMod, x => x.ModioData.ModId, CanOpenModioBoolCheck)
-			.ToUIProperty(this, x => x.OpenModioLinkVisibility);
+			.ToUIProperty(this, x => x.HasModioLink);
 
-		this.WhenAnyValue(x => x.OpenGitHubLinkVisibility, x => x.OpenNexusModsLinkVisibility, x => x.OpenModioLinkVisibility)
+		this.WhenAnyValue(x => x.HasGitHubLink, x => x.HasNexusModsLink, x => x.HasModioLink)
 			.Select(x => x.Item1 || x.Item2 || x.Item3)
-			.ToUIProperty(this, x => x.HasExternalLinkVisibility);
+			.ToUIProperty(this, x => x.HasAnyExternalLink);
 
 		var dependenciesChanged = Dependencies.CountChanged;
 		dependenciesChanged.ToUIProperty(this, x => x.TotalDependencies);
@@ -699,20 +704,22 @@ public class ModData : ReactiveObject, IModData
 
 		var whenExtenderProp = this.WhenAnyValue(x => x.ExtenderModStatus, x => x.ScriptExtenderData.RequiredVersion, x => x.CurrentExtenderVersion);
 		whenExtenderProp.Select(x => ExtenderStatusToToolTipText(x.Item1, x.Item2, x.Item3)).ToUIProperty(this, x => x.ScriptExtenderSupportToolTipText);
-		this.WhenAnyValue(x => x.ExtenderModStatus).Select(x => x != DivinityExtenderModStatus.NONE)
-			.ToUIPropertyImmediate(this, x => x.ExtenderStatusVisibility);
+		this.WhenAnyValue(x => x.ExtenderModStatus).Select(x => x != ModExtenderStatus.None)
+			.ToUIPropertyImmediate(this, x => x.HasExtenderStatus);
 
 		var whenOsirisStatusChanges = this.WhenAnyValue(x => x.OsirisModStatus);
-		whenOsirisStatusChanges.Select(x => x != DivinityOsirisModStatus.NONE).ToUIProperty(this, x => x.OsirisStatusVisibility);
+		whenOsirisStatusChanges.Select(x => x != DivinityOsirisModStatus.NONE).ToUIProperty(this, x => x.HasOsirisStatus);
 		whenOsirisStatusChanges.Select(OsirisStatusToTooltipText).ToUIProperty(this, x => x.OsirisStatusToolTipText);
 
-		this.WhenAnyValue(x => x.Notes).Select(Validators.IsValid).ToUIProperty(this, x => x.NotesVisibility);
+		this.WhenAnyValue(x => x.ExtenderModStatus).Select(ExtenderModStatusToIcon).ToUIPropertyImmediate(this, x => x.ExtenderIcon);
+
+		this.WhenAnyValue(x => x.Notes).Select(Validators.IsValid).ToUIProperty(this, x => x.HasNotes);
 
 		this.WhenAnyValue(x => x.LastModified).SkipWhile(x => !x.HasValue)
 			.Select(x => x.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture))
 			.ToUIProperty(this, x => x.LastModifiedDateText, "");
 
-		this.WhenAnyValue(x => x.FilePath).Select(Validators.IsValid).ToUIProperty(this, x => x.HasFilePathVisibility);
+		this.WhenAnyValue(x => x.FilePath).Select(Validators.IsValid).ToUIProperty(this, x => x.HasFilePath);
 		this.WhenAnyValue(x => x.Version.Version).ToUIProperty(this, x => x.DisplayVersion, "0.0.0.0");
 
 		this.WhenAnyValue(x => x.DisplayFileForName).Select(x => x ? "Show Mod Display Name" : "Show File Name").ToUIProperty(this, x => x.ToggleModNameLabel);

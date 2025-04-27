@@ -546,7 +546,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				var entry = order.Order[i];
 				if (ModManager.TryGetMod(entry.UUID, out var mod))
 				{
-					if (mod.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING)
+					if (mod.ExtenderModStatus == ModExtenderStatus.REQUIRED_MISSING)
 					{
 						extenderRequiredMods.Add(new MissingModData
 						{
@@ -563,7 +563,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 								if (ModManager.TryGetMod(dependency.UUID, out var dependencyMod))
 								{
 									// Dependencies not in the order that require the extender
-									if (dependencyMod.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING)
+									if (dependencyMod.ExtenderModStatus == ModExtenderStatus.REQUIRED_MISSING)
 									{
 										extenderRequiredMods.Add(new MissingModData
 										{

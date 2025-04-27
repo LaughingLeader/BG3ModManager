@@ -161,6 +161,8 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 		//RxApp.MainThreadScheduler.Schedule(ViewModelLocator.ModOrder.LoadCurrentProfile);
 	}
 
+	private bool _justDownloadedScriptExtender;
+
 	private async Task DownloadScriptExtenderAsync(CancellationToken token)
 	{
 		Progress.Title = "Setting up the Script Extender...";
@@ -214,6 +216,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 				_globalCommands.ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
 				HighlightExtenderDownload = false;
 				Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+				_justDownloadedScriptExtender = true;
 			}
 			else
 			{
@@ -377,6 +380,8 @@ Directory the zip will be extracted to:
 		}
 	}
 
+	private IDisposable? _warnExtenderUpdateFailureTask = null;
+
 	public bool CheckExtenderInstalledVersion(CancellationToken? t)
 	{
 		var extenderAppDataDir = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DivinityApp.EXTENDER_APPDATA_DIRECTORY);
@@ -427,6 +432,19 @@ Directory the zip will be extracted to:
 		else
 		{
 			DivinityApp.Log($"Extender Local AppData folder not found at '{extenderAppDataDir}'. Skipping.");
+		}
+
+		//Recently downloaded DWrite.dll, but Toolbox may have failed to invoke an update
+		if (t?.IsCancellationRequested == false && _justDownloadedScriptExtender)
+		{
+			_warnExtenderUpdateFailureTask?.Dispose();
+			_warnExtenderUpdateFailureTask = RxApp.MainThreadScheduler.Schedule(() =>
+			{
+				_justDownloadedScriptExtender = false;
+				_interactions.ShowMessageBox.Handle(new("Script Extender Installation",
+					"The Script Extender has been successfully downloaded.\n\nPlease start the game once to complete the installation process.",
+					InteractionMessageBoxType.Warning)).Subscribe();
+			});
 		}
 		return false;
 	}
@@ -984,17 +1002,15 @@ Directory the zip will be extracted to:
 	{
 		mod.CurrentExtenderVersion = Settings.ExtenderSettings.ExtenderMajorVersion;
 
+		mod.ExtenderModStatus = ModExtenderStatus.None;
+
 		if (mod.ScriptExtenderData != null && mod.ScriptExtenderData.HasAnySettings)
 		{
 			if (mod.ScriptExtenderData.Lua)
 			{
-				if (!Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
+				if (!Settings.ExtenderSettings.EnableExtensions)
 				{
-					mod.ExtenderModStatus = DivinityExtenderModStatus.REQUIRED_MISSING_UPDATER;
-				}
-				else if (!Settings.ExtenderSettings.EnableExtensions)
-				{
-					mod.ExtenderModStatus = DivinityExtenderModStatus.REQUIRED_DISABLED;
+					mod.ExtenderModStatus |= ModExtenderStatus.DisabledFromConfig;
 				}
 				else
 				{
@@ -1002,35 +1018,46 @@ Directory the zip will be extracted to:
 					{
 						if (mod.ScriptExtenderData.RequiredVersion > -1 && Settings.ExtenderSettings.ExtenderMajorVersion < mod.ScriptExtenderData.RequiredVersion)
 						{
-							mod.ExtenderModStatus = DivinityExtenderModStatus.REQUIRED_OLD;
+							mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
 						}
 						else
 						{
-							mod.ExtenderModStatus = DivinityExtenderModStatus.REQUIRED;
+							mod.ExtenderModStatus |= ModExtenderStatus.Fulfilled;
 						}
 					}
 					else
 					{
-						mod.ExtenderModStatus = DivinityExtenderModStatus.REQUIRED_MISSING;
+						mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
 					}
 				}
 			}
 			else
 			{
-				mod.ExtenderModStatus = DivinityExtenderModStatus.SUPPORTS;
+				mod.ExtenderModStatus |= ModExtenderStatus.Supports;
+			}
+			if (!Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
+			{
+				mod.ExtenderModStatus |= ModExtenderStatus.MissingUpdater;
 			}
 		}
-		else
+
+		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
+		if (mod.ExtenderModStatus.HasFlag(ModExtenderStatus.MissingUpdater))
 		{
-			mod.ExtenderModStatus = DivinityExtenderModStatus.NONE;
+			HighlightExtenderDownload = true;
 		}
 	}
 
 	public void UpdateExtenderVersionForAllMods()
 	{
-		foreach (var mod in _manager.AllMods)
+		if (_manager.AddonMods.Count > 0)
 		{
-			UpdateModExtenderStatus(mod);
+			HighlightExtenderDownload = false;
+
+			foreach (var mod in _manager.AllMods)
+			{
+				UpdateModExtenderStatus(mod);
+			}
 		}
 	}
 
@@ -1878,24 +1905,6 @@ Directory the zip will be extracted to:
 		#endregion
 
 		Router.CurrentViewModel.Select(x => x == ViewModelLocator.ModUpdates).ToUIProperty(this, x => x.UpdatesViewIsVisible, false);
-
-		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
-		if (AppSettings.Features.ScriptExtender)
-		{
-			_manager.ModsConnection.ObserveOn(RxApp.MainThreadScheduler).AutoRefresh(x => x.ExtenderModStatus).
-				Filter(x => x.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING || x.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_DISABLED).
-				Select(x => x.Count).Subscribe(totalWithRequirements =>
-				{
-					if (totalWithRequirements > 0)
-					{
-						HighlightExtenderDownload = !Settings.ExtenderUpdaterSettings.UpdaterIsAvailable;
-					}
-					else
-					{
-						HighlightExtenderDownload = false;
-					}
-				});
-		}
 
 		var anyPakModSelectedObservable = _manager.SelectedPakMods.ToObservableChangeSet().CountChanged().Select(x => _manager.SelectedPakMods.Count > 0);
 		//Keys.ExtractSelectedMods.AddAsyncAction(ExtractSelectedMods_Start, anyPakModSelectedObservable);
