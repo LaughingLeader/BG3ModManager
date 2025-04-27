@@ -1,30 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ModManager.Models.Mod.Game;
+
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace ModManager.Models.Mod;
-
-[DataContract]
-public class ModLoadOrderEntry
-{
-	[DataMember]
-	public string? UUID { get; set; }
-
-	[DataMember]
-	public string? Name { get; set; }
-	public bool Missing { get; set; }
-
-	public ModLoadOrderEntry Clone()
-	{
-		return new ModLoadOrderEntry() { Name = Name, UUID = UUID, Missing = Missing };
-	}
-}
 
 [DataContract]
 public class ModLoadOrder : ReactiveObject
 {
 	[Reactive] public string? Name { get; set; }
 	[Reactive] public string? FilePath { get; set; }
-	[Reactive] public DateTime LastModifiedDate { get; set; }
+	[Reactive] public DateTimeOffset LastModifiedDate { get; set; }
 	[Reactive] public bool IsLoaded { get; set; }
 
 	[Reactive] public bool IsModSettings { get; set; }
@@ -37,7 +23,7 @@ public class ModLoadOrder : ReactiveObject
 	[ObservableAsProperty] public string? LastModified { get; }
 
 	[DataMember]
-	public List<ModLoadOrderEntry> Order { get; set; } = [];
+	public List<ModuleShortDesc> Order { get; set; } = [];
 
 	public void Add(IModEntry mod, bool force = false)
 	{
@@ -100,11 +86,7 @@ public class ModLoadOrder : ReactiveObject
 			{
 				if (force)
 				{
-					Order.Add(new ModLoadOrderEntry
-					{
-						UUID = mod.UUID,
-						Name = mod.Name,
-					});
+					Order.Add(ModuleShortDesc.FromModData(mod));
 				}
 				else
 				{
@@ -121,20 +103,12 @@ public class ModLoadOrder : ReactiveObject
 						}
 						if (!alreadyInOrder)
 						{
-							Order.Add(new ModLoadOrderEntry
-							{
-								UUID = mod.UUID,
-								Name = mod.Name,
-							});
+							Order.Add(ModuleShortDesc.FromModData(mod));
 						}
 					}
 					else
 					{
-						Order.Add(new ModLoadOrderEntry
-						{
-							UUID = mod.UUID,
-							Name = mod.Name,
-						});
+						Order.Add(ModuleShortDesc.FromModData(mod));
 					}
 				}
 			}
@@ -159,7 +133,7 @@ public class ModLoadOrder : ReactiveObject
 		{
 			if (Order != null && Order.Count > 0 && mod != null)
 			{
-				ModLoadOrderEntry entry = null;
+				ModuleShortDesc? entry = null;
 				foreach (var x in Order)
 				{
 					if (x != null && x.UUID == mod.UUID)
@@ -188,7 +162,7 @@ public class ModLoadOrder : ReactiveObject
 		}
 	}
 
-	public void Sort(Comparison<ModLoadOrderEntry> comparison)
+	public void Sort(Comparison<ModuleShortDesc> comparison)
 	{
 		try
 		{
@@ -203,7 +177,7 @@ public class ModLoadOrder : ReactiveObject
 		}
 	}
 
-	public void SetOrder(IEnumerable<ModLoadOrderEntry> nextOrder)
+	public void SetOrder(IEnumerable<ModuleShortDesc> nextOrder)
 	{
 		Order.Clear();
 		Order.AddRange(nextOrder);

@@ -403,15 +403,6 @@ public class ModData : ReactiveObject, IModData
 		return $"Name({Name}) Version({Version?.Version}) Author({Author}) UUID({UUID}) File({FilePath})";
 	}
 
-	public ModLoadOrderEntry ToOrderEntry()
-	{
-		return new ModLoadOrderEntry
-		{
-			UUID = UUID,
-			Name = Name
-		};
-	}
-
 	public ModuleShortDesc ToModuleShortDesc()
 	{
 		return new ModuleShortDesc()

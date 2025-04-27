@@ -270,7 +270,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		var modManager = ModManager;
 
-		List<ModLoadOrderEntry>? lastActiveOrder = null;
+		List<ModuleShortDesc>? lastActiveOrder = null;
 		var lastOrderName = "";
 		if (SelectedModOrder != null)
 		{
@@ -474,14 +474,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		};
 	}
 
-	private void DisplayMissingMods(ModLoadOrder order = null)
+	private void DisplayMissingMods(ModLoadOrder? order = null)
 	{
 		var displayExtenderModWarning = false;
 
 		order ??= SelectedModOrder;
 		if (order != null && Settings.DisableMissingModWarnings != true)
 		{
-			List<MissingModData> missingMods = [];
+			var missingResults = new MissingModsResults();
 
 			for (var i = 0; i < order.Order.Count; i++)
 			{
@@ -492,39 +492,42 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						foreach (var dependency in mod.Dependencies.Items)
 						{
-							if (!ModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID) &&
-								!missingMods.Any(x => x.UUID == dependency.UUID))
+							if (dependency == null) continue;
+
+							if (!ModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID))
 							{
-								var x = new MissingModData
-								{
-									Index = -1,
-									Name = dependency.Name,
-									UUID = dependency.UUID,
-									Dependency = true
-								};
-								missingMods.Add(x);
+								missingResults.AddDependency(dependency, [mod.UUID]);
 							}
 						}
 					}
 				}
 				else if (!ModDataLoader.IgnoreMod(entry.UUID))
 				{
-					var x = new MissingModData
-					{
-						Index = i,
-						Name = entry.Name,
-						UUID = entry.UUID
-					};
-					missingMods.Add(x);
-					entry.Missing = true;
+					missingResults.AddMissing(entry, i);
 				}
 			}
 
-			if (missingMods.Count > 0)
+			if (missingResults.TotalMissing > 0)
 			{
-				var message = String.Join("\n", missingMods.OrderBy(x => x.Index));
-				var title = "Missing Mods in Load Order";
-				_interactions.ShowMessageBox.Handle(new(title, message, InteractionMessageBoxType.Error)).Subscribe();
+				var finalMessage = "";
+				var missingMessage = missingResults.GetMissingMessage();
+				var missingDependencies = missingResults.GetDependenciesMessage();
+
+				if(missingMessage.IsValid())
+				{
+					finalMessage += missingMessage;
+				}
+
+				if(missingDependencies.IsValid())
+				{
+					finalMessage += $"\nMissing Dependencies:\n{missingDependencies}";
+				}
+
+				_interactions.ShowMessageBox.Handle(new(
+				"Missing Mods in Load Order",
+				finalMessage,
+				InteractionMessageBoxType.Warning))
+				.Subscribe();
 			}
 			else
 			{
@@ -536,25 +539,21 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			displayExtenderModWarning = true;
 		}
 
-		if (Settings.DisableMissingModWarnings != true && displayExtenderModWarning && AppSettings.Features.ScriptExtender)
+		if (order != null && Settings.DisableMissingModWarnings != true && displayExtenderModWarning && AppSettings.Features.ScriptExtender)
 		{
+			var missingResults = new MissingModsResults();
+
 			//DivinityApp.LogMessage($"Mod Order: {String.Join("\n", order.Order.Select(x => x.Name))}");
 			DivinityApp.Log("Checking mods for extender requirements.");
-			List<MissingModData> extenderRequiredMods = [];
-			for (var i = 0; i < order.Order.Count; i++)
+			for (int i = 0; i < order.Order.Count; i++)
 			{
 				var entry = order.Order[i];
 				if (ModManager.TryGetMod(entry.UUID, out var mod))
 				{
-					if (mod.ExtenderModStatus == ModExtenderStatus.REQUIRED_MISSING)
+					if (mod.ExtenderIcon == ScriptExtenderIconType.Missing)
 					{
-						extenderRequiredMods.Add(new MissingModData
-						{
-							Index = mod.Index,
-							Name = mod.DisplayName,
-							UUID = mod.UUID,
-							Dependency = false
-						});
+						DivinityApp.Log($"{mod.Name} | ExtenderModStatus: {mod.ExtenderModStatus}");
+						missingResults.AddExtenderRequirement(mod);
 
 						if (mod.Dependencies.Count > 0)
 						{
@@ -563,15 +562,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 								if (ModManager.TryGetMod(dependency.UUID, out var dependencyMod))
 								{
 									// Dependencies not in the order that require the extender
-									if (dependencyMod.ExtenderModStatus == ModExtenderStatus.REQUIRED_MISSING)
+									if (mod.ExtenderIcon == ScriptExtenderIconType.Missing)
 									{
-										extenderRequiredMods.Add(new MissingModData
-										{
-											Index = mod.Index - 1,
-											Name = dependencyMod.DisplayName,
-											UUID = dependencyMod.UUID,
-											Dependency = true
-										});
+										DivinityApp.Log($"{mod.Name} | ExtenderModStatus: {mod.ExtenderModStatus}");
+										missingResults.AddExtenderRequirement(dependencyMod, [mod.Name]);
 									}
 								}
 							}
@@ -580,12 +574,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 			}
 
-			if (extenderRequiredMods.Count > 0)
+			if (missingResults.ExtenderRequired.Count > 0)
 			{
-				DivinityApp.Log("Displaying mods that require the extender.");
-				var message = "Functionality may be limited without the Script Extender.\n" + String.Join("\n", extenderRequiredMods.OrderBy(x => x.Index));
-				var title = "Mods Require the Script Extender";
-				_interactions.ShowMessageBox.Handle(new(title, message, InteractionMessageBoxType.Error)).Subscribe();
+				var finalMessage = "The following mods require the Script Extender. Functionality may be limited without it.\n";
+				finalMessage += missingResults.GetExtenderRequiredMessage();
+
+				_interactions.ShowMessageBox.Handle(new(
+				"Mods Require the Script Extender",
+				finalMessage,
+				InteractionMessageBoxType.Error))
+				.Subscribe();
 			}
 		}
 	}
@@ -1073,7 +1071,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		});
 	}
 
-	private int SortModOrder(ModLoadOrderEntry a, ModLoadOrderEntry b)
+	private int SortModOrder(ModuleShortDesc a, ModuleShortDesc b)
 	{
 		var modManager = ModManager;
 
@@ -1111,9 +1109,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			newOrder = new ModLoadOrder()
 			{
-				Name = $"New{ExternalModOrders.Count + 1}",
-				Order = ActiveMods.Where(x => x.EntryType == ModEntryType.Mod).Cast<ModEntry>().Select(m => m.Data.ToOrderEntry()).ToList()
+				Name = $"New{ExternalModOrders.Count + 1}"
 			};
+			//ActiveMods.Where(x => x.EntryType == ModEntryType.Mod).Cast<ModEntry>().Select(m => m.Data.ToModuleShortDesc()).ToList()
+			foreach(var mod in ActiveMods)
+			{
+				if(mod.EntryType == ModEntryType.Mod && mod is ModEntry entry && entry.Data != null)
+				{
+					newOrder.Add(entry.Data);
+				}
+			}
 			newOrder.FilePath = Path.Join(GetOrdersDirectory(), ModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
 		}
 		ExternalModOrders.Add(newOrder);
@@ -1140,10 +1145,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		modManager.DeselectAllMods();
 
 		DivinityApp.Log($"Loading mod order '{order.Name}':\n{string.Join(";", order.Order.Select(x => x.Name))}");
-		Dictionary<string, MissingModData> missingMods = [];
+		var missingResults = new MissingModsResults();
 		if (missingModsFromProfileOrder != null && missingModsFromProfileOrder.Count > 0)
 		{
-			missingModsFromProfileOrder.ForEach(x => missingMods[x.UUID] = x);
+			missingModsFromProfileOrder.ForEach(x => missingResults.Missing.Add(x.UUID, x));
 			DivinityApp.Log($"Missing mods (from profile): {String.Join(";", missingModsFromProfileOrder)}");
 		}
 
@@ -1178,26 +1183,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						{
 							if (!String.IsNullOrWhiteSpace(dependency.UUID) && !ModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID))
 							{
-								missingMods[dependency.UUID] = new MissingModData
-								{
-									Index = -1,
-									Name = dependency.Name,
-									UUID = dependency.UUID,
-									Dependency = true
-								};
+								missingResults.AddDependency(dependency, mod);
 							}
 						}
 					}
 				}
 				else
 				{
-					missingMods[entry.UUID] = new MissingModData
-					{
-						Index = i,
-						Name = entry.Name,
-						UUID = entry.UUID
-					};
-					entry.Missing = true;
+					missingResults.AddMissing(entry, i);
 				}
 			}
 		}
@@ -1222,18 +1215,34 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		}
 
-		if (missingMods.Count > 0)
+		if (missingResults.TotalMissing > 0)
 		{
-			var orderedMissingMods = missingMods.Values.OrderBy(x => x.Index).ToList();
+			var finalMessage = "";
+			var missingMessage = missingResults.GetMissingMessage();
+			var missingDependencies = missingResults.GetDependenciesMessage();
 
-			DivinityApp.Log($"Missing mods: {String.Join(";", orderedMissingMods)}");
+			if (missingMessage.IsValid())
+			{
+				finalMessage += missingMessage;
+			}
+
+			if (missingDependencies.IsValid())
+			{
+				finalMessage += $"\nMissing Dependencies:\n{missingDependencies}";
+			}
+
+			DivinityApp.Log($"Missing mods\n{finalMessage}");
 			if (Settings.DisableMissingModWarnings == true)
 			{
 				DivinityApp.Log("Skipping missing mod display.");
 			}
 			else
 			{
-				_interactions.ShowMessageBox.Handle(new("Missing Mods in Load Order", string.Join("\n", orderedMissingMods), InteractionMessageBoxType.Warning)).Subscribe();
+				_interactions.ShowMessageBox.Handle(new(
+				"Missing Mods in Load Order",
+				finalMessage,
+				InteractionMessageBoxType.Warning))
+				.Subscribe();
 			}
 		}
 

@@ -10,6 +10,7 @@ using ModManager.Models.Mod;
 using ModManager.Models.Mod.Game;
 using ModManager.Util.Pak;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -62,19 +63,19 @@ public static partial class ModDataLoader
 		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
-	public static bool IgnoreMod(string modUUID)
+	public static bool IgnoreMod([NotNullWhen(true)] string? modUUID)
 	{
-		return DivinityApp.IgnoredMods.Any(m => m.UUID == modUUID);
+		return modUUID.IsValid() && DivinityApp.IgnoredMods.Any(m => m.UUID == modUUID);
 	}
 
-	public static bool IgnoreModDependency(string modUUID)
+	public static bool IgnoreModDependency([NotNullWhen(true)] string? modUUID)
 	{
-		return DivinityApp.IgnoredDependencyMods.Any(m => m.UUID == modUUID) || IgnoreMod(modUUID);
+		return modUUID.IsValid() && DivinityApp.IgnoredDependencyMods.Any(m => m.UUID == modUUID) || IgnoreMod(modUUID);
 	}
 
-	public static bool IgnoreModByFolder(string folder)
+	public static bool IgnoreModByFolder([NotNullWhen(true)] string? folder)
 	{
-		return DivinityApp.IgnoredMods.Any(m => m.Folder?.Equals(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)), SCOMP) == true);
+		return folder.IsValid() && DivinityApp.IgnoredMods.Any(m => m.Folder?.Equals(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)), SCOMP) == true);
 	}
 
 	public static string MakeSafeFilename(string filename, char replaceChar)
@@ -999,7 +1000,7 @@ public static partial class ModDataLoader
 					if (order != null)
 					{
 						order.FilePath = loadOrderFile;
-						order.LastModifiedDate = File.GetLastWriteTime(loadOrderFile);
+						order.LastModifiedDate = File.GetLastAccessTime(loadOrderFile);
 						loadOrders.Add(order);
 					}
 				}
@@ -1108,13 +1109,6 @@ public static partial class ModDataLoader
 						}
 						DivinityApp.Log(String.Join("\n", order.Order.Select(x => x.UUID)));
 						var modGUIDs = allMods.Select(x => x.UUID).ToHashSet();
-						foreach (var entry in order.Order)
-						{
-							if (!modGUIDs.Contains(entry.UUID))
-							{
-								entry.Missing = true;
-							}
-						}
 						order.Name = Path.GetFileNameWithoutExtension(loadOrderFile);
 						return order;
 					}
@@ -1142,11 +1136,9 @@ public static partial class ModDataLoader
 						}
 						else
 						{
-							order.Order.Add(new ModLoadOrderEntry
+							order.Order.Add(new ModuleShortDesc
 							{
-								Missing = true,
-								Name = pakName,
-								UUID = "",
+								Name = pakName
 							});
 						}
 					}
@@ -1188,11 +1180,9 @@ public static partial class ModDataLoader
 								{
 									name = $"{name} {lineData[urlIndex]}";
 								}
-								order.Order.Add(new ModLoadOrderEntry
+								order.Order.Add(new ModuleShortDesc()
 								{
-									Missing = true,
 									Name = name,
-									UUID = "",
 								});
 							}
 						}
@@ -1304,7 +1294,7 @@ public static partial class ModDataLoader
 		return mods;
 	}
 
-	public static List<ModData> BuildOutputList(IEnumerable<ModLoadOrderEntry> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData selectedAdventure = null)
+	public static List<ModData> BuildOutputList(IEnumerable<ModuleShortDesc> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData selectedAdventure = null)
 	{
 		List<ModData> orderList = [];
 		var addedMods = new HashSet<string>();
@@ -1318,8 +1308,8 @@ public static partial class ModDataLoader
 			orderList.Add(selectedAdventure);
 			addedMods.Add(selectedAdventure.UUID);
 		}
-
-		foreach (var m in order.Where(x => !x.Missing))
+		
+		foreach (var m in order.Where(x => x.UUID.IsValid()))
 		{
 			var mData = allMods.FirstOrDefault(x => x.UUID == m.UUID);
 			if (mData != null)
@@ -1497,11 +1487,7 @@ public static partial class ModDataLoader
 							if (uuid != null && !IgnoreMod(uuid))
 							{
 								DivinityApp.Log($"Found mod in save: '{name}_{uuid}'.");
-								loadOrder.Order.Add(new ModLoadOrderEntry()
-								{
-									UUID = uuid,
-									Name = name
-								});
+								loadOrder.Order.Add(ModuleShortDesc.FromAttributes(c.Attributes));
 							}
 							else
 							{

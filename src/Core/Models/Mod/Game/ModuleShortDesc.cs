@@ -67,7 +67,7 @@ public class ModuleShortDesc : ReactiveObject, IModData
 		};
 	}
 
-	public static ModuleShortDesc FromModData(ModData m)
+	public static ModuleShortDesc FromModData(IModData m)
 	{
 		return new ModuleShortDesc
 		{

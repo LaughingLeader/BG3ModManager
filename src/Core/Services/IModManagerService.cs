@@ -2,6 +2,7 @@
 
 using ModManager.Models.Mod;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
 
 namespace ModManager;
@@ -24,7 +25,7 @@ public interface IModManagerService
 	void Add(ModData mod);
 	void RemoveByUUID(string uuid);
 	void RemoveByUUID(IEnumerable<string> uuids);
-	bool TryGetMod(string guid, out ModData mod);
+	bool TryGetMod(string? guid, [NotNullWhen(true)] out ModData? mod);
 	string GetModType(string guid);
 	bool ModIsAvailable(IModData divinityModData);
 	void DeselectAllMods();

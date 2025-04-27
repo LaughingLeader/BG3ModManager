@@ -9,6 +9,7 @@ using ModManager.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -45,9 +46,10 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	public bool ModExists(string uuid) => mods.Lookup(uuid) != null;
 
-	public bool TryGetMod(string guid, out ModData mod)
+	public bool TryGetMod(string? guid, [NotNullWhen(true)] out ModData? mod)
 	{
 		mod = null;
+		if(!guid.IsValid()) return false;
 		var modResult = mods.Lookup(guid);
 		if (modResult.HasValue)
 		{
@@ -61,7 +63,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 	{
 		if (TryGetMod(guid, out var mod))
 		{
-			return mod.ModType;
+			return mod?.ModType ?? "";
 		}
 		return "";
 	}

@@ -14,6 +14,7 @@ public class SerializedModData : IModData
 	[DataMember] public string? Name { get; set; }
 	[DataMember] public string? Description { get; set; }
 	[DataMember] public string? Author { get; set; }
+	[DataMember] public ulong PublishHandle { get; set; }
 
 	[DataMember] public LarianVersion Version { get; set; }
 
