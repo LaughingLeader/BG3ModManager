@@ -1579,6 +1579,15 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var whenGameExeProperties = host.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
 		whenGameExeProperties.Select(GetLaunchGameTooltip).ToUIProperty(this, x => x.OpenGameButtonToolTip, "Launch Game");
 
+		this.WhenAnyValue(x => x.SelectedModOrder, x => x.SelectedModOrder.Name, (order, name) => order?.Name).Subscribe(name =>
+		{
+			if (name.IsValid() && Settings.LastOrder != name)
+			{
+				Settings.LastOrder = name;
+				ViewModelLocator.Main.QueueSave();
+			}
+		});
+
 		var canRenameOrder = this.WhenAnyValue(x => x.SelectedModOrderIndex, (i) => i > 0);
 		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
 
