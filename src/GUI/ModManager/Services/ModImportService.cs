@@ -2,6 +2,7 @@
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
+using ModManager.Models.Mod.Game;
 using ModManager.Models.NexusMods;
 using ModManager.Models.Settings;
 using ModManager.ModUpdater.Cache;

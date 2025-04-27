@@ -1,5 +1,4 @@
-﻿using ModManager.Models;
-using ModManager.Models.App;
+﻿using ModManager.Models.App;
 using ModManager.Models.Mod;
 using ModManager.Models.NexusMods;
 

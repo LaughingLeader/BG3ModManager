@@ -153,7 +153,7 @@
 							</Flyout>
 						</FlyoutBase.AttachedFlyout>
 						<ComboBox.ItemTemplate>
-							<DataTemplate DataType="m:ModLoadOrder">
+							<DataTemplate DataType="mod:ModLoadOrder">
 								<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
 							</DataTemplate>
 						</ComboBox.ItemTemplate>

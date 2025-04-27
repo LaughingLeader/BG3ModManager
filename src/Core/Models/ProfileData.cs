@@ -1,4 +1,6 @@
-﻿namespace ModManager.Models;
+﻿using ModManager.Models.Mod.Game;
+
+namespace ModManager.Models;
 
 public class ProfileData : ReactiveObject
 {
@@ -16,7 +18,7 @@ public class ProfileData : ReactiveObject
 	/// <summary>
 	/// The mod data under the Mods node, from modsettings.lsx.
 	/// </summary>
-	public List<ProfileActiveModData> ActiveMods { get; set; } = [];
+	public List<ModuleShortDesc> ActiveMods { get; set; } = [];
 
 	public List<string> GetModOrder(bool includeIgnoredMods = false)
 	{

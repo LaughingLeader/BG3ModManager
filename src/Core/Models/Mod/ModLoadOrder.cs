@@ -1,8 +1,6 @@
-﻿using ModManager.Models.Mod;
+﻿using System.Runtime.Serialization;
 
-using System.Runtime.Serialization;
-
-namespace ModManager.Models;
+namespace ModManager.Models.Mod;
 
 [DataContract]
 public class ModLoadOrderEntry
@@ -16,7 +14,7 @@ public class ModLoadOrderEntry
 
 	public ModLoadOrderEntry Clone()
 	{
-		return new ModLoadOrderEntry() { Name = this.Name, UUID = this.UUID, Missing = this.Missing };
+		return new ModLoadOrderEntry() { Name = Name, UUID = UUID, Missing = Missing };
 	}
 }
 
@@ -229,9 +227,9 @@ public class ModLoadOrder : ReactiveObject
 	{
 		return new ModLoadOrder()
 		{
-			Name = this.Name,
-			Order = this.Order.ToList(),
-			LastModifiedDate = this.LastModifiedDate
+			Name = Name,
+			Order = Order.ToList(),
+			LastModifiedDate = LastModifiedDate
 		};
 	}
 

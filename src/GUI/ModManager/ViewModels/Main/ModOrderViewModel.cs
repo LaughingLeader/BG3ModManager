@@ -9,6 +9,7 @@ using ModManager.Controls.TreeDataGrid;
 using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.Mod;
+using ModManager.Models.Mod.Game;
 using ModManager.Models.Settings;
 using ModManager.Services;
 using ModManager.Util;
@@ -460,13 +461,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private ProfileActiveModData ProfileActiveModDataFromUUID(string uuid)
+	private ModuleShortDesc ModuleShortDescFromUUID(string uuid)
 	{
 		if (ModManager.TryGetMod(uuid, out var mod))
 		{
-			return mod.ToProfileModData();
+			return mod.ToModuleShortDesc();
 		}
-		return new ProfileActiveModData()
+		return new ModuleShortDesc()
 		{
 			UUID = uuid
 		};
@@ -800,7 +801,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					orderList.AddRange(SelectedModOrder.Order.Select(x => x.UUID));
 
 					SelectedProfile.ActiveMods.Clear();
-					SelectedProfile.ActiveMods.AddRange(orderList.Select(x => ProfileActiveModDataFromUUID(x)));
+					SelectedProfile.ActiveMods.AddRange(orderList.Select(x => ModuleShortDescFromUUID(x)));
 					DisplayMissingMods(SelectedModOrder);
 				}, RxApp.MainThreadScheduler);
 				return true;
@@ -1732,7 +1733,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				if (!SelectedProfile.ActiveMods.Any(m => m.UUID == SelectedAdventureMod.UUID))
 				{
 					SelectedProfile.ActiveMods.RemoveAll(r => modManagerService.AdventureMods.Any(y => y.UUID == r.UUID));
-					SelectedProfile.ActiveMods.Insert(0, SelectedAdventureMod.ToProfileModData());
+					SelectedProfile.ActiveMods.Insert(0, SelectedAdventureMod.ToModuleShortDesc());
 				}
 			}
 		});

@@ -1,6 +1,4 @@
-﻿using ModManager.Models.Mod;
-
-namespace ModManager.Models;
+﻿namespace ModManager.Models.Mod;
 
 public class MissingModData
 {
@@ -18,11 +16,11 @@ public class MissingModData
 			str += $"{Index}. ";
 		}
 		str += Name;
-		if (!String.IsNullOrEmpty(Author))
+		if (!string.IsNullOrEmpty(Author))
 		{
 			str += " by " + Author;
 		}
-		if (Dependency) str += (" (Dependency)");
+		if (Dependency) str += " (Dependency)";
 		return str;
 	}
 

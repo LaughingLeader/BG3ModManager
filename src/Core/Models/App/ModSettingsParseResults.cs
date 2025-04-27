@@ -1,8 +1,10 @@
-﻿namespace ModManager.Models.App;
+﻿using ModManager.Models.Mod.Game;
+
+namespace ModManager.Models.App;
 
 public class ModSettingsParseResults
 {
-	public List<ProfileActiveModData> ActiveMods { get; set; }
+	public List<ModuleShortDesc> ActiveMods { get; set; }
 
 	public ModSettingsParseResults()
 	{

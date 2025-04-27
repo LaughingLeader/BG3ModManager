@@ -1,6 +1,4 @@
-﻿using ModManager.Models.Mod;
-
-namespace ModManager.Models;
+﻿namespace ModManager.Models.Mod;
 
 public class ModFileDeletionData : ReactiveObject
 {
@@ -20,7 +18,7 @@ public class ModFileDeletionData : ReactiveObject
 			if (isDeletingDuplicates && loadedMods != null)
 			{
 				var duplicatesStr = loadedMods.FirstOrDefault(x => x.UUID == entry.UUID)?.FilePath;
-				if (!String.IsNullOrEmpty(duplicatesStr))
+				if (!string.IsNullOrEmpty(duplicatesStr))
 				{
 					data.Duplicates = duplicatesStr;
 				}

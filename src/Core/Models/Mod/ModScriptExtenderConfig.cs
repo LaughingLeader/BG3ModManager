@@ -4,7 +4,7 @@ using ModManager.Json;
 
 using System.Runtime.Serialization;
 
-namespace ModManager.Models;
+namespace ModManager.Models.Mod;
 
 [DataContract]
 public class ModScriptExtenderConfig : ReactiveObject
@@ -26,6 +26,6 @@ public class ModScriptExtenderConfig : ReactiveObject
 		FeatureFlags = new();
 		FeatureFlags.CountChanged.ToPropertyEx(this, x => x.TotalFeatureFlags);
 		this.WhenAnyValue(x => x.RequiredVersion, x => x.TotalFeatureFlags, x => x.ModTable)
-		.Select(x => x.Item1 > -1 || x.Item2 > 0 || !String.IsNullOrEmpty(x.Item3)).ToPropertyEx(this, x => x.HasAnySettings);
+		.Select(x => x.Item1 > -1 || x.Item2 > 0 || !string.IsNullOrEmpty(x.Item3)).ToPropertyEx(this, x => x.HasAnySettings);
 	}
 }

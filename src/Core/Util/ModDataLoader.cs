@@ -7,6 +7,7 @@ using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
+using ModManager.Models.Mod.Game;
 using ModManager.Util.Pak;
 
 using System.Text;
@@ -705,7 +706,7 @@ public static partial class ModDataLoader
 	public static async Task<ModSettingsParseResults> LoadModSettingsFileAsync(string path)
 	{
 		var modOrderUUIDs = new List<string>();
-		var activeMods = new List<ProfileActiveModData>();
+		var activeMods = new List<ModuleShortDesc>();
 
 		if (File.Exists(path))
 		{
@@ -733,9 +734,8 @@ public static partial class ModDataLoader
 							{
 								foreach (var c in modList)
 								{
-									var activeModData = new ProfileActiveModData();
-									activeModData.LoadFromAttributes(c.Attributes);
-									if (!ModDataLoader.IgnoreMod(activeModData.UUID))
+									var activeModData = ModuleShortDesc.FromAttributes(c.Attributes);
+									if (activeModData?.UUID != null && !ModDataLoader.IgnoreMod(activeModData.UUID))
 									{
 										activeMods.Add(activeModData);
 									}

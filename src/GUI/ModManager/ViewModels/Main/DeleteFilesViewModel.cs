@@ -1,7 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using ModManager.Models;
+using ModManager.Models.Mod;
 
 namespace ModManager.ViewModels.Main;
 

@@ -2,6 +2,7 @@
 using DynamicData.Binding;
 
 using ModManager.Models.GitHub;
+using ModManager.Models.Mod.Game;
 using ModManager.Models.Modio;
 using ModManager.Models.NexusMods;
 using ModManager.Util;
@@ -406,15 +407,15 @@ public class ModData : ReactiveObject, IModData
 		};
 	}
 
-	public ProfileActiveModData ToProfileModData()
+	public ModuleShortDesc ToModuleShortDesc()
 	{
-		return new ProfileActiveModData()
+		return new ModuleShortDesc()
 		{
 			Folder = Folder,
 			MD5 = MD5,
 			Name = Name,
 			UUID = UUID,
-			Version = Version.VersionInt
+			Version = new LarianVersion(Version.VersionInt)
 		};
 	}
 

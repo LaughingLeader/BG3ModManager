@@ -4,7 +4,7 @@ using ModManager.Extensions;
 
 using System.Reflection;
 
-namespace ModManager.Models.Mod;
+namespace ModManager.Models.Mod.Game;
 
 public class ModuleInfo
 {

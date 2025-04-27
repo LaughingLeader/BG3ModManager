@@ -3,6 +3,7 @@ using ModManager.Models.Cache;
 using ModManager.Models.Extender;
 using ModManager.Models.GitHub.Json;
 using ModManager.Models.Mod;
+using ModManager.Models.Mod.Game;
 using ModManager.Models.Settings;
 
 namespace ModManager;

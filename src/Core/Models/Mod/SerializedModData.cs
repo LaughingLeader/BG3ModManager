@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using ModManager.Models.Mod.Game;
+
+using System.Runtime.Serialization;
 
 namespace ModManager.Models.Mod;
 
