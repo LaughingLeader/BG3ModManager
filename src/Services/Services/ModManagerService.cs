@@ -197,7 +197,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	public async Task<List<ModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token)
 	{
-		var mods = await DivinityModDataLoader.LoadModsAsync(gameDataPath, userModsDirectoryPath, token);
+		var mods = await ModDataLoader.LoadModsAsync(gameDataPath, userModsDirectoryPath, token);
 		
 		var baseMods = mods.DataDirectoryMods.Mods;
 		var userMods = mods.UserDirectoryMods.Mods;

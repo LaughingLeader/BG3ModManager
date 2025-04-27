@@ -2,7 +2,7 @@
 
 namespace ModManager.Util;
 
-public static class DivinitySaveTools
+public static class SaveTools
 {
 	public static bool RenameSave(string pathToSave, string newName)
 	{

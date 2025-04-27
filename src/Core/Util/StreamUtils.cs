@@ -1,6 +1,6 @@
 ﻿namespace ModManager.Util;
 
-public static class DivinityStreamUtils
+public static class StreamUtils
 {
 	public static byte[] ReadToEnd(System.IO.Stream stream)
 	{

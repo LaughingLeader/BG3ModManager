@@ -1,11 +1,9 @@
-﻿using ModManager.Models.Mod;
+﻿using System.Runtime.Serialization;
 
-using System.Runtime.Serialization;
-
-namespace ModManager.Models;
+namespace ModManager.Models.Mod;
 
 [DataContract]
-public class DivinitySerializedModData : IModData
+public class SerializedModData : IModData
 {
 	[DataMember] public int Index { get; set; }
 	[DataMember] public string? FileName { get; set; }
@@ -19,16 +17,16 @@ public class DivinitySerializedModData : IModData
 
 	[DataMember] public string? Type { get; set; }
 
-	[DataMember] public DivinityModScriptExtenderConfig ScriptExtenderData { get; set; }
+	[DataMember] public ModScriptExtenderConfig ScriptExtenderData { get; set; }
 	[DataMember] public List<ModuleShortDesc> Dependencies { get; set; }
 
 	[DataMember] public string? MD5 { get; set; }
 
 	public DateTimeOffset? LastModified { get; set; }
 
-	public static DivinitySerializedModData FromMod(ModData mod)
+	public static SerializedModData FromMod(ModData mod)
 	{
-		return new DivinitySerializedModData
+		return new SerializedModData
 		{
 			Author = mod.AuthorDisplayName,
 			Dependencies = mod.Dependencies.Items.ToList(),

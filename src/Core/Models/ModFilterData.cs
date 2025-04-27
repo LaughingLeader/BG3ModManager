@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace ModManager.Models;
 
-public struct DivinityModFilterData
+public struct ModFilterData
 {
 	public string? FilterProperty { get; set; }
 	public string? FilterValue { get; set; }

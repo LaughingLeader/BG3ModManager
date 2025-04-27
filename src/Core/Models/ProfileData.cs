@@ -1,6 +1,6 @@
 ﻿namespace ModManager.Models;
 
-public class DivinityProfileData : ReactiveObject
+public class ProfileData : ReactiveObject
 {
 	[Reactive] public string? Name { get; set; }
 	[Reactive] public string? FolderName { get; set; }
@@ -16,7 +16,7 @@ public class DivinityProfileData : ReactiveObject
 	/// <summary>
 	/// The mod data under the Mods node, from modsettings.lsx.
 	/// </summary>
-	public List<DivinityProfileActiveModData> ActiveMods { get; set; } = [];
+	public List<ProfileActiveModData> ActiveMods { get; set; } = [];
 
 	public List<string> GetModOrder(bool includeIgnoredMods = false)
 	{
@@ -31,7 +31,7 @@ public class DivinityProfileData : ReactiveObject
 		return order;
 	}
 
-	public DivinityProfileData()
+	public ProfileData()
 	{
 		this.WhenAnyValue(x => x.FilePath).Select(x => !String.IsNullOrEmpty(x) ? Path.Join(x, "modsettings.lsx") : "").BindTo(this, x => x.ModSettingsFile);
 	}

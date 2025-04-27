@@ -45,7 +45,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 
 		if (File.Exists(appFeaturesPath))
 		{
-			var savedFeatures = DivinityJsonUtils.SafeDeserializeFromPath<Dictionary<string, bool>>(appFeaturesPath);
+			var savedFeatures = JsonUtils.SafeDeserializeFromPath<Dictionary<string, bool>>(appFeaturesPath);
 			if (savedFeatures != null)
 			{
 				var features = new Dictionary<string, bool>(savedFeatures, StringComparer.OrdinalIgnoreCase);
@@ -55,12 +55,12 @@ public class SettingsService : ReactiveObject, ISettingsService
 
 		if (File.Exists(defaultPathwaysPath))
 		{
-			AppSettings.DefaultPathways = DivinityJsonUtils.SafeDeserializeFromPath<DefaultPathwayData>(defaultPathwaysPath);
+			AppSettings.DefaultPathways = JsonUtils.SafeDeserializeFromPath<DefaultPathwayData>(defaultPathwaysPath);
 		}
 
 		if (File.Exists(ignoredModsPath))
 		{
-			var ignoredModsData = DivinityJsonUtils.SafeDeserializeFromPath<IgnoredModsData>(ignoredModsPath);
+			var ignoredModsData = JsonUtils.SafeDeserializeFromPath<IgnoredModsData>(ignoredModsPath);
 			if (ignoredModsData != null)
 			{
 				if (ignoredModsData.IgnoreBuiltinPath != null)
@@ -69,7 +69,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 					{
 						if (!String.IsNullOrEmpty(path))
 						{
-							DivinityModDataLoader.IgnoreBuiltinPath.Add(path.Replace(Path.DirectorySeparatorChar, '/'));
+							ModDataLoader.IgnoreBuiltinPath.Add(path.Replace(Path.DirectorySeparatorChar, '/'));
 						}
 					}
 				}

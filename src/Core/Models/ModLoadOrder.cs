@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ModManager.Models;
 
 [DataContract]
-public class DivinityLoadOrderEntry
+public class ModLoadOrderEntry
 {
 	[DataMember]
 	public string? UUID { get; set; }
@@ -14,17 +14,15 @@ public class DivinityLoadOrderEntry
 	public string? Name { get; set; }
 	public bool Missing { get; set; }
 
-	public DivinityLoadOrderEntry Clone()
+	public ModLoadOrderEntry Clone()
 	{
-		return new DivinityLoadOrderEntry() { Name = this.Name, UUID = this.UUID, Missing = this.Missing };
+		return new ModLoadOrderEntry() { Name = this.Name, UUID = this.UUID, Missing = this.Missing };
 	}
 }
 
 [DataContract]
-public class DivinityLoadOrder : ReactiveObject
+public class ModLoadOrder : ReactiveObject
 {
-	private string _lastName;
-
 	[Reactive] public string? Name { get; set; }
 	[Reactive] public string? FilePath { get; set; }
 	[Reactive] public DateTime LastModifiedDate { get; set; }
@@ -40,7 +38,7 @@ public class DivinityLoadOrder : ReactiveObject
 	[ObservableAsProperty] public string? LastModified { get; }
 
 	[DataMember]
-	public List<DivinityLoadOrderEntry> Order { get; set; } = [];
+	public List<ModLoadOrderEntry> Order { get; set; } = [];
 
 	public void Add(IModEntry mod, bool force = false)
 	{
@@ -103,7 +101,7 @@ public class DivinityLoadOrder : ReactiveObject
 			{
 				if (force)
 				{
-					Order.Add(new DivinityLoadOrderEntry
+					Order.Add(new ModLoadOrderEntry
 					{
 						UUID = mod.UUID,
 						Name = mod.Name,
@@ -124,7 +122,7 @@ public class DivinityLoadOrder : ReactiveObject
 						}
 						if (!alreadyInOrder)
 						{
-							Order.Add(new DivinityLoadOrderEntry
+							Order.Add(new ModLoadOrderEntry
 							{
 								UUID = mod.UUID,
 								Name = mod.Name,
@@ -133,7 +131,7 @@ public class DivinityLoadOrder : ReactiveObject
 					}
 					else
 					{
-						Order.Add(new DivinityLoadOrderEntry
+						Order.Add(new ModLoadOrderEntry
 						{
 							UUID = mod.UUID,
 							Name = mod.Name,
@@ -162,7 +160,7 @@ public class DivinityLoadOrder : ReactiveObject
 		{
 			if (Order != null && Order.Count > 0 && mod != null)
 			{
-				DivinityLoadOrderEntry entry = null;
+				ModLoadOrderEntry entry = null;
 				foreach (var x in Order)
 				{
 					if (x != null && x.UUID == mod.UUID)
@@ -191,7 +189,7 @@ public class DivinityLoadOrder : ReactiveObject
 		}
 	}
 
-	public void Sort(Comparison<DivinityLoadOrderEntry> comparison)
+	public void Sort(Comparison<ModLoadOrderEntry> comparison)
 	{
 		try
 		{
@@ -206,13 +204,13 @@ public class DivinityLoadOrder : ReactiveObject
 		}
 	}
 
-	public void SetOrder(IEnumerable<DivinityLoadOrderEntry> nextOrder)
+	public void SetOrder(IEnumerable<ModLoadOrderEntry> nextOrder)
 	{
 		Order.Clear();
 		Order.AddRange(nextOrder);
 	}
 
-	public void SetOrder(DivinityLoadOrder nextOrder)
+	public void SetOrder(ModLoadOrder nextOrder)
 	{
 		Order.Clear();
 		Order.AddRange(nextOrder.Order);
@@ -227,9 +225,9 @@ public class DivinityLoadOrder : ReactiveObject
 		return false;
 	}
 
-	public DivinityLoadOrder Clone()
+	public ModLoadOrder Clone()
 	{
-		return new DivinityLoadOrder()
+		return new ModLoadOrder()
 		{
 			Name = this.Name,
 			Order = this.Order.ToList(),
@@ -237,13 +235,8 @@ public class DivinityLoadOrder : ReactiveObject
 		};
 	}
 
-	public DivinityLoadOrder()
+	public ModLoadOrder()
 	{
-		this.WhenAnyValue(x => x.Name, (name) => !String.IsNullOrEmpty(name) && name != _lastName).Subscribe(_ =>
-		{
-			DivinityApp.Events.OnOrderNameChanged(_lastName, Name);
-			_lastName = Name;
-		});
 		this.WhenAnyValue(x => x.LastModifiedDate).Select(x => x.ToString("g")).ToUIProperty(this, x => x.LastModified, "");
 	}
 }

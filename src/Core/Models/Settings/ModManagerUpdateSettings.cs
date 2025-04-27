@@ -46,7 +46,7 @@ public class ModManagerUpdateSettings : ReactiveObject
 
 	public ModManagerUpdateSettings()
 	{
-		IsAssociatedWithNXM = DivinityRegistryHelper.IsAssociatedWithNXMProtocol(DivinityApp.GetExePath());
+		IsAssociatedWithNXM = RegistryHelper.IsAssociatedWithNXMProtocol(DivinityApp.GetExePath());
 		this.SetToDefault();
 	}
 }

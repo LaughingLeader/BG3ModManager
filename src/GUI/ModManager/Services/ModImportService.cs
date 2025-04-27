@@ -28,7 +28,7 @@ namespace ModManager.Services;
 public class ModImportService(IDialogService _dialogService)
 {
 	private static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
-	private static DivinityPathwayData Pathways => AppServices.Pathways.Data;
+	private static PathwayData Pathways => AppServices.Pathways.Data;
 	private static MainWindowViewModel ViewModel => AppServices.Get<MainWindowViewModel>()!;
 
 	private static readonly string[] _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
@@ -100,7 +100,7 @@ public class ModImportService(IDialogService _dialogService)
 
 				if (File.Exists(outputFilePath))
 				{
-					var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, builtinMods, token);
+					var parsed = await ModDataLoader.LoadModDataFromPakAsync(outputFilePath, builtinMods, token);
 					if (parsed != null)
 					{
 						foreach(var mod in parsed)
@@ -300,7 +300,7 @@ public class ModImportService(IDialogService _dialogService)
 					{
 						using var entryStream = file.OpenEntryStream();
 						tempFile = await TempFile.CreateAsync(String.Join("\\", filePath, file.Key), entryStream, token);
-						var meta = DivinityModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
+						var meta = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 						if (meta == null)
 						{
 							var pakName = Path.GetFileNameWithoutExtension(file.Key);
@@ -361,7 +361,7 @@ public class ModImportService(IDialogService _dialogService)
 				if (decompressionStream != null)
 				{
 					tempFile = await TempFile.CreateAsync(filePath, decompressionStream, token);
-					result = DivinityModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
+					result = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 					if (result == null)
 					{
 						var pakName = Path.GetFileNameWithoutExtension(filePath);
@@ -639,7 +639,7 @@ public class ModImportService(IDialogService _dialogService)
 		return task;
 	}
 
-	public async Task<bool> ExportLoadOrderToArchiveAsync(DivinityProfileData selectedProfile, DivinityLoadOrder selectedModOrder, string outputPath, CancellationToken token)
+	public async Task<bool> ExportLoadOrderToArchiveAsync(ProfileData selectedProfile, ModLoadOrder selectedModOrder, string outputPath, CancellationToken token)
 	{
 		var success = false;
 		if (selectedProfile != null && selectedModOrder != null)
@@ -673,7 +673,7 @@ public class ModImportService(IDialogService _dialogService)
 				using var stream = File.OpenWrite(outputPath);
 				using var zipWriter = WriterFactory.Open(stream, ArchiveType.Zip, _exportWriterOptions);
 
-				var orderFileName = DivinityModDataLoader.MakeSafeFilename(Path.Join(selectedModOrder.Name + ".json"), '_');
+				var orderFileName = ModDataLoader.MakeSafeFilename(Path.Join(selectedModOrder.Name + ".json"), '_');
 				var contents = JsonConvert.SerializeObject(selectedModOrder, Newtonsoft.Json.Formatting.Indented);
 
 				using var ms = new System.IO.MemoryStream();

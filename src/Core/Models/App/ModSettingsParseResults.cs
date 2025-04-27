@@ -2,7 +2,7 @@
 
 public class ModSettingsParseResults
 {
-	public List<DivinityProfileActiveModData> ActiveMods { get; set; }
+	public List<ProfileActiveModData> ActiveMods { get; set; }
 
 	public ModSettingsParseResults()
 	{

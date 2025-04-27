@@ -21,7 +21,7 @@ public static class GitHubHelper
 
 	private static string? GetBrowserDownloadUrl(string dataString)
 	{
-		var jsonData = DivinityJsonUtils.SafeDeserialize<Dictionary<string, object>>(dataString);
+		var jsonData = JsonUtils.SafeDeserialize<Dictionary<string, object>>(dataString);
 		if (jsonData != null)
 		{
 			if (jsonData.TryGetValue("assets", out var assetsArray))

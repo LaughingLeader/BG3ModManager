@@ -2,7 +2,7 @@
 
 namespace ModManager.Models;
 
-public class DivinityProfileActiveModData
+public class ProfileActiveModData
 {
 	public string? Folder { get; set; }
 	public string? MD5 { get; set; }

@@ -12,7 +12,7 @@ public static class IExternalModCacheDataExtensions
 
 		if (File.Exists(filePath))
 		{
-			var cachedData = await DivinityJsonUtils.DeserializeFromPathAsync<T>(filePath, token);
+			var cachedData = await JsonUtils.DeserializeFromPathAsync<T>(filePath, token);
 			if (cachedData != null)
 			{
 				if (string.IsNullOrEmpty(cachedData.LastVersion) || cachedData.LastVersion != currentAppVersion)

@@ -58,7 +58,7 @@ public partial class ModListViewModel : ReactiveObject
 			if (searchText.IndexOf('@') > -1)
 			{
 				var remainingSearch = searchText;
-				List<DivinityModFilterData> searchProps = [];
+				List<ModFilterData> searchProps = [];
 
 				MatchCollection matches;
 
@@ -82,7 +82,7 @@ public partial class ModListViewModel : ReactiveObject
 							if (String.IsNullOrEmpty(value)) value = "";
 							if (!String.IsNullOrWhiteSpace(prop))
 							{
-								searchProps.Add(new DivinityModFilterData()
+								searchProps.Add(new ModFilterData()
 								{
 									FilterProperty = prop,
 									FilterValue = value
@@ -100,7 +100,7 @@ public partial class ModListViewModel : ReactiveObject
 				if (!String.IsNullOrWhiteSpace(remainingSearch) && !searchProps.Any(f => f.PropertyContains("Name")))
 				{
 					remainingSearch = remainingSearch.Trim();
-					searchProps.Add(new DivinityModFilterData()
+					searchProps.Add(new ModFilterData()
 					{
 						FilterProperty = "Name",
 						FilterValue = remainingSearch

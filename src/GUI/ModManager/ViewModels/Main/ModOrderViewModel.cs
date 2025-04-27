@@ -40,7 +40,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	public MainCommandBarViewModel CommandBar { get; }
 
-	public static DivinityPathwayData PathwayData => AppServices.Pathways.Data;
+	public static PathwayData PathwayData => AppServices.Pathways.Data;
 	public static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
 	public static AppSettings AppSettings => AppServices.Settings.AppSettings;
 
@@ -49,10 +49,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	//public ModListDropHandler DropHandler { get; }
 	//public ModListDragHandler DragHandler { get; }
 
-	private readonly SourceCache<DivinityProfileData, string> profiles = new(x => x.FilePath);
+	private readonly SourceCache<ProfileData, string> profiles = new(x => x.FilePath);
 
-	private readonly ReadOnlyObservableCollection<DivinityProfileData> _uiprofiles;
-	public ReadOnlyObservableCollection<DivinityProfileData> Profiles => _uiprofiles;
+	private readonly ReadOnlyObservableCollection<ProfileData> _uiprofiles;
+	public ReadOnlyObservableCollection<ProfileData> Profiles => _uiprofiles;
 
 	public ObservableCollectionExtended<IModEntry> ActiveMods { get; }
 	public ObservableCollectionExtended<IModEntry> InactiveMods { get; }
@@ -67,8 +67,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public ModListViewModel OverrideModsView { get; }
 	public ModListViewModel InactiveModsView { get; }
 
-	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
-	public List<DivinityLoadOrder> ExternalModOrders { get; }
+	public ObservableCollectionExtended<ModLoadOrder> ModOrderList { get; }
+	public List<ModLoadOrder> ExternalModOrders { get; }
 
 	[ObservableAsProperty] public ObservableCollectionExtended<IModEntry>? FocusedList { get; }
 
@@ -84,8 +84,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[Reactive] public int SelectedModOrderIndex { get; set; }
 	[Reactive] public int SelectedAdventureModIndex { get; set; }
 
-	[Reactive] public DivinityProfileData? SelectedProfile { get; set; }
-	[Reactive] public DivinityLoadOrder? SelectedModOrder { get; set; }
+	[Reactive] public ProfileData? SelectedProfile { get; set; }
+	[Reactive] public ModLoadOrder? SelectedModOrder { get; set; }
 	[Reactive] public ModData? SelectedAdventureMod { get; set; }
 
 	[ObservableAsProperty] public string SelectedModOrderName { get; }
@@ -112,11 +112,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public int TotalActiveMods { get; }
 	[ObservableAsProperty] public int TotalInactiveMods { get; }
 
-	public ReactiveCommand<DivinityLoadOrder, Unit> DeleteOrderCommand { get; }
+	public ReactiveCommand<ModLoadOrder, Unit> DeleteOrderCommand { get; }
 	public ReactiveCommand<object, Unit> ToggleOrderRenamingCommand { get; set; }
 	public RxCommandUnit FocusFilterCommand { get; set; }
 	public RxCommandUnit CopyOrderToClipboardCommand { get; }
-	public ReactiveCommand<DivinityLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
+	public ReactiveCommand<ModLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
 	public RxCommandUnit OpenGameMasterCampaignInFileExplorerCommand { get; private set; }
 	public RxCommandUnit CopyGameMasterCampaignPathToClipboardCommand { get; private set; }
 
@@ -214,7 +214,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}, canExecuteCommands);
 	}*/
 
-	private readonly SortExpressionComparer<DivinityProfileData> _profileSort = SortExpressionComparer<DivinityProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
+	private readonly SortExpressionComparer<ProfileData> _profileSort = SortExpressionComparer<ProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
 
 	private async static Task<TResult> RunTask<TResult>(Task<TResult> task, TResult defaultValue)
 	{
@@ -268,7 +268,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		var modManager = ModManager;
 
-		List<DivinityLoadOrderEntry>? lastActiveOrder = null;
+		List<ModLoadOrderEntry>? lastActiveOrder = null;
 		var lastOrderName = "";
 		if (SelectedModOrder != null)
 		{
@@ -311,7 +311,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				DivinityApp.Log("Loading current profile...");
 				main.Progress.WorkText = "Loading current profile...";
-				selectedProfileUUID = await DivinityModDataLoader.GetSelectedProfileUUIDAsync(PathwayData.AppDataProfilesPath);
+				selectedProfileUUID = await ModDataLoader.GetSelectedProfileUUIDAsync(PathwayData.AppDataProfilesPath);
 				main.Progress.IncreaseValue(taskStepAmount);
 			}
 			else
@@ -446,8 +446,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					}
 				}
 
-				if (Profiles.ElementAtOrDefault(SelectedProfileIndex) is DivinityProfileData profile) SelectedProfile = profile;
-				if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is DivinityLoadOrder order) SelectedModOrder = order;
+				if (Profiles.ElementAtOrDefault(SelectedProfileIndex) is ProfileData profile) SelectedProfile = profile;
+				if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is ModLoadOrder order) SelectedModOrder = order;
 				if (AdventureMods.ElementAtOrDefault(SelectedAdventureModIndex) is ModData adventureMod) SelectedAdventureMod = adventureMod;
 
 				/*if (lastActiveOrder != null && lastActiveOrder.Count > 0)
@@ -460,26 +460,26 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private DivinityProfileActiveModData ProfileActiveModDataFromUUID(string uuid)
+	private ProfileActiveModData ProfileActiveModDataFromUUID(string uuid)
 	{
 		if (ModManager.TryGetMod(uuid, out var mod))
 		{
 			return mod.ToProfileModData();
 		}
-		return new DivinityProfileActiveModData()
+		return new ProfileActiveModData()
 		{
 			UUID = uuid
 		};
 	}
 
-	private void DisplayMissingMods(DivinityLoadOrder order = null)
+	private void DisplayMissingMods(ModLoadOrder order = null)
 	{
 		var displayExtenderModWarning = false;
 
 		order ??= SelectedModOrder;
 		if (order != null && Settings.DisableMissingModWarnings != true)
 		{
-			List<DivinityMissingModData> missingMods = [];
+			List<MissingModData> missingMods = [];
 
 			for (var i = 0; i < order.Order.Count; i++)
 			{
@@ -490,10 +490,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						foreach (var dependency in mod.Dependencies.Items)
 						{
-							if (!DivinityModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID) &&
+							if (!ModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID) &&
 								!missingMods.Any(x => x.UUID == dependency.UUID))
 							{
-								var x = new DivinityMissingModData
+								var x = new MissingModData
 								{
 									Index = -1,
 									Name = dependency.Name,
@@ -505,9 +505,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						}
 					}
 				}
-				else if (!DivinityModDataLoader.IgnoreMod(entry.UUID))
+				else if (!ModDataLoader.IgnoreMod(entry.UUID))
 				{
-					var x = new DivinityMissingModData
+					var x = new MissingModData
 					{
 						Index = i,
 						Name = entry.Name,
@@ -538,7 +538,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			//DivinityApp.LogMessage($"Mod Order: {String.Join("\n", order.Order.Select(x => x.Name))}");
 			DivinityApp.Log("Checking mods for extender requirements.");
-			List<DivinityMissingModData> extenderRequiredMods = [];
+			List<MissingModData> extenderRequiredMods = [];
 			for (var i = 0; i < order.Order.Count; i++)
 			{
 				var entry = order.Order[i];
@@ -546,7 +546,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					if (mod.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING)
 					{
-						extenderRequiredMods.Add(new DivinityMissingModData
+						extenderRequiredMods.Add(new MissingModData
 						{
 							Index = mod.Index,
 							Name = mod.DisplayName,
@@ -563,7 +563,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 									// Dependencies not in the order that require the extender
 									if (dependencyMod.ExtenderModStatus == DivinityExtenderModStatus.REQUIRED_MISSING)
 									{
-										extenderRequiredMods.Add(new DivinityMissingModData
+										extenderRequiredMods.Add(new MissingModData
 										{
 											Index = mod.Index - 1,
 											Name = dependencyMod.DisplayName,
@@ -590,7 +590,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	#region Load Orders
 
-	private static async Task<List<DivinityLoadOrder>> LoadExternalLoadOrdersAsync()
+	private static async Task<List<ModLoadOrder>> LoadExternalLoadOrdersAsync()
 	{
 		try
 		{
@@ -609,7 +609,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 
 			DivinityApp.Log($"Attempting to load saved load orders from '{loadOrderDirectory}'.");
-			return await DivinityModDataLoader.FindLoadOrderFilesInDirectoryAsync(loadOrderDirectory);
+			return await ModDataLoader.FindLoadOrderFilesInDirectoryAsync(loadOrderDirectory);
 		}
 		catch (Exception ex)
 		{
@@ -638,7 +638,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 
 			var outputPath = SelectedModOrder.FilePath;
-			var outputName = DivinityModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
+			var outputName = ModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
 
 			if (String.IsNullOrWhiteSpace(SelectedModOrder.FilePath))
 			{
@@ -664,7 +664,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				else
 				{
-					result = await DivinityModDataLoader.ExportLoadOrderToFileAsync(outputPath, SelectedModOrder);
+					result = await ModDataLoader.ExportLoadOrderToFileAsync(outputPath, SelectedModOrder);
 				}
 			}
 			catch (Exception ex)
@@ -700,7 +700,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			outputPath = $"Current_{DateTime.Now.ToString(sysFormat)}.json";
 		}
 
-		outputPath = DivinityModDataLoader.MakeSafeFilename(outputPath, '_');
+		outputPath = ModDataLoader.MakeSafeFilename(outputPath, '_');
 		var modOrderName = Path.GetFileNameWithoutExtension(outputPath);
 
 		var result = await _dialogs.SaveFileAsync(new(
@@ -715,9 +715,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			outputPath = result.File!;
 			modOrderName = Path.GetFileNameWithoutExtension(outputPath)!;
 			// Save mods that aren't missing
-			var tempOrder = new DivinityLoadOrder { Name = modOrderName };
+			var tempOrder = new ModLoadOrder { Name = modOrderName };
 			tempOrder.Order.AddRange(SelectedModOrder.Order.Where(x => modManager.ModExists(x.UUID)));
-			if (DivinityModDataLoader.ExportLoadOrderToFile(outputPath, tempOrder))
+			if (ModDataLoader.ExportLoadOrderToFile(outputPath, tempOrder))
 			{
 				AppServices.Commands.ShowAlert($"Saved mod load order to '{outputPath}'", AlertType.Success, 10);
 				var updatedOrder = false;
@@ -758,19 +758,19 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
 			var outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
-			var finalOrder = DivinityModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
-			var result = await DivinityModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder);
+			var finalOrder = ModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
+			var result = await ModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder);
 
 			var dir = AppServices.Pathways.GetLarianStudiosAppDataFolder();
 			if (SelectedModOrder.Order.Count > 0)
 			{
-				await DivinityModDataLoader.UpdateLauncherPreferencesAsync(dir, false, false, true);
+				await ModDataLoader.UpdateLauncherPreferencesAsync(dir, false, false, true);
 			}
 			else
 			{
 				if (settings.DisableLauncherTelemetry || settings.DisableLauncherModWarnings)
 				{
-					await DivinityModDataLoader.UpdateLauncherPreferencesAsync(dir, !settings.DisableLauncherTelemetry, !settings.DisableLauncherModWarnings);
+					await ModDataLoader.UpdateLauncherPreferencesAsync(dir, !settings.DisableLauncherTelemetry, !settings.DisableLauncherModWarnings);
 				}
 			}
 
@@ -780,7 +780,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					AppServices.Commands.ShowAlert($"Exported load order to '{StringUtils.ReplaceSpecialPathways(outputPath)}'", AlertType.Success, 15, "Order Exported");
 
-					if (DivinityModDataLoader.ExportedSelectedProfile(PathwayData.AppDataProfilesPath, SelectedProfile.UUID))
+					if (ModDataLoader.ExportedSelectedProfile(PathwayData.AppDataProfilesPath, SelectedProfile.UUID))
 					{
 						DivinityApp.Log($"Set active profile to '{SelectedProfile.Name}'");
 					}
@@ -820,9 +820,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return false;
 	}
 
-	private DivinityProfileData? _lastProfile;
+	private ProfileData? _lastProfile;
 
-	public void BuildModOrderList(DivinityProfileData profile, int selectIndex = -1, string lastOrderName = "")
+	public void BuildModOrderList(ProfileData profile, int selectIndex = -1, string lastOrderName = "")
 	{
 		if (profile != null)
 		{
@@ -830,9 +830,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			DivinityApp.Log($"Changing profile to ({profile.FolderName}|{profile.FilePath})");
 
-			List<DivinityMissingModData> missingMods = [];
+			List<MissingModData> missingMods = [];
 
-			DivinityLoadOrder currentOrder = new DivinityLoadOrder() { Name = "Current", FilePath = profile.ModSettingsFile, IsModSettings = true };
+			ModLoadOrder currentOrder = new ModLoadOrder() { Name = "Current", FilePath = profile.ModSettingsFile, IsModSettings = true };
 
 			var modManager = ModManager;
 
@@ -845,7 +845,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				else
 				{
-					var x = new DivinityMissingModData
+					var x = new MissingModData
 					{
 						Index = i,
 						Name = activeMod.Name,
@@ -880,7 +880,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					try
 					{
 						SelectedModOrderIndex = selectIndex;
-						if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is DivinityLoadOrder order) SelectedModOrder = order;
+						if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is ModLoadOrder order) SelectedModOrder = order;
 
 						if(SelectedModOrder != null)
 						{
@@ -897,7 +897,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private async Task DeleteOrder(DivinityLoadOrder order)
+	private async Task DeleteOrder(ModLoadOrder order)
 	{
 		var data = new ShowMessageBoxRequest("Confirm Order Deletion", 
 			$"Delete load order '{order.Name}'? This cannot be undone.",
@@ -915,13 +915,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	public async Task<List<DivinityProfileData>?> LoadProfilesAsync()
+	public async Task<List<ProfileData>?> LoadProfilesAsync()
 	{
 		if (Directory.Exists(PathwayData.AppDataProfilesPath))
 		{
 			DivinityApp.Log($"Loading profiles from '{PathwayData.AppDataProfilesPath}'.");
 
-			var profiles = await DivinityModDataLoader.LoadProfileDataAsync(PathwayData.AppDataProfilesPath);
+			var profiles = await ModDataLoader.LoadProfileDataAsync(PathwayData.AppDataProfilesPath);
 			DivinityApp.Log($"Loaded '{profiles.Count}' profiles.\n{string.Join(';', profiles.Select(x => x.FolderName))}");
 			return profiles;
 		}
@@ -1079,7 +1079,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		});
 	}
 
-	private int SortModOrder(DivinityLoadOrderEntry a, DivinityLoadOrderEntry b)
+	private int SortModOrder(ModLoadOrderEntry a, ModLoadOrderEntry b)
 	{
 		var modManager = ModManager;
 
@@ -1111,16 +1111,16 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return 0;
 	}
 
-	public void AddNewModOrder(DivinityLoadOrder? newOrder = null)
+	public void AddNewModOrder(ModLoadOrder? newOrder = null)
 	{
 		if (newOrder == null)
 		{
-			newOrder = new DivinityLoadOrder()
+			newOrder = new ModLoadOrder()
 			{
 				Name = $"New{ExternalModOrders.Count + 1}",
 				Order = ActiveMods.Where(x => x.EntryType == ModEntryType.Mod).Cast<ModEntry>().Select(m => m.Data.ToOrderEntry()).ToList()
 			};
-			newOrder.FilePath = Path.Join(Settings.LoadOrderPath, DivinityModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
+			newOrder.FilePath = Path.Join(Settings.LoadOrderPath, ModDataLoader.MakeSafeFilename(Path.Join(newOrder.Name + ".json"), '_'));
 		}
 		ExternalModOrders.Add(newOrder);
 		BuildModOrderList(SelectedProfile, ExternalModOrders.Count); // +1 due to Current being index 0
@@ -1128,7 +1128,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	public bool LoadModOrder() => LoadModOrder(SelectedModOrder);
 
-	public bool LoadModOrder(DivinityLoadOrder order, List<DivinityMissingModData>? missingModsFromProfileOrder = null)
+	public bool LoadModOrder(ModLoadOrder order, List<MissingModData>? missingModsFromProfileOrder = null)
 	{
 		if (order == null) return false;
 
@@ -1146,7 +1146,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		modManager.DeselectAllMods();
 
 		DivinityApp.Log($"Loading mod order '{order.Name}':\n{string.Join(";", order.Order.Select(x => x.Name))}");
-		Dictionary<string, DivinityMissingModData> missingMods = [];
+		Dictionary<string, MissingModData> missingMods = [];
 		if (missingModsFromProfileOrder != null && missingModsFromProfileOrder.Count > 0)
 		{
 			missingModsFromProfileOrder.ForEach(x => missingMods[x.UUID] = x);
@@ -1158,7 +1158,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		for (var i = 0; i < loadFrom.Count; i++)
 		{
 			var entry = loadFrom[i];
-			if (!DivinityModDataLoader.IgnoreMod(entry.UUID))
+			if (!ModDataLoader.IgnoreMod(entry.UUID))
 			{
 				if (modManager.TryGetMod(entry.UUID, out var mod))
 				{
@@ -1182,9 +1182,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						foreach (var dependency in mod.Dependencies.Items)
 						{
-							if (!String.IsNullOrWhiteSpace(dependency.UUID) && !DivinityModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID))
+							if (!String.IsNullOrWhiteSpace(dependency.UUID) && !ModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID))
 							{
-								missingMods[dependency.UUID] = new DivinityMissingModData
+								missingMods[dependency.UUID] = new MissingModData
 								{
 									Index = -1,
 									Name = dependency.Name,
@@ -1197,7 +1197,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				else
 				{
-					missingMods[entry.UUID] = new DivinityMissingModData
+					missingMods[entry.UUID] = new MissingModData
 					{
 						Index = i,
 						Name = entry.Name,
@@ -1267,7 +1267,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			var result = await _dialogs.SaveFileAsync(new(
 				"Export Load Order As Text File...",
-				Path.Join(ModImportService.GetInitialStartingDirectory(), DivinityModDataLoader.MakeSafeFilename(outputName, '_')),
+				Path.Join(ModImportService.GetInitialStartingDirectory(), ModDataLoader.MakeSafeFilename(outputName, '_')),
 				CommonFileTypes.ModOrderFileTypes
 			));
 
@@ -1281,7 +1281,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				var outputText = "";
 				if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 				{
-					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => DivinitySerializedModData.FromMod((ModData)x)).ToList();
+					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => SerializedModData.FromMod((ModData)x)).ToList();
 					outputText = JsonConvert.SerializeObject(serializedMods, Formatting.Indented, new JsonSerializerSettings
 					{
 						NullValueHandling = NullValueHandling.Ignore
@@ -1315,7 +1315,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	public async Task<DivinityLoadOrder?> ImportOrderFromSave()
+	public async Task<ModLoadOrder?> ImportOrderFromSave()
 	{
 		var startPath = "";
 		if (SelectedProfile != null)
@@ -1342,7 +1342,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			PathwayData.LastSaveFilePath = Path.GetDirectoryName(result.File);
 			DivinityApp.Log($"Loading order from '{result.File}'.");
-			var newOrder = DivinityModDataLoader.GetLoadOrderFromSave(result.File, Settings.LoadOrderPath);
+			var newOrder = ModDataLoader.GetLoadOrderFromSave(result.File, Settings.LoadOrderPath);
 			if (newOrder != null)
 			{
 				DivinityApp.Log($"Imported mod order: {String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
@@ -1405,7 +1405,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			Settings.LastLoadedOrderFilePath = Path.GetDirectoryName(result.File)!;
 			Settings.Save(out _);
 			DivinityApp.Log($"Loading order from '{result.File}'.");
-			var newOrder = DivinityModDataLoader.LoadOrderFromFile(result.File, ModManager.AllMods);
+			var newOrder = ModDataLoader.LoadOrderFromFile(result.File, ModManager.AllMods);
 			if (newOrder != null)
 			{
 				DivinityApp.Log($"Imported mod order:\n{String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
@@ -1589,7 +1589,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
 
 		var canDeleteOrder = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => x > 0));
-		DeleteOrderCommand = ReactiveCommand.CreateFromTask<DivinityLoadOrder>(DeleteOrder, canDeleteOrder);
+		DeleteOrderCommand = ReactiveCommand.CreateFromTask<ModLoadOrder>(DeleteOrder, canDeleteOrder);
 
 		CopyOrderToClipboardCommand = ReactiveCommand.CreateFromObservable(() => Observable.Start(() =>
 		{
@@ -1643,7 +1643,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		});
 
-		OrderJustLoadedCommand = ReactiveCommand.Create<DivinityLoadOrder>(order => { });
+		OrderJustLoadedCommand = ReactiveCommand.Create<ModLoadOrder>(order => { });
 
 		/*Profiles.ToObservableChangeSet().CountChanged()
 			.CombineLatest(this.WhenAnyValue(x => x.SelectedProfileIndex))
@@ -1756,7 +1756,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				checkModSettingsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromSeconds(2), async (sch, cts) =>
 				{
 					var activeCount = ActiveMods.Count;
-					var modSettingsData = await DivinityModDataLoader.LoadModSettingsFileAsync(e.FullPath);
+					var modSettingsData = await ModDataLoader.LoadModSettingsFileAsync(e.FullPath);
 					if (activeCount > 0 && modSettingsData.CountActive() < activeCount)
 					{
 						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
@@ -1784,19 +1784,19 @@ public class DesignModOrderViewModel : IModOrderViewModel
 	private readonly ReadOnlyObservableCollection<ModData> _adventureMods;
 	public ReadOnlyObservableCollection<ModData> AdventureMods => _adventureMods;
 
-	private ObservableCollectionExtended<DivinityProfileData> _testProfiles = [];
+	private ObservableCollectionExtended<ProfileData> _testProfiles = [];
 
-	private readonly ReadOnlyObservableCollection<DivinityProfileData> _profiles;
-	public ReadOnlyObservableCollection<DivinityProfileData> Profiles => _profiles;
-	public ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
+	private readonly ReadOnlyObservableCollection<ProfileData> _profiles;
+	public ReadOnlyObservableCollection<ProfileData> Profiles => _profiles;
+	public ObservableCollectionExtended<ModLoadOrder> ModOrderList { get; }
 	public bool IsLocked { get; }
 
 	public int SelectedProfileIndex { get; set; }
 	public int SelectedModOrderIndex { get; set; }
 	public int SelectedAdventureModIndex { get; set; }
 
-	public DivinityProfileData? SelectedProfile { get; set; }
-	public DivinityLoadOrder? SelectedModOrder { get; set; }
+	public ProfileData? SelectedProfile { get; set; }
+	public ModLoadOrder? SelectedModOrder { get; set; }
 	public ModData? SelectedAdventureMod { get; set; }
 
 	public void AddActiveMod(IModEntry mod) => throw new NotImplementedException();
@@ -1814,7 +1814,7 @@ public class DesignModOrderViewModel : IModOrderViewModel
 		_testAdventureMods.ToObservableChangeSet().Bind(out _adventureMods).Subscribe();
 
 		_testProfiles.ToObservableChangeSet().Bind(out _profiles).Subscribe();
-		_testProfiles.Add(new DivinityProfileData()
+		_testProfiles.Add(new ProfileData()
 		{
 			Name = "Public",
 			FolderName = "Public",
@@ -1823,7 +1823,7 @@ public class DesignModOrderViewModel : IModOrderViewModel
 			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\PlayerProfiles\\Public\\profile8.lsf"
 		});
 
-		ModOrderList.Add(new DivinityLoadOrder()
+		ModOrderList.Add(new ModLoadOrder()
 		{
 			Name = "Current",
 			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\PlayerProfiles\\Public\\modsettings.lsx"

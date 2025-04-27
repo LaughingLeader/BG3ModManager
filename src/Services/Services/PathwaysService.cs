@@ -8,7 +8,7 @@ public class PathwaysService : IPathwaysService
 {
 	private readonly ISettingsService _settingsService;
 
-	public DivinityPathwayData Data { get; }
+	public PathwayData Data { get; }
 
 	public string GetLarianStudiosAppDataFolder()
 	{
@@ -120,7 +120,7 @@ public class PathwaysService : IPathwaysService
 			if (String.IsNullOrWhiteSpace(currentGameDataPath) || !Directory.Exists(currentGameDataPath))
 			{
 				var defaultPathways = _settingsService.AppSettings.DefaultPathways;
-				var installPath = DivinityRegistryHelper.GetGameInstallPath(defaultPathways.Steam.RootFolderName,
+				var installPath = RegistryHelper.GetGameInstallPath(defaultPathways.Steam.RootFolderName,
 					defaultPathways.GOG.Registry_32, defaultPathways.GOG.Registry_64, defaultPathways.Steam.AppID);
 
 				if (!String.IsNullOrEmpty(installPath) && Directory.Exists(installPath))
@@ -129,7 +129,7 @@ public class PathwaysService : IPathwaysService
 					if (!File.Exists(_settingsService.ManagerSettings.GameExecutablePath))
 					{
 						var exePath = "";
-						if (!DivinityRegistryHelper.IsGOG)
+						if (!RegistryHelper.IsGOG)
 						{
 							exePath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.Steam.ExePath);
 						}
@@ -163,7 +163,7 @@ public class PathwaysService : IPathwaysService
 				if (!File.Exists(_settingsService.ManagerSettings.GameExecutablePath))
 				{
 					var exePath = "";
-					if (!DivinityRegistryHelper.IsGOG)
+					if (!RegistryHelper.IsGOG)
 					{
 						exePath = Path.Join(installPath, _settingsService.AppSettings.DefaultPathways.Steam.ExePath);
 					}

@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace ModManager.Models;
 
 [DataContract]
-public class DivinityModScriptExtenderConfig : ReactiveObject
+public class ModScriptExtenderConfig : ReactiveObject
 {
 	[DataMember][Reactive] public int RequiredVersion { get; set; }
 	[DataMember][Reactive] public string? ModTable { get; set; }
@@ -20,7 +20,7 @@ public class DivinityModScriptExtenderConfig : ReactiveObject
 
 	public bool Lua => FeatureFlags.Items.Contains("Lua");
 
-	public DivinityModScriptExtenderConfig()
+	public ModScriptExtenderConfig()
 	{
 		RequiredVersion = -1;
 		FeatureFlags = new();

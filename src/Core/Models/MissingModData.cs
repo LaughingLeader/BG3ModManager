@@ -2,7 +2,7 @@
 
 namespace ModManager.Models;
 
-public class DivinityMissingModData
+public class MissingModData
 {
 	public string? Name { get; set; }
 	public int Index { get; set; }
@@ -26,9 +26,9 @@ public class DivinityMissingModData
 		return str;
 	}
 
-	public static DivinityMissingModData FromData(ModData modData)
+	public static MissingModData FromData(ModData modData)
 	{
-		return new DivinityMissingModData
+		return new MissingModData
 		{
 			Name = modData.Name,
 			UUID = modData.UUID,
@@ -37,9 +37,9 @@ public class DivinityMissingModData
 		};
 	}
 
-	public static DivinityMissingModData FromData(DivinityLoadOrderEntry modData, List<DivinityLoadOrderEntry> orderList)
+	public static MissingModData FromData(ModLoadOrderEntry modData, List<ModLoadOrderEntry> orderList)
 	{
-		return new DivinityMissingModData
+		return new MissingModData
 		{
 			Name = modData.Name,
 			UUID = modData.UUID,

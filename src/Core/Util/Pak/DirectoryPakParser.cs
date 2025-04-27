@@ -101,7 +101,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 
 		await Parallel.ForEachAsync(_packages, opts, async (package, t) =>
 		{
-			var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(package, _baseMods, t, !detectDuplicates);
+			var parsed = await ModDataLoader.LoadModDataFromPakAsync(package, _baseMods, t, !detectDuplicates);
 			if (parsed?.Count > 0)
 			{
 				foreach (var mod in parsed)
@@ -131,7 +131,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			var metaFiles = Directory.EnumerateFiles(modProjectDirectory, "meta.lsx", FileUtils.RecursiveOptions);
 			await Parallel.ForEachAsync(metaFiles, opts, async (metaFilePath, t) =>
 			{
-				var mod = await DivinityModDataLoader.GetModDataFromMeta(metaFilePath, t);
+				var mod = await ModDataLoader.GetModDataFromMeta(metaFilePath, t);
 				if (mod != null)
 				{
 					mod.IsEditorMod = true;

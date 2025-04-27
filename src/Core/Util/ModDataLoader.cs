@@ -16,7 +16,7 @@ using System.Xml.Linq;
 
 namespace ModManager.Util;
 
-public static partial class DivinityModDataLoader
+public static partial class ModDataLoader
 {
 	private static readonly StringComparison SCOMP = StringComparison.OrdinalIgnoreCase;
 	private static readonly string[] LarianFileTypes = [".lsb", ".lsf", ".lsx", ".lsj"];
@@ -365,7 +365,7 @@ public static partial class DivinityModDataLoader
 			var modManagerConfigPath = Path.Join(modsFolder, ModConfig.FileName);
 			if (vfs.TryOpen(modManagerConfigPath, out modManagerConfigStream))
 			{
-				var modManagerConfig = await DivinityJsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigStream, token);
+				var modManagerConfig = await JsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigStream, token);
 				if (modManagerConfig != null)
 				{
 					modData.ApplyModConfig(modManagerConfig);
@@ -618,7 +618,7 @@ public static partial class DivinityModDataLoader
 
 						if (modManagerConfigPath != null)
 						{
-							var modManagerConfig = await DivinityJsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigPath, token);
+							var modManagerConfig = await JsonUtils.DeserializeFromAbstractAsync<ModConfig>(modManagerConfigPath, token);
 							if (modManagerConfig != null)
 							{
 								modData.ApplyModConfig(modManagerConfig);
@@ -705,7 +705,7 @@ public static partial class DivinityModDataLoader
 	public static async Task<ModSettingsParseResults> LoadModSettingsFileAsync(string path)
 	{
 		var modOrderUUIDs = new List<string>();
-		var activeMods = new List<DivinityProfileActiveModData>();
+		var activeMods = new List<ProfileActiveModData>();
 
 		if (File.Exists(path))
 		{
@@ -733,9 +733,9 @@ public static partial class DivinityModDataLoader
 							{
 								foreach (var c in modList)
 								{
-									var activeModData = new DivinityProfileActiveModData();
+									var activeModData = new ProfileActiveModData();
 									activeModData.LoadFromAttributes(c.Attributes);
-									if (!DivinityModDataLoader.IgnoreMod(activeModData.UUID))
+									if (!ModDataLoader.IgnoreMod(activeModData.UUID))
 									{
 										activeMods.Add(activeModData);
 									}
@@ -757,9 +757,9 @@ public static partial class DivinityModDataLoader
 		};
 	}
 
-	public static async Task<List<DivinityProfileData>> LoadProfileDataAsync(string profilePath)
+	public static async Task<List<ProfileData>> LoadProfileDataAsync(string profilePath)
 	{
-		List<DivinityProfileData> profiles = [];
+		List<ProfileData> profiles = [];
 		if (Directory.Exists(profilePath))
 		{
 			var profileDirectories = Directory.EnumerateDirectories(profilePath);
@@ -801,7 +801,7 @@ public static partial class DivinityModDataLoader
 					displayedName = name;
 				}
 
-				var profileData = new DivinityProfileData()
+				var profileData = new ProfileData()
 				{
 					Name = name,
 					FolderName = folderName,
@@ -954,7 +954,7 @@ public static partial class DivinityModDataLoader
 		return activeProfileUUID;
 	}
 
-	public static bool ExportLoadOrderToFile(string outputFilePath, DivinityLoadOrder order)
+	public static bool ExportLoadOrderToFile(string outputFilePath, ModLoadOrder order)
 	{
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
@@ -968,7 +968,7 @@ public static partial class DivinityModDataLoader
 		return true;
 	}
 
-	public static async Task<bool> ExportLoadOrderToFileAsync(string outputFilePath, DivinityLoadOrder order)
+	public static async Task<bool> ExportLoadOrderToFileAsync(string outputFilePath, ModLoadOrder order)
 	{
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
@@ -982,9 +982,9 @@ public static partial class DivinityModDataLoader
 		return true;
 	}
 
-	public static List<DivinityLoadOrder> FindLoadOrderFilesInDirectory(string directory)
+	public static List<ModLoadOrder> FindLoadOrderFilesInDirectory(string directory)
 	{
-		List<DivinityLoadOrder> loadOrders = [];
+		List<ModLoadOrder> loadOrders = [];
 
 		if (Directory.Exists(directory))
 		{
@@ -995,7 +995,7 @@ public static partial class DivinityModDataLoader
 				try
 				{
 					var fileText = File.ReadAllText(loadOrderFile);
-					var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
+					var order = JsonUtils.SafeDeserialize<ModLoadOrder>(fileText);
 					if (order != null)
 					{
 						order.FilePath = loadOrderFile;
@@ -1013,9 +1013,9 @@ public static partial class DivinityModDataLoader
 		return loadOrders;
 	}
 
-	public static async Task<List<DivinityLoadOrder>> FindLoadOrderFilesInDirectoryAsync(string directory)
+	public static async Task<List<ModLoadOrder>> FindLoadOrderFilesInDirectoryAsync(string directory)
 	{
-		List<DivinityLoadOrder> loadOrders = [];
+		List<ModLoadOrder> loadOrders = [];
 
 		if (Directory.Exists(directory))
 		{
@@ -1033,7 +1033,7 @@ public static partial class DivinityModDataLoader
 					using var reader = File.OpenText(loadOrderFile);
 					var fileText = await reader.ReadToEndAsync();
 
-					var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
+					var order = JsonUtils.SafeDeserialize<ModLoadOrder>(fileText);
 					order.Name = Path.GetFileNameWithoutExtension(loadOrderFile);
 					if (order != null)
 					{
@@ -1052,7 +1052,7 @@ public static partial class DivinityModDataLoader
 
 		return loadOrders;
 	}
-	public static async Task<DivinityLoadOrder> LoadOrderFromFileAsync(string loadOrderFile)
+	public static async Task<ModLoadOrder> LoadOrderFromFileAsync(string loadOrderFile)
 	{
 		if (File.Exists(loadOrderFile))
 		{
@@ -1060,7 +1060,7 @@ public static partial class DivinityModDataLoader
 			{
 				using var reader = File.OpenText(loadOrderFile);
 				var fileText = await reader.ReadToEndAsync();
-				var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(fileText);
+				var order = JsonUtils.SafeDeserialize<ModLoadOrder>(fileText);
 				if (order != null)
 				{
 					order.FilePath = loadOrderFile;
@@ -1075,22 +1075,22 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static DivinityLoadOrder LoadOrderFromFile(string loadOrderFile, IEnumerable<ModData> allMods)
+	public static ModLoadOrder LoadOrderFromFile(string loadOrderFile, IEnumerable<ModData> allMods)
 	{
 		var ext = Path.GetExtension(loadOrderFile).ToLower();
-		DivinityLoadOrder order = null;
+		ModLoadOrder order = null;
 		switch (ext)
 		{
 			case ".json":
-				if (DivinityJsonUtils.TrySafeDeserializeFromPath<DivinityLoadOrder>(loadOrderFile, out var savedOrder))
+				if (JsonUtils.TrySafeDeserializeFromPath<ModLoadOrder>(loadOrderFile, out var savedOrder))
 				{
 					return savedOrder;
 				}
 				else
 				{
-					if (DivinityJsonUtils.TrySafeDeserializeFromPath<List<DivinitySerializedModData>>(loadOrderFile, out var exportedOrder))
+					if (JsonUtils.TrySafeDeserializeFromPath<List<SerializedModData>>(loadOrderFile, out var exportedOrder))
 					{
-						order = new DivinityLoadOrder
+						order = new ModLoadOrder
 						{
 							IsDecipheredOrder = true
 						};
@@ -1123,7 +1123,7 @@ public static partial class DivinityModDataLoader
 			case ".txt":
 				var textPattern = new Regex(@"\((\S+\.pak)\)", RegexOptions.IgnoreCase);
 				var textLines = File.ReadAllLines(loadOrderFile);
-				order = new DivinityLoadOrder();
+				order = new ModLoadOrder();
 				foreach (var line in textLines)
 				{
 					var match = textPattern.Match(line);
@@ -1142,7 +1142,7 @@ public static partial class DivinityModDataLoader
 						}
 						else
 						{
-							order.Order.Add(new DivinityLoadOrderEntry
+							order.Order.Add(new ModLoadOrderEntry
 							{
 								Missing = true,
 								Name = pakName,
@@ -1160,7 +1160,7 @@ public static partial class DivinityModDataLoader
 				var urlIndex = header.IndexOf("URL");
 				if (fileIndex > -1)
 				{
-					order = new DivinityLoadOrder();
+					order = new ModLoadOrder();
 					for (var i = 1; i < tsvLines.Length; i++)
 					{
 						var line = tsvLines[i];
@@ -1188,7 +1188,7 @@ public static partial class DivinityModDataLoader
 								{
 									name = $"{name} {lineData[urlIndex]}";
 								}
-								order.Order.Add(new DivinityLoadOrderEntry
+								order.Order.Add(new ModLoadOrderEntry
 								{
 									Missing = true,
 									Name = name,
@@ -1249,7 +1249,7 @@ public static partial class DivinityModDataLoader
 		var settingsFilePath = Path.Join(folderDir, "preferences.json");
 		if (File.Exists(settingsFilePath))
 		{
-			settings = DivinityJsonUtils.SafeDeserializeFromPath<Dictionary<string, object>>(settingsFilePath);
+			settings = JsonUtils.SafeDeserializeFromPath<Dictionary<string, object>>(settingsFilePath);
 		}
 		if (settings == null)
 		{
@@ -1304,7 +1304,7 @@ public static partial class DivinityModDataLoader
 		return mods;
 	}
 
-	public static List<ModData> BuildOutputList(IEnumerable<DivinityLoadOrderEntry> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData selectedAdventure = null)
+	public static List<ModData> BuildOutputList(IEnumerable<ModLoadOrderEntry> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData selectedAdventure = null)
 	{
 		List<ModData> orderList = [];
 		var addedMods = new HashSet<string>();
@@ -1433,7 +1433,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static DivinityLoadOrder? GetLoadOrderFromSave(string file, string ordersFolder = "")
+	public static ModLoadOrder? GetLoadOrderFromSave(string file, string ordersFolder = "")
 	{
 		try
 		{
@@ -1474,7 +1474,7 @@ public static partial class DivinityModDataLoader
 						{
 							orderName = $"{match.Groups[1].Value}_{fileName}";
 						}
-						DivinityLoadOrder loadOrder = new()
+						ModLoadOrder loadOrder = new()
 						{
 							Name = orderName,
 							FilePath = Path.Join(ordersFolder, MakeSafeFilename(Path.Join(orderName + ".json"), '_'))
@@ -1497,7 +1497,7 @@ public static partial class DivinityModDataLoader
 							if (uuid != null && !IgnoreMod(uuid))
 							{
 								DivinityApp.Log($"Found mod in save: '{name}_{uuid}'.");
-								loadOrder.Order.Add(new DivinityLoadOrderEntry()
+								loadOrder.Order.Add(new ModLoadOrderEntry()
 								{
 									UUID = uuid,
 									Name = name
@@ -1531,14 +1531,14 @@ public static partial class DivinityModDataLoader
 
 	private readonly static List<string> _fallbackFeatureFlags = [];
 
-	private static async Task<DivinityModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(string configFile)
+	private static async Task<ModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(string configFile)
 	{
 		try
 		{
 			using var reader = File.OpenText(configFile);
 			var text = await reader.ReadToEndAsync();
 			if (!string.IsNullOrWhiteSpace(text) &&
-				DivinityJsonUtils.TrySafeDeserialize<DivinityModScriptExtenderConfig>(text, out var config))
+				JsonUtils.TrySafeDeserialize<ModScriptExtenderConfig>(text, out var config))
 			{
 				return config;
 			}
@@ -1550,14 +1550,14 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(Stream stream)
+	private static async Task<ModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(Stream stream)
 	{
 		try
 		{
 			using var sr = new StreamReader(stream);
 			var text = await sr.ReadToEndAsync();
 			if (!string.IsNullOrWhiteSpace(text)
-				&& DivinityJsonUtils.TrySafeDeserialize<DivinityModScriptExtenderConfig>(text, out var config))
+				&& JsonUtils.TrySafeDeserialize<ModScriptExtenderConfig>(text, out var config))
 			{
 				return config;
 			}
@@ -1569,7 +1569,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(PackagedFileInfo configFile)
+	private static async Task<ModScriptExtenderConfig?> LoadScriptExtenderConfigAsync(PackagedFileInfo configFile)
 	{
 		try
 		{

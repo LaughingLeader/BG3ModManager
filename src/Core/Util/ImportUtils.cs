@@ -108,7 +108,7 @@ public static class ImportUtils
 
 							if (success)
 							{
-								var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
+								var parsed = await ModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
 								if (parsed?.Count > 0)
 								{
 									foreach (var mod in parsed)
@@ -157,7 +157,7 @@ public static class ImportUtils
 		{
 			foreach (var entry in options.ImportedJsonFiles)
 			{
-				var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(entry.Text);
+				var order = JsonUtils.SafeDeserialize<ModLoadOrder>(entry.Text);
 				if (order != null)
 				{
 					options.Result.Orders.Add(order);
@@ -214,7 +214,7 @@ public static class ImportUtils
 
 						try
 						{
-							var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(tempFile.Stream, outputFilePath, options.BuiltinMods, options.Token);
+							var parsed = await ModDataLoader.LoadModDataFromPakAsync(tempFile.Stream, outputFilePath, options.BuiltinMods, options.Token);
 							if (parsed?.Count > 0)
 							{
 								foreach (var mod in parsed)
@@ -291,7 +291,7 @@ public static class ImportUtils
 			{
 				foreach (var entry in options.ImportedJsonFiles)
 				{
-					var order = DivinityJsonUtils.SafeDeserialize<DivinityLoadOrder>(entry.Text);
+					var order = JsonUtils.SafeDeserialize<ModLoadOrder>(entry.Text);
 					if (order != null)
 					{
 						options.Result.Orders.Add(order);
@@ -317,7 +317,7 @@ public static class ImportUtils
 
 			if (File.Exists(outputFilePath))
 			{
-				var parsed = await DivinityModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
+				var parsed = await ModDataLoader.LoadModDataFromPakAsync(outputFilePath, options.BuiltinMods, options.Token);
 				if (parsed?.Count > 0)
 				{
 					options.Result.Mods.AddRange(parsed);

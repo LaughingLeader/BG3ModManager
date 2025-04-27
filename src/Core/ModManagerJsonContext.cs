@@ -7,11 +7,11 @@ using ModManager.Models.Settings;
 
 namespace ModManager;
 
-[JsonSerializable(typeof(DivinityLoadOrder))]
+[JsonSerializable(typeof(ModLoadOrder))]
 [JsonSerializable(typeof(ModData))]
 [JsonSerializable(typeof(ModuleShortDesc))]
-[JsonSerializable(typeof(DivinityModScriptExtenderConfig))]
-[JsonSerializable(typeof(DivinitySerializedModData))]
+[JsonSerializable(typeof(ModScriptExtenderConfig))]
+[JsonSerializable(typeof(SerializedModData))]
 [JsonSerializable(typeof(GitHubModsCachedData))]
 [JsonSerializable(typeof(GitHubModsCachedData))]
 [JsonSerializable(typeof(GitHubReleaseJsonEntry))]

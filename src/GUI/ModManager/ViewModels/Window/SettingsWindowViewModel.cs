@@ -115,7 +115,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 		//#endif
 		if (!String.IsNullOrEmpty(text))
 		{
-			if (DivinityJsonUtils.TrySafeDeserialize<ScriptExtenderUpdateData>(text, out var data))
+			if (JsonUtils.TrySafeDeserialize<ScriptExtenderUpdateData>(text, out var data))
 			{
 				var res = data.Resources.FirstOrDefault();
 				if (res != null)
@@ -251,7 +251,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 			if (attr.HasFlag(System.IO.FileAttributes.Directory))
 			{
 				var exeName = "";
-				if (!DivinityRegistryHelper.IsGOG)
+				if (!RegistryHelper.IsGOG)
 				{
 					exeName = Path.GetFileName(AppServices.Settings.AppSettings.DefaultPathways.Steam.ExePath);
 				}
@@ -313,7 +313,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		{
 			if (result && DivinityApp.GetExePath() is string exePath)
 			{
-				if (DivinityRegistryHelper.AssociateWithNXMProtocol(exePath))
+				if (RegistryHelper.AssociateWithNXMProtocol(exePath))
 				{
 					UpdateSettings.IsAssociatedWithNXM = true;
 					AppServices.Commands.ShowAlert("nxm:// protocol assocation successfully set");

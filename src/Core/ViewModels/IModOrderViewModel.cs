@@ -10,10 +10,10 @@ public interface IModOrderViewModel
 	ObservableCollectionExtended<IModEntry> ActiveMods { get; }
 	ObservableCollectionExtended<IModEntry> InactiveMods { get; }
 	ReadOnlyObservableCollection<ModData> AdventureMods { get; }
-	ReadOnlyObservableCollection<DivinityProfileData> Profiles { get; }
+	ReadOnlyObservableCollection<ProfileData> Profiles { get; }
 	//ReadOnlyObservableCollection<DivinityModData> Mods { get; }
 	//ReadOnlyObservableCollection<DivinityModData> WorkshopMods { get; }
-	ObservableCollectionExtended<DivinityLoadOrder> ModOrderList { get; }
+	ObservableCollectionExtended<ModLoadOrder> ModOrderList { get; }
 
 	//bool IsDragging { get; }
 	//bool IsRefreshing { get; }
@@ -23,8 +23,8 @@ public interface IModOrderViewModel
 	int SelectedModOrderIndex { get; set; }
 	int SelectedAdventureModIndex { get; set; }
 
-	DivinityProfileData? SelectedProfile { get; set; }
-	DivinityLoadOrder? SelectedModOrder { get; set; }
+	ProfileData? SelectedProfile { get; set; }
+	ModLoadOrder? SelectedModOrder { get; set; }
 	ModData? SelectedAdventureMod { get; set; }
 
 	//int ActiveSelected { get; }

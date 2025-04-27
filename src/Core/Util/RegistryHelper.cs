@@ -5,7 +5,7 @@ using Microsoft.Win32;
 
 namespace ModManager.Util;
 
-public static class DivinityRegistryHelper
+public static class RegistryHelper
 {
 	const string REG_Steam_32 = @"SOFTWARE\Valve\Steam";
 	const string REG_Steam_64 = @"SOFTWARE\Wow6432Node\Valve\Steam";

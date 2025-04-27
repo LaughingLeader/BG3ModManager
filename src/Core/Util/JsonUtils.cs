@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ModManager.Util;
 
-public static class DivinityJsonUtils
+public static class JsonUtils
 {
 	private static readonly JsonSerializerOptions _serializerSettings = new()
 	{

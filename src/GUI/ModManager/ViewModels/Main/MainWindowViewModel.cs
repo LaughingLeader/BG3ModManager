@@ -32,7 +32,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	public ViewManager Views { get; }
 
 	private readonly IPathwaysService _pathways;
-	public DivinityPathwayData PathwayData => _pathways.Data;
+	public PathwayData PathwayData => _pathways.Data;
 	private readonly ModImportService _importer;
 	private readonly IModManagerService _manager;
 	private readonly IModUpdaterService _updater;
@@ -440,7 +440,7 @@ Directory the zip will be extracted to:
 			var latestReleaseData = await GitHubHelper.GetLatestReleaseJsonStringAsync(DivinityApp.EXTENDER_REPO_URL, token);
 			if (!String.IsNullOrEmpty(latestReleaseData))
 			{
-				var jsonData = DivinityJsonUtils.SafeDeserialize<Dictionary<string, object>>(latestReleaseData);
+				var jsonData = JsonUtils.SafeDeserialize<Dictionary<string, object>>(latestReleaseData);
 				if (jsonData != null)
 				{
 					if (jsonData.TryGetValue("assets", out var assetsArray) && assetsArray is JArray assets)
@@ -499,7 +499,7 @@ Directory the zip will be extracted to:
 			{
 				if (settingsFilePath.IsExistingFile())
 				{
-					if (DivinityJsonUtils.TrySafeDeserializeFromPath<ScriptExtenderSettings>(settingsFilePath, out var data))
+					if (JsonUtils.TrySafeDeserializeFromPath<ScriptExtenderSettings>(settingsFilePath, out var data))
 					{
 						DivinityApp.Log($"Loaded {settingsFilePath}");
 						Settings.ExtenderSettings.SetFrom(data);
@@ -516,7 +516,7 @@ Directory the zip will be extracted to:
 			{
 				if (updaterSettingsFilePath.IsExistingFile())
 				{
-					if (DivinityJsonUtils.TrySafeDeserializeFromPath<ScriptExtenderUpdateConfig>(updaterSettingsFilePath, out var data))
+					if (JsonUtils.TrySafeDeserializeFromPath<ScriptExtenderUpdateConfig>(updaterSettingsFilePath, out var data))
 					{
 						Settings.ExtenderUpdaterSettings.SetFrom(data);
 						DivinityApp.Log($"Loaded {updaterSettingsFilePath}");
@@ -584,7 +584,7 @@ Directory the zip will be extracted to:
 		{
 			RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
 			{
-				await DivinityModDataLoader.UpdateLauncherPreferencesAsync(_pathways.GetLarianStudiosAppDataFolder(), !Settings.DisableLauncherTelemetry, !Settings.DisableLauncherModWarnings);
+				await ModDataLoader.UpdateLauncherPreferencesAsync(_pathways.GetLarianStudiosAppDataFolder(), !Settings.DisableLauncherTelemetry, !Settings.DisableLauncherModWarnings);
 			});
 		}
 
@@ -789,15 +789,6 @@ Directory the zip will be extracted to:
 		//Settings.WhenAnyValue(x => x.SaveWindowLocation).Subscribe(Window.ToggleWindowPositionSaving);
 	}
 
-	private void OnOrderNameChanged(object sender, OrderNameChangedArgs e)
-	{
-		if (Settings.LastOrder == e.LastName)
-		{
-			Settings.LastOrder = e.NewName;
-			QueueSave();
-		}
-	}
-
 	private async Task<bool> LoadSettings()
 	{
 		var success = true;
@@ -841,7 +832,7 @@ Directory the zip will be extracted to:
 
 			if (String.IsNullOrEmpty(Settings.WorkshopPath) || !Directory.Exists(Settings.WorkshopPath))
 			{
-				Settings.WorkshopPath = DivinityRegistryHelper.GetWorkshopPath(AppSettings.DefaultPathways.Steam.AppID).Replace("\\", "/");
+				Settings.WorkshopPath = RegistryHelper.GetWorkshopPath(AppSettings.DefaultPathways.Steam.AppID).Replace("\\", "/");
 				if (!String.IsNullOrEmpty(Settings.WorkshopPath) && Directory.Exists(Settings.WorkshopPath))
 				{
 					DivinityApp.Log($"Workshop path set to: '{Settings.WorkshopPath}'.");
@@ -1279,7 +1270,7 @@ Directory the zip will be extracted to:
 
 	public async Task ExportLoadOrderToArchiveAsAsync() => await ExportLoadOrderToArchiveAsAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder);
 
-	public async Task ExportLoadOrderToArchiveAsAsync(DivinityProfileData? profile = null, DivinityLoadOrder? order = null)
+	public async Task ExportLoadOrderToArchiveAsAsync(ProfileData? profile = null, ModLoadOrder? order = null)
 	{
 		if (profile != null && order != null)
 		{
@@ -1290,7 +1281,7 @@ Directory the zip will be extracted to:
 				baseOrderName = $"{profile.Name}_{order.Name}";
 			}
 
-			var outputName = DivinityModDataLoader.MakeSafeFilename($"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.zip", '_');
+			var outputName = ModDataLoader.MakeSafeFilename($"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.zip", '_');
 
 			var result = await _dialogs.SaveFileAsync(new(
 				"Export Load Order As...",
@@ -1360,7 +1351,7 @@ Directory the zip will be extracted to:
 				PathwayData.LastSaveFilePath = rootFolder;
 				DivinityApp.Log($"Renaming '{pickFile.File}' to '{renameFile.File}'.");
 
-				if (DivinitySaveTools.RenameSave(pickFile.File, renameFile.File))
+				if (SaveTools.RenameSave(pickFile.File, renameFile.File))
 				{
 					try
 					{
@@ -1885,8 +1876,6 @@ Directory the zip will be extracted to:
 		#endregion
 
 		Router.CurrentViewModel.Select(x => x == ViewModelLocator.ModUpdates).ToUIProperty(this, x => x.UpdatesViewIsVisible, false);
-
-		DivinityApp.Events.OrderNameChanged += OnOrderNameChanged;
 
 		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
 		if (AppSettings.Features.ScriptExtender)

@@ -3,7 +3,7 @@ using ModManager.Models.Settings;
 
 namespace ModManager.Models;
 
-public class DivinityPathwayData : ReactiveObject
+public class PathwayData : ReactiveObject
 {
 	/// <summary>
 	/// The path to the root game folder, i.e. SteamLibrary\steamapps\common\Baldur's Gate 3
@@ -35,7 +35,7 @@ public class DivinityPathwayData : ReactiveObject
 	[Reactive] public string? ScriptExtenderLatestReleaseUrl { get; set; }
 	[Reactive] public string? ScriptExtenderLatestReleaseVersion { get; set; }
 
-	public DivinityPathwayData()
+	public PathwayData()
 	{
 		InstallPath = "";
 		AppDataGameFolder = "";

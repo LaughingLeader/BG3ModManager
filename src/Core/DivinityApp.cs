@@ -116,8 +116,6 @@ public static class DivinityApp
 	public static HashSet<ModData> IgnoredMods { get; private set; }
 	public static HashSet<ModData> IgnoredDependencyMods { get; private set; }
 
-	public static DivinityGlobalEvents Events { get; private set; }
-
 	private static readonly Assembly? _exeAssembly;
 	private static readonly string? _exePath;
 	private static readonly string? _appDirectory;
@@ -130,7 +128,6 @@ public static class DivinityApp
 
 		IgnoredMods = [];
 		IgnoredDependencyMods = [];
-		Events = new DivinityGlobalEvents();
 
 		//Process.GetCurrentProcess()?.MainModule?.FileName
 	}

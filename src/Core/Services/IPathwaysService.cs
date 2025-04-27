@@ -4,7 +4,7 @@ namespace ModManager;
 
 public interface IPathwaysService
 {
-	DivinityPathwayData Data { get; }
+	PathwayData Data { get; }
 
 	string GetLarianStudiosAppDataFolder();
 	bool SetGamePathways(string currentGameDataPath, string gameDataFolderOverride = "");

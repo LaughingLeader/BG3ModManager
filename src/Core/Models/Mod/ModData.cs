@@ -79,7 +79,7 @@ public class ModData : ReactiveObject, IModData
 
 	[Reactive] public int CurrentExtenderVersion { get; set; }
 
-	[Reactive] public DivinityModScriptExtenderConfig ScriptExtenderData { get; set; }
+	[Reactive] public ModScriptExtenderConfig ScriptExtenderData { get; set; }
 
 
 	protected ReadOnlyObservableCollection<ModuleShortDesc> _displayedDependencies;
@@ -397,18 +397,18 @@ public class ModData : ReactiveObject, IModData
 		return $"Name({Name}) Version({Version?.Version}) Author({Author}) UUID({UUID}) File({FilePath})";
 	}
 
-	public DivinityLoadOrderEntry ToOrderEntry()
+	public ModLoadOrderEntry ToOrderEntry()
 	{
-		return new DivinityLoadOrderEntry
+		return new ModLoadOrderEntry
 		{
 			UUID = UUID,
 			Name = Name
 		};
 	}
 
-	public DivinityProfileActiveModData ToProfileModData()
+	public ProfileActiveModData ToProfileModData()
 	{
-		return new DivinityProfileActiveModData()
+		return new ProfileActiveModData()
 		{
 			Folder = Folder,
 			MD5 = MD5,
