@@ -25,7 +25,7 @@ namespace ModManager
 
 			for (var i = 0; i < 30; i++)
 			{
-				TestMods.Add(new ModEntry(new DivinityModData()
+				TestMods.Add(new ModEntry(new ModData()
 				{ 
 					Index = i, 
 					Name = $"Mod {i+1}",

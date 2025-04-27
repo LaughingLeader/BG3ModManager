@@ -30,7 +30,7 @@ public class ModEntry : ReactiveObject, IModEntry
 
 	public string? Export(ModExportType exportType) => string.Empty;
 
-	[Reactive] public DivinityModData? Data { get; set; }
+	[Reactive] public ModData? Data { get; set; }
 
 	public ModEntry()
 	{
@@ -55,7 +55,7 @@ public class ModEntry : ReactiveObject, IModEntry
 		});
 	}
 
-	public ModEntry(DivinityModData modData) : this()
+	public ModEntry(ModData modData) : this()
 	{
 		Data = modData;
 	}

@@ -121,7 +121,7 @@ public class StatsValidatorService : IStatsValidatorService
 		}
 	}
 
-	public async Task<ValidateModStatsResults> ValidateModsAsync(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<ValidateModStatsResults> ValidateModsAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var validationVFS = new VFS(_vfs, true); // true so it doesn't clone Packages
 

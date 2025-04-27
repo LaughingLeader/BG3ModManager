@@ -45,7 +45,7 @@ public class GitHubService : IGitHubService
 		return null;
 	}
 
-	public async Task<Dictionary<string, GitHubLatestReleaseData>> GetLatestDownloadsForModsAsync(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<Dictionary<string, GitHubLatestReleaseData>> GetLatestDownloadsForModsAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var results = new Dictionary<string, GitHubLatestReleaseData>();
 

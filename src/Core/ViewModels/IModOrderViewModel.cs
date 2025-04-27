@@ -9,7 +9,7 @@ public interface IModOrderViewModel
 {
 	ObservableCollectionExtended<IModEntry> ActiveMods { get; }
 	ObservableCollectionExtended<IModEntry> InactiveMods { get; }
-	ReadOnlyObservableCollection<DivinityModData> AdventureMods { get; }
+	ReadOnlyObservableCollection<ModData> AdventureMods { get; }
 	ReadOnlyObservableCollection<DivinityProfileData> Profiles { get; }
 	//ReadOnlyObservableCollection<DivinityModData> Mods { get; }
 	//ReadOnlyObservableCollection<DivinityModData> WorkshopMods { get; }
@@ -25,7 +25,7 @@ public interface IModOrderViewModel
 
 	DivinityProfileData? SelectedProfile { get; set; }
 	DivinityLoadOrder? SelectedModOrder { get; set; }
-	DivinityModData? SelectedAdventureMod { get; set; }
+	ModData? SelectedAdventureMod { get; set; }
 
 	//int ActiveSelected { get; }
 	//int InactiveSelected { get; }

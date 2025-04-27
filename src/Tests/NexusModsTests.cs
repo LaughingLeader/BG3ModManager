@@ -20,7 +20,7 @@ public class NexusModsTests : BaseTest
 {
 	private readonly NexusModsService _service;
 	private readonly string _testModUUID = "789deb36-e3da-4a5e-b737-eb644cd1dd6a";
-	private readonly List<DivinityModData> _mods;
+	private readonly List<ModData> _mods;
 
 	public NexusModsTests(ITestOutputHelper output) : base(output)
 	{
@@ -43,9 +43,9 @@ public class NexusModsTests : BaseTest
 		];
 	}
 
-	private static DivinityModData CreateTestMod(string uuid, long modId)
+	private static ModData CreateTestMod(string uuid, long modId)
 	{
-		var mod = new DivinityModData() { UUID = uuid };
+		var mod = new ModData() { UUID = uuid };
 		mod.NexusModsData.ModId = modId;
 		return mod;
 	}

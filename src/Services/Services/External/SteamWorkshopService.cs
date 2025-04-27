@@ -3,9 +3,9 @@
 namespace ModManager.Services;
 public class SteamWorkshopService : ISteamWorkshopService
 {
-	public async Task<List<DivinityModData>> CheckForWorkshopModUpdatesAsync(CancellationToken token)
+	public async Task<List<ModData>> CheckForWorkshopModUpdatesAsync(CancellationToken token)
 	{
-		var mods = new List<DivinityModData>();
+		var mods = new List<ModData>();
 
 
 

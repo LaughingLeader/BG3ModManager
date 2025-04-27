@@ -76,7 +76,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 
 				foreach (var ignoredMod in ignoredModsData.Mods)
 				{
-					var mod = new DivinityModData();
+					var mod = new ModData();
 					mod.SetIsBaseGameMod(true);
 					mod.IsLarianMod = true;
 					if (ignoredMod.UUID.IsValid()) mod.UUID = ignoredMod.UUID;
@@ -154,7 +154,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 		}
 	}
 
-	public void UpdateLastUpdated(IList<DivinityModData> updatedMods)
+	public void UpdateLastUpdated(IList<ModData> updatedMods)
 	{
 		if (updatedMods.Count > 0)
 		{

@@ -21,7 +21,7 @@ public class ExportOrderFileEntry : ReactiveObject
 {
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsVisible { get; set; }
-	[Reactive] public DivinityModData? Mod { get; set; }
+	[Reactive] public ModData? Mod { get; set; }
 
 	public ExportOrderFileEntry()
 	{

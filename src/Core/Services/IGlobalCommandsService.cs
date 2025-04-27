@@ -8,18 +8,18 @@ public interface IGlobalCommandsService
 
 	ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> ToggleNameDisplayCommand { get; }
+	ReactiveCommand<ModData?, Unit> ToggleNameDisplayCommand { get; }
 	ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
 	ReactiveCommand<IModEntry?, Unit> DeleteModCommand { get; }
 	RxCommandUnit DeleteSelectedModsCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> OpenModioPageCommand { get; }
+	ReactiveCommand<ModData?, Unit> OpenGitHubPageCommand { get; }
+	ReactiveCommand<ModData?, Unit> OpenNexusModsPageCommand { get; }
+	ReactiveCommand<ModData?, Unit> OpenModioPageCommand { get; }
 	ReactiveCommand<object?, Unit> OpenURLCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> CopyModAsDependencyCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> OpenModPropertiesCommand { get; }
-	ReactiveCommand<DivinityModData?, Unit> ValidateStatsCommand { get; }
+	ReactiveCommand<ModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
+	ReactiveCommand<ModData?, Unit> CopyModAsDependencyCommand { get; }
+	ReactiveCommand<ModData?, Unit> OpenModPropertiesCommand { get; }
+	ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
 
 	void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
 	Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");

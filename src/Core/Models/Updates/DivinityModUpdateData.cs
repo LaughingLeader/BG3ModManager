@@ -6,7 +6,7 @@ namespace ModManager.Models.Updates;
 
 public class DivinityModUpdateData : ReactiveObject, ISelectable
 {
-	[Reactive] public DivinityModData Mod { get; set; }
+	[Reactive] public ModData Mod { get; set; }
 	[Reactive] public ModDownloadData DownloadData { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
@@ -26,7 +26,7 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 	[ObservableAsProperty] public string? UpdateDateText { get; }
 	[ObservableAsProperty] public string? UpdateToolTip { get; }
 
-	private Uri SourceToLink(ValueTuple<DivinityModData, ModSourceType> data)
+	private Uri SourceToLink(ValueTuple<ModData, ModSourceType> data)
 	{
 		if (data.Item1 != null)
 		{

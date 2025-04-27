@@ -1,6 +1,6 @@
 ﻿namespace ModManager.Models.Mod;
 
-public interface IDivinityModData
+public interface IModData
 {
 	string? UUID { get; set; }
 	string? Name { get; set; }

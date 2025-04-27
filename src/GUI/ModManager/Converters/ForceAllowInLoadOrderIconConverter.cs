@@ -16,7 +16,7 @@ public class ForceAllowInLoadOrderIconConverter : IValueConverter
 {
 	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
-		if(value is DivinityModData mod)
+		if(value is ModData mod)
 		{
 			if(mod.ForceAllowInLoadOrder)
 			{

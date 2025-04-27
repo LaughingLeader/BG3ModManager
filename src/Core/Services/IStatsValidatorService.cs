@@ -5,5 +5,5 @@ public interface IStatsValidatorService
 {
 	string? GameDataPath { get; }
 	void Initialize(string gameDataPath);
-	Task<ValidateModStatsResults> ValidateModsAsync(IEnumerable<DivinityModData> mods, CancellationToken token);
+	Task<ValidateModStatsResults> ValidateModsAsync(IEnumerable<ModData> mods, CancellationToken token);
 }

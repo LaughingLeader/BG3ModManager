@@ -24,7 +24,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 	private readonly IInteractionsService _interactions;
 	private readonly IStatsValidatorService _validator;
 
-	[Reactive] public DivinityModData? Mod { get; set; }
+	[Reactive] public ModData? Mod { get; set; }
 	[Reactive] public string? OutputText { get; internal set; }
 	[Reactive] public TimeSpan TimeTaken { get; internal set; }
 
@@ -35,7 +35,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 	[ObservableAsProperty] public bool HasTimeTakenText { get; }
 	[ObservableAsProperty] public bool LockScreenVisibility { get; }
 
-	public ReactiveCommand<DivinityModData, Unit> ValidateCommand { get; }
+	public ReactiveCommand<ModData, Unit> ValidateCommand { get; }
 	public RxCommandUnit CancelValidateCommand { get; }
 
 	private static string FormatMessage(StatLoadingError message)
@@ -160,7 +160,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 		await _interactions.OpenValidateStatsResults.Handle(results);
 	}
 
-	private IObservable<Unit> StartValidationAsync(DivinityModData mod)
+	private IObservable<Unit> StartValidationAsync(ModData mod)
 	{
 		return ObservableEx.CreateAndStartAsync(token => StartValidationAsyncImpl(new([mod], token)), RxApp.TaskpoolScheduler)
 			.TakeUntil(CancelValidateCommand);
@@ -186,7 +186,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 
 		var canValidate = this.WhenAnyValue(x => x.Mod).Select(x => x != null);
 
-		ValidateCommand = ReactiveCommand.CreateFromObservable<DivinityModData, Unit>(StartValidationAsync, canValidate);
+		ValidateCommand = ReactiveCommand.CreateFromObservable<ModData, Unit>(StartValidationAsync, canValidate);
 		CancelValidateCommand = ReactiveCommand.Create(() => { }, ValidateCommand.IsExecuting);
 
 		ValidateCommand.IsExecuting.ToUIProperty(this, x => x.LockScreenVisibility);

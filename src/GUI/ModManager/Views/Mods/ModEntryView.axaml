@@ -7,14 +7,16 @@
     xmlns:mod="using:ModManager.Models.Mod"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    x:DataType="mod:DivinityModData"
+    x:DataType="mod:ModData"
     ContextFlyout="{StaticResource ModContextFlyout}"
     mc:Ignorable="d">
 	<Panel>
-		<Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent" />
-		<TextBlock VerticalAlignment="Center"
-		    IsHitTestVisible="False"
-		    Text="{Binding DisplayName}"
-		    TextAlignment="Left" />
+		<!--<Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent" />-->
+		<StackPanel Orientation="Horizontal">
+			<TextBlock VerticalAlignment="Center"
+			    IsHitTestVisible="False"
+			    Text="{Binding DisplayName}"
+			    TextAlignment="Left" />
+		</StackPanel>
 	</Panel>
 </UserControl>

@@ -187,7 +187,7 @@ public static partial class DivinityModDataLoader
 		return str;
 	}
 
-	private static DivinityModData? ParseMetaFile(string metaContents, string? filePath = null)
+	private static ModData? ParseMetaFile(string metaContents, string? filePath = null)
 	{
 		try
 		{
@@ -233,7 +233,7 @@ public static partial class DivinityModDataLoader
 				var description = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Description", ""));
 				var author = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Author", ""));
 
-				DivinityModData modData = new()
+				ModData modData = new()
 				{
 					HasMetadata = true,
 					UUID = uuid,
@@ -339,7 +339,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task TryLoadConfigFiles(VFS vfs, DivinityModData modData, string modsFolder, CancellationToken token)
+	private static async Task TryLoadConfigFiles(VFS vfs, ModData modData, string modsFolder, CancellationToken token)
 	{
 		Stream? extenderConfigStream = null;
 		Stream? modManagerConfigStream = null;
@@ -404,7 +404,7 @@ public static partial class DivinityModDataLoader
 		return false;
 	}
 
-	public static async Task<DivinityModData> GetModDataFromMeta(PackagedFileInfo file)
+	public static async Task<ModData> GetModDataFromMeta(PackagedFileInfo file)
 	{
 		using var stream = file.CreateContentReader();
 		using var sr = new StreamReader(stream);
@@ -412,7 +412,7 @@ public static partial class DivinityModDataLoader
 		return ParseMetaFile(text, file.Name);
 	}
 
-	public static async Task<DivinityModData?> GetModDataFromMeta(string filePath, CancellationToken token)
+	public static async Task<ModData?> GetModDataFromMeta(string filePath, CancellationToken token)
 	{
 		var fileBytes = await FileUtils.LoadFileAsBytesAsync(filePath, token);
 		if (fileBytes != null)
@@ -426,8 +426,8 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<List<DivinityModData>> InternalLoadModDataFromPakAsync(Package pak, string pakPath,
-		Dictionary<string, DivinityModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
+	private static async Task<List<ModData>> InternalLoadModDataFromPakAsync(Package pak, string pakPath,
+		Dictionary<string, ModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
 	{
 		var pakName = Path.GetFileNameWithoutExtension(pakPath);
 
@@ -438,7 +438,7 @@ public static partial class DivinityModDataLoader
 		var isOverridingBuiltinDirectory = false;
 		var hasModFolderData = false;
 		var hasOsirisScripts = DivinityOsirisModStatus.NONE;
-		var builtinModOverrides = new Dictionary<string, DivinityModData>();
+		var builtinModOverrides = new Dictionary<string, ModData>();
 		var files = new HashSet<string>();
 		var baseGameFiles = new HashSet<string>();
 
@@ -556,7 +556,7 @@ public static partial class DivinityModDataLoader
 		}
 
 		var metaCount = metaFiles.Count;
-		var loadedData = new List<DivinityModData>();
+		var loadedData = new List<ModData>();
 
 		if (metaCount == 0)
 		{
@@ -635,7 +635,7 @@ public static partial class DivinityModDataLoader
 		{
 			if (isOverridingBuiltinDirectory)
 			{
-				loadedData.Add(new DivinityModData()
+				loadedData.Add(new ModData()
 				{
 					UUID = pakName,
 					FilePath = pakPath,
@@ -652,7 +652,7 @@ public static partial class DivinityModDataLoader
 		return loadedData;
 	}
 
-	public static async Task<List<DivinityModData>?> LoadModDataFromPakAsync(string pakPath, Dictionary<string, DivinityModData>? builtinMods, CancellationToken token)
+	public static async Task<List<ModData>?> LoadModDataFromPakAsync(string pakPath, Dictionary<string, ModData>? builtinMods, CancellationToken token)
 	{
 		try
 		{
@@ -670,7 +670,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static async Task<List<DivinityModData>?> LoadModDataFromPakAsync(FileStream stream, string pakPath, Dictionary<string, DivinityModData>? builtinMods, CancellationToken token)
+	public static async Task<List<ModData>?> LoadModDataFromPakAsync(FileStream stream, string pakPath, Dictionary<string, ModData>? builtinMods, CancellationToken token)
 	{
 		try
 		{
@@ -689,7 +689,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static async Task<List<DivinityModData>?> LoadModDataFromPakAsync(Package package, Dictionary<string, DivinityModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
+	public static async Task<List<ModData>?> LoadModDataFromPakAsync(Package package, Dictionary<string, ModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
 	{
 		try
 		{
@@ -1075,7 +1075,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	public static DivinityLoadOrder LoadOrderFromFile(string loadOrderFile, IEnumerable<DivinityModData> allMods)
+	public static DivinityLoadOrder LoadOrderFromFile(string loadOrderFile, IEnumerable<ModData> allMods)
 	{
 		var ext = Path.GetExtension(loadOrderFile).ToLower();
 		DivinityLoadOrder order = null;
@@ -1208,7 +1208,7 @@ public static partial class DivinityModDataLoader
 		return order;
 	}
 
-	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<DivinityModData> order)
+	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<ModData> order)
 	{
 		if (Directory.Exists(folder))
 		{
@@ -1273,9 +1273,9 @@ public static partial class DivinityModDataLoader
 		return true;
 	}
 
-	public static List<DivinityModData> GetDependencyMods(DivinityModData mod, IEnumerable<DivinityModData> allMods, HashSet<string> addedMods, bool forExport = true)
+	public static List<ModData> GetDependencyMods(ModData mod, IEnumerable<ModData> allMods, HashSet<string> addedMods, bool forExport = true)
 	{
-		List<DivinityModData> mods = [];
+		List<ModData> mods = [];
 		var dependencies = mod.Dependencies.Items.Where(x => !IgnoreModDependency(x.UUID));
 		foreach (var d in dependencies)
 		{
@@ -1304,9 +1304,9 @@ public static partial class DivinityModDataLoader
 		return mods;
 	}
 
-	public static List<DivinityModData> BuildOutputList(IEnumerable<DivinityLoadOrderEntry> order, IEnumerable<DivinityModData> allMods, bool addDependencies = true, DivinityModData selectedAdventure = null)
+	public static List<ModData> BuildOutputList(IEnumerable<DivinityLoadOrderEntry> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData selectedAdventure = null)
 	{
-		List<DivinityModData> orderList = [];
+		List<ModData> orderList = [];
 		var addedMods = new HashSet<string>();
 
 		if (selectedAdventure != null)
@@ -1344,7 +1344,7 @@ public static partial class DivinityModDataLoader
 		return orderList;
 	}
 
-	public static string GenerateModSettingsFile(IEnumerable<DivinityModData> orderList)
+	public static string GenerateModSettingsFile(IEnumerable<ModData> orderList)
 	{
 		/* The "Mods" node is used for the in-game menu it seems. The selected adventure mod is always at the top. */
 		var modShortDescText = "";
@@ -1583,7 +1583,7 @@ public static partial class DivinityModDataLoader
 		return null;
 	}
 
-	private static async Task<DivinityModData?> LoadModFromModInfo(string directoryPath, VFS vfs, ModInfo modInfo, bool isGameDirectory, CancellationToken token)
+	private static async Task<ModData?> LoadModFromModInfo(string directoryPath, VFS vfs, ModInfo modInfo, bool isGameDirectory, CancellationToken token)
 	{
 		if (vfs.TryOpen(modInfo.Meta, out var stream))
 		{

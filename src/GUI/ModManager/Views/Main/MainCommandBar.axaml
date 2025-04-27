@@ -200,7 +200,7 @@
 						SelectedIndex="{Binding ModOrder.SelectedAdventureModIndex, FallbackValue=0}"
 						SelectedItem="{Binding ModOrder.SelectedAdventureMod}">
 						<ComboBox.ItemTemplate>
-							<DataTemplate DataType="mod:DivinityModData">
+							<DataTemplate DataType="mod:ModData">
 								<TextBlock Text="{Binding DisplayName}" ToolTip.Tip="{Binding FilePath}" />
 							</DataTemplate>
 						</ComboBox.ItemTemplate>

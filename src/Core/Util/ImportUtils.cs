@@ -47,7 +47,7 @@ public class ImportParameters(string filePath, string outputDirectory, Cancellat
 
 	public ImportOperationResults Result { get; } = result ?? new ImportOperationResults();
 
-	public Dictionary<string, DivinityModData>? BuiltinMods { get; set; }
+	public Dictionary<string, ModData>? BuiltinMods { get; set; }
 	public List<ImportedJsonFile> ImportedJsonFiles { get; } = [];
 }
 

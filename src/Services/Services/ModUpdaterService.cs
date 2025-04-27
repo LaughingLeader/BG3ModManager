@@ -35,7 +35,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 	};
 
-	public async Task<bool> UpdateInfoAsync(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<bool> UpdateInfoAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		IsRefreshing = true;
 		if (Modio.IsEnabled) await Modio.Update(mods, token);
@@ -45,7 +45,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		return false;
 	}
 
-	public async Task<bool> LoadCacheAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token)
+	public async Task<bool> LoadCacheAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token)
 	{
 		await Modio.LoadCacheAsync(currentAppVersion, token);
 		await NexusMods.LoadCacheAsync(currentAppVersion, token);
@@ -77,7 +77,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		return false;
 	}
 
-	public async Task<bool> SaveCacheAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token)
+	public async Task<bool> SaveCacheAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token)
 	{
 		if (Modio.IsEnabled)
 		{
@@ -106,7 +106,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		return b1 || b2 || b3;
 	}
 
-	public async Task<ModUpdaterResults> FetchUpdatesAsync(ModManagerSettings settings, IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<ModUpdaterResults> FetchUpdatesAsync(ModManagerSettings settings, IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var appVersion = Locator.Current.GetService<IEnvironmentService>()?.AppVersion.ToString() ?? "Debug";
 
@@ -119,7 +119,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		return new ModUpdaterResults(githubResults, nexusResults, modioResults);
 	}
 
-	public async Task<Dictionary<string, GitHubLatestReleaseData>> GetGitHubUpdatesAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token)
+	public async Task<Dictionary<string, GitHubLatestReleaseData>> GetGitHubUpdatesAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token)
 	{
 		var results = new Dictionary<string, GitHubLatestReleaseData>();
 		try
@@ -156,7 +156,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 		return results;
 	}
 
-	public async Task<Dictionary<string, NexusModsModDownloadLink>> GetNexusModsUpdatesAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token)
+	public async Task<Dictionary<string, NexusModsModDownloadLink>> GetNexusModsUpdatesAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token)
 	{
 		var results = new Dictionary<string, NexusModsModDownloadLink>();
 		try
@@ -192,7 +192,7 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 	}
 
 	//TODO
-	public async Task<Dictionary<string, Modio.Models.Download>> GetModioUpdatesAsync(ModManagerSettings settings, IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token)
+	public async Task<Dictionary<string, Modio.Models.Download>> GetModioUpdatesAsync(ModManagerSettings settings, IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token)
 	{
 		var results = new Dictionary<string, Modio.Models.Download>();
 		try

@@ -93,7 +93,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 		return await _dataLoader.User.GetUserAsync(token);
 	}
 
-	public async Task<Dictionary<string, NexusModsModDownloadLink>> GetLatestDownloadsForModsAsync(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<Dictionary<string, NexusModsModDownloadLink>> GetLatestDownloadsForModsAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var links = new Dictionary<string, NexusModsModDownloadLink>();
 		if (!CanFetchData) return links;
@@ -139,7 +139,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 		return links;
 	}
 
-	public async Task<UpdateResult> FetchModInfoAsync(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<UpdateResult> FetchModInfoAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var taskResult = new UpdateResult();
 		if (token.IsCancellationRequested)

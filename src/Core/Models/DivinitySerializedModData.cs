@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ModManager.Models;
 
 [DataContract]
-public class DivinitySerializedModData : IDivinityModData
+public class DivinitySerializedModData : IModData
 {
 	[DataMember] public int Index { get; set; }
 	[DataMember] public string? FileName { get; set; }
@@ -26,7 +26,7 @@ public class DivinitySerializedModData : IDivinityModData
 
 	public DateTimeOffset? LastModified { get; set; }
 
-	public static DivinitySerializedModData FromMod(DivinityModData mod)
+	public static DivinitySerializedModData FromMod(ModData mod)
 	{
 		return new DivinitySerializedModData
 		{

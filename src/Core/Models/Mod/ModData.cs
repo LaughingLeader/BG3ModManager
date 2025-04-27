@@ -13,7 +13,7 @@ namespace ModManager.Models.Mod;
 
 [DataContract]
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
-public class DivinityModData : ReactiveObject, IDivinityModData
+public class ModData : ReactiveObject, IModData
 {
 	private static readonly SortExpressionComparer<ModuleShortDesc> _moduleSort = SortExpressionComparer<ModuleShortDesc>
 			.Ascending(p => !DivinityApp.IgnoredMods.Any(x => x.UUID == p.UUID)).
@@ -336,7 +336,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		return false;
 	}
 
-	public bool IsNewerThan(IDivinityModData mod)
+	public bool IsNewerThan(IModData mod)
 	{
 		if (LastModified.HasValue && mod.LastModified.HasValue)
 		{
@@ -590,7 +590,7 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		return result;
 	}
 
-	public DivinityModData()
+	public ModData()
 	{
 		Version = LarianVersion.Empty;
 		HeaderVersion = LarianVersion.Empty;
@@ -740,9 +740,9 @@ public class DivinityModData : ReactiveObject, IDivinityModData
 		}
 	}
 
-	public static DivinityModData Clone(DivinityModData mod)
+	public static ModData Clone(ModData mod)
 	{
-		var cloneMod = new DivinityModData()
+		var cloneMod = new ModData()
 		{
 			HasMetadata = mod.HasMetadata,
 			UUID = mod.UUID,

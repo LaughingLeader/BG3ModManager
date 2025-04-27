@@ -25,12 +25,12 @@ public class DivinityConflictEntryData : ReactiveObject
 
 public class DivinityConflictModData : ReactiveObject
 {
-	private readonly DivinityModData modData;
-	public DivinityModData Mod => modData;
+	private readonly ModData modData;
+	public ModData Mod => modData;
 
 	public string? Value { get; set; }
 
-	public DivinityConflictModData(DivinityModData mod, string val = "")
+	public DivinityConflictModData(ModData mod, string val = "")
 	{
 		modData = mod;
 		Value = val;

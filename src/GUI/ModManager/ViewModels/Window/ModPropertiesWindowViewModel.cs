@@ -16,7 +16,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 	[Reactive] public bool IsVisible { get; set; }
 	[Reactive] public bool Locked { get; set; }
 	[Reactive] public bool HasChanges { get; private set; }
-	[Reactive] public DivinityModData? Mod { get; set; }
+	[Reactive] public ModData? Mod { get; set; }
 	[Reactive] public string? Notes { get; set; }
 	[Reactive] public string? GitHub { get; set; }
 	[Reactive] public long NexusModsId { get; set; }
@@ -37,13 +37,13 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 
 	public long NexusModsIDMinimum => DivinityApp.NEXUSMODS_MOD_ID_START;
 
-	public void SetMod(DivinityModData mod)
+	public void SetMod(ModData mod)
 	{
 		Mod = mod;
 		HasChanges = false;
 	}
 
-	private void LoadConfigProperties(DivinityModData mod)
+	private void LoadConfigProperties(ModData mod)
 	{
 		Locked = true;
 		//var disp = this.SuppressChangeNotifications();
@@ -95,17 +95,17 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 
 	}
 
-	private static string ModToTitle(ValueTuple<bool, DivinityModData?> x)
+	private static string ModToTitle(ValueTuple<bool, ModData?> x)
 	{
 		var (b, mod) = x;
 		var result = b ? "*" : string.Empty;
 		result += mod != null ? $"{mod.Name} Properties" : "Mod Properties";
 		return result;
 	}
-	private static string GetModType(DivinityModData mod) => mod?.IsEditorMod == true ? "Toolkit Project" : "Pak";
-	private static string GetModFilePath(DivinityModData mod) => StringUtils.ReplaceSpecialPathways(mod.FilePath);
+	private static string GetModType(ModData mod) => mod?.IsEditorMod == true ? "Toolkit Project" : "Pak";
+	private static string GetModFilePath(ModData mod) => StringUtils.ReplaceSpecialPathways(mod.FilePath);
 
-	private static string GetModSize(DivinityModData mod)
+	private static string GetModSize(ModData mod)
 	{
 		if (mod == null) return "0 bytes";
 
@@ -188,7 +188,7 @@ public class DesignModPropertiesWindowViewModel : ModPropertiesWindowViewModel
 {
 	public DesignModPropertiesWindowViewModel()
 	{
-		Mod = new DivinityModData()
+		Mod = new ModData()
 		{
 			UUID = "98a0d3f4-1c87-444c-8559-51c1d5ba650f",
 			Name = "Test Mod",

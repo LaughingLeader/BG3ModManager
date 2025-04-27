@@ -81,7 +81,7 @@ public static class StringUtils
 		return null;
 	}
 
-	public static string ModToTSVLine(DivinityModData mod)
+	public static string ModToTSVLine(ModData mod)
 	{
 		var index = mod.Index.ToString();
 		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
@@ -92,7 +92,7 @@ public static class StringUtils
 		return $"{index}\t{mod.Name}\t{mod.AuthorDisplayName}\t{mod.OutputPakName}\t{String.Join(", ", mod.Tags)}\t{String.Join(", ", mod.Dependencies.Items.Select(y => y.Name))}\t{urls}";
 	}
 
-	public static string ModToTextLine(DivinityModData mod)
+	public static string ModToTextLine(ModData mod)
 	{
 		var index = mod.Index.ToString() + ".";
 		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)

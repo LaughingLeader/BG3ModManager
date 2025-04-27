@@ -68,7 +68,7 @@ public static class ModUtils
 		return new FileText(path, []);
 	}
 
-	public static async Task<ValidateModStatsResults> ValidateStatsAsync(IEnumerable<DivinityModData> mods, string gameDataPath, CancellationToken token)
+	public static async Task<ValidateModStatsResults> ValidateStatsAsync(IEnumerable<ModData> mods, string gameDataPath, CancellationToken token)
 	{
 		var definitions = new StatDefinitionRepository();
 		var context = new StatLoadingContext(definitions);
@@ -159,6 +159,6 @@ public static class ModUtils
 		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(vfs, x, token)).ToArray());
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 
-		return new ValidateModStatsResults(new List<DivinityModData>(mods), context.Errors, fileDict, DateTimeOffset.Now - time);
+		return new ValidateModStatsResults(new List<ModData>(mods), context.Errors, fileDict, DateTimeOffset.Now - time);
 	}
 }

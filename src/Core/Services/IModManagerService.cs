@@ -8,29 +8,29 @@ namespace ModManager;
 
 public interface IModManagerService
 {
-	IEnumerable<DivinityModData> AllMods { get; }
-	ReadOnlyObservableCollection<DivinityModData> AddonMods { get; }
-	ReadOnlyObservableCollection<DivinityModData> AdventureMods { get; }
-	ReadOnlyObservableCollection<DivinityModData> ForceLoadedMods { get; }
-	ReadOnlyObservableCollection<DivinityModData> UserMods { get; }
-	ReadOnlyObservableCollection<DivinityModData> SelectedPakMods { get; }
+	IEnumerable<ModData> AllMods { get; }
+	ReadOnlyObservableCollection<ModData> AddonMods { get; }
+	ReadOnlyObservableCollection<ModData> AdventureMods { get; }
+	ReadOnlyObservableCollection<ModData> ForceLoadedMods { get; }
+	ReadOnlyObservableCollection<ModData> UserMods { get; }
+	ReadOnlyObservableCollection<ModData> SelectedPakMods { get; }
 	string MainCampaignGuid { get; set; }
 
 	int ActiveSelected { get; }
 	int InactiveSelected { get; }
 	int OverrideModsSelected { get; }
-	IConnectableObservable<IChangeSet<DivinityModData, string>> ModsConnection { get; }
+	IConnectableObservable<IChangeSet<ModData, string>> ModsConnection { get; }
 	bool ModExists(string uuid);
-	void Add(DivinityModData mod);
+	void Add(ModData mod);
 	void RemoveByUUID(string uuid);
 	void RemoveByUUID(IEnumerable<string> uuids);
-	bool TryGetMod(string guid, out DivinityModData mod);
+	bool TryGetMod(string guid, out ModData mod);
 	string GetModType(string guid);
-	bool ModIsAvailable(IDivinityModData divinityModData);
+	bool ModIsAvailable(IModData divinityModData);
 	void DeselectAllMods();
 	void Refresh();
 	void ApplyUserModConfig();
-	void SetLoadedMods(IEnumerable<DivinityModData> loadedMods, bool nexusModsEnabled = false);
-	Task<List<DivinityModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token);
+	void SetLoadedMods(IEnumerable<ModData> loadedMods, bool nexusModsEnabled = false);
+	Task<List<ModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token);
 	IEnumerable<IModEntry> GetAllModsAsInterface();
 }

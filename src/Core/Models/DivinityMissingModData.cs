@@ -26,7 +26,7 @@ public class DivinityMissingModData
 		return str;
 	}
 
-	public static DivinityMissingModData FromData(DivinityModData modData)
+	public static DivinityMissingModData FromData(ModData modData)
 	{
 		return new DivinityMissingModData
 		{

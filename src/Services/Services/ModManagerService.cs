@@ -17,21 +17,21 @@ namespace ModManager.Services;
 
 public class ModManagerService : ReactiveObject, IModManagerService
 {
-	private readonly SourceCache<DivinityModData, string> mods = new(mod => mod.UUID);
+	private readonly SourceCache<ModData, string> mods = new(mod => mod.UUID);
 
 	//Derived collections
-	private readonly ReadOnlyObservableCollection<DivinityModData> _addonMods;
-	private readonly ReadOnlyObservableCollection<DivinityModData> _adventureMods;
-	private readonly ReadOnlyObservableCollection<DivinityModData> _forceLoadedMods;
-	private readonly ReadOnlyObservableCollection<DivinityModData> _selectedPakMods;
-	private readonly ReadOnlyObservableCollection<DivinityModData> _userMods;
+	private readonly ReadOnlyObservableCollection<ModData> _addonMods;
+	private readonly ReadOnlyObservableCollection<ModData> _adventureMods;
+	private readonly ReadOnlyObservableCollection<ModData> _forceLoadedMods;
+	private readonly ReadOnlyObservableCollection<ModData> _selectedPakMods;
+	private readonly ReadOnlyObservableCollection<ModData> _userMods;
 
-	public IEnumerable<DivinityModData> AllMods => mods.Items;
-	public ReadOnlyObservableCollection<DivinityModData> AddonMods => _addonMods;
-	public ReadOnlyObservableCollection<DivinityModData> AdventureMods => _adventureMods;
-	public ReadOnlyObservableCollection<DivinityModData> ForceLoadedMods => _forceLoadedMods;
-	public ReadOnlyObservableCollection<DivinityModData> UserMods => _userMods;
-	public ReadOnlyObservableCollection<DivinityModData> SelectedPakMods => _selectedPakMods;
+	public IEnumerable<ModData> AllMods => mods.Items;
+	public ReadOnlyObservableCollection<ModData> AddonMods => _addonMods;
+	public ReadOnlyObservableCollection<ModData> AdventureMods => _adventureMods;
+	public ReadOnlyObservableCollection<ModData> ForceLoadedMods => _forceLoadedMods;
+	public ReadOnlyObservableCollection<ModData> UserMods => _userMods;
+	public ReadOnlyObservableCollection<ModData> SelectedPakMods => _selectedPakMods;
 
 	//GustavX, as of patch 8
 	[Reactive] public string MainCampaignGuid { get; set; } = "cb555efe-2d9e-131f-8195-a89329d218ea";
@@ -40,12 +40,12 @@ public class ModManagerService : ReactiveObject, IModManagerService
 	[ObservableAsProperty] public int InactiveSelected { get; }
 	[ObservableAsProperty] public int OverrideModsSelected { get; }
 
-	private readonly System.Reactive.Subjects.IConnectableObservable<IChangeSet<DivinityModData, string>> _modsConnection;
-	public System.Reactive.Subjects.IConnectableObservable<IChangeSet<DivinityModData, string>> ModsConnection => _modsConnection;
+	private readonly System.Reactive.Subjects.IConnectableObservable<IChangeSet<ModData, string>> _modsConnection;
+	public System.Reactive.Subjects.IConnectableObservable<IChangeSet<ModData, string>> ModsConnection => _modsConnection;
 
 	public bool ModExists(string uuid) => mods.Lookup(uuid) != null;
 
-	public bool TryGetMod(string guid, out DivinityModData mod)
+	public bool TryGetMod(string guid, out ModData mod)
 	{
 		mod = null;
 		var modResult = mods.Lookup(guid);
@@ -66,7 +66,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		return "";
 	}
 
-	public bool ModIsAvailable(IDivinityModData divinityModData)
+	public bool ModIsAvailable(IModData divinityModData)
 	{
 		return ModExists(divinityModData.UUID)
 			|| DivinityApp.IgnoredMods.Any(im => im.UUID == divinityModData.UUID)
@@ -103,11 +103,11 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		}
 	}
 
-	public void Add(DivinityModData mod) => mods.AddOrUpdate(mod);
+	public void Add(ModData mod) => mods.AddOrUpdate(mod);
 	public void RemoveByUUID(string uuid) => mods.RemoveKey(uuid);
 	public void RemoveByUUID(IEnumerable<string> uuids) => mods.RemoveKeys(uuids);
 
-	public void SetLoadedMods(IEnumerable<DivinityModData> loadedMods, bool nexusModsEnabled = false)
+	public void SetLoadedMods(IEnumerable<ModData> loadedMods, bool nexusModsEnabled = false)
 	{
 		mods.Clear();
 		foreach (var mod in loadedMods)
@@ -176,7 +176,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		return defaultValue;
 	}
 
-	private static void MergeModLists(ref List<DivinityModData> finalMods, IEnumerable<DivinityModData> newMods, bool preferNew = false)
+	private static void MergeModLists(ref List<ModData> finalMods, IEnumerable<ModData> newMods, bool preferNew = false)
 	{
 		foreach (var mod in newMods)
 		{
@@ -195,14 +195,14 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		}
 	}
 
-	public async Task<List<DivinityModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token)
+	public async Task<List<ModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token)
 	{
 		var mods = await DivinityModDataLoader.LoadModsAsync(gameDataPath, userModsDirectoryPath, token);
 		
 		var baseMods = mods.DataDirectoryMods.Mods;
 		var userMods = mods.UserDirectoryMods.Mods;
 
-		var allMods = new List<DivinityModData>();
+		var allMods = new List<ModData>();
 
 		if (baseMods.Count < DivinityApp.IgnoredMods.Count)
 		{

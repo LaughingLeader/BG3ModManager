@@ -12,5 +12,5 @@ public interface IExternalModCacheHandler<T> where T : IModCacheData
 	bool IsEnabled { get; set; }
 	T CacheData { get; set; }
 	void OnCacheUpdated(T cachedData);
-	Task<bool> Update(IEnumerable<DivinityModData> mods, CancellationToken token);
+	Task<bool> Update(IEnumerable<ModData> mods, CancellationToken token);
 }

@@ -25,8 +25,8 @@ public interface INexusModsService
 
 	ObservableCollectionExtended<string> DownloadResults { get; }
 
-	Task<Dictionary<string, NexusModsModDownloadLink>> GetLatestDownloadsForModsAsync(IEnumerable<DivinityModData> mods, CancellationToken token);
-	Task<UpdateResult> FetchModInfoAsync(IEnumerable<DivinityModData> mods, CancellationToken token);
+	Task<Dictionary<string, NexusModsModDownloadLink>> GetLatestDownloadsForModsAsync(IEnumerable<ModData> mods, CancellationToken token);
+	Task<UpdateResult> FetchModInfoAsync(IEnumerable<ModData> mods, CancellationToken token);
 	void ProcessNXMLinkBackground(string url);
 	void CancelDownloads();
 }

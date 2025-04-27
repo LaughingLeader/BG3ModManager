@@ -29,7 +29,7 @@ public interface IInteractionsService
 	/// <summary>
 	/// Open the mod properties view.
 	/// </summary>
-	Interaction<DivinityModData, bool> OpenModProperties { get; }
+	Interaction<ModData, bool> OpenModProperties { get; }
 
 	/// <summary>
 	/// Open a view for downloading a Nexus Mods collection.

@@ -60,8 +60,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private readonly ReadOnlyObservableCollection<IModEntry> _overrideMods;
 	public ReadOnlyObservableCollection<IModEntry> OverrideMods => _overrideMods;
 
-	private readonly ReadOnlyObservableCollection<DivinityModData> _adventureMods;
-	public ReadOnlyObservableCollection<DivinityModData> AdventureMods => _adventureMods;
+	private readonly ReadOnlyObservableCollection<ModData> _adventureMods;
+	public ReadOnlyObservableCollection<ModData> AdventureMods => _adventureMods;
 
 	public ModListViewModel ActiveModsView { get; }
 	public ModListViewModel OverrideModsView { get; }
@@ -86,7 +86,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	[Reactive] public DivinityProfileData? SelectedProfile { get; set; }
 	[Reactive] public DivinityLoadOrder? SelectedModOrder { get; set; }
-	[Reactive] public DivinityModData? SelectedAdventureMod { get; set; }
+	[Reactive] public ModData? SelectedAdventureMod { get; set; }
 
 	[ObservableAsProperty] public string SelectedModOrderName { get; }
 	[ObservableAsProperty] public string? SelectedProfilePath { get; }
@@ -377,7 +377,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				{
 					var defaultAdventureIndex = 0;
 
-					if (AdventureMods.FirstOrDefault(x => x.UUID == modManager.MainCampaignGuid) is DivinityModData mainCampaign)
+					if (AdventureMods.FirstOrDefault(x => x.UUID == modManager.MainCampaignGuid) is ModData mainCampaign)
 					{
 						defaultAdventureIndex = AdventureMods.IndexOf(mainCampaign);
 					}
@@ -448,7 +448,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 				if (Profiles.ElementAtOrDefault(SelectedProfileIndex) is DivinityProfileData profile) SelectedProfile = profile;
 				if (ModOrderList.ElementAtOrDefault(SelectedModOrderIndex) is DivinityLoadOrder order) SelectedModOrder = order;
-				if (AdventureMods.ElementAtOrDefault(SelectedAdventureModIndex) is DivinityModData adventureMod) SelectedAdventureMod = adventureMod;
+				if (AdventureMods.ElementAtOrDefault(SelectedAdventureModIndex) is ModData adventureMod) SelectedAdventureMod = adventureMod;
 
 				/*if (lastActiveOrder != null && lastActiveOrder.Count > 0)
 				{
@@ -1281,7 +1281,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				var outputText = "";
 				if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 				{
-					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => DivinitySerializedModData.FromMod((DivinityModData)x)).ToList();
+					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => DivinitySerializedModData.FromMod((ModData)x)).ToList();
 					outputText = JsonConvert.SerializeObject(serializedMods, Formatting.Indented, new JsonSerializerSettings
 					{
 						NullValueHandling = NullValueHandling.Ignore
@@ -1720,7 +1720,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		//this.WhenAnyValue(x => x.OverrideModsFilterText).Throttle(TimeSpan.FromMilliseconds(500)).ObserveOn(RxApp.MainThreadScheduler).
 		//	Subscribe((s) => { OnFilterTextChanged(s, modManagerService.ForceLoadedMods); });
 
-		ActiveMods.WhenAnyPropertyChanged(nameof(DivinityModData.Index)).Throttle(TimeSpan.FromMilliseconds(25)).Subscribe(_ =>
+		ActiveMods.WhenAnyPropertyChanged(nameof(ModData.Index)).Throttle(TimeSpan.FromMilliseconds(25)).Subscribe(_ =>
 		{
 			SelectedModOrder?.Sort(SortModOrder);
 		});
@@ -1780,9 +1780,9 @@ public class DesignModOrderViewModel : IModOrderViewModel
 	public ObservableCollectionExtended<IModEntry> ActiveMods { get; }
 	public ObservableCollectionExtended<IModEntry> InactiveMods { get; }
 
-	private ObservableCollectionExtended<DivinityModData> _testAdventureMods = [];
-	private readonly ReadOnlyObservableCollection<DivinityModData> _adventureMods;
-	public ReadOnlyObservableCollection<DivinityModData> AdventureMods => _adventureMods;
+	private ObservableCollectionExtended<ModData> _testAdventureMods = [];
+	private readonly ReadOnlyObservableCollection<ModData> _adventureMods;
+	public ReadOnlyObservableCollection<ModData> AdventureMods => _adventureMods;
 
 	private ObservableCollectionExtended<DivinityProfileData> _testProfiles = [];
 
@@ -1797,7 +1797,7 @@ public class DesignModOrderViewModel : IModOrderViewModel
 
 	public DivinityProfileData? SelectedProfile { get; set; }
 	public DivinityLoadOrder? SelectedModOrder { get; set; }
-	public DivinityModData? SelectedAdventureMod { get; set; }
+	public ModData? SelectedAdventureMod { get; set; }
 
 	public void AddActiveMod(IModEntry mod) => throw new NotImplementedException();
 	public void ClearMissingMods() => throw new NotImplementedException();
@@ -1829,7 +1829,7 @@ public class DesignModOrderViewModel : IModOrderViewModel
 			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\PlayerProfiles\\Public\\modsettings.lsx"
 		});
 
-		_testAdventureMods.Add(new DivinityModData()
+		_testAdventureMods.Add(new ModData()
 		{
 			Name = "Main"
 		});

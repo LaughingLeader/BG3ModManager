@@ -29,7 +29,7 @@ public class GitHubModsCacheHandler : ReactiveObject, IExternalModCacheHandler<G
 
 	}
 
-	public async Task<bool> Update(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<bool> Update(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		DivinityApp.Log("Checking for GitHub mod updates.");
 		var success = false;

@@ -39,7 +39,7 @@ public class ModioCacheHandler : ReactiveObject, IExternalModCacheHandler<ModioC
 		}
 	}
 
-	public async Task<bool> Update(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<bool> Update(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var apiService = Locator.Current.GetService<IModioService>();
 		if (apiService?.CanFetchData == true)

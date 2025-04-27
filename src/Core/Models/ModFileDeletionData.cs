@@ -11,7 +11,7 @@ public class ModFileDeletionData : ReactiveObject
 	[Reactive] public string? UUID { get; set; }
 	[Reactive] public string? Duplicates { get; set; }
 
-	public static ModFileDeletionData? FromModEntry(IModEntry entry, bool isWorkshopMod = false, bool isDeletingDuplicates = false, IEnumerable<DivinityModData>? loadedMods = null)
+	public static ModFileDeletionData? FromModEntry(IModEntry entry, bool isWorkshopMod = false, bool isDeletingDuplicates = false, IEnumerable<ModData>? loadedMods = null)
 	{
 		if (entry.EntryType is ModEntryType.Mod && entry is ModEntry modEntry && modEntry.Data != null)
 		{

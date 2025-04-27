@@ -95,7 +95,7 @@ public class DivinityLoadOrder : ReactiveObject
 		}
 	}
 
-	public void Add(IDivinityModData mod, bool force = false)
+	public void Add(IModData mod, bool force = false)
 	{
 		try
 		{

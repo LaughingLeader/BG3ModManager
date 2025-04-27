@@ -70,7 +70,7 @@
 		    IsEnabled="{Binding $parent[controls:EnhancedTextBox].CanClear}" />
 	</MenuFlyout>
 
-	<MenuFlyout x:Key="ModContextFlyout" x:DataType="mod:DivinityModData" Placement="Bottom">
+	<MenuFlyout x:Key="ModContextFlyout" x:DataType="mod:ModData" Placement="Bottom">
 		<MenuItem Command="{Binding Path=OpenInFileExplorerCommand, Source={x:Static manager:AppServices.Commands}}"
 		    CommandParameter="{Binding FilePath}"
 		    Header="Open in File Explorer..."

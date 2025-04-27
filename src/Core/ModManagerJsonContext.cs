@@ -8,7 +8,7 @@ using ModManager.Models.Settings;
 namespace ModManager;
 
 [JsonSerializable(typeof(DivinityLoadOrder))]
-[JsonSerializable(typeof(DivinityModData))]
+[JsonSerializable(typeof(ModData))]
 [JsonSerializable(typeof(ModuleShortDesc))]
 [JsonSerializable(typeof(DivinityModScriptExtenderConfig))]
 [JsonSerializable(typeof(DivinitySerializedModData))]

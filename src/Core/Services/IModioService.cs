@@ -10,7 +10,7 @@ public interface IModioService
 	bool CanFetchData { get; }
 	Uri ProfileAvatarUrl { get; }
 
-	Task<UpdateResult> FetchModInfoAsync(IEnumerable<DivinityModData> mods, CancellationToken token);
+	Task<UpdateResult> FetchModInfoAsync(IEnumerable<ModData> mods, CancellationToken token);
 	//TODO
-	Task<Dictionary<string, Modio.Models.Download>> GetLatestDownloadsForModsAsync(IEnumerable<DivinityModData> mods, CancellationToken token);
+	Task<Dictionary<string, Modio.Models.Download>> GetLatestDownloadsForModsAsync(IEnumerable<ModData> mods, CancellationToken token);
 }

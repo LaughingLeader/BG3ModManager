@@ -20,7 +20,7 @@ public class InteractionsService : IInteractionsService
 	/// <inheritdoc/>
 	public Interaction<Unit, bool> DeleteSelectedMods { get; }
 	/// <inheritdoc/>
-	public Interaction<DivinityModData, bool> OpenModProperties { get; }
+	public Interaction<ModData, bool> OpenModProperties { get; }
 	/// <inheritdoc/>
 	public Interaction<NexusGraphCollectionRevision, bool> OpenDownloadCollectionView { get; }
 	/// <inheritdoc/>

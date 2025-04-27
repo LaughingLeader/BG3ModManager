@@ -13,14 +13,14 @@ public interface IModUpdaterService
 	NexusModsCacheHandler NexusMods { get; }
 	ModioCacheHandler Modio { get; }
 	GitHubModsCacheHandler GitHub { get; }
-	Task<bool> UpdateInfoAsync(IEnumerable<DivinityModData> mods, CancellationToken token);
-	Task<bool> LoadCacheAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token);
-	Task<bool> SaveCacheAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token);
+	Task<bool> UpdateInfoAsync(IEnumerable<ModData> mods, CancellationToken token);
+	Task<bool> LoadCacheAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token);
+	Task<bool> SaveCacheAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token);
 
-	Task<ModUpdaterResults> FetchUpdatesAsync(ModManagerSettings settings, IEnumerable<DivinityModData> mods, CancellationToken token);
-	Task<Dictionary<string, GitHubLatestReleaseData>> GetGitHubUpdatesAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token);
-	Task<Dictionary<string, NexusModsModDownloadLink>> GetNexusModsUpdatesAsync(IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token);
-	Task<Dictionary<string, Modio.Models.Download>> GetModioUpdatesAsync(ModManagerSettings settings, IEnumerable<DivinityModData> mods, string currentAppVersion, CancellationToken token);
+	Task<ModUpdaterResults> FetchUpdatesAsync(ModManagerSettings settings, IEnumerable<ModData> mods, CancellationToken token);
+	Task<Dictionary<string, GitHubLatestReleaseData>> GetGitHubUpdatesAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token);
+	Task<Dictionary<string, NexusModsModDownloadLink>> GetNexusModsUpdatesAsync(IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token);
+	Task<Dictionary<string, Modio.Models.Download>> GetModioUpdatesAsync(ModManagerSettings settings, IEnumerable<ModData> mods, string currentAppVersion, CancellationToken token);
 
 	bool DeleteCache();
 }

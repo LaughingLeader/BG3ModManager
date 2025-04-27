@@ -86,7 +86,7 @@ public class ModImportService(IDialogService _dialogService)
 		return directory;
 	}
 
-	public async Task<ImportOperationResults> ImportModFromFile(Dictionary<string, DivinityModData> builtinMods, ImportOperationResults taskResult, string filePath, CancellationToken token, bool toActiveList = false)
+	public async Task<ImportOperationResults> ImportModFromFile(Dictionary<string, ModData> builtinMods, ImportOperationResults taskResult, string filePath, CancellationToken token, bool toActiveList = false)
 	{
 		var ext = Path.GetExtension(filePath).ToLower();
 		if (ext.Equals(".pak", StringComparison.OrdinalIgnoreCase))
@@ -663,7 +663,7 @@ public class ModImportService(IDialogService _dialogService)
 
 			var modManager = AppServices.Mods;
 
-			var modPaks = new List<DivinityModData>(modManager.AllMods.Where(x => selectedModOrder.Order.Any(o => o.UUID == x.UUID)));
+			var modPaks = new List<ModData>(modManager.AllMods.Where(x => selectedModOrder.Order.Any(o => o.UUID == x.UUID)));
 			modPaks.AddRange(modManager.ForceLoadedMods.Where(x => !x.IsForceLoadedMergedMod));
 
 			var incrementProgress = 100d / modPaks.Count;

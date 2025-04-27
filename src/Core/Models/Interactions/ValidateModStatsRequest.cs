@@ -2,4 +2,4 @@
 
 namespace ModManager;
 
-public record struct ValidateModStatsRequest(List<DivinityModData> Mods, CancellationToken Token);
+public record struct ValidateModStatsRequest(List<ModData> Mods, CancellationToken Token);

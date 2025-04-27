@@ -113,8 +113,8 @@ public static class DivinityApp
 	public const LSLib.LS.Enums.Game GAME = LSLib.LS.Enums.Game.DivinityOriginalSin2DE;
 	public const LSLib.LS.Story.Compiler.TargetGame GAME_COMPILER = LSLib.LS.Story.Compiler.TargetGame.DOS2DE;
 #endif
-	public static HashSet<DivinityModData> IgnoredMods { get; private set; }
-	public static HashSet<DivinityModData> IgnoredDependencyMods { get; private set; }
+	public static HashSet<ModData> IgnoredMods { get; private set; }
+	public static HashSet<ModData> IgnoredDependencyMods { get; private set; }
 
 	public static DivinityGlobalEvents Events { get; private set; }
 

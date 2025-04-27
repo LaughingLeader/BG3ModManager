@@ -989,7 +989,7 @@ Directory the zip will be extracted to:
 		}
 	}*/
 
-	private void UpdateModExtenderStatus(DivinityModData mod)
+	private void UpdateModExtenderStatus(ModData mod)
 	{
 		mod.CurrentExtenderVersion = Settings.ExtenderSettings.ExtenderMajorVersion;
 
@@ -1043,7 +1043,7 @@ Directory the zip will be extracted to:
 		}
 	}
 
-	private bool CanUpdateMod(DivinityModData mod, DateTime now, TimeSpan minWaitPeriod, ISettingsService settingsService)
+	private bool CanUpdateMod(ModData mod, DateTime now, TimeSpan minWaitPeriod, ISettingsService settingsService)
 	{
 		if (settingsService.ModConfig.LastUpdated.TryGetValue(mod.UUID, out var last))
 		{
@@ -1053,7 +1053,7 @@ Directory the zip will be extracted to:
 		return true;
 	}
 
-	private IList<DivinityModData> GetUpdateableMods()
+	private IList<ModData> GetUpdateableMods()
 	{
 		var settingsService = AppServices.Get<ISettingsService>();
 		var minUpdateTime = Settings.UpdateSettings.MinimumUpdateTimePeriod;
@@ -1210,7 +1210,7 @@ Directory the zip will be extracted to:
 		});
 	}
 
-	public void AddImportedMod(DivinityModData mod, bool toActiveList = false)
+	public void AddImportedMod(ModData mod, bool toActiveList = false)
 	{
 		mod.ModioEnabled = ModioSupportEnabled;
 		mod.NexusModsEnabled = NexusModsSupportEnabled;

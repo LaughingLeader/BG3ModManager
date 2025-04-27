@@ -172,7 +172,7 @@ public class DesignModUpdatesViewModel : ModUpdatesViewModel
 	{
 		Add(new DivinityModUpdateData()
 		{
-			Mod = new DivinityModData() { Name = "Test Mod", Author = "LaughingLeader", UUID = "0" },
+			Mod = new ModData() { Name = "Test Mod", Author = "LaughingLeader", UUID = "0" },
 			DownloadData = new ModDownloadData()
 			{
 				DownloadPath = "",
@@ -184,7 +184,7 @@ public class DesignModUpdatesViewModel : ModUpdatesViewModel
 		});
 		Add(new DivinityModUpdateData()
 		{
-			Mod = new DivinityModData() { Name = "Test Mod 2", Author = "LaughingLeader", UUID = "1" },
+			Mod = new ModData() { Name = "Test Mod 2", Author = "LaughingLeader", UUID = "1" },
 			DownloadData = new ModDownloadData()
 			{
 				DownloadPath = "",

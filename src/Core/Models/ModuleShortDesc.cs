@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ModManager.Models;
 
 [DataContract]
-public class ModuleShortDesc : ReactiveObject, IDivinityModData
+public class ModuleShortDesc : ReactiveObject, IModData
 {
 	[DataMember, Reactive] public string? UUID { get; set; }
 	[DataMember, Reactive] public string? Name { get; set; }
@@ -17,7 +17,7 @@ public class ModuleShortDesc : ReactiveObject, IDivinityModData
 
 	public override string ToString() => $"[ModuleShortDesc] Name({Name}) UUID({UUID}) Version({Version?.Version})";
 
-	public static ModuleShortDesc FromModData(DivinityModData m)
+	public static ModuleShortDesc FromModData(ModData m)
 	{
 		return new ModuleShortDesc
 		{

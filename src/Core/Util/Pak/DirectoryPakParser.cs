@@ -10,18 +10,18 @@ using System.Text.RegularExpressions;
 namespace ModManager.Util.Pak;
 
 public partial class DirectoryPakParser(string directoryPath, EnumerationOptions? opts = null,
-	Dictionary<string, DivinityModData>? baseMods = null, HashSet<string>? packageBlackList = null) : IDisposable
+	Dictionary<string, ModData>? baseMods = null, HashSet<string>? packageBlackList = null) : IDisposable
 {
 	private bool _isDisposed;
 	private readonly List<Package> _packages = [];
 	private readonly IFileSystemService _fs = Locator.Current.GetService<IFileSystemService>()!;
 	private readonly IEnvironmentService _environment = Locator.Current.GetService<IEnvironmentService>()!;
 	private readonly EnumerationOptions _opts = opts ?? FileUtils.FlatSearchOptions;
-	private readonly Dictionary<string, DivinityModData> _baseMods = baseMods ?? [];
+	private readonly Dictionary<string, ModData> _baseMods = baseMods ?? [];
 	private readonly HashSet<string> _packageBlackList = packageBlackList ?? PackageBlacklistBG3;
 
 	public string? DirectoryPath { get; } = directoryPath;
-	public List<DivinityModData> Mods { get; } = [];
+	public List<ModData> Mods { get; } = [];
 
 	#region Static Properties
 
@@ -96,8 +96,8 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			MaxDegreeOfParallelism = _environment.ProcessorCount
 		};
 
-		ConcurrentDictionary<string, DivinityModData> loadedMods = [];
-		ConcurrentBag<DivinityModData> dupes = [];
+		ConcurrentDictionary<string, ModData> loadedMods = [];
+		ConcurrentBag<ModData> dupes = [];
 
 		await Parallel.ForEachAsync(_packages, opts, async (package, t) =>
 		{

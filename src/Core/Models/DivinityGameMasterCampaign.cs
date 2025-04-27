@@ -6,11 +6,11 @@ using ModManager.Models.Mod;
 namespace ModManager.Models;
 
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
-public class DivinityGameMasterCampaign : DivinityModData
+public class DivinityGameMasterCampaign : ModData
 {
 	public Resource MetaResource { get; set; }
 
-	public bool Export(IEnumerable<DivinityModData> order)
+	public bool Export(IEnumerable<ModData> order)
 	{
 		try
 		{

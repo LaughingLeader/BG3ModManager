@@ -21,18 +21,18 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 	public ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	public ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> ToggleNameDisplayCommand { get; }
+	public ReactiveCommand<ModData?, Unit> ToggleNameDisplayCommand { get; }
 	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
 	public ReactiveCommand<IModEntry?, Unit> DeleteModCommand { get; }
 	public RxCommandUnit DeleteSelectedModsCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> OpenGitHubPageCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> OpenNexusModsPageCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> OpenModioPageCommand { get; }
+	public ReactiveCommand<ModData?, Unit> OpenGitHubPageCommand { get; }
+	public ReactiveCommand<ModData?, Unit> OpenNexusModsPageCommand { get; }
+	public ReactiveCommand<ModData?, Unit> OpenModioPageCommand { get; }
 	public ReactiveCommand<object?, Unit> OpenURLCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> CopyModAsDependencyCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> OpenModPropertiesCommand { get; }
-	public ReactiveCommand<DivinityModData?, Unit> ValidateStatsCommand { get; }
+	public ReactiveCommand<ModData?, Unit> ToggleForceAllowInLoadOrderCommand { get; }
+	public ReactiveCommand<ModData?, Unit> CopyModAsDependencyCommand { get; }
+	public ReactiveCommand<ModData?, Unit> OpenModPropertiesCommand { get; }
+	public ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
 
 	private void OpenFile(string? path)
 	{
@@ -91,7 +91,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private void CopyModAsDependency(DivinityModData? mod)
+	private void CopyModAsDependency(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		try
@@ -113,7 +113,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		FileUtils.TryOpenPath(url);
 	}
 
-	private static void OpenGitHubPage(DivinityModData? mod)
+	private static void OpenGitHubPage(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		var url = mod.GetURL(ModSourceType.GITHUB);
@@ -123,7 +123,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private static void OpenNexusModsPage(DivinityModData? mod)
+	private static void OpenNexusModsPage(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		var url = mod.GetURL(ModSourceType.NEXUSMODS);
@@ -133,7 +133,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private static void OpenModioPage(DivinityModData? mod)
+	private static void OpenModioPage(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		var url = mod.GetURL(ModSourceType.MODIO);
@@ -143,25 +143,25 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private static void ToggleForceAllowInLoadOrder(DivinityModData? mod)
+	private static void ToggleForceAllowInLoadOrder(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		mod.ForceAllowInLoadOrder = !mod.ForceAllowInLoadOrder;
 	}
 
-	private void OpenModProperties(DivinityModData? mod)
+	private void OpenModProperties(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		_interactions.OpenModProperties.Handle(mod).Subscribe();
 	}
 
-	private void StartValidateModStats(DivinityModData? mod)
+	private void StartValidateModStats(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		_interactions.ValidateModStats.Handle(new([mod], CancellationToken.None)).Subscribe();
 	}
 
-	private void ToggleNameDisplay(DivinityModData? mod)
+	private void ToggleNameDisplay(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		mod.DisplayFileForName = !mod.DisplayFileForName;
@@ -200,7 +200,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		OpenFileCommand = ReactiveCommand.Create<string?>(OpenFile, canExecuteCommands);
 		OpenInFileExplorerCommand = ReactiveCommand.Create<string?>(OpenInFileExplorer, canExecuteCommands);
 
-		ToggleNameDisplayCommand = ReactiveCommand.Create<DivinityModData?>(ToggleNameDisplay, canExecuteCommands);
+		ToggleNameDisplayCommand = ReactiveCommand.Create<ModData?>(ToggleNameDisplay, canExecuteCommands);
 
 		CopyToClipboardCommand = ReactiveCommand.Create<string?>(CopyToClipboard, canExecuteCommands);
 
@@ -209,12 +209,12 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		DeleteSelectedModsCommand = ReactiveCommand.Create(DeleteSelectedMods, canExecuteCommands);
 
 		OpenURLCommand = ReactiveCommand.Create<object?>(x => OpenURL(x?.ToString()), canExecuteCommands);
-		OpenGitHubPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenGitHubPage, canExecuteCommands);
-		OpenNexusModsPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenNexusModsPage, canExecuteCommands);
-		OpenModioPageCommand = ReactiveCommand.Create<DivinityModData?>(OpenModioPage, canExecuteCommands);
-		ToggleForceAllowInLoadOrderCommand = ReactiveCommand.Create<DivinityModData?>(ToggleForceAllowInLoadOrder, canExecuteCommands);
-		CopyModAsDependencyCommand = ReactiveCommand.Create<DivinityModData?>(CopyModAsDependency, canExecuteCommands);
-		OpenModPropertiesCommand = ReactiveCommand.Create<DivinityModData?>(OpenModProperties, canExecuteCommands);
-		ValidateStatsCommand = ReactiveCommand.Create<DivinityModData?>(StartValidateModStats, canExecuteCommands);
+		OpenGitHubPageCommand = ReactiveCommand.Create<ModData?>(OpenGitHubPage, canExecuteCommands);
+		OpenNexusModsPageCommand = ReactiveCommand.Create<ModData?>(OpenNexusModsPage, canExecuteCommands);
+		OpenModioPageCommand = ReactiveCommand.Create<ModData?>(OpenModioPage, canExecuteCommands);
+		ToggleForceAllowInLoadOrderCommand = ReactiveCommand.Create<ModData?>(ToggleForceAllowInLoadOrder, canExecuteCommands);
+		CopyModAsDependencyCommand = ReactiveCommand.Create<ModData?>(CopyModAsDependency, canExecuteCommands);
+		OpenModPropertiesCommand = ReactiveCommand.Create<ModData?>(OpenModProperties, canExecuteCommands);
+		ValidateStatsCommand = ReactiveCommand.Create<ModData?>(StartValidateModStats, canExecuteCommands);
 	}
 }

@@ -13,5 +13,5 @@ public interface ISettingsService
 	bool TryLoadAll(out List<Exception> errors);
 	bool TryLoadAppSettings(out Exception error);
 	void UpdateLastUpdated(IList<string> updatedModIds);
-	void UpdateLastUpdated(IList<DivinityModData> updatedMods);
+	void UpdateLastUpdated(IList<ModData> updatedMods);
 }

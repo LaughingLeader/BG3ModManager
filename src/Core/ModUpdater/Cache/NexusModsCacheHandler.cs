@@ -36,7 +36,7 @@ public class NexusModsCacheHandler : ReactiveObject, IExternalModCacheHandler<Ne
 		}
 	}
 
-	public async Task<bool> Update(IEnumerable<DivinityModData> mods, CancellationToken token)
+	public async Task<bool> Update(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var nexusModsService = Locator.Current.GetService<INexusModsService>();
 		if (nexusModsService.CanFetchData)
