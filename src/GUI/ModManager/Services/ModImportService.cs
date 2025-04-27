@@ -513,6 +513,7 @@ public class ModImportService(IDialogService _dialogService)
 			"Import Mods from Archive...",
 			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
 			_importModFileTypes,
+			null,
 			true
 		));
 
@@ -536,6 +537,7 @@ public class ModImportService(IDialogService _dialogService)
 			"Import NexusMods ModId(s) from Archive(s)",
 			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
 			_importModFileTypes,
+			null,
 			true
 		));
 

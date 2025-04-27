@@ -4,7 +4,8 @@ public readonly struct OpenFileBrowserDialogRequest
 {
 	public string? Title { get; init; }
 	public string? Description { get; init; }
-	public string? StartingPath { get; init; }
+	public string? SuggestedDirectory { get; init; }
+	public string? SuggestedName { get; init; }
 	public bool MultiSelect { get; init; }
 	public FileTypeFilter[] FileTypes { get; init; }
 	public object? TargetWindow { get; init; }
@@ -15,7 +16,8 @@ public readonly struct OpenFileBrowserDialogRequest
 		FileTypes = [CommonFileTypes.All];
 	}
 
-	public OpenFileBrowserDialogRequest(string title, string startingPath, FileTypeFilter[]? fileTypes = null,
+	public OpenFileBrowserDialogRequest(string title, string startingDirectory, FileTypeFilter[]? fileTypes = null,
+		string? fileName = null,
 		bool multiSelect = false,
 		string? description = null,
 		object? window = null
@@ -23,7 +25,8 @@ public readonly struct OpenFileBrowserDialogRequest
 	{
 		Title = title;
 		Description = description;
-		StartingPath = startingPath;
+		SuggestedDirectory = startingDirectory;
+		SuggestedName = fileName;
 		FileTypes = fileTypes ?? [CommonFileTypes.All];
 		MultiSelect = multiSelect;
 		TargetWindow = window;

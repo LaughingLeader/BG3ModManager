@@ -674,7 +674,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return loadOrderDirectory;
 	}
 
-	public async Task<bool> SaveLoadOrderAs()
+	public async Task<bool> SaveLoadOrderAsAsync()
 	{
 		if (SelectedModOrder == null)
 		{
@@ -682,24 +682,25 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			return false;
 		}
 
-		var ordersDir = GetOrdersDirectory();
-		if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
-		var startDirectory = ModImportService.GetInitialStartingDirectory(ordersDir);
+		var ordersDir = ModImportService.GetInitialStartingDirectory(GetOrdersDirectory());
+		var outputName = SelectedModOrder.Name + ".json";
 
-		var outputPath = Path.Join(SelectedModOrder.Name + ".json");
+		if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
+
 		if (SelectedModOrder.IsModSettings)
 		{
 			var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-") + "_HH-mm-ss";
-			outputPath = $"Current_{DateTime.Now.ToString(sysFormat)}.json";
+			outputName = $"Current_{DateTime.Now.ToString(sysFormat)}.json";
 		}
 
-		outputPath = ModDataLoader.MakeSafeFilename(outputPath, '_');
+		var outputPath = Path.Join(ordersDir, ModDataLoader.MakeSafeFilename(outputName, '_'));
 		var modOrderName = Path.GetFileNameWithoutExtension(outputPath);
 
 		var result = await _dialogs.SaveFileAsync(new(
 			"Save Load Order As...",
-			Path.Join(startDirectory, outputPath),
-			[CommonFileTypes.Json]
+			ordersDir,
+			[CommonFileTypes.Json],
+			ModDataLoader.MakeSafeFilename(outputName, '_')
 		));
 
 		if (result.Success)
@@ -1260,8 +1261,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			var result = await _dialogs.SaveFileAsync(new(
 				"Export Load Order As Text File...",
-				Path.Join(ModImportService.GetInitialStartingDirectory(), ModDataLoader.MakeSafeFilename(outputName, '_')),
-				CommonFileTypes.ModOrderFileTypes
+				ModImportService.GetInitialStartingDirectory(),
+				CommonFileTypes.ModOrderFileTypes,
+				ModDataLoader.MakeSafeFilename(outputName, '_')
 			));
 
 			if (result.Success)

@@ -185,7 +185,8 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 		var dialogResult = await _dialogService.OpenFolderAsync(new OpenFolderBrowserDialogRequest(
 			"Extract File(s) To...",
 			ModImportService.GetInitialStartingDirectory(settings.ManagerSettings.LastExtractOutputPath),
-			"",
+			null,
+			null,
 			AppServices.Get<PakFileExplorerWindow>()
 		));
 

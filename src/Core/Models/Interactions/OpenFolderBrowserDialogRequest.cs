@@ -4,7 +4,8 @@ public readonly struct OpenFolderBrowserDialogRequest
 {
 	public string? Title { get; init; }
 	public string? Description { get; init; }
-	public string? StartingPath { get; init; }
+	public string? SuggestedDirectory { get; init; }
+	public string? SuggestedName { get; init; }
 	public bool MultiSelect { get; init; }
 	public object? TargetWindow { get; init; }
 
@@ -13,11 +14,12 @@ public readonly struct OpenFolderBrowserDialogRequest
 		Title = "Open Folder...";
 	}
 
-	public OpenFolderBrowserDialogRequest(string title, string startingPath, string? description = null, object? window = null)
+	public OpenFolderBrowserDialogRequest(string title, string startingPath, string? fileName = null, string? description = null, object? window = null)
 	{
 		Title = title;
 		Description = description;
-		StartingPath = startingPath;
+		SuggestedDirectory = startingPath;
+		SuggestedName = fileName;
 		TargetWindow = window;
 	}
 }

@@ -26,12 +26,13 @@ public class DialogService : IDialogService
 			provider = _window.StorageProvider;
 		}
 
-		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
+		var startingFolder = await provider.TryGetFolderFromPathAsync(context.SuggestedDirectory);
 
 		var opts = new FolderPickerOpenOptions()
 		{
 			Title = context.Title,
 			SuggestedStartLocation = startingFolder,
+			SuggestedFileName = context.SuggestedName,
 			AllowMultiple = context.MultiSelect
 		};
 
@@ -58,12 +59,13 @@ public class DialogService : IDialogService
 			provider = _window.StorageProvider;
 		}
 
-		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
+		var startingFolder = await provider.TryGetFolderFromPathAsync(context.SuggestedDirectory);
 
 		var opts = new FilePickerOpenOptions()
 		{
 			Title = context.Title,
 			SuggestedStartLocation = startingFolder,
+			SuggestedFileName = context.SuggestedName,
 			AllowMultiple = context.MultiSelect
 		};
 
@@ -95,13 +97,14 @@ public class DialogService : IDialogService
 			provider = _window.StorageProvider;
 		}
 
-		var startingFolder = await provider.TryGetFolderFromPathAsync(context.StartingPath);
+		var startingFolder = await provider.TryGetFolderFromPathAsync(context.SuggestedDirectory);
 
 		var opts = new FilePickerSaveOptions()
 		{
 			ShowOverwritePrompt = true,
 			Title = context.Title,
-			SuggestedStartLocation = startingFolder
+			SuggestedStartLocation = startingFolder,
+			SuggestedFileName = context.SuggestedName,
 		};
 
 		if (context.FileTypes != null)

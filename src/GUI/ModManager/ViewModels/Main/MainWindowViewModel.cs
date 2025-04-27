@@ -1285,8 +1285,9 @@ Directory the zip will be extracted to:
 
 			var result = await _dialogs.SaveFileAsync(new(
 				"Export Load Order As...",
-				Path.Join(GetInitialStartingDirectory(), outputName),
-				CommonFileTypes.ArchiveFileTypes));
+				GetInitialStartingDirectory(),
+				CommonFileTypes.ArchiveFileTypes,
+				outputName));
 
 			if (result.Success)
 			{
@@ -1337,11 +1338,12 @@ Directory the zip will be extracted to:
 			var rootFileName = Path.GetFileNameWithoutExtension(pickFile.File);
 			PathwayData.LastSaveFilePath = rootFolder;
 
-			var initialFilePath = Path.Join(rootFolder, rootFileName + "_1.lsv");
 			var renameFile = await _dialogs.SaveFileAsync(new(
 				"Rename Save As...",
-				initialFilePath,
-				[CommonFileTypes.LarianSaveFile], true));
+				rootFolder,
+				[CommonFileTypes.LarianSaveFile],
+				rootFileName + "_1.lsv",
+				true));
 
 			if (renameFile.Success)
 			{
