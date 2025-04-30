@@ -13,21 +13,28 @@ public class MissingModData
 
 	public override string ToString()
 	{
-		var str = "";
+		List<string> text = [];
 		if (Index > 0)
 		{
-			str += $"{Index}. ";
+			text.Add($"{Index}. ");
 		}
-		str += Name;
+		if (!string.IsNullOrWhiteSpace(Name))
+		{
+			text.Add(Name);
+		}
+		else
+		{
+			text.Add(UUID);
+		}
 		if (!string.IsNullOrEmpty(Author))
 		{
-			str += " by " + Author;
+			text.Add(" by " + Author);
 		}
 		if (RequiredBy.Count > 0)
 		{
-			str += " [Required By] " + string.Join(';', RequiredBy.Order());
+			text.Add(", Required By " + string.Join(';', RequiredBy.Order().Distinct()));
 		}
-		return str;
+		return string.Join("", text);
 	}
 
 	public static MissingModData FromData(ModData modData, bool isDependency = true, string[]? requiredBy = null)

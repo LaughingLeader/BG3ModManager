@@ -1,11 +1,5 @@
 ﻿using ModManager.Models.Mod.Game;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ModManager.Models.Mod;
 public class MissingModsResults
 {
@@ -25,26 +19,39 @@ public class MissingModsResults
 	{
 		if (!mod.UUID.IsValid()) return;
 
-		if (!Missing.ContainsKey(mod.UUID))
+		if (Dependencies.TryGetValue(mod.UUID, out var dep))
+		{
+			Dependencies.Remove(mod.UUID);
+			dep.Index = index;
+			Missing.Add(mod.UUID, dep);
+		}
+		else if (!Missing.ContainsKey(mod.UUID))
 		{
 			Missing.Add(mod.UUID, MissingModData.FromData(mod, index, false));
 		}
 	}
 
-	public void AddDependency(ModuleShortDesc mod, string[]? requiredBy = null)
+	public void AddDependency(ModuleShortDesc mod, params string[] requiredBy)
 	{
 		if (!mod.UUID.IsValid()) return;
 
-		if (Dependencies.TryGetValue(mod.UUID, out var existing))
+		if (Missing.TryGetValue(mod.UUID, out var existingMissing))
 		{
-			if (requiredBy != null)
-			{
-				existing.RequiredBy.AddRange(requiredBy);
-			}
+			if (requiredBy != null) existingMissing.RequiredBy.AddRange(requiredBy);
 		}
 		else
 		{
-			Dependencies.Add(mod.UUID, MissingModData.FromData(mod, -1, true, requiredBy));
+			if (Dependencies.TryGetValue(mod.UUID, out var existing))
+			{
+				if (requiredBy != null)
+				{
+					existing.RequiredBy.AddRange(requiredBy);
+				}
+			}
+			else
+			{
+				Dependencies.Add(mod.UUID, MissingModData.FromData(mod, -1, true, requiredBy));
+			}
 		}
 	}
 
@@ -54,17 +61,10 @@ public class MissingModsResults
 
 		var requiredByName = requiredByMod.Name ?? requiredByMod.FileName!;
 
-		if (Dependencies.TryGetValue(mod.UUID, out var existing))
-		{
-			existing.RequiredBy.Add(requiredByName);
-		}
-		else
-		{
-			Dependencies.Add(mod.UUID, MissingModData.FromData(mod, -1, true, [requiredByName]));
-		}
+		AddDependency(mod, requiredByName);
 	}
 
-	public void AddExtenderRequirement(ModData mod, string[]? requiredBy = null)
+	public void AddExtenderRequirement(ModData mod, params string[] requiredBy)
 	{
 		if (!mod.UUID.IsValid()) return;
 

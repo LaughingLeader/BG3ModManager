@@ -477,9 +477,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private void DisplayMissingMods(ModLoadOrder? order = null)
 	{
 		var displayExtenderModWarning = false;
+		var checkMissingMods = !Settings.DisableMissingModWarnings;
 
 		order ??= SelectedModOrder;
-		if (order != null && Settings.DisableMissingModWarnings != true)
+		if (order != null && checkMissingMods)
 		{
 			var missingResults = new MissingModsResults();
 
@@ -494,9 +495,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 						{
 							if (dependency == null) continue;
 
-							if (!ModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID))
+							if (dependency.UUID.IsValid() && !ModDataLoader.IgnoreMod(dependency.UUID) && !ModManager.ModExists(dependency.UUID))
 							{
-								missingResults.AddDependency(dependency, [mod.UUID]);
+								missingResults.AddDependency(dependency, mod.UUID);
 							}
 						}
 					}
@@ -509,19 +510,22 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			if (missingResults.TotalMissing > 0)
 			{
-				var finalMessage = "";
+				List<string> messages = [];
+
 				var missingMessage = missingResults.GetMissingMessage();
 				var missingDependencies = missingResults.GetDependenciesMessage();
 
-				if(missingMessage.IsValid())
+				if (!String.IsNullOrWhiteSpace(missingMessage))
 				{
-					finalMessage += missingMessage;
+					messages.Add(missingMessage);
 				}
 
-				if(missingDependencies.IsValid())
+				if (!String.IsNullOrWhiteSpace(missingDependencies))
 				{
-					finalMessage += $"\nMissing Dependencies:\n{missingDependencies}";
+					messages.Add($"Missing Dependencies:\n{missingDependencies}");
 				}
+
+				var finalMessage = string.Join(Environment.NewLine, messages);
 
 				_interactions.ShowMessageBox.Handle(new(
 				"Missing Mods in Load Order",
@@ -539,7 +543,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			displayExtenderModWarning = true;
 		}
 
-		if (order != null && Settings.DisableMissingModWarnings != true && displayExtenderModWarning && AppSettings.Features.ScriptExtender)
+		if (order != null && checkMissingMods && displayExtenderModWarning && AppSettings.Features.ScriptExtender)
 		{
 			var missingResults = new MissingModsResults();
 
