@@ -17,4 +17,10 @@
 		<DebugType>full</DebugType>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<DefineConstants Condition="'$(RuntimeIdentifier)' == 'win-x64'">$(DefineConstants);Windows</DefineConstants>
+		<DefineConstants Condition="'$(RuntimeIdentifier)' == 'osx-x64'">$(DefineConstants);MacOS</DefineConstants>
+		<DefineConstants Condition="'$(RuntimeIdentifier)' == 'linux-x64'">$(DefineConstants);Linux</DefineConstants>
+	</PropertyGroup>
 </Project>
