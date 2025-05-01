@@ -593,8 +593,26 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		ExtractSelectedActiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractSelectedInactiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractSelectedAdventureCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
-		SpeakActiveModOrderCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
-		StopSpeakingCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		SpeakActiveModOrderCommand = ReactiveCommand.Create(() =>
+		{
+			var speaker = AppServices.Get<IScreenReaderService>();
+			if(speaker != null)
+			{
+				if (ModOrder.ActiveMods.Count > 0)
+				{
+					var text = string.Join(", ", ModOrder.ActiveMods.Select(x => x.DisplayName));
+					speaker.Speak($"{ModOrder.ActiveMods.Count} mods are in the active order, including:\n{text}", true);
+				}
+				else
+				{
+					speaker.Speak($"Zero mods are active.", true);
+				}
+			}
+		}, canExecuteCommands);
+		StopSpeakingCommand = ReactiveCommand.Create(() =>
+		{
+			AppServices.Get<IScreenReaderService>()?.Silence();
+		}, canExecuteCommands);
 		CheckForUpdatesCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		OpenDonationLinkCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 
