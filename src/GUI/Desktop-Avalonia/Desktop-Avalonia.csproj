@@ -41,9 +41,9 @@
 		<PreBuildEvent>rd /s /q $(TargetDir)_Lib</PreBuildEvent>
 	</PropertyGroup>
 
-	<Target Name="CrossSpeakLibraryFiles" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Publish' or '$(Configuration)' == 'PublishTest'">
+	<Target Name="CrossSpeakLibraryFiles" AfterTargets="AfterBuild">
 		<ItemGroup>
-			<LibFiles Include="$(SolutionDir)\External\CrossSpeak\CrossSpeak\lib\windows\*.dll" />
+			<LibFiles Include="$(SolutionDir)\External\CrossSpeak\CrossSpeak\lib\**\*.*" />
 		</ItemGroup>
 		<Copy SourceFiles="@(LibFiles)" DestinationFolder="$(OutputPath)_Lib" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
 	</Target>
