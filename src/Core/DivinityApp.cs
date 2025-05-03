@@ -177,7 +177,7 @@ public static class DivinityApp
 
 	public static void Log(string msg, [CallerMemberName] string mName = "", [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
 	{
-		LogMethod($"[{Path.GetFileName(path)}:{mName}({line})] {msg}");
+		LogMethod($"[{Path.GetFileName(path)}:{mName}({line})] {StringUtils.ReplaceSpecialPathways(msg)}");
 	}
 
 	public static bool IsScreenReaderActive()

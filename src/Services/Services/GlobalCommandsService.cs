@@ -201,12 +201,12 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 	public void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "")
 	{
-		_interactions.ShowAlert.Handle(new(message, alertType, timeout, title)).Subscribe();
+		_interactions.ShowAlert.Handle(new(StringUtils.ReplaceSpecialPathways(message), alertType, timeout, title)).Subscribe();
 	}
 
 	public async Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "")
 	{
-		await _interactions.ShowAlert.Handle(new(message, alertType, timeout, title));
+		await _interactions.ShowAlert.Handle(new(StringUtils.ReplaceSpecialPathways(message), alertType, timeout, title));
 	}
 
 	public GlobalCommandsService(IInteractionsService interactionsService, IFileSystemService fileSystemService)
