@@ -46,18 +46,18 @@ public class PathwayData : ReactiveObject
 		ScriptExtenderLatestReleaseVersion = "";
 	}
 
-	public string? ScriptExtenderSettingsFile(ModManagerSettings settings)
+	public static string ScriptExtenderSettingsFile(ModManagerSettings settings)
 	{
-		if (settings.GameExecutablePath.IsExistingFile())
+		if (settings.GameExecutablePath?.IsExistingFile() == true)
 		{
 			return Path.Join(Path.GetDirectoryName(settings.GameExecutablePath), DivinityApp.EXTENDER_CONFIG_FILE);
 		}
 		return "";
 	}
 
-	public string? ScriptExtenderUpdaterConfigFile(ModManagerSettings settings)
+	public static string ScriptExtenderUpdaterConfigFile(ModManagerSettings settings)
 	{
-		if (settings.GameExecutablePath.IsExistingFile())
+		if (settings.GameExecutablePath?.IsExistingFile() == true)
 		{
 			return Path.Join(Path.GetDirectoryName(settings.GameExecutablePath), DivinityApp.EXTENDER_UPDATER_CONFIG_FILE);
 		}

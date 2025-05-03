@@ -7,6 +7,7 @@ using ReactiveUI.Fody.Helpers;
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 
 using TextCopy;
 
@@ -38,20 +39,22 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	{
 		if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path), "path is null or empty");
 
+		path = _fs.GetRealPath(path);
+
 		if (_fs.File.Exists(path))
 		{
 			try
 			{
-				Process.Start(_fs.Path.GetFullPath(path));
+				Process.Start(path);
 			}
 			catch (System.ComponentModel.Win32Exception) // No File Association
 			{
-				Process.Start("explorer.exe", $"\"{_fs.Path.GetFullPath(path)}\"");
+				Process.Start("explorer.exe", $"\"{path}\"");
 			}
 		}
 		else if (_fs.Directory.Exists(path))
 		{
-			Process.Start("explorer.exe", $"\"{_fs.Path.GetFullPath(path)}\"");
+			Process.Start("explorer.exe", $"\"{path}\"");
 		}
 		else
 		{
@@ -107,40 +110,56 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private static void OpenURL(string url)
+	public void OpenURL(string? url)
 	{
-		if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
-		FileUtils.TryOpenPath(url);
+		if (!url.IsValid()) throw new ArgumentNullException(nameof(url));
+		//Source: https://stackoverflow.com/a/43232486
+		try
+		{
+			Process.Start(url);
+		}
+		catch
+		{
+			// hack because of this: https://github.com/dotnet/corefx/issues/10361
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				url = url.Replace("&", "^&");
+				Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			{
+				Process.Start("xdg-open", url);
+			}
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+			{
+				Process.Start("open", url);
+			}
+			else
+			{
+				throw;
+			}
+		}
 	}
 
-	private static void OpenGitHubPage(ModData? mod)
+	private void OpenGitHubPage(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		var url = mod.GetURL(ModSourceType.GITHUB);
-		if (!string.IsNullOrEmpty(url))
-		{
-			FileUtils.TryOpenPath(url);
-		}
+		OpenURL(url);
 	}
 
-	private static void OpenNexusModsPage(ModData? mod)
+	private void OpenNexusModsPage(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		var url = mod.GetURL(ModSourceType.NEXUSMODS);
-		if (!string.IsNullOrEmpty(url))
-		{
-			FileUtils.TryOpenPath(url);
-		}
+		OpenURL(url);
 	}
 
-	private static void OpenModioPage(ModData? mod)
+	private void OpenModioPage(ModData? mod)
 	{
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		var url = mod.GetURL(ModSourceType.MODIO);
-		if (!string.IsNullOrEmpty(url))
-		{
-			FileUtils.TryOpenPath(url);
-		}
+		OpenURL(url);
 	}
 
 	private static void ToggleForceAllowInLoadOrder(ModData? mod)

@@ -1,6 +1,6 @@
 ﻿namespace ModManager.Models.Settings;
 
-public interface ISerializableSettings
+public interface ISerializableSettings : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
 	string FileName { get; }
 	string GetDirectory();

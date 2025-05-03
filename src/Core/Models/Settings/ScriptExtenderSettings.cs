@@ -9,7 +9,6 @@ namespace ModManager.Models.Settings;
 public class ScriptExtenderSettings : ReactiveObject
 {
 	[Reactive] public bool DevOptionsEnabled { get; set; }
-
 	[Reactive] public bool ExtenderIsAvailable { get; set; }
 	[Reactive] public bool ExtenderUpdaterIsAvailable { get; set; }
 	[Reactive] public string? ExtenderVersion { get; set; }
@@ -38,7 +37,7 @@ public class ScriptExtenderSettings : ReactiveObject
 
 	[SettingsEntry("Log Working Story Errors", "Log errors during Osiris story compilation to a log file (LogFailedCompile)")]
 	[DataMember, Reactive]
-	[DefaultValue(true)]
+	[DefaultValue(false)]
 	public bool LogFailedCompile { get; set; }
 
 	[SettingsEntry("Enable Osiris Logging", "Enable logging of Osiris activity (rule evaluation, queries, etc.) to a log file")]
@@ -68,7 +67,7 @@ public class ScriptExtenderSettings : ReactiveObject
 
 	[SettingsEntry("Disable Story Merge", "Prevents story.div.osi merging, which automatically happens when mods are present\nMay only occur when loading a save", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
-	[DefaultValue(true)]
+	[DefaultValue(false)]
 	public bool DisableStoryMerge { get; set; }
 
 	[SettingsEntry("Disable Story Patching", "Prevents patching story.bin with story.div.osi when loading saves, effectively preventing the Osiris scripts in the save from updating", BindVisibilityTo = nameof(DevOptionsEnabled))]
@@ -128,7 +127,7 @@ public class ScriptExtenderSettings : ReactiveObject
 
 	[SettingsEntry("Clear Console On Reset", "Clears the extender console when the reset command is used", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
-	[DefaultValue(true)]
+	[DefaultValue(false)]
 	public bool ClearOnReset { get; set; }
 
 	[SettingsEntry("Default to Client Side", "Defaults the extender console to the client-side\nThis is setting is intended for developers", BindVisibilityTo = nameof(DevOptionsEnabled))]
@@ -140,6 +139,11 @@ public class ScriptExtenderSettings : ReactiveObject
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool ShowPerfWarnings { get; set; }
+
+	[SettingsEntry("Disable ModCrashSanityCheck", "Disables the ModCrashSanityCheck jank that disables mods the next time the game runs")]
+	[DataMember, Reactive]
+	[DefaultValue(false)]
+	public bool InsanityCheck { get; set; }
 
 	public ScriptExtenderSettings()
 	{

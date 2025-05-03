@@ -16,6 +16,7 @@ public static class ModelExtensions
 			if (pr.CanResetValue(model))
 			{
 				pr.ResetValue(model);
+				model.RaisePropertyChanged(pr.Name);
 			}
 		}
 	}
@@ -29,6 +30,7 @@ public static class ModelExtensions
 			if (value != null)
 			{
 				pr.SetValue(target, value);
+				target.RaisePropertyChanged(pr.Name);
 			}
 		}
 	}
@@ -43,6 +45,7 @@ public static class ModelExtensions
 			if (value != null)
 			{
 				pr.SetValue(target, value);
+				target.RaisePropertyChanged(pr.Name);
 			}
 		}
 	}
@@ -51,7 +54,7 @@ public static class ModelExtensions
 	{
 		AllowTrailingCommas = true,
 		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull
 	};
 
 	public static bool Save<T>(this T data, out Exception? error) where T : ISerializableSettings
@@ -95,6 +98,7 @@ public static class ModelExtensions
 						if (value != null)
 						{
 							pr.SetValue(data, value);
+							data.RaisePropertyChanged(pr.Name);
 						}
 					}
 					return true;

@@ -58,6 +58,9 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Open Mods Folder", Key.D1, KeyModifiers.Control, "", "Go")]
 	public RxCommandUnit? OpenModsFolderCommand { get; set; }
 
+	[Keybinding("Open Logs Folder", Key.D2, KeyModifiers.Control, "", "Go")]
+	public RxCommandUnit? OpenLogsFolderCommand { get; set; }
+
 	[Keybinding("Open Nexus Mods Website", Key.D3, KeyModifiers.Control, "", "Go")]
 	public RxCommandUnit? OpenNexusModsCommand { get; set; }
 
@@ -315,17 +318,30 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 		LaunchGameCommand = ReactiveCommand.Create(main.LaunchGame, main.WhenAnyValue(x => x.CanLaunchGame).AllTrue(canExecuteCommands));
 
-		OpenGitHubRepoCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_REPO), canExecuteCommands);
-		OpenDonationPageCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_DONATION), canExecuteCommands);
-		OpenModsFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(main.PathwayData.AppDataModsPath), canExecuteCommands);
+		OpenGitHubRepoCommand = ReactiveCommand.Create(() => AppServices.Commands.OpenURL(DivinityApp.URL_REPO), canExecuteCommands);
+		OpenDonationPageCommand = ReactiveCommand.Create(() => AppServices.Commands.OpenURL(DivinityApp.URL_DONATION), canExecuteCommands);
+		OpenModsFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(main.PathwayData.AppDataModsPath, fs.Directory.Exists), canExecuteCommands);
+
+		var gameExecutableExists = main.Settings.WhenAnyValue(x => x.GameExecutablePath, fs.File.Exists);
+		var logFolderExists = main.Settings.WhenAnyValue(x => x.ExtenderLogDirectory).Select(fs.Directory.Exists);
+		var canOpenLogsFolder = canExecuteCommands.CombineLatest(gameExecutableExists, logFolderExists).AllTrue();
+
+		OpenLogsFolderCommand = ReactiveCommand.Create(() =>
+		{
+			if(fs.File.Exists(main.Settings.GameExecutablePath))
+			{
+				FileUtils.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath), fs.Directory.Exists);
+			}
+		}, canOpenLogsFolder);
+
 		OpenGameFolderCommand = ReactiveCommand.Create(() =>
 		{
-			var fs = AppServices.Get<IFileSystemService>()!;
 			if(fs.File.Exists(main.Settings.GameExecutablePath))
 			{
 				FileUtils.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath));
 			}
-		}, canExecuteCommands);
+		}, canExecuteCommands.CombineLatest(gameExecutableExists).AllTrue());
+
 		//Savegames\Story
 		var canOpenProfileSaves = modOrder.WhenAnyValue(x => x.SelectedProfileSavesPath, fs.Directory.Exists).CombineLatest(canExecuteCommands).AllTrue();
 		OpenSavesFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(modOrder.SelectedProfileSavesPath), canOpenProfileSaves);
@@ -400,7 +416,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		ImportOrderFromFileCommand = ReactiveCommand.CreateFromTask(modOrder.ImportOrderFromFile, canExecuteCommands);
 		ImportOrderFromZipFileCommand = ReactiveCommand.CreateFromTask(modImporter.ImportOrderFromArchive, canExecuteCommands);
 
-		ExportOrderToTextFileCommand = ReactiveCommand.CreateFromTask(modOrder.ExportLoadOrderToTextFileAs, canExecuteHasActive);
+		ExportOrderToTextFileCommand = ReactiveCommand.CreateFromTask(modOrder.ExportLoadOrderToTextFileAsAsync, canExecuteHasActive);
 		ExportOrderToZipCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsync, canExecuteHasActive);
 		ExportOrderToArchiveAsCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsAsync, canExecuteHasActive);
 

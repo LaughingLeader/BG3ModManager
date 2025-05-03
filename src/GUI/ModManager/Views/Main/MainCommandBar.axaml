@@ -212,6 +212,10 @@
 					    Content="{materialIcons:MaterialIconExt Kind=FolderOpen}"
 					    Foreground="RoyalBlue"
 					    ToolTip.Tip="Open Mods Folder..." />
+					<Button Command="{Binding OpenLogsFolderCommand}"
+					    Content="{materialIcons:MaterialIconExt Kind=Contract}"
+					    Foreground="Teal"
+					    ToolTip.Tip="Open Script Extender Logs Folder..." />
 					<Button Command="{Binding LaunchGameCommand}"
 					    Content="{materialIcons:MaterialIconExt Kind=Launch}"
 					    Foreground="Red"

@@ -9,8 +9,6 @@ using ModManager.Util;
 using ModManager.ViewModels.Main;
 using ModManager.ViewModels.Settings;
 
-using Newtonsoft.Json;
-
 using System.ComponentModel;
 
 namespace ModManager.ViewModels;
@@ -60,6 +58,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 	#endregion
 
 	private readonly IInteractionsService _interactions;
+	private readonly ISettingsService _settings;
 
 	public ObservableCollectionExtended<ScriptExtenderUpdateVersion> ScriptExtenderUpdates { get; private set; }
 	[Reactive] public ScriptExtenderUpdateVersion TargetVersion { get; set; }
@@ -89,13 +88,6 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 	public RxCommandUnit AssociateWithNXMCommand { get; }
 
 	private readonly ScriptExtenderUpdateVersion _emptyVersion = new();
-
-	private readonly JsonSerializerSettings _jsonConfigExportSettings = new()
-	{
-		DefaultValueHandling = DefaultValueHandling.Ignore,
-		NullValueHandling = NullValueHandling.Ignore,
-		Formatting = Formatting.Indented
-	};
 
 	private string SelectedTabToResetTooltip(SettingsWindowTab tab)
 	{
@@ -206,39 +198,29 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 
 	public bool ExportExtenderSettings()
 	{
-		var outputFile = Path.Join(Path.GetDirectoryName(Settings.GameExecutablePath), "ScriptExtenderSettings.json");
-		try
+		if (_settings.SaveExtenderSettings())
 		{
-			_jsonConfigExportSettings.DefaultValueHandling = ExtenderSettings.ExportDefaultExtenderSettings ? DefaultValueHandling.Include : DefaultValueHandling.Ignore;
-			var contents = JsonConvert.SerializeObject(Settings.ExtenderSettings, _jsonConfigExportSettings);
-			File.WriteAllText(outputFile, contents);
-			AppServices.Commands.ShowAlert($"Saved Script Extender settings to '{outputFile}'", AlertType.Success, 20);
+			AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Success, 20);
 			return true;
 		}
-		catch (Exception ex)
+		else
 		{
-			AppServices.Commands.ShowAlert($"Error saving Script Extender settings to '{outputFile}':\n{ex}", AlertType.Danger);
+			AppServices.Commands.ShowAlert($"Failed to save bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Danger, 60);
 		}
 		return false;
 	}
 
 	public bool ExportExtenderUpdaterSettings()
 	{
-		var outputFile = Path.Join(Path.GetDirectoryName(Settings.GameExecutablePath), "ScriptExtenderUpdaterConfig.json");
-		try
+		if (_settings.SaveExtenderUpdaterSettings())
 		{
-			_jsonConfigExportSettings.DefaultValueHandling = ExtenderSettings.ExportDefaultExtenderSettings ? DefaultValueHandling.Include : DefaultValueHandling.Ignore;
-			var contents = JsonConvert.SerializeObject(Settings.ExtenderUpdaterSettings, _jsonConfigExportSettings);
-			File.WriteAllText(outputFile, contents);
-			AppServices.Commands.ShowAlert($"Saved Script Extender Updater settings to '{outputFile}'", AlertType.Success, 20);
-
+			AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Success, 20);
 			ViewModelLocator.Main.UpdateExtender(true);
-
 			return true;
 		}
-		catch (Exception ex)
+		else
 		{
-			AppServices.Commands.ShowAlert($"Error saving Script Extender Updater settings to '{outputFile}':\n{ex}", AlertType.Danger);
+			AppServices.Commands.ShowAlert($"Failed to save bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Danger, 60);
 		}
 		return false;
 	}
@@ -327,12 +309,13 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		});
 	}
 
-	public SettingsWindowViewModel(IInteractionsService interactions, IScreen? host = null)
+	public SettingsWindowViewModel(IInteractionsService interactions, ISettingsService settingsService, IScreen? host = null)
 	{
 		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 		CloseCommand = this.CreateCloseCommand();
 
 		_interactions = interactions;
+		_settings = settingsService;
 
 		TargetVersion = _emptyVersion;
 		SelectedTabIndex = SettingsWindowTab.Default;

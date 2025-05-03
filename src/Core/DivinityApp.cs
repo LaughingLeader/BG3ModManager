@@ -63,7 +63,8 @@ public static class DivinityApp
 	public const long MODIO_GAME_ID = 6715;
 	public const string MODIO_MOD_URL = "https://mod.io/g/baldursgate3/m/{0}";
 
-	public const string EXTENDER_REPO_URL = "Norbyte/bg3se";
+	public const string EXTENDER_GITHUB_USER = "Norbyte";
+	public const string EXTENDER_GITHUB_REPO = "bg3se";
 	public const string EXTENDER_LATEST_URL = "https://github.com/Norbyte/bg3se/releases/latest";
 	public const string EXTENDER_APPDATA_DIRECTORY = "BG3ScriptExtender";
 	public const string EXTENDER_APPDATA_DLL = "BG3ScriptExtender.dll";

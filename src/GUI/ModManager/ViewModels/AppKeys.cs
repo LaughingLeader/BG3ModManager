@@ -6,8 +6,6 @@ using ModManager.Models;
 using ModManager.Util;
 using ModManager.ViewModels.Main;
 
-using Newtonsoft.Json;
-
 using System.Collections.ObjectModel;
 using System.Reflection;
 

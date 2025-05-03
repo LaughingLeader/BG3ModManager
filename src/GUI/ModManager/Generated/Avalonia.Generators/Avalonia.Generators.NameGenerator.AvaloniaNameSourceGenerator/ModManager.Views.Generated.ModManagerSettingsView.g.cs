@@ -42,6 +42,8 @@ namespace ModManager.Views.Generated
         internal global::Avalonia.Controls.TextBlock DisableMissingModWarningsTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock SaveWindowLocationTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock EnableColorblindSupportTextBlock;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -75,6 +77,7 @@ namespace ModManager.Views.Generated
             ActionOnGameLaunchTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ActionOnGameLaunchTextBlock");
             DisableMissingModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableMissingModWarningsTextBlock");
             SaveWindowLocationTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SaveWindowLocationTextBlock");
+            EnableColorblindSupportTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableColorblindSupportTextBlock");
         }
     }
 }

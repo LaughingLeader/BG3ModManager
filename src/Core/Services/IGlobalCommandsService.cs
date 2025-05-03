@@ -21,6 +21,7 @@ public interface IGlobalCommandsService
 	ReactiveCommand<ModData?, Unit> OpenModPropertiesCommand { get; }
 	ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
 
+	void OpenURL(string? url);
 	void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
 	Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
 }

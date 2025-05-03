@@ -45,6 +45,11 @@ public class GitHubService : IGitHubService
 		return null;
 	}
 
+	public async Task<Release?> GetLatestReleaseRawAsync(string owner, string repo)
+	{
+		return await _client.Repository.Release.GetLatest(owner, repo);
+	}
+
 	public async Task<Dictionary<string, GitHubLatestReleaseData>> GetLatestDownloadsForModsAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var results = new Dictionary<string, GitHubLatestReleaseData>();

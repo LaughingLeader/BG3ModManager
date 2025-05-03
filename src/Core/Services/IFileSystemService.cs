@@ -41,4 +41,11 @@ public interface IFileSystemService : IFileSystem
 	/// <exception cref="ArgumentNullException">Thrown if the path is null.</exception>
 	/// <exception cref="ArgumentException">Thrown if the path is empty.</exception>
 	string SanitizeFileName(string fileName, char replacementChar = '_');
+
+	/// <summary>
+	/// Expands environment variables and makes the path relative to the app directory if not rooted.
+	/// </summary>
+	/// <param name="path">The file path.</param>
+	/// <returns>The expanded file path.</returns>
+	string GetRealPath(string path);
 }

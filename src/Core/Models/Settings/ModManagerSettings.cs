@@ -23,19 +23,19 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public bool GameStoryLogEnabled { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Disable Launcher Telemetry", "Disable the telemetry options in the launcher\nTelemetry is always disabled if mods are active")]
+	[SettingsEntry("Launcher - Disable Telemetry", "Disable the telemetry options in the launcher\nTelemetry is always disabled if mods are active")]
 	[DataMember, Reactive] public bool DisableLauncherTelemetry { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Disable Launcher Warnings", "Disable the mod/data mismatch warnings in the launcher")]
+	[SettingsEntry("Launcher - Disable Warnings", "Disable the mod/data mismatch warnings in the launcher")]
 	[DataMember, Reactive] public bool DisableLauncherModWarnings { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Enable DirectX 11 Mode", "If enabled, when launching the game, bg3_dx11.exe is used instead")]
+	[SettingsEntry("DirectX 11", "If enabled, when launching the game, bg3_dx11.exe is used instead")]
 	[DataMember, Reactive] public bool LaunchDX11 { get; set; }
 
 	[DefaultValue(true)]
-	[SettingsEntry("Skip Launcher", "Pass the --skip-launcher args when launching the game")]
+	[SettingsEntry("Steam - Skip Launcher", "Creates a steam_appid.txt in the bin folder if it doesn't exist, allowing you to bypassing the launcher when running the game exe directly")]
 	[DataMember, Reactive] public bool SkipLauncher { get; set; }
 
 	[DefaultValue(false)]
@@ -46,116 +46,98 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[SettingsEntry("Limit to Single Instance", "Prevent the mod manager from launching multiple instances of the game\nThis can be bypassed by holding Shift when clicking on the launch button")]
 	[DataMember, Reactive] public bool LimitToSingleInstance { get; set; }
 
-	//[SettingsEntry("Workshop Path", "The Steam Workshop folder for Baldur's Gate 3\nUsed for detecting mod updates and new mods to be copied into the local mods folder\nExample: Steam/steamapps/workshop/content/1086940")]
-	[DataMember, Reactive] public string? WorkshopPath { get; set; }
-
 	[DefaultValue("Orders")]
-	[SettingsEntry("Saved Load Orders Path", "The folder containing mod load orders")]
+	[SettingsEntry("Load Orders Path", "The folder containing mod load order .json files")]
 	[DataMember, Reactive] public string? LoadOrderPath { get; set; }
 
 	[DefaultValue(false)]
-	[SettingsEntry("Enable Internal Log", "Enable the log for the mod manager", DisableAutoGen = true)]
+	[SettingsEntry("Internal Logging", "Enable the log for the mod manager", DisableAutoGen = true)]
 	[DataMember, Reactive] public bool LogEnabled { get; set; }
 
 	[DefaultValue(true)]
-	[SettingsEntry("Auto Add Missing Dependencies When Exporting", "Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order")]
+	[SettingsEntry("Add Missing Dependencies When Exporting", "Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order")]
 	[DataMember, Reactive] public bool AutoAddDependenciesWhenExporting { get; set; }
 
 	[DefaultValue(true)]
-	[SettingsEntry("Enable Automatic Updates", "Automatically check for updates when the program starts")]
+	[SettingsEntry("Automatically Check For Updates", "Automatically check for updates when the program starts")]
 	[DataMember, Reactive] public bool CheckForUpdates { get; set; }
 
 	[DefaultValue("")]
-	[SettingsEntry("AppData Path Override", "[EXPERIMENTAL]\nOverride the default location to %LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\nThis folder is used when exporting load orders, loading profiles, and loading mods.")]
+	[SettingsEntry("Override AppData Path", "[EXPERIMENTAL]\nOverride the default location to %LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\nThis folder is used when exporting load orders, loading profiles, and loading mods")]
 	[DataMember, Reactive] public string? DocumentsFolderPathOverride { get; set; }
-
-	//[SettingsEntry("Automatically Load GM Campaign Mods", "When a GM campaign is selected, its dependency mods will automatically be loaded without needing to manually import them")]
-	//[DataMember, Reactive] public bool AutomaticallyLoadGMCampaignMods { get; set; }
-	//TODO - Waiting for DM mode
-	public bool AutomaticallyLoadGMCampaignMods => false;
-
-	[DataMember, Reactive] public long LastUpdateCheck { get; set; }
-
-	[DataMember, Reactive] public string? LastOrder { get; set; }
-
-	[DataMember, Reactive] public string? LastImportDirectoryPath { get; set; }
-	[DataMember, Reactive] public string? LastLoadedOrderFilePath { get; set; }
-	[DataMember, Reactive] public string? LastExtractOutputPath { get; set; }
-
-	[DefaultValue(true)]
-	[DataMember, Reactive] public bool DarkThemeEnabled { get; set; }
 
 	[DefaultValue(true)]
 	[SettingsEntry("Shift Focus on Swap", "When moving selected mods to the opposite list with Enter, move focus to that list as well")]
 	[DataMember, Reactive] public bool ShiftListFocusOnSwap { get; set; }
-
-	[DataMember, Reactive] public ScriptExtenderSettings ExtenderSettings { get; set; }
-	[DataMember, Reactive] public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; set; }
-	[DataMember, Reactive] public ModManagerUpdateSettings UpdateSettings { get; set; }
-
-	public string? DefaultExtenderLogDirectory { get; set; }
-
-	public string? ExtenderLogDirectory
-	{
-		get
-		{
-			if (ExtenderSettings == null || string.IsNullOrWhiteSpace(ExtenderSettings.LogDirectory))
-			{
-				return DefaultExtenderLogDirectory;
-			}
-			return ExtenderSettings.LogDirectory;
-		}
-	}
 
 	[DataMember, Reactive]
 	[SettingsEntry("On Game Launch", "When the game launches through the mod manager, this action will be performed", nameof(ActionOnGameLaunchIndex))]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public GameLaunchWindowAction ActionOnGameLaunch { get; set; }
 
-	[DefaultValue(0)]
-	[Reactive]
-	public int ActionOnGameLaunchIndex { get; set; }
-
 	[DefaultValue(false)]
-	[SettingsEntry("Disable Missing Mod Warnings", "If a load order is missing mods, no warnings will be displayed")]
+	[SettingsEntry("Skip Checking for Missing Mods", "If a load order is missing mods, no warnings will be displayed")]
 	[DataMember, Reactive] public bool DisableMissingModWarnings { get; set; }
-
-	[DefaultValue(false)]
-	[Reactive] public bool DisplayFileNames { get; set; }
 
 	[DefaultValue(false)]
 	[SettingsEntry("Mod Developer Mode", "This enables features for mod developers, such as being able to copy a mod's UUID in context menus, and additional Script Extender options", DisableAutoGen = true)]
 	[DataMember, Reactive]
 	public bool DebugModeEnabled { get; set; }
 
+	[DefaultValue(false)]
+	[Reactive] public bool DisplayFileNames { get; set; }
+
+	[DefaultValue(0)]
+	[Reactive]
+	public int ActionOnGameLaunchIndex { get; set; }
+
 	[DefaultValue("")]
 	[DataMember, Reactive] public string? GameLaunchParams { get; set; }
-
-	[DataMember] public WindowSettings Window { get; set; }
 
 	[DefaultValue(false)]
 	[SettingsEntry("Save Window Location", "Save and restore the window location when the application starts.")]
 	[DataMember, Reactive] public bool SaveWindowLocation { get; set; }
 
-	public bool Loaded { get; set; }
+	[DefaultValue(true)]
+	[SettingsEntry("Delete ModCrashSanityCheck", "Automatically delete the %LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/ModCrashSanityCheck folder,\nwhich may make certain mods deactivate if it exists")]
+	[DataMember][Reactive] public bool DeleteModCrashSanityCheck { get; set; }
 
-	private bool canSaveSettings = false;
+	[DefaultValue(false)]
+	[SettingsEntry("Colorblind Support", "Enables some colorblind support, such as displaying icons for toolkit projects (which normally have a green background)")]
+	[DataMember, Reactive] public bool EnableColorblindSupport { get; set; }
 
-	public bool CanSaveSettings
+	[DefaultValue(true)]
+	[DataMember, Reactive] public bool DarkThemeEnabled { get; set; }
+
+	[DataMember, Reactive] public long LastUpdateCheck { get; set; }
+	[DataMember, Reactive] public string? LastOrder { get; set; }
+	[DataMember, Reactive] public string? LastImportDirectoryPath { get; set; }
+	[DataMember, Reactive] public string? LastLoadedOrderFilePath { get; set; }
+	[DataMember, Reactive] public string? LastExtractOutputPath { get; set; }
+
+	[DataMember, Reactive] public ScriptExtenderSettings ExtenderSettings { get; set; }
+	[DataMember, Reactive] public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; set; }
+	[DataMember, Reactive] public ModManagerUpdateSettings UpdateSettings { get; set; }
+	[DataMember, Reactive] public WindowSettings Window { get; set; }
+
+	[Reactive] public bool Loaded { get; set; }
+	[Reactive] public bool CanSaveSettings { get; set; }
+	[Reactive] public bool SettingsWindowIsOpen { get; set; }
+
+	[Reactive] public string? DefaultExtenderLogDirectory { get; set; }
+	[Reactive] public string? ExtenderLogDirectory { get; set; }
+
+	private static string? GetExtenderLogsDirectory(string? defaultDirectory, string? logDirectory)
 	{
-		get => canSaveSettings;
-		set { this.RaiseAndSetIfChanged(ref canSaveSettings, value); }
+		if (!logDirectory.IsValid())
+		{
+			return defaultDirectory;
+		}
+		return logDirectory;
 	}
 
-	public bool SettingsWindowIsOpen { get; set; }
-
-	public ModManagerSettings() : base("settings.json")
+	public void InitSubscriptions()
 	{
-		UpdateSettings = new ModManagerUpdateSettings();
-		ExtenderSettings = new ScriptExtenderSettings();
-		ExtenderUpdaterSettings = new ScriptExtenderUpdateConfig();
-		Window = new WindowSettings();
-
 		var properties = typeof(ModManagerSettings)
 		.GetRuntimeProperties()
 		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
@@ -208,6 +190,18 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 
 		this.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderSettings, x => x.DevOptionsEnabled);
 		this.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderUpdaterSettings, x => x.DevOptionsEnabled);
+
+		this.WhenAnyValue(x => x.DefaultExtenderLogDirectory, x => x.ExtenderSettings.LogDirectory)
+		.Select(x => GetExtenderLogsDirectory(x.Item1, x.Item2))
+		.BindTo(this, x => x.ExtenderLogDirectory);
+	}
+
+	public ModManagerSettings() : base("settings.json")
+	{
+		UpdateSettings = new ModManagerUpdateSettings();
+		ExtenderSettings = new ScriptExtenderSettings();
+		ExtenderUpdaterSettings = new ScriptExtenderUpdateConfig();
+		Window = new WindowSettings();
 
 		this.SetToDefault();
 	}

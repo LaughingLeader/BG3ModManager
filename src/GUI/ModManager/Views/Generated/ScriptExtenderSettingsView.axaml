@@ -11,7 +11,7 @@
 	d:DesignHeight="900"
     d:DesignWidth="1600"
 	mc:Ignorable="d">
-	<controls:AutoGrid RowCount="25" RowHeight="auto">
+	<controls:AutoGrid RowCount="26" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
@@ -101,5 +101,8 @@ This is setting is intended for developers" />
 		
 		<TextBlock Classes="left" x:Name="ShowPerfWarningsTextBlock" Text="Show Performance Warnings" ToolTip.Tip="Print warnings to the extender console window, which indicates when the server-side part of the game lags behind (a.k.a. warnings about ticks taking too long)." />
 		<CheckBox Classes="right" IsChecked ="{Binding ShowPerfWarnings}" ToolTip.Tip="{Binding ElementName=ShowPerfWarningsTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		
+		<TextBlock Classes="left" x:Name="InsanityCheckTextBlock" Text="Disable ModCrashSanityCheck" ToolTip.Tip="Disables the ModCrashSanityCheck jank that disables mods the next time the game runs" />
+		<CheckBox Classes="right" IsChecked ="{Binding InsanityCheck}" ToolTip.Tip="{Binding ElementName=InsanityCheckTextBlock, Path=(ToolTip.Tip)}"/>
 	</controls:AutoGrid>
 </UserControl>

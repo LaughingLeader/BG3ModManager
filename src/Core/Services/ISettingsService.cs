@@ -11,7 +11,9 @@ public interface ISettingsService
 
 	bool TrySaveAll(out List<Exception> errors);
 	bool TryLoadAll(out List<Exception> errors);
-	bool TryLoadAppSettings(out Exception error);
+	bool TryLoadAppSettings(out Exception? error);
 	void UpdateLastUpdated(IList<string> updatedModIds);
 	void UpdateLastUpdated(IList<ModData> updatedMods);
+	bool SaveExtenderSettings();
+	bool SaveExtenderUpdaterSettings();
 }

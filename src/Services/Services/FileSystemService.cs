@@ -56,4 +56,17 @@ public class FileSystemService(IFileSystem fileSystemService) : IFileSystemServi
 		}
 		return fileName.Trim();
 	}
+
+	/// <inheritdoc />
+	public string GetRealPath(string path)
+	{
+		if (string.IsNullOrEmpty(path)) return path;
+
+		var finalPath = Environment.ExpandEnvironmentVariables(path);
+		if (!Path.IsPathRooted(finalPath))
+		{
+			finalPath = DivinityApp.GetAppDirectory(finalPath);
+		}
+		return finalPath;
+	}
 }

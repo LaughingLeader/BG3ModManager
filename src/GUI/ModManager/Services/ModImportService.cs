@@ -9,8 +9,6 @@ using ModManager.ModUpdater.Cache;
 using ModManager.Util;
 using ModManager.ViewModels.Main;
 
-using Newtonsoft.Json;
-
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Compressors.BZip2;
@@ -21,6 +19,8 @@ using SharpCompress.Writers;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using ZstdSharp;
 
@@ -52,6 +52,13 @@ public class ModImportService(IDialogService _dialogService)
 	private static readonly ArchiveEncoding _archiveEncoding = new(Encoding.UTF8, Encoding.UTF8);
 	private static readonly ReaderOptions _importReaderOptions = new() { ArchiveEncoding = _archiveEncoding };
 	private static readonly WriterOptions _exportWriterOptions = new(CompressionType.Deflate) { ArchiveEncoding = _archiveEncoding };
+
+	private static readonly JsonSerializerOptions _loadOrderExportOptions = new()
+	{
+		AllowTrailingCommas = true,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.Never
+	};
 
 	public static bool IsImportableFile(string ext)
 	{
@@ -115,7 +122,7 @@ public class ModImportService(IDialogService _dialogService)
 					}
 				}
 			}
-			catch (System.IO.IOException ex)
+			catch (IOException ex)
 			{
 				DivinityApp.Log($"File may be in use by another process:\n{ex}");
 				AppServices.Commands.ShowAlert($"Failed to copy file '{Path.GetFileName(filePath)} - It may be locked by another process'", AlertType.Danger);
@@ -677,10 +684,10 @@ public class ModImportService(IDialogService _dialogService)
 				using var zipWriter = WriterFactory.Open(stream, ArchiveType.Zip, _exportWriterOptions);
 
 				var orderFileName = ModDataLoader.MakeSafeFilename(Path.Join(selectedModOrder.Name + ".json"), '_');
-				var contents = JsonConvert.SerializeObject(selectedModOrder, Newtonsoft.Json.Formatting.Indented);
+				var contents = JsonSerializer.Serialize(selectedModOrder, _loadOrderExportOptions);
 
-				using var ms = new System.IO.MemoryStream();
-				using var swriter = new System.IO.StreamWriter(ms);
+				using var ms = new MemoryStream();
+				using var swriter = new StreamWriter(ms);
 
 				await swriter.WriteAsync(contents);
 				swriter.Flush();
@@ -758,6 +765,37 @@ public class ModImportService(IDialogService _dialogService)
 		}
 
 		return success;
+	}
+
+	public async Task<bool> ExportLoadOrderToTextFileAsync(string filePath, List<IModEntry> exportMods, CancellationToken token)
+	{
+		var fileType = Path.GetExtension(filePath)!;
+		var outputText = "";
+		if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
+		{
+			var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => SerializedModData.FromMod((ModData)x)).ToList();
+			outputText = JsonSerializer.Serialize(serializedMods, _loadOrderExportOptions);
+		}
+		else if (fileType.Equals(".tsv", StringComparison.OrdinalIgnoreCase))
+		{
+			outputText = "Index\tName\tAuthor\tFileName\tTags\tDependencies\tURL\n";
+			outputText += String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(x => !String.IsNullOrEmpty(x)));
+		}
+		else
+		{
+			outputText = String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(x => !String.IsNullOrEmpty(x)));
+		}
+		try
+		{
+			await File.WriteAllTextAsync(filePath, outputText, token);
+			AppServices.Commands.ShowAlert($"Exported order to '{filePath}'", AlertType.Success, 20);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			AppServices.Commands.ShowAlert($"Error exporting mod order to '{filePath}':\n{ex}", AlertType.Danger);
+		}
+		return false;
 	}
 
 	#endregion

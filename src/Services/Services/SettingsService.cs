@@ -7,6 +7,8 @@ using ModManager.Util;
 using ReactiveUI;
 
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ModManager.Services;
 
@@ -19,7 +21,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 	private readonly List<ISerializableSettings> _loadSettings;
 	private readonly List<ISerializableSettings> _saveSettings;
 
-	public bool TryLoadAppSettings(out Exception error)
+	public bool TryLoadAppSettings(out Exception? error)
 	{
 		error = null;
 		try
@@ -167,13 +169,66 @@ public class SettingsService : ReactiveObject, ISettingsService
 		}
 	}
 
+	private static readonly JsonSerializerOptions _extenderConfigOptions = new()
+	{
+		AllowTrailingCommas = true,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull
+	};
+
+	public bool SaveExtenderSettings()
+	{
+		var outputFile = Path.Join(Path.GetDirectoryName(ManagerSettings.GameExecutablePath), DivinityApp.EXTENDER_CONFIG_FILE);
+		try
+		{
+			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, _extenderConfigOptions);
+			File.WriteAllText(outputFile, contents);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Failed to save '{outputFile}':\n{ex}");
+		}
+		return false;
+	}
+
+	public bool SaveExtenderUpdaterSettings()
+	{
+		var outputFile = Path.Join(Path.GetDirectoryName(ManagerSettings.GameExecutablePath), DivinityApp.EXTENDER_UPDATER_CONFIG_FILE);
+		try
+		{
+			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, _extenderConfigOptions);
+			File.WriteAllText(outputFile, contents);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Failed to save '{outputFile}':\n{ex}");
+		}
+		return false;
+	}
+
 	public SettingsService()
 	{
 		AppSettings = new AppSettings();
 		ManagerSettings = new ModManagerSettings();
 		ModConfig = new UserModConfig();
 
+		ManagerSettings.InitSubscriptions();
+
 		_loadSettings = [ManagerSettings, ModConfig];
 		_saveSettings = [ManagerSettings, ModConfig];
+
+		ManagerSettings.ExtenderSettings.WhenAnyValue(x => x.ExportDefaultExtenderSettings).Subscribe(b =>
+		{
+			if (!b)
+			{
+				_extenderConfigOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull;
+			}
+			else
+			{
+				_extenderConfigOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+			}
+		});
 	}
 }

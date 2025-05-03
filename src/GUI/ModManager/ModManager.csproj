@@ -47,6 +47,10 @@
 		<PackageReference Include="Splat.DependencyInjection.SourceGenerator" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
 	</ItemGroup>
 
+	<!--<ItemGroup>
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+	</ItemGroup>-->
+
 	<ItemGroup>
 		<None Include="Resources\*.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

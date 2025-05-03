@@ -374,16 +374,14 @@ public static class FileUtils
 		return false;
 	}
 
-	public static void TryOpenPath(string path, string args = "")
+	public static void TryOpenPath(string? path, Func<string, bool>? existsCheck = null, string args = "")
 	{
 		try
 		{
-			if (!String.IsNullOrEmpty(path))
+			if (path.IsValid() && Locator.Current.GetService<IFileSystemService>() is IFileSystemService fs)
 			{
-				if(Locator.Current.GetService<IFileSystemService>() is IFileSystemService fs && !fs.Path.IsPathRooted(path))
-				{
-					path = DivinityApp.GetAppDirectory(path);
-				}
+				path = fs.GetRealPath(path);
+				if (existsCheck?.Invoke(path) == false) return;
 				Process.Start(new ProcessStartInfo(path) { UseShellExecute = true, Arguments = args });
 			}
 		}

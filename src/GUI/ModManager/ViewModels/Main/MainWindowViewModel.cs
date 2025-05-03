@@ -15,8 +15,6 @@ using ModManager.Services;
 using ModManager.Util;
 using ModManager.Windows;
 
-using Newtonsoft.Json.Linq;
-
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
@@ -41,6 +39,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	private readonly IInteractionsService _interactions;
 	private readonly IDialogService _dialogs;
 	private readonly IEnvironmentService _environment;
+	private readonly IFileSystemService _fs;
 	private readonly IGlobalCommandsService _globalCommands;
 
 	[Reactive] public MainWindow Window { get; private set; }
@@ -454,31 +453,18 @@ Directory the zip will be extracted to:
 		try
 		{
 			var latestReleaseZipUrl = "";
-			DivinityApp.Log($"Checking for latest {DivinityApp.EXTENDER_UPDATER_FILE} release at 'https://github.com/{DivinityApp.EXTENDER_REPO_URL}'.");
-			var latestReleaseData = await GitHubHelper.GetLatestReleaseJsonStringAsync(DivinityApp.EXTENDER_REPO_URL, token);
-			if (!String.IsNullOrEmpty(latestReleaseData))
+			DivinityApp.Log($"Checking for latest {DivinityApp.EXTENDER_UPDATER_FILE} release at 'https://github.com/{DivinityApp.EXTENDER_GITHUB_USER}/{DivinityApp.EXTENDER_GITHUB_REPO}'");
+
+			var latestRelease = await AppServices.Get<IGitHubService>().GetLatestReleaseRawAsync(DivinityApp.EXTENDER_GITHUB_USER, DivinityApp.EXTENDER_GITHUB_REPO);
+
+			if (latestRelease != null)
 			{
-				var jsonData = JsonUtils.SafeDeserialize<Dictionary<string, object>>(latestReleaseData);
-				if (jsonData != null)
+				foreach(var entry in latestRelease.Assets)
 				{
-					if (jsonData.TryGetValue("assets", out var assetsArray) && assetsArray is JArray assets)
+					if(entry.BrowserDownloadUrl.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) && !entry.BrowserDownloadUrl.Contains("Console"))
 					{
-						foreach (var obj in assets.Children<JObject>())
-						{
-							if (obj.TryGetValue("browser_download_url", StringComparison.OrdinalIgnoreCase, out var browserUrl))
-							{
-								var url = browserUrl.ToString();
-								if (url.EndsWith(".zip"))
-								{
-									latestReleaseZipUrl = url;
-									if (url.IndexOf("Console") <= -1) break;
-								}
-							}
-						}
-					}
-					if (jsonData.TryGetValue("tag_name", out var tagName) && tagName is string tag)
-					{
-						PathwayData.ScriptExtenderLatestReleaseVersion = tag;
+						latestReleaseZipUrl = entry.BrowserDownloadUrl;
+						PathwayData.ScriptExtenderLatestReleaseVersion = latestRelease.TagName;
 					}
 				}
 				if (!String.IsNullOrEmpty(latestReleaseZipUrl))
@@ -700,9 +686,6 @@ Directory the zip will be extracted to:
 
 	private void InitSettingsBindings()
 	{
-		var canOpenWorkshopFolder = this.WhenAnyValue(x => x.ModioSupportEnabled, x => x.Settings.WorkshopPath,
-			(b, p) => (b && !String.IsNullOrEmpty(p) && Directory.Exists(p))).StartWith(false);
-
 		var gameUtils = AppServices.Get<IGameUtilitiesService>();
 		gameUtils.WhenAnyValue(x => x.GameIsRunning).BindTo(this, x => x.GameIsRunning);
 
@@ -804,7 +787,36 @@ Directory the zip will be extracted to:
 			}
 		});
 
-		//Settings.WhenAnyValue(x => x.SaveWindowLocation).Subscribe(Window.ToggleWindowPositionSaving);
+		Settings.WhenAnyValue(x => x.SkipLauncher, x => x.GameExecutablePath)
+		.Throttle(TimeSpan.FromMilliseconds(250))
+		.ObserveOn(RxApp.MainThreadScheduler)
+		.Subscribe(x =>
+		{
+			if (!x.Item2.IsValid()) return;
+
+			var exePath = _fs.GetRealPath(x.Item2);
+
+			if (_fs.File.Exists(exePath))
+			{
+				if (x.Item1)
+				{
+					CreateSteamApiTextFile(exePath);
+				}
+				else if (Settings.SettingsWindowIsOpen)
+				{
+					RemoveSteamApiTextFile(exePath);
+				}
+			}
+		});
+
+		Settings.WhenAnyValue(x => x.DeleteModCrashSanityCheck, x => x.GameExecutablePath).ObserveOn(RxApp.MainThreadScheduler).Subscribe(x =>
+		{
+			if (x.Item1 && !string.IsNullOrEmpty(x.Item2) && Settings.ExtenderSettings.InsanityCheck != true && !Settings.SettingsWindowIsOpen)
+			{
+				Settings.ExtenderSettings.InsanityCheck = true;
+				_settings.SaveExtenderSettings();
+			}
+		});
 	}
 
 	private async Task<bool> LoadSettings()
@@ -827,46 +839,7 @@ Directory the zip will be extracted to:
 
 		var githubSupportEnabled = AppSettings.Features.GitHub;
 		var nexusModsSupportEnabled = AppSettings.Features.NexusMods;
-		var workshopSupportEnabled = AppSettings.Features.Modio;
-
-		if (workshopSupportEnabled)
-		{
-			if (!String.IsNullOrWhiteSpace(Settings.WorkshopPath))
-			{
-				var baseName = Path.GetFileNameWithoutExtension(Settings.WorkshopPath);
-				if (baseName == "steamapps")
-				{
-					var newFolder = Path.Join(Settings.WorkshopPath, $"workshop/content/{AppSettings.DefaultPathways.Steam.AppID}");
-					if (Directory.Exists(newFolder))
-					{
-						Settings.WorkshopPath = newFolder;
-					}
-					else
-					{
-						Settings.WorkshopPath = "";
-					}
-				}
-			}
-
-			if (String.IsNullOrEmpty(Settings.WorkshopPath) || !Directory.Exists(Settings.WorkshopPath))
-			{
-				Settings.WorkshopPath = RegistryHelper.GetWorkshopPath(AppSettings.DefaultPathways.Steam.AppID).Replace("\\", "/");
-				if (!String.IsNullOrEmpty(Settings.WorkshopPath) && Directory.Exists(Settings.WorkshopPath))
-				{
-					DivinityApp.Log($"Workshop path set to: '{Settings.WorkshopPath}'.");
-				}
-			}
-			else if (Directory.Exists(Settings.WorkshopPath))
-			{
-				DivinityApp.Log($"Found workshop folder at: '{Settings.WorkshopPath}'.");
-			}
-		}
-		else
-		{
-			Settings.WorkshopPath = "";
-		}
-
-		//if (Settings.LogEnabled) Window.ToggleLogging(true);
+		var modioSupportEnabled = AppSettings.Features.Modio;
 
 		if (!_pathways.SetGamePathways(Settings.GameDataPath, Settings.DocumentsFolderPathOverride))
 		{
@@ -1232,6 +1205,8 @@ Directory the zip will be extracted to:
 	{
 		mod.ModioEnabled = ModioSupportEnabled;
 		mod.NexusModsEnabled = NexusModsSupportEnabled;
+		mod.DisplayExtraIcons = Settings.EnableColorblindSupport;
+		mod.IsActive = toActiveList;
 
 		if (_manager.TryGetMod(mod.UUID, out var existingMod) && existingMod.IsActive)
 		{
@@ -1678,6 +1653,37 @@ Directory the zip will be extracted to:
 		return $"NexusMods Limits [Hourly ({limits.HourlyRemaining}/{limits.HourlyLimit}) Daily ({limits.DailyRemaining}/{limits.DailyLimit})]";
 	}
 
+	private void CreateSteamApiTextFile(string exePath)
+	{
+		var binFolder = Path.GetDirectoryName(exePath);
+		// Steam folder check essentially
+		var steamAppiDll = Path.Join(binFolder, "steam_api64.dll");
+		var steamAppidPath = Path.Join(binFolder, "steam_appid.txt");
+		if (!File.Exists(steamAppidPath) && File.Exists(steamAppiDll))
+		{
+			File.WriteAllText(steamAppidPath, "1086940");
+			_globalCommands.ShowAlert($"Skip Launcher - Created '{steamAppidPath}'", AlertType.Success, 10);
+		}
+	}
+
+	private void RemoveSteamApiTextFile(string exePath)
+	{
+		var binFolder = Path.GetDirectoryName(exePath);
+		var steamAppidPath = Path.Join(binFolder, "steam_appid.txt");
+		if (File.Exists(steamAppidPath))
+		{
+			try
+			{
+				File.Delete(steamAppidPath);
+				_globalCommands.ShowAlert($"Skip Launcher - Deleted '{steamAppidPath}'", AlertType.Danger, 10);
+			}
+			catch (Exception ex)
+			{
+				DivinityApp.Log($"Failed to delete '{steamAppidPath}':\n{ex}");
+			}
+		}
+	}
+
 	public MainWindowViewModel(
 		IPathwaysService pathwaysService,
 		ISettingsService settingsService,
@@ -1687,6 +1693,7 @@ Directory the zip will be extracted to:
 		INexusModsService nexusModsService,
 		IInteractionsService interactionsService,
 		IEnvironmentService environmentService,
+		IFileSystemService fileSystemService,
 		IGlobalCommandsService globalCommands,
 		IDialogService dialogsService
 		)
@@ -1699,6 +1706,7 @@ Directory the zip will be extracted to:
 		_nexusMods = nexusModsService;
 		_interactions = interactionsService;
 		_environment = environmentService;
+		_fs = fileSystemService;
 		_dialogs = dialogsService;
 		_globalCommands = globalCommands;
 

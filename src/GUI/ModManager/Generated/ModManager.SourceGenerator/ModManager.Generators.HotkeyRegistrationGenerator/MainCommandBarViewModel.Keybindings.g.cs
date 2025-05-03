@@ -22,6 +22,7 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_OpenDonationPageCommand", "Donate a Coffee...", OpenDonationPageCommand, Avalonia.Input.Key.F10);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenGitHubRepoCommand", "Open Repository Page...", OpenGitHubRepoCommand, Avalonia.Input.Key.F11);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenModsFolderCommand", "Open Mods Folder", OpenModsFolderCommand, Avalonia.Input.Key.D1, Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_OpenLogsFolderCommand", "Open Logs Folder", OpenLogsFolderCommand, Avalonia.Input.Key.D2, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenNexusModsCommand", "Open Nexus Mods Website", OpenNexusModsCommand, Avalonia.Input.Key.D3, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenSteamPageCommand", "Open Steam Store Page", OpenSteamPageCommand, Avalonia.Input.Key.D4, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_RefreshCommand", "Refresh Mods", RefreshCommand, Avalonia.Input.Key.F5);

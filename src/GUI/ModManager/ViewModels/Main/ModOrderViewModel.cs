@@ -2,7 +2,6 @@
 using Avalonia.VisualTree;
 
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Binding;
 
 using ModManager.Controls.TreeDataGrid;
@@ -15,12 +14,8 @@ using ModManager.Services;
 using ModManager.Util;
 using ModManager.ViewModels.Mods;
 
-using Newtonsoft.Json;
-
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 using TextCopy;
 
@@ -1260,7 +1255,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return true;
 	}
 
-	public async Task ExportLoadOrderToTextFileAs()
+	public async Task ExportLoadOrderToTextFileAsAsync(CancellationToken token)
 	{
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
@@ -1285,35 +1280,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				var exportMods = new List<IModEntry>(ActiveMods);
 				exportMods.AddRange(ModManager.ForceLoadedMods.ToList().OrderBy(x => x.Name).ToModInterface());
 
-				var fileType = Path.GetExtension(filePath)!;
-				var outputText = "";
-				if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
-				{
-					var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => SerializedModData.FromMod((ModData)x)).ToList();
-					outputText = JsonConvert.SerializeObject(serializedMods, Formatting.Indented, new JsonSerializerSettings
-					{
-						NullValueHandling = NullValueHandling.Ignore
-					});
-				}
-				else if (fileType.Equals(".tsv", StringComparison.OrdinalIgnoreCase))
-				{
-					outputText = "Index\tName\tAuthor\tFileName\tTags\tDependencies\tURL\n";
-					outputText += String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(x => !String.IsNullOrEmpty(x)));
-				}
-				else
-				{
-					//Text file format
-					outputText = String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(x => !String.IsNullOrEmpty(x)));
-				}
-				try
-				{
-					File.WriteAllText(filePath, outputText);
-					AppServices.Commands.ShowAlert($"Exported order to '{filePath}'", AlertType.Success, 20);
-				}
-				catch (Exception ex)
-				{
-					AppServices.Commands.ShowAlert($"Error exporting mod order to '{filePath}':\n{ex}", AlertType.Danger);
-				}
+				await ModImporter.ExportLoadOrderToTextFileAsync(filePath, exportMods, token);
 			}
 		}
 		else
@@ -1588,6 +1555,17 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			if (mainCampaign != null)
 			{
 				mainCampaign.NameOverride = nameOverride;
+			}
+		});
+
+		host.Settings.WhenAnyValue(x => x.EnableColorblindSupport).Skip(1).ObserveOn(RxApp.MainThreadScheduler).Subscribe(b =>
+		{
+			if(!IsLocked)
+			{
+				foreach (var mod in ModManager.AllMods)
+				{
+					mod.DisplayExtraIcons = b;
+				}
 			}
 		});
 

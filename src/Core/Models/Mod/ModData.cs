@@ -100,11 +100,11 @@ public class ModData : ReactiveObject, IModData
 	[Reactive] public bool HasScriptExtenderSettings { get; set; }
 
 	[Reactive] public bool IsEditorMod { get; set; }
-
 	[Reactive] public bool IsActive { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
+	[Reactive] public bool DisplayExtraIcons { get; set; }
 
 	public string? OutputPakName
 	{

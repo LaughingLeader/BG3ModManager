@@ -1,5 +1,7 @@
 ﻿namespace ModManager.Util;
 
+using Octokit;
+
 public static class GitHubHelper
 {
 	private static readonly string GIT_URL_REPO_LATEST = "https://api.github.com/repos/{0}/releases/latest";
@@ -7,12 +9,14 @@ public static class GitHubHelper
 
 	private static readonly HttpCompletionOption _completionOption = HttpCompletionOption.ResponseContentRead;
 
+	[Obsolete]
 	public static async Task<string> GetLatestReleaseJsonStringAsync(string repo, CancellationToken token)
 	{
 		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
 		return await response.Content.ReadAsStringAsync();
 	}
 
+	[Obsolete]
 	public static async Task<string> GetAllReleaseJsonStringAsync(string repo, CancellationToken token)
 	{
 		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_RELEASES, repo), _completionOption, token);

@@ -11,7 +11,7 @@
 	d:DesignHeight="900"
     d:DesignWidth="1600"
 	mc:Ignorable="d">
-	<controls:AutoGrid RowCount="17" RowHeight="auto">
+	<controls:AutoGrid RowCount="19" RowHeight="auto">
 		<controls:AutoGrid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="*" />
@@ -27,17 +27,17 @@ Example: Baldur's Gate 3/Data" />
 		<TextBlock Classes="left" x:Name="GameStoryLogEnabledTextBlock" Text="Enable Story Log" ToolTip.Tip="When launching the game, enable the Osiris story log (osiris.log)" />
 		<CheckBox Classes="right" IsChecked ="{Binding GameStoryLogEnabled}" ToolTip.Tip="{Binding ElementName=GameStoryLogEnabledTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="DisableLauncherTelemetryTextBlock" Text="Disable Launcher Telemetry" ToolTip.Tip="Disable the telemetry options in the launcher
+		<TextBlock Classes="left" x:Name="DisableLauncherTelemetryTextBlock" Text="Launcher - Disable Telemetry" ToolTip.Tip="Disable the telemetry options in the launcher
 Telemetry is always disabled if mods are active" />
 		<CheckBox Classes="right" IsChecked ="{Binding DisableLauncherTelemetry}" ToolTip.Tip="{Binding ElementName=DisableLauncherTelemetryTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="DisableLauncherModWarningsTextBlock" Text="Disable Launcher Warnings" ToolTip.Tip="Disable the mod/data mismatch warnings in the launcher" />
+		<TextBlock Classes="left" x:Name="DisableLauncherModWarningsTextBlock" Text="Launcher - Disable Warnings" ToolTip.Tip="Disable the mod/data mismatch warnings in the launcher" />
 		<CheckBox Classes="right" IsChecked ="{Binding DisableLauncherModWarnings}" ToolTip.Tip="{Binding ElementName=DisableLauncherModWarningsTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="LaunchDX11TextBlock" Text="Enable DirectX 11 Mode" ToolTip.Tip="If enabled, when launching the game, bg3_dx11.exe is used instead" />
+		<TextBlock Classes="left" x:Name="LaunchDX11TextBlock" Text="DirectX 11" ToolTip.Tip="If enabled, when launching the game, bg3_dx11.exe is used instead" />
 		<CheckBox Classes="right" IsChecked ="{Binding LaunchDX11}" ToolTip.Tip="{Binding ElementName=LaunchDX11TextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="SkipLauncherTextBlock" Text="Skip Launcher" ToolTip.Tip="Pass the --skip-launcher args when launching the game" />
+		<TextBlock Classes="left" x:Name="SkipLauncherTextBlock" Text="Steam - Skip Launcher" ToolTip.Tip="Creates a steam_appid.txt in the bin folder if it doesn't exist, allowing you to bypassing the launcher when running the game exe directly" />
 		<CheckBox Classes="right" IsChecked ="{Binding SkipLauncher}" ToolTip.Tip="{Binding ElementName=SkipLauncherTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="LaunchThroughSteamTextBlock" Text="Launch Through Steam" ToolTip.Tip="Launch the game through steam, instead of by the exe directly" />
@@ -47,18 +47,18 @@ Telemetry is always disabled if mods are active" />
 This can be bypassed by holding Shift when clicking on the launch button" />
 		<CheckBox Classes="right" IsChecked ="{Binding LimitToSingleInstance}" ToolTip.Tip="{Binding ElementName=LimitToSingleInstanceTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="LoadOrderPathTextBlock" Text="Saved Load Orders Path" ToolTip.Tip="The folder containing mod load orders" />
+		<TextBlock Classes="left" x:Name="LoadOrderPathTextBlock" Text="Load Orders Path" ToolTip.Tip="The folder containing mod load order .json files" />
 		<TextBox Classes="compact" Text="{Binding LoadOrderPath}" ToolTip.Tip="{Binding ElementName=LoadOrderPathTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="AutoAddDependenciesWhenExportingTextBlock" Text="Auto Add Missing Dependencies When Exporting" ToolTip.Tip="Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order" />
+		<TextBlock Classes="left" x:Name="AutoAddDependenciesWhenExportingTextBlock" Text="Add Missing Dependencies When Exporting" ToolTip.Tip="Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order" />
 		<CheckBox Classes="right" IsChecked ="{Binding AutoAddDependenciesWhenExporting}" ToolTip.Tip="{Binding ElementName=AutoAddDependenciesWhenExportingTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="CheckForUpdatesTextBlock" Text="Enable Automatic Updates" ToolTip.Tip="Automatically check for updates when the program starts" />
+		<TextBlock Classes="left" x:Name="CheckForUpdatesTextBlock" Text="Automatically Check For Updates" ToolTip.Tip="Automatically check for updates when the program starts" />
 		<CheckBox Classes="right" IsChecked ="{Binding CheckForUpdates}" ToolTip.Tip="{Binding ElementName=CheckForUpdatesTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="DocumentsFolderPathOverrideTextBlock" Text="AppData Path Override" ToolTip.Tip="[EXPERIMENTAL]
+		<TextBlock Classes="left" x:Name="DocumentsFolderPathOverrideTextBlock" Text="Override AppData Path" ToolTip.Tip="[EXPERIMENTAL]
 Override the default location to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3
-This folder is used when exporting load orders, loading profiles, and loading mods." />
+This folder is used when exporting load orders, loading profiles, and loading mods" />
 		<TextBox Classes="compact" Text="{Binding DocumentsFolderPathOverride}" ToolTip.Tip="{Binding ElementName=DocumentsFolderPathOverrideTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="ShiftListFocusOnSwapTextBlock" Text="Shift Focus on Swap" ToolTip.Tip="When moving selected mods to the opposite list with Enter, move focus to that list as well" />
@@ -71,10 +71,17 @@ This folder is used when exporting load orders, loading profiles, and loading mo
 			<ComboBoxItem Content="Close" ToolTip.Tip="Close the window" />
 		</ComboBox>
 		
-		<TextBlock Classes="left" x:Name="DisableMissingModWarningsTextBlock" Text="Disable Missing Mod Warnings" ToolTip.Tip="If a load order is missing mods, no warnings will be displayed" />
+		<TextBlock Classes="left" x:Name="DisableMissingModWarningsTextBlock" Text="Skip Checking for Missing Mods" ToolTip.Tip="If a load order is missing mods, no warnings will be displayed" />
 		<CheckBox Classes="right" IsChecked ="{Binding DisableMissingModWarnings}" ToolTip.Tip="{Binding ElementName=DisableMissingModWarningsTextBlock, Path=(ToolTip.Tip)}"/>
 		
 		<TextBlock Classes="left" x:Name="SaveWindowLocationTextBlock" Text="Save Window Location" ToolTip.Tip="Save and restore the window location when the application starts." />
 		<CheckBox Classes="right" IsChecked ="{Binding SaveWindowLocation}" ToolTip.Tip="{Binding ElementName=SaveWindowLocationTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="DeleteModCrashSanityCheckTextBlock" Text="Delete ModCrashSanityCheck" ToolTip.Tip="Automatically delete the %LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/ModCrashSanityCheck folder,
+which may make certain mods deactivate if it exists" />
+		<CheckBox Classes="right" IsChecked ="{Binding DeleteModCrashSanityCheck}" ToolTip.Tip="{Binding ElementName=DeleteModCrashSanityCheckTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<TextBlock Classes="left" x:Name="EnableColorblindSupportTextBlock" Text="Colorblind Support" ToolTip.Tip="Enables some colorblind support, such as displaying icons for toolkit projects (which normally have a green background)" />
+		<CheckBox Classes="right" IsChecked ="{Binding EnableColorblindSupport}" ToolTip.Tip="{Binding ElementName=EnableColorblindSupportTextBlock, Path=(ToolTip.Tip)}"/>
 	</controls:AutoGrid>
 </UserControl>
