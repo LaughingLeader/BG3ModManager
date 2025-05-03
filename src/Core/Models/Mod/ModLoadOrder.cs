@@ -162,6 +162,15 @@ public class ModLoadOrder : ReactiveObject
 		}
 	}
 
+	public void Update(IModData mod)
+	{
+		if (Order != null && Order.Count > 0)
+		{
+			var existing = Order.FirstOrDefault(x => x.UUID == mod.UUID);
+			existing?.UpdateFrom(mod);
+		}
+	}
+
 	public void Sort(Comparison<ModuleShortDesc> comparison)
 	{
 		try

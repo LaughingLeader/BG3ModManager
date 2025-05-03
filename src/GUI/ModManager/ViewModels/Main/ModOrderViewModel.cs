@@ -15,6 +15,7 @@ using ModManager.Util;
 using ModManager.ViewModels.Mods;
 
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Globalization;
 
 using TextCopy;
@@ -35,7 +36,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private readonly IFileWatcherWrapper _modSettingsWatcher;
 
-	public MainCommandBarViewModel CommandBar { get; }
+	private bool HasExported { get; set; }
 
 	public static PathwayData PathwayData => AppServices.Pathways.Data;
 	public static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
@@ -92,6 +93,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public bool AdventureModBoxVisibility { get; }
 	[ObservableAsProperty] public bool LogFolderShortcutButtonVisibility { get; }
 	[ObservableAsProperty] public bool OverrideModsVisibility { get; }
+
+	[ObservableAsProperty] public bool GitHubModSupportEnabled { get; }
+	[ObservableAsProperty] public bool NexusModsSupportEnabled { get; }
+	[ObservableAsProperty] public bool ModioSupportEnabled { get; }
 
 	[ObservableAsProperty] public bool HasProfile { get; }
 	[ObservableAsProperty] public bool IsBaseLoadOrder { get; }
@@ -343,7 +348,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			await Observable.Start(() =>
 			{
-				if (loadedMods.Count > 0) ModManager.SetLoadedMods(loadedMods, main.NexusModsSupportEnabled);
+				if (loadedMods.Count > 0) ModManager.SetLoadedMods(loadedMods, NexusModsSupportEnabled);
 				//SetLoadedGMCampaigns(loadedGMCampaigns);
 				if (loadedProfiles != null) profiles.AddOrUpdate(loadedProfiles);
 				ExternalModOrders.AddRange(savedModOrderList);
@@ -793,6 +798,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					SelectedProfile.ActiveMods.Clear();
 					SelectedProfile.ActiveMods.AddRange(orderList.Select(x => ModuleShortDescFromUUID(x)));
 					DisplayMissingMods(SelectedModOrder);
+
+					HasExported = true;
 				}, RxApp.MainThreadScheduler);
 				return true;
 			}
@@ -925,22 +932,99 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	#endregion
 
+	private void UpdateModExtenderStatus(ModData mod)
+	{
+		mod.CurrentExtenderVersion = Settings.ExtenderSettings.ExtenderMajorVersion;
+		mod.ExtenderModStatus = ModExtenderStatus.None;
+
+		if (mod.ScriptExtenderData != null && mod.ScriptExtenderData.HasAnySettings)
+		{
+			if (mod.ScriptExtenderData.Lua)
+			{
+				if (!Settings.ExtenderSettings.EnableExtensions)
+				{
+					mod.ExtenderModStatus |= ModExtenderStatus.DisabledFromConfig;
+				}
+				else
+				{
+					if (Settings.ExtenderSettings.ExtenderMajorVersion > -1)
+					{
+						if (mod.ScriptExtenderData.RequiredVersion > -1 && Settings.ExtenderSettings.ExtenderMajorVersion < mod.ScriptExtenderData.RequiredVersion)
+						{
+							mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
+						}
+						else
+						{
+							mod.ExtenderModStatus |= ModExtenderStatus.Fulfilled;
+						}
+					}
+					else
+					{
+						mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
+					}
+				}
+			}
+			else
+			{
+				mod.ExtenderModStatus |= ModExtenderStatus.Supports;
+			}
+			if (!Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
+			{
+				mod.ExtenderModStatus |= ModExtenderStatus.MissingUpdater;
+			}
+		}
+
+		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
+		if (mod.ExtenderModStatus.HasFlag(ModExtenderStatus.MissingUpdater))
+		{
+			ViewModelLocator.CommandBar.HighlightExtenderDownload = true;
+		}
+	}
+
+	public void UpdateExtenderVersionForAllMods()
+	{
+		if (ModManager.AddonMods.Count > 0)
+		{
+			ViewModelLocator.CommandBar.HighlightExtenderDownload = false;
+
+			foreach (var mod in ModManager.AllMods)
+			{
+				UpdateModExtenderStatus(mod);
+			}
+		}
+	}
+
+	IDisposable? _updateOrderTask = null;
+
+	public void UpdateOrderFromActiveMods()
+	{
+		_updateOrderTask?.Dispose();
+
+		if (SelectedModOrder != null)
+		{
+			SelectedModOrder.Order.Clear();
+			SelectedModOrder.AddRange(ActiveMods, true);
+		}
+	}
+
 	public void AddActiveMod(IModEntry mod)
 	{
 		if (!ActiveMods.Any(x => x.UUID == mod.UUID))
 		{
 			ActiveMods.Add(mod);
+			mod.IsActive = true;
 			mod.Index = ActiveMods.Count - 1;
-			SelectedModOrder.Add(mod);
+			SelectedModOrder?.Add(mod);
 		}
 		InactiveMods.Remove(mod);
 	}
 
 	public void RemoveActiveMod(IModEntry mod)
 	{
-		SelectedModOrder.Remove(mod);
+		SelectedModOrder?.Remove(mod);
 		ActiveMods.Remove(mod);
-		if (mod.EntryType == ModEntryType.Mod && mod is ModEntry modEntry && (modEntry.Data.IsForceLoadedMergedMod || !modEntry.Data.IsForceLoaded))
+		mod.IsActive = false;
+		if (mod.EntryType == ModEntryType.Mod && mod is ModEntry modEntry && modEntry.Data != null && (modEntry.Data.IsForceLoadedMergedMod || !modEntry.Data.IsForceLoaded))
 		{
 			if (!InactiveMods.Any(x => x.UUID == mod.UUID))
 			{
@@ -953,6 +1037,65 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			//Safeguard
 			InactiveMods.Remove(mod);
 		}
+	}
+
+	public void AddImportedMod(ModData mod, bool toActiveList = false)
+	{
+		mod.ModioEnabled = ModioSupportEnabled;
+		mod.NexusModsEnabled = NexusModsSupportEnabled;
+		mod.GitHubEnabled = GitHubModSupportEnabled;
+		mod.DisplayExtraIcons = Settings.EnableColorblindSupport;
+
+		mod.IsActive = toActiveList;
+
+		if (ModManager.TryGetMod(mod.UUID, out var existingMod) && existingMod.IsActive)
+		{
+			mod.Index = existingMod.Index;
+		}
+
+		ModManager.Add(mod);
+		UpdateModExtenderStatus(mod);
+
+		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
+		{
+			DivinityApp.Log($"Imported Override Mod: {mod}");
+			return;
+		}
+
+		var entry = mod.ToModInterface();
+		if (mod.IsActive)
+		{
+			var existingInterface = ActiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
+			if (existingInterface != null)
+			{
+				ActiveMods.Replace(existingInterface, entry);
+			}
+			else
+			{
+				ActiveMods.Add(entry);
+				mod.Index = ActiveMods.Count - 1;
+			}
+		}
+		else
+		{
+			var existingInterface = InactiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
+			if (existingInterface != null)
+			{
+				InactiveMods.Replace(existingInterface, entry);
+			}
+			else
+			{
+				InactiveMods.Add(entry);
+			}
+		}
+
+		//Update mod in load orders
+		foreach (var order in ModOrderList)
+		{
+			order.Update(mod);
+		}
+
+		DivinityApp.Log($"Imported Mod: {mod}");
 	}
 
 	public void ClearMissingMods()
@@ -1425,6 +1568,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		"28ac9ce2-2aba-8cda-b3b5-6e922f71b6b8",
 	};
 
+	[DependencyInjectionConstructor]
 	public ModOrderViewModel(MainWindowViewModel host,
 		IModManagerService modManagerService,
 		IFileWatcherService fileWatcherService,
@@ -1432,7 +1576,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IGlobalCommandsService globalCommands,
 		IDialogService dialogService,
 		IFileSystemService fileSystemService,
-		ModImportService modImportService
+		ModImportService modImportService,
+		IModUpdaterService _updater
 		)
 	{
 		ModManager = modManagerService;
@@ -1449,6 +1594,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		InactiveMods = [];
 		ModOrderList = [];
 		ExternalModOrders = [];
+
+		ActiveMods.CollectionChanged += (o, e) =>
+		{
+			HasExported = false;
+			_updateOrderTask?.Dispose();
+			_updateOrderTask = RxApp.MainThreadScheduler.Schedule(TimeSpan.FromMilliseconds(50), UpdateOrderFromActiveMods);
+		};
 
 		modManagerService.AdventureMods.ToObservableChangeSet().ObserveOn(RxApp.MainThreadScheduler).Bind(out _adventureMods).Subscribe();
 
@@ -1744,7 +1896,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		_modSettingsWatcher.FileChanged.Subscribe(e =>
 		{
-			if (SelectedModOrder != null)
+			if (SelectedModOrder != null && HasExported)
 			{
 				//var exeName = !Settings.LaunchDX11 ? "bg3" : "bg3_dx11";
 				//var isGameRunning = Process.GetProcessesByName(exeName).Length > 0;
@@ -1768,6 +1920,23 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		});
 
 		//SetupKeys(host.Keys, host, canExecuteCommands);
+
+		_updater.Modio.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.ModioSupportEnabled);
+		_updater.NexusMods.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.NexusModsSupportEnabled);
+		_updater.GitHub.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.GitHubModSupportEnabled);
+
+		_updater.WhenAnyValue(x => x.GitHub.IsEnabled, x => x.NexusMods.IsEnabled, x => x.Modio.IsEnabled)
+		.Throttle(TimeSpan.FromMilliseconds(250))
+		.ObserveOn(RxApp.MainThreadScheduler)
+		.Subscribe(x =>
+		{
+			foreach (var mod in ModManager.AllMods)
+			{
+				mod.GitHubEnabled = x.Item1;
+				mod.NexusModsEnabled = x.Item2;
+				mod.ModioEnabled = x.Item3;
+			}
+		});
 	}
 }
 

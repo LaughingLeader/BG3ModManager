@@ -116,7 +116,7 @@ public class ModImportService(IDialogService _dialogService)
 							taskResult.Mods.Add(mod);
 							await Observable.Start(() =>
 							{
-								ViewModel.AddImportedMod(mod, toActiveList);
+								ViewModelLocator.ModOrder.AddImportedMod(mod, toActiveList);
 							}, RxApp.MainThreadScheduler);
 						}
 					}
@@ -158,7 +158,7 @@ public class ModImportService(IDialogService _dialogService)
 				{
 					foreach (var mod in importOptions.Result.Mods)
 					{
-						ViewModel.AddImportedMod(mod, toActiveList);
+						ViewModelLocator.ModOrder.AddImportedMod(mod, toActiveList);
 					}
 				}, RxApp.MainThreadScheduler);
 			}
@@ -214,7 +214,7 @@ public class ModImportService(IDialogService _dialogService)
 					{
 						foreach (var mod in importOptions.Result.Mods)
 						{
-							ViewModel.AddImportedMod(mod, false);
+							ViewModelLocator.ModOrder.AddImportedMod(mod, false);
 						}
 					}, RxApp.MainThreadScheduler);
 				}

@@ -81,6 +81,17 @@ public class ModuleShortDesc : ReactiveObject, IModData
 		};
 	}
 
+	public void UpdateFrom(IModData m)
+	{
+		Folder = m.Folder;
+		Name = m.Name;
+		UUID = m.UUID;
+		MD5 = m.MD5;
+		PublishHandle = m.PublishHandle;
+		Version = m.Version;
+		LastModified = m.LastModified;
+	}
+
 	public ModuleShortDesc()
 	{
 		UUID = "";

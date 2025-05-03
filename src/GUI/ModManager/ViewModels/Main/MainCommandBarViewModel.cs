@@ -240,6 +240,8 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 	[Reactive] public IModOrderViewModel? ModOrder { get; set; }
 
+	[Reactive] public bool HighlightExtenderDownload { get; set; }
+
 	public MainCommandBarViewModel()
 	{
 		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
@@ -305,12 +307,12 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			main.SaveSettings();
 		}, canExecuteCommands);
 
-		var anyDownloadAllowed = main.WhenAnyValue(x => x.GitHubModSupportEnabled, x => x.NexusModsSupportEnabled, x => x.ModioSupportEnabled).Select(x => x.Item1 || x.Item2 || x.Item3);
+		var anyDownloadAllowed = modOrder.WhenAnyValue(x => x.GitHubModSupportEnabled, x => x.NexusModsSupportEnabled, x => x.ModioSupportEnabled).Select(x => x.Item1 || x.Item2 || x.Item3);
 
 		CheckAllModUpdatesCommand = ReactiveCommand.Create(main.RefreshAllModUpdatesBackground, anyDownloadAllowed.AllTrue(canExecuteCommands));
-		CheckForGitHubModUpdatesCommand = ReactiveCommand.Create(main.RefreshGitHubModsUpdatesBackground, main.WhenAnyValue(x => x.GitHubModSupportEnabled).AllTrue(canExecuteCommands));
-		CheckForNexusModsUpdatesCommand = ReactiveCommand.Create(main.RefreshNexusModsUpdatesBackground, main.WhenAnyValue(x => x.NexusModsSupportEnabled).AllTrue(canExecuteCommands));
-		CheckForModioUpdatesCommand = ReactiveCommand.Create(main.RefreshModioUpdatesBackground, main.WhenAnyValue(x => x.ModioSupportEnabled).AllTrue(canExecuteCommands));
+		CheckForGitHubModUpdatesCommand = ReactiveCommand.Create(main.RefreshGitHubModsUpdatesBackground, modOrder.WhenAnyValue(x => x.GitHubModSupportEnabled).AllTrue(canExecuteCommands));
+		CheckForNexusModsUpdatesCommand = ReactiveCommand.Create(main.RefreshNexusModsUpdatesBackground, modOrder.WhenAnyValue(x => x.NexusModsSupportEnabled).AllTrue(canExecuteCommands));
+		CheckForModioUpdatesCommand = ReactiveCommand.Create(main.RefreshModioUpdatesBackground, modOrder.WhenAnyValue(x => x.ModioSupportEnabled).AllTrue(canExecuteCommands));
 
 		ExportOrderCommand = ReactiveCommand.CreateFromTask(modOrder.ExportLoadOrderAsync, canExecuteCommands);
 		ExportModsToZipCommand = ReactiveCommand.CreateFromTask(main.ExportLoadOrderToArchiveAsync, canExecuteCommands);

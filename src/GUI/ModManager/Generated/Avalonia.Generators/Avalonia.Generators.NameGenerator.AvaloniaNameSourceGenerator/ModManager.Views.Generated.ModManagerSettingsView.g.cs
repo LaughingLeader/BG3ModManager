@@ -43,6 +43,8 @@ namespace ModManager.Views.Generated
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock SaveWindowLocationTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock DeleteModCrashSanityCheckTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock EnableColorblindSupportTextBlock;
 
         /// <summary>
@@ -77,6 +79,7 @@ namespace ModManager.Views.Generated
             ActionOnGameLaunchTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ActionOnGameLaunchTextBlock");
             DisableMissingModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableMissingModWarningsTextBlock");
             SaveWindowLocationTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SaveWindowLocationTextBlock");
+            DeleteModCrashSanityCheckTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DeleteModCrashSanityCheckTextBlock");
             EnableColorblindSupportTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableColorblindSupportTextBlock");
         }
     }

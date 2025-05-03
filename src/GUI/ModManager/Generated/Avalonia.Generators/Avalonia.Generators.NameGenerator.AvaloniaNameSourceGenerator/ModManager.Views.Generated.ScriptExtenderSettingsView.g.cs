@@ -58,6 +58,8 @@ namespace ModManager.Views.Generated
         internal global::Avalonia.Controls.TextBlock DefaultToClientConsoleTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock ShowPerfWarningsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock InsanityCheckTextBlock;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -99,6 +101,7 @@ namespace ModManager.Views.Generated
             ClearOnResetTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ClearOnResetTextBlock");
             DefaultToClientConsoleTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DefaultToClientConsoleTextBlock");
             ShowPerfWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ShowPerfWarningsTextBlock");
+            InsanityCheckTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("InsanityCheckTextBlock");
         }
     }
 }

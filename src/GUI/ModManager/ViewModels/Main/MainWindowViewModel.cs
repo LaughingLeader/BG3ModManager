@@ -73,7 +73,6 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	[Reactive] public string StatusBarRightText { get; set; }
 
 	[Reactive] public bool ModUpdatesAvailable { get; set; }
-	[Reactive] public bool HighlightExtenderDownload { get; set; }
 	[Reactive] public bool GameDirectoryFound { get; set; }
 
 	[ObservableAsProperty] public bool CanLaunchGame { get; }
@@ -82,9 +81,6 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	[ObservableAsProperty] public bool UpdatesViewIsVisible { get; }
 
 	[Reactive] public bool StatusBarBusyIndicatorVisibility { get; set; }
-	[ObservableAsProperty] public bool GitHubModSupportEnabled { get; }
-	[ObservableAsProperty] public bool NexusModsSupportEnabled { get; }
-	[ObservableAsProperty] public bool ModioSupportEnabled { get; }
 	[ObservableAsProperty] public string NexusModsLimitsText { get; }
 	[ObservableAsProperty] public Uri? NexusModsProfileBitmapUri { get; }
 	[ObservableAsProperty] public bool NexusModsProfileAvatarVisibility { get; }
@@ -213,7 +209,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 			if (successes >= 3)
 			{
 				_globalCommands.ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
-				HighlightExtenderDownload = false;
+				ViewModelLocator.CommandBar.HighlightExtenderDownload = false;
 				Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 				_justDownloadedScriptExtender = true;
 			}
@@ -288,7 +284,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 		if (IsInitialized && !IsRefreshing)
 		{
 			CheckExtenderInstalledVersion(t);
-			if (updateMods) RxApp.MainThreadScheduler.Schedule(UpdateExtenderVersionForAllMods);
+			if (updateMods) RxApp.MainThreadScheduler.Schedule(ViewModelLocator.ModOrder.UpdateExtenderVersionForAllMods);
 		}
 	}
 
@@ -534,7 +530,7 @@ Directory the zip will be extracted to:
 
 			CheckExtenderUpdaterVersion();
 			CheckExtenderInstalledVersion(token);
-			UpdateExtenderVersionForAllMods();
+			ViewModelLocator.ModOrder.UpdateExtenderVersionForAllMods();
 
 			return Unit.Default;
 		}, RxApp.MainThreadScheduler);
@@ -745,7 +741,7 @@ Directory the zip will be extracted to:
 		{
 			if (Settings.SettingsWindowIsOpen)
 			{
-				UpdateExtenderVersionForAllMods();
+				ViewModelLocator.ModOrder.UpdateExtenderVersionForAllMods();
 			}
 		});
 
@@ -971,69 +967,6 @@ Directory the zip will be extracted to:
 		}
 	}*/
 
-	private void UpdateModExtenderStatus(ModData mod)
-	{
-		mod.CurrentExtenderVersion = Settings.ExtenderSettings.ExtenderMajorVersion;
-
-		mod.ExtenderModStatus = ModExtenderStatus.None;
-
-		if (mod.ScriptExtenderData != null && mod.ScriptExtenderData.HasAnySettings)
-		{
-			if (mod.ScriptExtenderData.Lua)
-			{
-				if (!Settings.ExtenderSettings.EnableExtensions)
-				{
-					mod.ExtenderModStatus |= ModExtenderStatus.DisabledFromConfig;
-				}
-				else
-				{
-					if (Settings.ExtenderSettings.ExtenderMajorVersion > -1)
-					{
-						if (mod.ScriptExtenderData.RequiredVersion > -1 && Settings.ExtenderSettings.ExtenderMajorVersion < mod.ScriptExtenderData.RequiredVersion)
-						{
-							mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
-						}
-						else
-						{
-							mod.ExtenderModStatus |= ModExtenderStatus.Fulfilled;
-						}
-					}
-					else
-					{
-						mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
-					}
-				}
-			}
-			else
-			{
-				mod.ExtenderModStatus |= ModExtenderStatus.Supports;
-			}
-			if (!Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
-			{
-				mod.ExtenderModStatus |= ModExtenderStatus.MissingUpdater;
-			}
-		}
-
-		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
-		if (mod.ExtenderModStatus.HasFlag(ModExtenderStatus.MissingUpdater))
-		{
-			HighlightExtenderDownload = true;
-		}
-	}
-
-	public void UpdateExtenderVersionForAllMods()
-	{
-		if (_manager.AddonMods.Count > 0)
-		{
-			HighlightExtenderDownload = false;
-
-			foreach (var mod in _manager.AllMods)
-			{
-				UpdateModExtenderStatus(mod);
-			}
-		}
-	}
-
 	private bool CanUpdateMod(ModData mod, DateTime now, TimeSpan minWaitPeriod, ISettingsService settingsService)
 	{
 		if (settingsService.ModConfig.LastUpdated.TryGetValue(mod.UUID, out var last))
@@ -1199,57 +1132,6 @@ Directory the zip will be extracted to:
 
 			IsRefreshingModUpdates = false;
 		});
-	}
-
-	public void AddImportedMod(ModData mod, bool toActiveList = false)
-	{
-		mod.ModioEnabled = ModioSupportEnabled;
-		mod.NexusModsEnabled = NexusModsSupportEnabled;
-		mod.DisplayExtraIcons = Settings.EnableColorblindSupport;
-		mod.IsActive = toActiveList;
-
-		if (_manager.TryGetMod(mod.UUID, out var existingMod) && existingMod.IsActive)
-		{
-			mod.Index = existingMod.Index;
-		}
-
-		_manager.Add(mod);
-		UpdateModExtenderStatus(mod);
-
-		if (mod.IsForceLoaded && !mod.IsForceLoadedMergedMod)
-		{
-			DivinityApp.Log($"Imported Override Mod: {mod}");
-			return;
-		}
-
-		var entry = mod.ToModInterface();
-		if (mod.IsActive)
-		{
-			var existingInterface = ViewModelLocator.ModOrder.ActiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
-			if (existingInterface != null)
-			{
-				ViewModelLocator.ModOrder.ActiveMods.Replace(existingInterface, entry);
-			}
-			else
-			{
-				ViewModelLocator.ModOrder.ActiveMods.Add(entry);
-				mod.Index = ViewModelLocator.ModOrder.ActiveMods.Count - 1;
-			}
-		}
-		else
-		{
-			var existingInterface = ViewModelLocator.ModOrder.InactiveMods.FirstOrDefault(x => x.UUID == mod.UUID);
-			if (existingInterface != null)
-			{
-				ViewModelLocator.ModOrder.InactiveMods.Replace(existingInterface, entry);
-			}
-			else
-			{
-				ViewModelLocator.ModOrder.InactiveMods.Add(entry);
-			}
-		}
-
-		DivinityApp.Log($"Imported Mod: {mod}");
 	}
 
 	public async Task ExportLoadOrderToArchiveAsync()
@@ -1844,23 +1726,6 @@ Directory the zip will be extracted to:
 		this.WhenAnyValue(x => x.AppSettings.Features.GitHub, x => x.Settings.UpdateSettings.UpdateGitHubMods).Select(x => x.Item1 && x.Item2).BindTo(_updater.GitHub, x => x.IsEnabled);
 		this.WhenAnyValue(x => x.AppSettings.Features.NexusMods, x => x.Settings.UpdateSettings.UpdateNexusMods).Select(x => x.Item1 && x.Item2).BindTo(_updater.NexusMods, x => x.IsEnabled);
 		this.WhenAnyValue(x => x.AppSettings.Features.Modio, x => x.Settings.UpdateSettings.UpdateModioMods).Select(x => x.Item1 && x.Item2).BindTo(_updater.Modio, x => x.IsEnabled);
-
-		_updater.Modio.WhenAnyValue(x => x.IsEnabled).ToUIProperty(this, x => x.ModioSupportEnabled);
-		_updater.NexusMods.WhenAnyValue(x => x.IsEnabled).ToUIProperty(this, x => x.NexusModsSupportEnabled);
-		_updater.GitHub.WhenAnyValue(x => x.IsEnabled).ToUIProperty(this, x => x.GitHubModSupportEnabled);
-
-		_updater.WhenAnyValue(x => x.GitHub.IsEnabled, x => x.NexusMods.IsEnabled, x => x.Modio.IsEnabled)
-		.Throttle(TimeSpan.FromMilliseconds(250))
-		.ObserveOn(RxApp.MainThreadScheduler)
-		.Subscribe(x =>
-		{
-			foreach (var mod in _manager.AllMods)
-			{
-				mod.GitHubEnabled = x.Item1;
-				mod.NexusModsEnabled = x.Item2;
-				mod.ModioEnabled = x.Item3;
-			}
-		});
 
 		var whenRefreshing = _updater.WhenAnyValue(x => x.IsRefreshing);
 		whenRefreshing.ToUIProperty(this, x => x.UpdatingBusyIndicatorVisibility);
