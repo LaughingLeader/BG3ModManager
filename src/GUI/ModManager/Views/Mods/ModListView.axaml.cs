@@ -138,11 +138,11 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 
 	private void OnDrop(TreeDataGridRowDragEventArgs e)
 	{
+		_isDragging = false;
 		MaybeRedirectDrop(e);
 
 		//List to List
 		if (e.Inner.Data.Get(DragInfo.DataFormat) is DragInfo di
-			&& di.Source != ModsTreeDataGrid.Source
 			&& di.Source is HierarchicalTreeDataGridSource<IModEntry> listSource
 			&& ModsTreeDataGrid.Source is HierarchicalTreeDataGridSource<IModEntry> target)
 		{
@@ -151,20 +151,27 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 				if (mod != null) mod.PreserveSelection = true;
 			}
 
-			if (e.Position == TreeDataGridRowDropPosition.None)
+			//From one list to another
+			if (di.Source != ModsTreeDataGrid.Source)
 			{
-				e.Position = GetDropPosition(e.TargetRow.Model is ModCategory, e.Inner, e.TargetRow);
+				if (e.Position == TreeDataGridRowDropPosition.None)
+				{
+					e.Position = GetDropPosition(e.TargetRow.Model is ModCategory, e.Inner, e.TargetRow);
+				}
+				//Clear the previous selection, so only the dropped items are selected
+				target.RowSelection!.Clear();
+				var targetIndex = target.Rows.RowIndexToModelIndex(e.TargetRow.RowIndex);
+				DragDropRows(listSource, target, listSource.RowSelection!.SelectedIndexes, targetIndex, e.Position, e.Inner.DragEffects);
 			}
-			//Clear the previous selection, so only the dropped items are selected
-			target.RowSelection!.Clear();
-			var targetIndex = target.Rows.RowIndexToModelIndex(e.TargetRow.RowIndex);
-			DragDropRows(listSource, target, listSource.RowSelection!.SelectedIndexes, targetIndex, e.Position, e.Inner.DragEffects);
 		}
 	}
 
+	private bool _isSingleSelect = false;
+	private bool _isDragging = false;
+
 	private void OnDragStarted(TreeDataGridRowDragStartedEventArgs e)
 	{
-
+		_isDragging = true;
 	}
 
 	private static void OnError(Exception ex)
@@ -174,17 +181,33 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 
 	private void OnPointerDown(object? sender, PointerPressedEventArgs e)
 	{
+		_isSingleSelect = false;
+
 		//Allow deselecting with just left click, if no modifiers are pressed and a single item is selected
-		if (e.KeyModifiers == KeyModifiers.None && sender is TreeDataGridRow row && row.IsSelected && ModsTreeDataGrid.RowSelection?.Count == 1)
+		if (!_isDragging && e.KeyModifiers == KeyModifiers.None && sender is TreeDataGridRow row && row.IsSelected && ModsTreeDataGrid.RowSelection?.Count == 1)
 		{
-			ModsTreeDataGrid.RowSelection?.Deselect(row.RowIndex);
-			e.Handled = true;
+			_isSingleSelect = true;
 		}
+	}
+
+	private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+	{
+		//Allow deselecting with just left click, if no modifiers are pressed and a single item is selected
+		if (_isSingleSelect && !_isDragging && e.KeyModifiers == KeyModifiers.None)
+		{
+			if (sender is TreeDataGridRow row && row.IsSelected && ModsTreeDataGrid.RowSelection?.Count == 1)
+			{
+				ModsTreeDataGrid.RowSelection?.Deselect(row.RowIndex);
+				e.Handled = true;
+			}
+		}
+		_isSingleSelect = false;
 	}
 
 	private void OnRowPrepared(object? sender, TreeDataGridRowEventArgs e)
 	{
 		e.Row.PointerPressed += OnPointerDown;
+		e.Row.PointerReleased += OnPointerReleased;
 	}
 
 	public ModListView()
