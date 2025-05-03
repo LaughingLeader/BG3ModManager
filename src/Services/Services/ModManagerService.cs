@@ -44,7 +44,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 	private readonly System.Reactive.Subjects.IConnectableObservable<IChangeSet<ModData, string>> _modsConnection;
 	public System.Reactive.Subjects.IConnectableObservable<IChangeSet<ModData, string>> ModsConnection => _modsConnection;
 
-	public bool ModExists(string uuid) => mods.Lookup(uuid) != null;
+	public bool ModExists(string? uuid) => uuid.IsValid() && mods.Lookup(uuid).HasValue;
 
 	public bool TryGetMod(string? guid, [NotNullWhen(true)] out ModData? mod)
 	{
@@ -70,9 +70,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	public bool ModIsAvailable(IModData divinityModData)
 	{
-		return ModExists(divinityModData.UUID)
-			|| DivinityApp.IgnoredMods.Any(im => im.UUID == divinityModData.UUID)
-			|| DivinityApp.IgnoredDependencyMods.Any(d => d.UUID == divinityModData.UUID);
+		return ModExists(divinityModData.UUID) || ModDataLoader.IgnoreModDependency(divinityModData.UUID);
 	}
 
 	public void DeselectAllMods()
@@ -111,20 +109,16 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 	public void SetLoadedMods(IEnumerable<ModData> loadedMods, bool nexusModsEnabled = false)
 	{
+		var uuids = loadedMods.Select(x => x.UUID).ToHashSet();
 		mods.Clear();
 		foreach (var mod in loadedMods)
 		{
 			//mod.SteamWorkshopEnabled = SteamWorkshopSupportEnabled;
 			mod.NexusModsEnabled = nexusModsEnabled;
 
-			if (mod.IsLarianMod)
+			if (mod.IsLarianMod && mod.UUID.IsValid())
 			{
-				var existingIgnoredMod = DivinityApp.IgnoredMods.FirstOrDefault(x => x.UUID == mod.UUID);
-				if (existingIgnoredMod != null && existingIgnoredMod != mod)
-				{
-					DivinityApp.IgnoredMods.Remove(existingIgnoredMod);
-				}
-				DivinityApp.IgnoredMods.Add(mod);
+				DivinityApp.IgnoredMods.AddOrUpdate(mod);
 			}
 
 			if (TryGetMod(mod.UUID, out var existingMod))
@@ -138,6 +132,15 @@ public class ModManagerService : ReactiveObject, IModManagerService
 			else
 			{
 				mods.AddOrUpdate(mod);
+			}
+
+			mod.MissingDependencies.Clear();
+			foreach (var dep in mod.Dependencies.Items)
+			{
+				if (!uuids.Contains(dep.UUID) && !ModDataLoader.IgnoreModDependency(dep.UUID))
+				{
+					mod.MissingDependencies.AddOrUpdate(dep);
+				}
 			}
 		}
 	}
@@ -210,16 +213,16 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		{
 			if (baseMods.Count == 0)
 			{
-				foreach(var mod in DivinityApp.IgnoredMods)
+				foreach(var mod in DivinityApp.IgnoredMods.Items)
 				{
-					baseMods[mod.UUID] = mod;
+					baseMods[mod.UUID!] = mod;
 				}
 			}
 			else
 			{
-				foreach (var mod in DivinityApp.IgnoredMods)
+				foreach (var mod in DivinityApp.IgnoredMods.Items)
 				{
-					if (!baseMods.ContainsKey(mod.UUID)) baseMods[mod.UUID] = mod;
+					if (!baseMods.ContainsKey(mod.UUID!)) baseMods[mod.UUID] = mod;
 				}
 			}
 		}

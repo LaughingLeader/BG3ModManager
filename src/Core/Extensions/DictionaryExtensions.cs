@@ -84,9 +84,9 @@ public static class DictionaryExtensions
 	/// <returns></returns>
 	public static Dictionary<TKey, TElement> SafeToDictionary<TSource, TKey, TElement>(
 	this IEnumerable<TSource> source,
-	Func<TSource, TKey> keySelector,
+	Func<TSource, TKey?> keySelector,
 	Func<TSource, TElement> elementSelector,
-	IEqualityComparer<TKey> comparer = null)
+	IEqualityComparer<TKey>? comparer = null)
 	{
 		var dictionary = new Dictionary<TKey, TElement>(comparer);
 
@@ -97,7 +97,11 @@ public static class DictionaryExtensions
 
 		foreach (var element in source)
 		{
-			dictionary[keySelector(element)] = elementSelector(element);
+			var key = keySelector(element);
+			if(key != null)
+			{
+				dictionary[key] = elementSelector(element);
+			}
 		}
 
 		return dictionary;

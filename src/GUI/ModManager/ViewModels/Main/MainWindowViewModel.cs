@@ -698,7 +698,7 @@ Directory the zip will be extracted to:
 
 		/*Keys.LaunchGame.AddAction(LaunchGame, canOpenGameExe);
 
-		var canOpenLogDirectory = Settings.WhenAnyValue(x => x.ExtenderLogDirectory, (f) => Directory.Exists(f)).StartWith(false);
+		var canOpenLogDirectory = Settings.WhenAnyValue(x => x.ExtenderLogDirectory, (f) => Directory.Exists(f));
 
 		var canDownloadScriptExtender = this.WhenAnyValue(x => x.PathwayData.ScriptExtenderLatestReleaseUrl, (p) => !String.IsNullOrEmpty(p));
 		Keys.DownloadScriptExtender.AddAction(() => AskToDownloadScriptExtender(), canDownloadScriptExtender);
@@ -1681,7 +1681,7 @@ Directory the zip will be extracted to:
 				{
 					TotalFiles = files.Count
 				};
-				var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
+				var builtinMods = DivinityApp.IgnoredMods.Items.SafeToDictionary(x => x.Folder, x => x);
 				foreach (var filePath in files)
 				{
 					await _importer.ImportModFromFile(builtinMods, result, filePath, token, false);

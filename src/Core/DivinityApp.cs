@@ -1,4 +1,6 @@
-﻿using ModManager.Models.Mod;
+﻿using DynamicData;
+
+using ModManager.Models.Mod;
 using ModManager.Services;
 using ModManager.Util;
 
@@ -114,8 +116,8 @@ public static class DivinityApp
 	public const LSLib.LS.Enums.Game GAME = LSLib.LS.Enums.Game.DivinityOriginalSin2DE;
 	public const LSLib.LS.Story.Compiler.TargetGame GAME_COMPILER = LSLib.LS.Story.Compiler.TargetGame.DOS2DE;
 #endif
-	public static HashSet<ModData> IgnoredMods { get; private set; }
-	public static HashSet<ModData> IgnoredDependencyMods { get; private set; }
+	public static SourceCache<ModData, string> IgnoredMods { get; }
+	public static HashSet<string> IgnoredDependencyMods { get; }
 
 	private static readonly Assembly? _exeAssembly;
 	private static readonly string? _exePath;
@@ -127,7 +129,7 @@ public static class DivinityApp
 		_exePath = _exeAssembly?.Location;
 		_appDirectory = Path.GetDirectoryName(_exeAssembly?.Location);
 
-		IgnoredMods = [];
+		IgnoredMods = new(x => x.UUID ?? "");
 		IgnoredDependencyMods = [];
 
 		//Process.GetCurrentProcess()?.MainModule?.FileName

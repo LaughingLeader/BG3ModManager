@@ -196,7 +196,7 @@ public class ModImportService(IDialogService _dialogService)
 			};
 			ViewModel.Progress.Start(async token =>
 			{
-				var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
+				var builtinMods = DivinityApp.IgnoredMods.Items.SafeToDictionary(x => x.Folder, x => x);
 
 				var importOptions = new ImportParameters(filePath, Pathways.AppDataModsPath, token, result)
 				{
@@ -455,7 +455,7 @@ public class ModImportService(IDialogService _dialogService)
 
 		ViewModel.Progress.Start(async token =>
 		{
-			var builtinMods = DivinityApp.IgnoredMods.SafeToDictionary(x => x.Folder, x => x);
+			var builtinMods = DivinityApp.IgnoredMods.Items.SafeToDictionary(x => x.Folder, x => x);
 			foreach (var f in files)
 			{
 				await ImportModFromFile(builtinMods, result, f, token, toActiveList);

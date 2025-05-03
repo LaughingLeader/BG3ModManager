@@ -65,17 +65,17 @@ public static partial class ModDataLoader
 
 	public static bool IgnoreMod([NotNullWhen(true)] string? modUUID)
 	{
-		return modUUID.IsValid() && DivinityApp.IgnoredMods.Any(m => m.UUID == modUUID);
+		return modUUID.IsValid() && DivinityApp.IgnoredMods.Lookup(modUUID).HasValue;
 	}
 
 	public static bool IgnoreModDependency([NotNullWhen(true)] string? modUUID)
 	{
-		return modUUID.IsValid() && DivinityApp.IgnoredDependencyMods.Any(m => m.UUID == modUUID) || IgnoreMod(modUUID);
+		return modUUID.IsValid() && DivinityApp.IgnoredDependencyMods.Contains(modUUID) || IgnoreMod(modUUID);
 	}
 
 	public static bool IgnoreModByFolder([NotNullWhen(true)] string? folder)
 	{
-		return folder.IsValid() && DivinityApp.IgnoredMods.Any(m => m.Folder?.Equals(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)), SCOMP) == true);
+		return folder.IsValid() && DivinityApp.IgnoredMods.Items.Any(m => m.Folder?.Equals(Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)), SCOMP) == true);
 	}
 
 	public static string MakeSafeFilename(string filename, char replaceChar)
@@ -285,7 +285,7 @@ public static partial class ModDataLoader
 
 							if (!String.IsNullOrEmpty(entryMod.UUID))
 							{
-								modData.Dependencies.Add(entryMod);
+								modData.Dependencies.AddOrUpdate(entryMod);
 							}
 						}
 					}
@@ -313,7 +313,7 @@ public static partial class ModDataLoader
 
 							if (!String.IsNullOrEmpty(entryMod.UUID))
 							{
-								modData.Conflicts.Add(entryMod);
+								modData.Conflicts.AddOrUpdate(entryMod);
 							}
 						}
 					}
@@ -575,7 +575,7 @@ public static partial class ModDataLoader
 					var modData = await GetModDataFromMeta(f);
 					if (modData != null)
 					{
-						if (DivinityApp.IgnoredMods.Any(x => x.UUID == modData.UUID))
+						if (modData.UUID.IsValid() && DivinityApp.IgnoredMods.Lookup(modData.UUID).HasValue)
 						{
 							modData.IsLarianMod = true;
 							modData.SetIsBaseGameMod(true);
@@ -1617,7 +1617,7 @@ public static partial class ModDataLoader
 				}
 
 				modData.IsLarianMod = modData.Author.Contains("Larian") || String.IsNullOrEmpty(modData.Author);
-				var isBaseMod = DivinityApp.IgnoredMods.Any(x => x.UUID == modData.UUID) || modData.IsLarianMod;
+				var isBaseMod = (modData.UUID != null && DivinityApp.IgnoredMods.Lookup(modData.UUID).HasValue) || modData.IsLarianMod;
 				if (isBaseMod)
 				{
 					modData.SetIsBaseGameMod(true);
@@ -1658,9 +1658,9 @@ public static partial class ModDataLoader
 			baseMods = new ModDirectoryLoadingResults(gameDataPath);
 		}
 
-		foreach (var mod in DivinityApp.IgnoredMods)
+		foreach (var mod in DivinityApp.IgnoredMods.Items)
 		{
-			if (!baseMods.Mods.ContainsKey(mod.UUID))
+			if (mod.UUID.IsValid() && !baseMods.Mods.ContainsKey(mod.UUID))
 			{
 				baseMods.Mods[mod.UUID] = mod;
 			}

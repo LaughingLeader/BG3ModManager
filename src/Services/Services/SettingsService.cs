@@ -1,4 +1,6 @@
-﻿using ModManager.Models;
+﻿using DynamicData;
+
+using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
 using ModManager.Models.Settings;
@@ -79,26 +81,30 @@ public class SettingsService : ReactiveObject, ISettingsService
 				foreach (var ignoredMod in ignoredModsData.Mods)
 				{
 					var mod = new ModData();
-					mod.SetIsBaseGameMod(true);
-					mod.IsLarianMod = true;
-					if (ignoredMod.UUID.IsValid()) mod.UUID = ignoredMod.UUID;
-					if (ignoredMod.Name.IsValid()) mod.Name = ignoredMod.Name;
-					if (ignoredMod.Description.IsValid()) mod.Description = ignoredMod.Description;
-					if (ignoredMod.Folder.IsValid()) mod.Folder = ignoredMod.Folder;
-					if (ignoredMod.Type.IsValid()) mod.ModType = ignoredMod.Type;
-					if (ignoredMod.Author.IsValid()) mod.Author = ignoredMod.Author;
-					if (ignoredMod.Version != null) mod.Version = new LarianVersion(ignoredMod.Version.Value);
-					if (ignoredMod.Tags.IsValid()) mod.AddTags(ignoredMod.Tags.Split(';'));
-					DivinityApp.IgnoredMods.Add(mod);
+					if(mod.UUID.IsValid())
+					{
+						mod.SetIsBaseGameMod(true);
+						mod.IsLarianMod = true;
+						if (ignoredMod.UUID.IsValid()) mod.UUID = ignoredMod.UUID;
+						if (ignoredMod.Name.IsValid()) mod.Name = ignoredMod.Name;
+						if (ignoredMod.Description.IsValid()) mod.Description = ignoredMod.Description;
+						if (ignoredMod.Folder.IsValid()) mod.Folder = ignoredMod.Folder;
+						if (ignoredMod.Type.IsValid()) mod.ModType = ignoredMod.Type;
+						if (ignoredMod.Author.IsValid()) mod.Author = ignoredMod.Author;
+						if (ignoredMod.Version != null) mod.Version = new LarianVersion(ignoredMod.Version.Value);
+						if (ignoredMod.Tags.IsValid()) mod.AddTags(ignoredMod.Tags.Split(';'));
+
+						var existing = DivinityApp.IgnoredMods.Lookup(mod.UUID);
+						if (!existing.HasValue || existing.Value.Version < mod.Version)
+						{
+							DivinityApp.IgnoredMods.AddOrUpdate(mod);
+						}
+					}
 				}
 
 				foreach (var uuid in ignoredModsData.IgnoreDependencies)
 				{
-					var mod = DivinityApp.IgnoredMods.FirstOrDefault(x => x.UUID.ToLower() == uuid.ToLower());
-					if (mod != null)
-					{
-						DivinityApp.IgnoredDependencyMods.Add(mod);
-					}
+					DivinityApp.IgnoredDependencyMods.Add(uuid);
 				}
 
 				if(ignoredModsData.MainCampaign?.IsValid() == true)

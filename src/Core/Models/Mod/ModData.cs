@@ -17,8 +17,7 @@ namespace ModManager.Models.Mod;
 public class ModData : ReactiveObject, IModData
 {
 	private static readonly SortExpressionComparer<ModuleShortDesc> _moduleSort = SortExpressionComparer<ModuleShortDesc>
-			.Ascending(p => !DivinityApp.IgnoredMods.Any(x => x.UUID == p.UUID)).
-			ThenByAscending(p => p.Name);
+			.Ascending(p => p.UUID.IsValid() && !DivinityApp.IgnoredMods.Lookup(p.UUID).HasValue).ThenByAscending(p => p.Name);
 
 	#region meta.lsx Properties
 	[Reactive, DataMember] public string? UUID { get; set; }
@@ -35,8 +34,9 @@ public class ModData : ReactiveObject, IModData
 	[Reactive] public LarianVersion PublishVersion { get; set; }
 	public List<string> Tags { get; set; } = [];
 
-	public SourceList<ModuleShortDesc> Dependencies { get; }
-	public SourceList<ModuleShortDesc> Conflicts { get; }
+	public SourceCache<ModuleShortDesc, string> Dependencies { get; }
+	public SourceCache<ModuleShortDesc, string> MissingDependencies { get; }
+	public SourceCache<ModuleShortDesc, string> Conflicts { get; }
 
 	#endregion
 
@@ -90,12 +90,7 @@ public class ModData : ReactiveObject, IModData
 	public ReadOnlyObservableCollection<ModuleShortDesc>DisplayedConflicts => _displayedConflicts;
 
 	[ObservableAsProperty] public int TotalDependencies { get; }
-	[ObservableAsProperty] public bool HasDependencies { get; }
-
 	[ObservableAsProperty] public int TotalConflicts { get; }
-	[ObservableAsProperty] public bool HasConflicts { get; }
-
-	[ObservableAsProperty] public bool HasToolTip { get; }
 
 	[Reactive] public bool HasScriptExtenderSettings { get; set; }
 
@@ -104,7 +99,6 @@ public class ModData : ReactiveObject, IModData
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
-	[Reactive] public bool DisplayExtraIcons { get; set; }
 
 	public string? OutputPakName
 	{
@@ -152,7 +146,13 @@ public class ModData : ReactiveObject, IModData
 	[ObservableAsProperty] public bool HasNexusModsLink { get; }
 	[ObservableAsProperty] public bool HasNotes { get; }
 	[ObservableAsProperty] public bool HasOsirisStatus { get; }
-
+	[ObservableAsProperty] public bool HasDependencies { get; }
+	[ObservableAsProperty] public bool HasConflicts { get; }
+	[ObservableAsProperty] public bool HasToolTip { get; }
+	[ObservableAsProperty] public bool HasInvalidUUID { get; }
+	[ObservableAsProperty] public bool HasMissingDependency { get; }
+	[ObservableAsProperty] public string MissingDependencyToolTip { get; }
+	[ObservableAsProperty] public bool HasToolkitIcon { get; }
 
 	[ObservableAsProperty] public ScriptExtenderIconType ExtenderIcon { get; }
 
@@ -170,6 +170,7 @@ public class ModData : ReactiveObject, IModData
 	[Reactive] public bool ModioEnabled { get; set; }
 	[Reactive] public bool CanDrag { get; set; }
 	[Reactive] public bool HasColorOverride { get; set; }
+	[Reactive] public bool DisplayExtraIcons { get; set; }
 	[Reactive] public string? SelectedColor { get; set; }
 	[Reactive] public string? PointerOverColor { get; set; }
 	[Reactive] public string? ListColor { get; set; }
@@ -567,6 +568,23 @@ public class ModData : ReactiveObject, IModData
 		}
 	}
 
+	private static bool CheckForInvalidUUID(ValueTuple<string?, bool> x)
+	{
+		var uuid = x.Item1;
+		var canAddToLoadOrder = x.Item2;
+		if (!canAddToLoadOrder) return false;
+		if(uuid.IsValid())
+		{
+			return !Guid.TryParse(uuid, out _);
+		}
+		return false;
+	}
+
+	private string BuildMissingDependencyToolTip()
+	{
+		return $"Missing Dependencies:\n{string.Join(Environment.NewLine, MissingDependencies.Items.Select(x => x.Name).Order())}";
+	}
+
 	private static readonly JsonSerializerOptions _serializerSettings = new()
 	{
 		AllowTrailingCommas = true,
@@ -605,8 +623,10 @@ public class ModData : ReactiveObject, IModData
 		CanDrag = true;
 		IsVisible = true;
 
-		Dependencies = new();
-		Conflicts = new();
+		Dependencies = new SourceCache<ModuleShortDesc, string>(x => x.UUID);
+		MissingDependencies = new SourceCache<ModuleShortDesc, string>(x => x.UUID);
+		Conflicts = new SourceCache<ModuleShortDesc, string>(x => x.UUID);
+
 		Tags = [];
 
 		ModioData = new ModioModData();
@@ -655,12 +675,24 @@ public class ModData : ReactiveObject, IModData
 		var dependenciesChanged = Dependencies.CountChanged;
 		dependenciesChanged.ToUIProperty(this, x => x.TotalDependencies);
 		dependenciesChanged.Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasDependencies);
-		Dependencies.Connect().ObserveOn(RxApp.MainThreadScheduler).Sort(_moduleSort).Bind(out _displayedDependencies).Subscribe();
+		Dependencies.Connect().ObserveOn(RxApp.MainThreadScheduler).SortAndBind(out _displayedDependencies, _moduleSort).Subscribe();
 
 		var conflictsChanged = Conflicts.CountChanged;
 		conflictsChanged.ToUIProperty(this, x => x.TotalConflicts);
 		conflictsChanged.Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasConflicts);
-		Conflicts.Connect().ObserveOn(RxApp.MainThreadScheduler).Sort(_moduleSort).Bind(out _displayedConflicts).Subscribe();
+		Conflicts.Connect().ObserveOn(RxApp.MainThreadScheduler).SortAndBind(out _displayedConflicts, _moduleSort).Subscribe();
+
+		var missingDepConn = MissingDependencies.Connect().ObserveOn(RxApp.MainThreadScheduler);
+		missingDepConn.Count().Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasMissingDependency);
+		missingDepConn.Select(x => BuildMissingDependencyToolTip()).ToUIProperty(this, x => x.MissingDependencyToolTip, string.Empty);
+
+		this.WhenAnyValue(x => x.UUID, x => x.CanAddToLoadOrder)
+			.Select(CheckForInvalidUUID)
+			.ToUIPropertyImmediate(this, x => x.HasInvalidUUID);
+
+		this.WhenAnyValue(x => x.IsEditorMod, x => x.DisplayExtraIcons)
+			.AllTrue()
+			.ToUIPropertyImmediate(this, x => x.HasToolkitIcon);
 
 		this.WhenAnyValue(x => x.IsActive, x => x.IsForceLoaded, x => x.IsForceLoadedMergedMod, x => x.ForceAllowInLoadOrder).Subscribe((b) =>
 		{
@@ -756,8 +788,8 @@ public class ModData : ReactiveObject, IModData
 			ModType = mod.ModType,
 			Tags = mod.Tags.ToList()
 		};
-		cloneMod.Conflicts.AddRange(mod.Conflicts.Items);
-		cloneMod.Dependencies.AddRange(mod.Dependencies.Items);
+		cloneMod.Conflicts.AddOrUpdate(mod.Conflicts.Items);
+		cloneMod.Dependencies.AddOrUpdate(mod.Dependencies.Items);
 		cloneMod.NexusModsData.Update(mod.NexusModsData);
 		cloneMod.ModioData.Update(mod.ModioData.Data);
 		cloneMod.GitHubData.Update(mod.GitHubData);
