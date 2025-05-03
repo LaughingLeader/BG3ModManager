@@ -616,6 +616,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var result = false;
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
+			UpdateOrderFromActiveMods();
+
 			var outputDirectory = GetOrdersDirectory();
 
 			if (!Directory.Exists(outputDirectory)) Directory.CreateDirectory(outputDirectory);
@@ -684,6 +686,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			return false;
 		}
 
+		UpdateOrderFromActiveMods();
+
 		var ordersDir = ModImportService.GetInitialStartingDirectory(GetOrdersDirectory());
 		var outputName = SelectedModOrder.Name + ".json";
 
@@ -748,11 +752,37 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return false;
 	}
 
+	public bool DeleteModCrashSanityCheck()
+	{
+		if (Settings.DeleteModCrashSanityCheck && !string.IsNullOrWhiteSpace(PathwayData.AppDataGameFolder))
+		{
+			var modCrashSanityCheck = Path.Join(PathwayData.AppDataGameFolder, "ModCrashSanityCheck");
+			try
+			{
+				if (Directory.Exists(modCrashSanityCheck))
+				{
+					Directory.Delete(modCrashSanityCheck);
+
+					DivinityApp.Log($"Deleted '{modCrashSanityCheck}'");
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				DivinityApp.Log($"Error deleting '{modCrashSanityCheck}':\n{ex}");
+			}
+		}
+		return false;
+	}
+
 	public async Task<bool> ExportLoadOrderAsync()
 	{
 		var settings = Settings;
 		if (SelectedProfile != null && SelectedModOrder != null)
 		{
+			UpdateOrderFromActiveMods();
+			DeleteModCrashSanityCheck();
+
 			var outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
 			var finalOrder = ModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
 			var result = await ModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder);
@@ -774,7 +804,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				await Observable.Start(() =>
 				{
-					AppServices.Commands.ShowAlert($"Exported load order to '{StringUtils.ReplaceSpecialPathways(outputPath)}'", AlertType.Success, 15, "Order Exported");
+					AppServices.Commands.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15, "Order Exported");
 
 					if (ModDataLoader.ExportedSelectedProfile(PathwayData.AppDataProfilesPath, SelectedProfile.UUID))
 					{
@@ -817,6 +847,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 		return false;
 	}
+
+
 
 	private ProfileData? _lastProfile;
 

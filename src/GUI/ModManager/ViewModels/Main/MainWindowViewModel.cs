@@ -144,7 +144,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 			RefreshModUpdates();
 
-			if(!IsInitialized)
+			if (!IsInitialized)
 			{
 				CheckForUpdates(false, true);
 			}
@@ -455,9 +455,9 @@ Directory the zip will be extracted to:
 
 			if (latestRelease != null)
 			{
-				foreach(var entry in latestRelease.Assets)
+				foreach (var entry in latestRelease.Assets)
 				{
-					if(entry.BrowserDownloadUrl.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) && !entry.BrowserDownloadUrl.Contains("Console"))
+					if (entry.BrowserDownloadUrl.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) && !entry.BrowserDownloadUrl.Contains("Console"))
 					{
 						latestReleaseZipUrl = entry.BrowserDownloadUrl;
 						PathwayData.ScriptExtenderLatestReleaseVersion = latestRelease.TagName;
@@ -580,6 +580,8 @@ Directory the zip will be extracted to:
 
 	public void LaunchGame()
 	{
+		ViewModelLocator.ModOrder.DeleteModCrashSanityCheck();
+
 		if (Settings.DisableLauncherTelemetry || Settings.DisableLauncherModWarnings)
 		{
 			RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
@@ -1136,10 +1138,8 @@ Directory the zip will be extracted to:
 
 	public async Task ExportLoadOrderToArchiveAsync()
 	{
-		//view.MainWindowMessageBox.Text = "Add active mods to a zip file?";
-		//view.MainWindowMessageBox.Caption = "Depending on the number of mods, this may take some time.";
 		var result = await _interactions.ShowMessageBox.Handle(new(
-			"Confirm Archive Creation", 
+			"Confirm Archive Creation",
 			$"Save active mods to a zip file?{Environment.NewLine}Depending on the number of mods, this may take some time.",
 			InteractionMessageBoxType.YesNo));
 		if (result)
@@ -1147,12 +1147,17 @@ Directory the zip will be extracted to:
 			Progress.Title = "Adding active mods to zip...";
 			Progress.Start(async token =>
 			{
+				ViewModelLocator.ModOrder.UpdateOrderFromActiveMods();
 				await _importer.ExportLoadOrderToArchiveAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder, "", token);
 			}, true);
 		}
 	}
 
-	public async Task ExportLoadOrderToArchiveAsAsync() => await ExportLoadOrderToArchiveAsAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder);
+	public async Task ExportLoadOrderToArchiveAsAsync()
+	{
+		ViewModelLocator.ModOrder.UpdateOrderFromActiveMods();
+		await ExportLoadOrderToArchiveAsAsync(ViewModelLocator.ModOrder.SelectedProfile, ViewModelLocator.ModOrder.SelectedModOrder);
+	}
 
 	public async Task ExportLoadOrderToArchiveAsAsync(ProfileData? profile = null, ModLoadOrder? order = null)
 	{
