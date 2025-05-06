@@ -183,6 +183,11 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 	{
 		_isSingleSelect = false;
 
+		if(sender is Control source && !e.GetCurrentPoint(source).Properties.IsLeftButtonPressed)
+		{
+			return;
+		}
+
 		//Allow deselecting with just left click, if no modifiers are pressed and a single item is selected
 		if (!_isDragging && e.KeyModifiers == KeyModifiers.None && sender is TreeDataGridRow row && row.IsSelected && ModsTreeDataGrid.RowSelection?.Count == 1)
 		{
@@ -192,6 +197,11 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 
 	private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
 	{
+		if (sender is Control source && !e.GetCurrentPoint(source).Properties.IsLeftButtonPressed)
+		{
+			return;
+		}
+
 		//Allow deselecting with just left click, if no modifiers are pressed and a single item is selected
 		if (_isSingleSelect && !_isDragging && e.KeyModifiers == KeyModifiers.None)
 		{
