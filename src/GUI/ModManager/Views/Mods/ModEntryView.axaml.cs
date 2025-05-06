@@ -1,3 +1,6 @@
+using Avalonia.Controls.Primitives;
+using Avalonia.VisualTree;
+
 using ModManager.Models.Mod;
 
 namespace ModManager.Views.Mods;

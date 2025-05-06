@@ -42,7 +42,7 @@ public static class SplatContainerExtensions
 
 		SplatRegistrations.RegisterLazySingleton<INexusModsService, NexusModsService>();
 		SplatRegistrations.RegisterLazySingleton<IGitHubService, GitHubService>();
-		//SplatRegistrations.RegisterLazySingleton<ISteamWorkshopService, SteamWorkshopService>();
+		SplatRegistrations.RegisterLazySingleton<IModioService, ModioService>();
 
 		SplatRegistrations.RegisterLazySingleton<IAppUpdaterService, AppUpdaterService>();
 

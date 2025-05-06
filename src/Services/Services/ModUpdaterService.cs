@@ -218,11 +218,11 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 				}, RxApp.MainThreadScheduler);
 			}
 			if (!Modio.IsEnabled) return results;
-			return await Locator.Current.GetService<IModioService>().GetLatestDownloadsForModsAsync(mods, token);
+			return await Locator.Current.GetService<IModioService>()!.GetLatestDownloadsForModsAsync(mods, token);
 		}
 		catch (Exception ex)
 		{
-			DivinityApp.Log($"Error fetching SteamWorkshop updates:\n{ex}");
+			DivinityApp.Log($"Error fetching Modio updates:\n{ex}");
 		}
 		return results;
 	}

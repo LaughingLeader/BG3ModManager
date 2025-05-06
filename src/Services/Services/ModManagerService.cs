@@ -107,14 +107,15 @@ public class ModManagerService : ReactiveObject, IModManagerService
 	public void RemoveByUUID(string uuid) => mods.RemoveKey(uuid);
 	public void RemoveByUUID(IEnumerable<string> uuids) => mods.RemoveKeys(uuids);
 
-	public void SetLoadedMods(IEnumerable<ModData> loadedMods, bool nexusModsEnabled = false)
+	public void SetLoadedMods(IEnumerable<ModData> loadedMods, bool githubEnabled, bool nexusModsEnabled, bool modioEnabled)
 	{
 		var uuids = loadedMods.Select(x => x.UUID).ToHashSet();
 		mods.Clear();
 		foreach (var mod in loadedMods)
 		{
-			//mod.SteamWorkshopEnabled = SteamWorkshopSupportEnabled;
+			mod.GitHubEnabled = githubEnabled;
 			mod.NexusModsEnabled = nexusModsEnabled;
+			mod.ModioEnabled = modioEnabled;
 
 			if (mod.IsLarianMod && mod.UUID.IsValid())
 			{

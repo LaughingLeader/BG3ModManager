@@ -61,6 +61,8 @@
 			<Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
 				<Setter Property="Background" Value="{Binding SelectedColor, Converter={StaticResource ModBackgroundColorConverter}, ConverterParameter='TreeDataGridSelectedCellBackgroundBrush'}" />
 			</Style>
+
+			<!--<Setter Property="ContextFlyout" Value="{StaticResource ModContextFlyout}" />-->
 		</Style>
 
 	</UserControl.Styles>

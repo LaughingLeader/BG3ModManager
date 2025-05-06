@@ -31,7 +31,7 @@ public interface IModManagerService
 	void DeselectAllMods();
 	void Refresh();
 	void ApplyUserModConfig();
-	void SetLoadedMods(IEnumerable<ModData> loadedMods, bool nexusModsEnabled = false);
+	void SetLoadedMods(IEnumerable<ModData> loadedMods, bool githubEnabled, bool nexusModsEnabled, bool modioEnabled);
 	Task<List<ModData>> LoadModsAsync(string gameDataPath, string userModsDirectoryPath, CancellationToken token);
 	IEnumerable<IModEntry> GetAllModsAsInterface();
 }

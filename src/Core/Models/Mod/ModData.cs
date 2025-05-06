@@ -359,7 +359,7 @@ public class ModData : ReactiveObject, IModData
 			case ModSourceType.MODIO:
 				if (ModioData.IsEnabled)
 				{
-					return string.Format(DivinityApp.NEXUSMODS_MOD_URL, ModioData.Data.NameId);
+					return ModioData.ExternalLink;
 				}
 				break;
 			case ModSourceType.NEXUSMODS:
@@ -432,9 +432,9 @@ public class ModData : ReactiveObject, IModData
 		};
 	}
 
-	private static bool CanOpenModioBoolCheck(bool enabled, bool isHidden, bool isLarianMod, string? modioId)
+	private static bool CanOpenModioBoolCheck(bool enabled, string? externalLink)
 	{
-		return enabled && !isHidden & !isLarianMod & !string.IsNullOrEmpty(modioId);
+		return enabled && externalLink.IsValid();
 	}
 
 	private static string NexusModsInfoToTooltip(DateTime createdDate, DateTime updatedDate, long endorsements)
@@ -480,7 +480,7 @@ public class ModData : ReactiveObject, IModData
 					this.WhenAnyValue(x => x.UUID).BindTo(ModManagerConfig, x => x.Id).DisposeWith(_modConfigDisposables);
 
 					this.WhenAnyValue(x => x.NexusModsData.ModId).BindTo(this, x => x.ModManagerConfig.NexusModsId).DisposeWith(_modConfigDisposables);
-					this.WhenAnyValue(x => x.ModioData.ModId).BindTo(this, x => x.ModManagerConfig.ModioId).DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.ModioData.NameId).BindTo(this, x => x.ModManagerConfig.ModioId).DisposeWith(_modConfigDisposables);
 					this.WhenAnyValue(x => x.GitHubData.Url).BindTo(this, x => x.ModManagerConfig.GitHub).DisposeWith(_modConfigDisposables);
 				}
 			}
@@ -503,7 +503,7 @@ public class ModData : ReactiveObject, IModData
 		}
 
 		if (config.NexusModsId > DivinityApp.NEXUSMODS_MOD_ID_START) NexusModsData.ModId = config.NexusModsId;
-		if (!string.IsNullOrEmpty(config.ModioId)) ModioData.ModId = config.ModioId;
+		if (!string.IsNullOrEmpty(config.ModioId)) ModioData.NameId = config.ModioId;
 		if (!string.IsNullOrWhiteSpace(config.GitHub)) GitHubData.Url = config.GitHub;
 	}
 
@@ -665,7 +665,7 @@ public class ModData : ReactiveObject, IModData
 		this.WhenAnyValue(x => x.NexusModsEnabled, x => x.NexusModsData.ModId, (b, id) => b && id >= DivinityApp.NEXUSMODS_MOD_ID_START)
 			.ToUIProperty(this, x => x.HasNexusModsLink);
 
-		this.WhenAnyValue(x => x.ModioEnabled, x => x.IsHidden, x => x.IsLarianMod, x => x.ModioData.ModId, CanOpenModioBoolCheck)
+		this.WhenAnyValue(x => x.ModioEnabled, x => x.ModioData.ExternalLink, CanOpenModioBoolCheck)
 			.ToUIProperty(this, x => x.HasModioLink);
 
 		this.WhenAnyValue(x => x.HasGitHubLink, x => x.HasNexusModsLink, x => x.HasModioLink)
@@ -747,6 +747,22 @@ public class ModData : ReactiveObject, IModData
 
 		this.WhenAnyValue(x => x.DisplayFileForName).Select(x => x ? "Show Mod Display Name" : "Show File Name").ToUIProperty(this, x => x.ToggleModNameLabel);
 		this.WhenAnyValue(x => x.ForceAllowInLoadOrder).Select(x => x ? "Remove from Load Order" : "Allow in Load Order").ToUIProperty(this, x => x.ForceAllowInLoadOrderLabel);
+
+		this.WhenAnyValue(x => x.ModioData.Description).Subscribe(desc =>
+		{
+			if(desc.IsValid() && desc.Length > Description?.Length)
+			{
+				Description = desc;
+			}
+		});
+
+		this.WhenAnyValue(x => x.ModioData.LastUpdated).Subscribe(lastUpdated =>
+		{
+			if(lastUpdated != DateTimeOffset.MinValue)
+			{
+				LastModified = lastUpdated;
+			}
+		});
 
 		SetIsBaseGameMod(false);
 	}

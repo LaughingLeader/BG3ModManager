@@ -25,7 +25,7 @@ public class ProfileData : ReactiveObject
 		var order = new List<string>();
 		foreach(var mod in ActiveMods)
 		{
-			if(!string.IsNullOrEmpty(mod.UUID) && (includeIgnoredMods || !DivinityApp.IgnoredMods.Any(x => x.UUID == mod.UUID)))
+			if(mod.UUID.IsValid() && (includeIgnoredMods || !DivinityApp.IgnoredMods.Lookup(mod.UUID).HasValue))
 			{
 				order.Add(mod.UUID);
 			}

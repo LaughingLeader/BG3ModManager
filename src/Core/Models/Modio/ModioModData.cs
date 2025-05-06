@@ -11,10 +11,17 @@ namespace ModManager.Models.Modio;
 public class ModioModData : ReactiveObject
 {
 	[MemberNotNullWhen(true, nameof(IsEnabled))]
-	public ModioMod? Data { get; set; }
+	[Reactive] public ModioMod? Data { get; set; }
 
-	[Reactive] public string? ModId { get; set; }
+	[Reactive] public uint Id { get; set; }
+	[Reactive] public string? NameId { get; set; }
 	[Reactive] public bool IsEnabled { get; private set; }
+
+	[ObservableAsProperty] public string? Description { get; }
+	[ObservableAsProperty] public DateTimeOffset LastUpdated { get; }
+	[ObservableAsProperty] public string? ExternalLink { get; }
+
+	private static readonly string _modPageUrlPattern = "https://mod.io/g/baldursgate3/m/{0}";
 
 	public void Update(ModioMod? data)
 	{
@@ -23,7 +30,14 @@ public class ModioModData : ReactiveObject
 
 	public ModioModData() : base()
 	{
-		this.WhenAnyValue(x => x.Data).WhereNotNull().Where(x => !String.IsNullOrEmpty(x.NameId)).Select(x => x.NameId).BindTo(this, x => x.ModId);
-		this.WhenAnyValue(x => x.ModId).Select(x => !String.IsNullOrEmpty(x)).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.IsEnabled);
+		var whenData = this.WhenAnyValue(x => x.Data).WhereNotNull();
+		whenData.Select(x => x.Id).BindTo(this, x => x.Id);
+		whenData.Where(x => x.NameId.IsValid()).Select(x => x.NameId).BindTo(this, x => x.NameId);
+
+		whenData.Select(x => x.DescriptionPlaintext).ToUIProperty(this, x => x.Description);
+		whenData.Select(x => x.DateUpdated).Select(DateTimeOffset.FromUnixTimeSeconds).ToUIProperty(this, x => x.LastUpdated);
+		whenData.Select(x => x.NameId).Select(x => string.Format(_modPageUrlPattern, x)).ToUIProperty(this, x => x.ExternalLink);
+
+		this.WhenAnyValue(x => x.Id).Select(x => x != 0).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.IsEnabled);
 	}
 }

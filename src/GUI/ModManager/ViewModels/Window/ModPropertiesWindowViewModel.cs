@@ -60,7 +60,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 			{
 				GitHub = mod.GitHubData.Url;
 				NexusModsId = mod.NexusModsData.ModId;
-				ModioId = mod.ModioData.ModId;
+				ModioId = mod.ModioData.NameId;
 				Notes = "";
 			}
 		}

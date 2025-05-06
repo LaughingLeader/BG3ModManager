@@ -16,7 +16,7 @@ public class ModSettingsParseResults
 		var i = 0;
 		foreach (var mod in ActiveMods)
 		{
-			if (includeIgnoredMods || !DivinityApp.IgnoredMods.Any(x => x.UUID == mod.UUID))
+			if (includeIgnoredMods || (mod.UUID.IsValid() && !DivinityApp.IgnoredMods.Lookup(mod.UUID).HasValue))
 			{
 				i++;
 			}

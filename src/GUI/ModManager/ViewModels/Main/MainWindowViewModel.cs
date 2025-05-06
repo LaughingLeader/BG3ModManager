@@ -979,23 +979,29 @@ Directory the zip will be extracted to:
 		return true;
 	}
 
-	private IList<ModData> GetUpdateableMods()
+	private List<ModData> GetUpdateableMods(ModDownloadSource modDownloadSource)
 	{
 		var settingsService = AppServices.Get<ISettingsService>();
 		var minUpdateTime = Settings.UpdateSettings.MinimumUpdateTimePeriod;
 		if (minUpdateTime > TimeSpan.Zero)
 		{
 			var now = DateTime.Now;
-			return _manager.UserMods.Where(x => CanUpdateMod(x, now, minUpdateTime, settingsService)).ToList();
+			List<ModData> mods = [.. modDownloadSource switch
+			{
+				ModDownloadSource.Modio => _manager.UserMods.Where(x => x.PublishHandle != 0 && CanUpdateMod(x, now, minUpdateTime, settingsService)),
+				_ => _manager.UserMods.Where(x => CanUpdateMod(x, now, minUpdateTime, settingsService)),
+			}];
+
+			return mods;
 		}
-		return _manager.UserMods;
+		return [];
 	}
 
 	private IDisposable _refreshGitHubModsUpdatesBackgroundTask;
 
 	private async Task<Unit> RefreshGitHubModsUpdatesBackgroundAsync(IScheduler sch, CancellationToken token)
 	{
-		var results = await _updater.GetGitHubUpdatesAsync(GetUpdateableMods(), Version, token);
+		var results = await _updater.GetGitHubUpdatesAsync(GetUpdateableMods(ModDownloadSource.GitHub), Version, token);
 		await sch.Yield(token);
 		if (!token.IsCancellationRequested && results.Count > 0)
 		{
@@ -1035,7 +1041,7 @@ Directory the zip will be extracted to:
 
 	private async Task<Unit> RefreshNexusModsUpdatesBackgroundAsync(IScheduler sch, CancellationToken token)
 	{
-		var updates = await _updater.GetNexusModsUpdatesAsync(GetUpdateableMods(), Version, token);
+		var updates = await _updater.GetNexusModsUpdatesAsync(GetUpdateableMods(ModDownloadSource.NexusMods), Version, token);
 		await sch.Yield(token);
 		if (!token.IsCancellationRequested && updates.Count > 0)
 		{
@@ -1085,7 +1091,7 @@ Directory the zip will be extracted to:
 
 	private async Task<Unit> RefreshModioUpdatesBackgroundAsync(IScheduler sch, CancellationToken token)
 	{
-		var results = await _updater.GetModioUpdatesAsync(Settings, GetUpdateableMods(), Version, token);
+		var results = await _updater.GetModioUpdatesAsync(Settings, GetUpdateableMods(ModDownloadSource.Modio), Version, token);
 		await sch.Yield(token);
 		if (!token.IsCancellationRequested && results.Count > 0)
 		{
@@ -1728,9 +1734,14 @@ Directory the zip will be extracted to:
 			});
 		});
 
-		this.WhenAnyValue(x => x.AppSettings.Features.GitHub, x => x.Settings.UpdateSettings.UpdateGitHubMods).Select(x => x.Item1 && x.Item2).BindTo(_updater.GitHub, x => x.IsEnabled);
-		this.WhenAnyValue(x => x.AppSettings.Features.NexusMods, x => x.Settings.UpdateSettings.UpdateNexusMods).Select(x => x.Item1 && x.Item2).BindTo(_updater.NexusMods, x => x.IsEnabled);
-		this.WhenAnyValue(x => x.AppSettings.Features.Modio, x => x.Settings.UpdateSettings.UpdateModioMods).Select(x => x.Item1 && x.Item2).BindTo(_updater.Modio, x => x.IsEnabled);
+		this.WhenAnyValue(x => x.AppSettings.Features.GitHub, x => x.Settings.UpdateSettings.UpdateGitHubMods).AllTrue()
+			.BindTo(_updater.GitHub, x => x.IsEnabled);
+
+		this.WhenAnyValue(x => x.AppSettings.Features.NexusMods, x => x.Settings.UpdateSettings.UpdateNexusMods).AllTrue()
+			.BindTo(_updater.NexusMods, x => x.IsEnabled);
+
+		this.WhenAnyValue(x => x.AppSettings.Features.Modio, x => x.Settings.UpdateSettings.UpdateModioMods).AllTrue()
+			.BindTo(_updater.Modio, x => x.IsEnabled);
 
 		var whenRefreshing = _updater.WhenAnyValue(x => x.IsRefreshing);
 		whenRefreshing.ToUIProperty(this, x => x.UpdatingBusyIndicatorVisibility);

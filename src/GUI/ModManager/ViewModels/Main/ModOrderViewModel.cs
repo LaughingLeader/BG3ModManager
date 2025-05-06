@@ -348,7 +348,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			await Observable.Start(() =>
 			{
-				if (loadedMods.Count > 0) ModManager.SetLoadedMods(loadedMods, NexusModsSupportEnabled);
+				if (loadedMods.Count > 0) ModManager.SetLoadedMods(loadedMods, GitHubModSupportEnabled, NexusModsSupportEnabled, ModioSupportEnabled);
 				//SetLoadedGMCampaigns(loadedGMCampaigns);
 				if (loadedProfiles != null) profiles.AddOrUpdate(loadedProfiles);
 				ExternalModOrders.AddRange(savedModOrderList);
@@ -1953,11 +1953,12 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		//SetupKeys(host.Keys, host, canExecuteCommands);
 
-		_updater.Modio.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.ModioSupportEnabled);
-		_updater.NexusMods.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.NexusModsSupportEnabled);
-		_updater.GitHub.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.GitHubModSupportEnabled);
+		_updater.Modio.WhenAnyValue(x => x.IsEnabled).ToUIPropertyImmediate(this, x => x.ModioSupportEnabled);
+		_updater.NexusMods.WhenAnyValue(x => x.IsEnabled).ToUIPropertyImmediate(this, x => x.NexusModsSupportEnabled);
+		_updater.GitHub.WhenAnyValue(x => x.IsEnabled).ToUIPropertyImmediate(this, x => x.GitHubModSupportEnabled);
 
-		_updater.WhenAnyValue(x => x.GitHub.IsEnabled, x => x.NexusMods.IsEnabled, x => x.Modio.IsEnabled)
+		this.WhenAnyValue(x => x.GitHubModSupportEnabled, x => x.NexusModsSupportEnabled, x => x.ModioSupportEnabled)
+		.SkipUntil(this.WhenAnyValue(x => x.IsRefreshing, b => !b))
 		.Throttle(TimeSpan.FromMilliseconds(250))
 		.ObserveOn(RxApp.MainThreadScheduler)
 		.Subscribe(x =>

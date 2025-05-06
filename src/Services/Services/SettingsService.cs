@@ -71,7 +71,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 				{
 					foreach (var path in ignoredModsData.IgnoreBuiltinPath)
 					{
-						if (!String.IsNullOrEmpty(path))
+						if (path.IsValid())
 						{
 							ModDataLoader.IgnoreBuiltinPath.Add(path.Replace(Path.DirectorySeparatorChar, '/'));
 						}
@@ -80,9 +80,9 @@ public class SettingsService : ReactiveObject, ISettingsService
 
 				foreach (var ignoredMod in ignoredModsData.Mods)
 				{
-					var mod = new ModData();
-					if(mod.UUID.IsValid())
+					if(ignoredMod.UUID.IsValid())
 					{
+						var mod = new ModData();
 						mod.SetIsBaseGameMod(true);
 						mod.IsLarianMod = true;
 						if (ignoredMod.UUID.IsValid()) mod.UUID = ignoredMod.UUID;
@@ -104,7 +104,10 @@ public class SettingsService : ReactiveObject, ISettingsService
 
 				foreach (var uuid in ignoredModsData.IgnoreDependencies)
 				{
-					DivinityApp.IgnoredDependencyMods.Add(uuid);
+					if(uuid.IsValid())
+					{
+						DivinityApp.IgnoredDependencyMods.Add(uuid);
+					}
 				}
 
 				if(ignoredModsData.MainCampaign?.IsValid() == true)
