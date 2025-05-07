@@ -2,7 +2,7 @@
 
 public interface IModData
 {
-	string? UUID { get; set; }
+	string UUID { get; }
 	string? Name { get; set; }
 	string? Folder { get; set; }
 	string? MD5 { get; set; }

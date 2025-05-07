@@ -82,10 +82,9 @@ public class SettingsService : ReactiveObject, ISettingsService
 				{
 					if(ignoredMod.UUID.IsValid())
 					{
-						var mod = new ModData();
+						var mod = new ModData(ignoredMod.UUID);
 						mod.SetIsBaseGameMod(true);
 						mod.IsLarianMod = true;
-						if (ignoredMod.UUID.IsValid()) mod.UUID = ignoredMod.UUID;
 						if (ignoredMod.Name.IsValid()) mod.Name = ignoredMod.Name;
 						if (ignoredMod.Description.IsValid()) mod.Description = ignoredMod.Description;
 						if (ignoredMod.Folder.IsValid()) mod.Folder = ignoredMod.Folder;

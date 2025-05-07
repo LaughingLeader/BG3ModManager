@@ -81,13 +81,17 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 	{
 		if (Modio.IsEnabled)
 		{
+			foreach (var mod in mods.Where(x => x.PublishHandle > 0 && x.ModioData?.Data != null))
+			{
+				Modio.CacheData.Mods[mod.UUID] = mod.ModioData.Data!;
+			}
 			await Modio.SaveCacheAsync(true, currentAppVersion, token);
 		}
 		if (NexusMods.IsEnabled)
 		{
-			foreach (var mod in mods.Where(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START).Select(x => x.NexusModsData))
+			foreach (var mod in mods.Where(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
 			{
-				NexusMods.CacheData.Mods[mod.UUID] = mod;
+				NexusMods.CacheData.Mods[mod.UUID] = mod.NexusModsData;
 			}
 			await NexusMods.SaveCacheAsync(true, currentAppVersion, token);
 		}

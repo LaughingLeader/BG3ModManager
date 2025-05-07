@@ -7,7 +7,7 @@ namespace ModManager.Models.Mod.Game;
 [DataContract]
 public class ModuleShortDesc : ReactiveObject, IModData
 {
-	[DataMember, Reactive] public string? UUID { get; set; }
+	[DataMember, Reactive] public string UUID { get; set; }
 	[DataMember, Reactive] public string? Name { get; set; }
 	[DataMember, Reactive] public string? Folder { get; set; }
 	[DataMember, Reactive] public string? MD5 { get; set; }
@@ -57,23 +57,21 @@ public class ModuleShortDesc : ReactiveObject, IModData
 
 	public static ModuleShortDesc FromAttributes(Dictionary<string, NodeAttribute> attributes)
 	{
-		return new ModuleShortDesc
+		return new ModuleShortDesc(GetAttributeAsString(attributes, "UUID", "") ?? string.Empty)
 		{
 			Folder = GetAttributeAsString(attributes, "Folder", ""),
 			MD5 = GetAttributeAsString(attributes, "MD5", ""),
 			Name = GetAttributeAsString(attributes, "Name", ""),
-			UUID = GetAttributeAsString(attributes, "UUID", ""),
 			Version = new LarianVersion(GetULongAttribute(attributes, "Version", 0UL)),
 		};
 	}
 
 	public static ModuleShortDesc FromModData(IModData m)
 	{
-		return new ModuleShortDesc
+		return new ModuleShortDesc(m.UUID)
 		{
 			Folder = m.Folder,
 			Name = m.Name,
-			UUID = m.UUID,
 			MD5 = m.MD5,
 			PublishHandle = m.PublishHandle,
 			Version = m.Version,
@@ -92,9 +90,9 @@ public class ModuleShortDesc : ReactiveObject, IModData
 		LastModified = m.LastModified;
 	}
 
-	public ModuleShortDesc()
+	public ModuleShortDesc(string uuid)
 	{
-		UUID = "";
+		UUID = uuid;
 		Name = "";
 		Folder = "";
 		MD5 = "";

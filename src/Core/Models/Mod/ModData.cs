@@ -20,7 +20,7 @@ public class ModData : ReactiveObject, IModData
 			.Ascending(p => p.UUID.IsValid() && !DivinityApp.IgnoredMods.Lookup(p.UUID).HasValue).ThenByAscending(p => p.Name);
 
 	#region meta.lsx Properties
-	[Reactive, DataMember] public string? UUID { get; set; }
+	[Reactive, DataMember] public string UUID { get; set; }
 	[Reactive, DataMember] public string? Folder { get; set; }
 	[Reactive, DataMember] public string? Name { get; set; }
 	[Reactive, DataMember] public string? Description { get; set; }
@@ -406,12 +406,11 @@ public class ModData : ReactiveObject, IModData
 
 	public ModuleShortDesc ToModuleShortDesc()
 	{
-		return new ModuleShortDesc()
+		return new ModuleShortDesc(UUID)
 		{
 			Folder = Folder,
 			MD5 = MD5,
 			Name = Name,
-			UUID = UUID,
 			Version = new LarianVersion(Version.VersionInt)
 		};
 	}
@@ -461,27 +460,27 @@ public class ModData : ReactiveObject, IModData
 
 
 	private CompositeDisposable _modConfigDisposables;
-	private ModConfig _modManagerConfig;
+	private ModConfig? _modManagerConfig;
 
-	public ModConfig ModManagerConfig
+	public ModConfig? ModManagerConfig
 	{
 		get => _modManagerConfig;
 		set
 		{
-			this.RaiseAndSetIfChanged(ref _modManagerConfig, value);
+			this.RaiseAndSetIfChanged(ref _modManagerConfig, value, nameof(ModManagerConfig));
 			if (_modManagerConfig != null)
 			{
 				if (_modConfigDisposables == null)
 				{
 					_modConfigDisposables = [];
 
-					this.WhenAnyValue(x => x.ModManagerConfig.Notes).ToUIProperty(this, x => x.Notes, "").DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.ModManagerConfig!.Notes).ToUIProperty(this, x => x.Notes, "").DisposeWith(_modConfigDisposables);
 
 					this.WhenAnyValue(x => x.UUID).BindTo(ModManagerConfig, x => x.Id).DisposeWith(_modConfigDisposables);
 
-					this.WhenAnyValue(x => x.NexusModsData.ModId).BindTo(this, x => x.ModManagerConfig.NexusModsId).DisposeWith(_modConfigDisposables);
-					this.WhenAnyValue(x => x.ModioData.NameId).BindTo(this, x => x.ModManagerConfig.ModioId).DisposeWith(_modConfigDisposables);
-					this.WhenAnyValue(x => x.GitHubData.Url).BindTo(this, x => x.ModManagerConfig.GitHub).DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.NexusModsData.ModId).BindTo(this, x => x.ModManagerConfig!.NexusModsId).DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.ModioData.NameId).BindTo(this, x => x.ModManagerConfig!.ModioId).DisposeWith(_modConfigDisposables);
+					this.WhenAnyValue(x => x.GitHubData.Url).BindTo(this, x => x.ModManagerConfig!.GitHub).DisposeWith(_modConfigDisposables);
 				}
 			}
 			else
@@ -605,7 +604,7 @@ public class ModData : ReactiveObject, IModData
 		return result;
 	}
 
-	public ModData()
+	public ModData(string uuid)
 	{
 		Version = LarianVersion.Empty;
 		HeaderVersion = LarianVersion.Empty;
@@ -613,7 +612,7 @@ public class ModData : ReactiveObject, IModData
 		MD5 = "";
 		Author = "";
 		Folder = "";
-		UUID = "";
+		UUID = uuid;
 		Name = "";
 		PublishHandle = 0ul;
 		FileSize = 0ul;
@@ -789,10 +788,9 @@ public class ModData : ReactiveObject, IModData
 
 	public static ModData Clone(ModData mod)
 	{
-		var cloneMod = new ModData()
+		var cloneMod = new ModData(mod.UUID)
 		{
 			HasMetadata = mod.HasMetadata,
-			UUID = mod.UUID,
 			Name = mod.Name,
 			Author = mod.Author,
 			Version = new LarianVersion(mod.Version.VersionInt),

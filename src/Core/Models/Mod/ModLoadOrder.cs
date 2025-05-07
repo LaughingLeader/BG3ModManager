@@ -33,10 +33,9 @@ public class ModLoadOrder : ReactiveObject
 			{
 				if (force)
 				{
-					Order.Add(new()
+					Order.Add(new(mod.UUID)
 					{
-						Name = mod.DisplayName,
-						UUID = mod.UUID
+						Name = mod.DisplayName
 					});
 				}
 				else
@@ -54,19 +53,17 @@ public class ModLoadOrder : ReactiveObject
 						}
 						if (!alreadyInOrder)
 						{
-							Order.Add(new()
+							Order.Add(new(mod.UUID)
 							{
-								Name = mod.DisplayName,
-								UUID = mod.UUID
+								Name = mod.DisplayName
 							});
 						}
 					}
 					else
 					{
-						Order.Add(new()
+						Order.Add(new(mod.UUID)
 						{
-							Name = mod.DisplayName,
-							UUID = mod.UUID
+							Name = mod.DisplayName
 						});
 					}
 				}

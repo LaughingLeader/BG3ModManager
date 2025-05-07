@@ -16,8 +16,8 @@ public class MainWindowExceptionHandler : IObserver<Exception>
 	public void OnNext(Exception value)
 	{
 		DivinityApp.Log($"Error: [{value.Source}]({value.GetType()}): {value.Message}\n{value.StackTrace}");
-		//if (Debugger.IsAttached) Debugger.Break();
-		//RxApp.MainThreadScheduler.Schedule(() => { throw value; });
+		if (Debugger.IsAttached) Debugger.Break();
+		RxApp.MainThreadScheduler.Schedule(() => { throw value; });
 	}
 
 	public void OnError(Exception error)

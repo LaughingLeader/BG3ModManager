@@ -45,7 +45,7 @@ public class NexusModsTests : BaseTest
 
 	private static ModData CreateTestMod(string uuid, long modId)
 	{
-		var mod = new ModData() { UUID = uuid };
+		var mod = new ModData(uuid);
 		mod.NexusModsData.ModId = modId;
 		return mod;
 	}

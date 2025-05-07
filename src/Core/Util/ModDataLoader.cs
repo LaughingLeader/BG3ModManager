@@ -24,9 +24,9 @@ public static partial class ModDataLoader
 	private static readonly string[] LarianFileTypes = [".lsb", ".lsf", ".lsx", ".lsj"];
 
 	private static readonly ulong HEADER_MAJOR = 4;
-	private static readonly ulong HEADER_MINOR = 7;
-	private static readonly ulong HEADER_REVISION = 1;
-	private static readonly ulong HEADER_BUILD = 3;
+	private static readonly ulong HEADER_MINOR = 8;
+	private static readonly ulong HEADER_REVISION = 0;
+	private static readonly ulong HEADER_BUILD = 0;
 
 	private static readonly string[] VersionAttributes = ["Version64", "Version"];
 
@@ -235,10 +235,9 @@ public static partial class ModDataLoader
 				var description = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Description", ""));
 				var author = UnescapeXml(GetAttributeWithId(moduleInfoNode, "Author", ""));
 
-				ModData modData = new()
+				ModData modData = new(uuid)
 				{
 					HasMetadata = true,
-					UUID = uuid,
 					Name = name,
 					Author = author,
 					Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(moduleInfoNode, VersionAttributes, ""))),
@@ -273,13 +272,12 @@ public static partial class ModDataLoader
 					{
 						foreach (var node in dependenciesNodes)
 						{
-							ModuleShortDesc entryMod = new()
+							ModuleShortDesc entryMod = new(GetAttributeWithId(node, "UUID", ""))
 							{
 								Folder = GetAttributeWithId(node, "Folder", ""),
 								MD5 = GetAttributeWithId(node, "MD5", ""),
 								Name = UnescapeXml(GetAttributeWithId(node, "Name", "")),
 								PublishHandle = GetAttributeValueWithId(moduleInfoNode, "PublishHandle", 0ul),
-								UUID = GetAttributeWithId(node, "UUID", ""),
 								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							};
 
@@ -301,13 +299,12 @@ public static partial class ModDataLoader
 					{
 						foreach (var node in conflictsNodes)
 						{
-							ModuleShortDesc entryMod = new()
+							ModuleShortDesc entryMod = new(GetAttributeWithId(node, "UUID", ""))
 							{
 								Folder = GetAttributeWithId(node, "Folder", ""),
 								MD5 = GetAttributeWithId(node, "MD5", ""),
 								Name = UnescapeXml(GetAttributeWithId(node, "Name", "")),
 								PublishHandle = GetAttributeValueWithId(moduleInfoNode, "PublishHandle", 0ul),
-								UUID = GetAttributeWithId(node, "UUID", ""),
 								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							};
 
@@ -637,9 +634,8 @@ public static partial class ModDataLoader
 		{
 			if (isOverridingBuiltinDirectory)
 			{
-				loadedData.Add(new ModData()
+				loadedData.Add(new ModData(pakName)
 				{
-					UUID = pakName,
 					FilePath = pakPath,
 					Name = pakName,
 					Folder = builtinModOverrides.FirstOrDefault().Key,
@@ -1136,7 +1132,7 @@ public static partial class ModDataLoader
 						}
 						else
 						{
-							order.Order.Add(new ModuleShortDesc
+							order.Order.Add(new ModuleShortDesc(pakName)
 							{
 								Name = pakName
 							});
@@ -1180,7 +1176,7 @@ public static partial class ModDataLoader
 								{
 									name = $"{name} {lineData[urlIndex]}";
 								}
-								order.Order.Add(new ModuleShortDesc()
+								order.Order.Add(new ModuleShortDesc(name)
 								{
 									Name = name,
 								});

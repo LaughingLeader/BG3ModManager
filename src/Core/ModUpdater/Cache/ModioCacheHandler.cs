@@ -65,7 +65,7 @@ public class ModioCacheHandler : ReactiveObject, IExternalModCacheHandler<ModioC
 		}
 		else
 		{
-			DivinityApp.Log("mod.io API web key not set, or daily/hourly limit reached. Skipping.");
+			DivinityApp.Log("mod.io API key not set, or daily/hourly limit reached. Skipping.");
 		}
 		return false;
 	}

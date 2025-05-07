@@ -468,10 +468,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			return mod.ToModuleShortDesc();
 		}
-		return new ModuleShortDesc()
-		{
-			UUID = uuid
-		};
+		return new ModuleShortDesc(uuid);
 	}
 
 	private void DisplayMissingMods(ModLoadOrder? order = null)
@@ -852,7 +849,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private ProfileData? _lastProfile;
 
-	public void BuildModOrderList(ProfileData profile, int selectIndex = -1, string lastOrderName = "")
+	public void BuildModOrderList(ProfileData profile, int selectIndex = -1)
 	{
 		if (profile != null)
 		{
@@ -895,10 +892,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			DivinityApp.Log($"ModOrderList: {String.Join(";", ModOrderList.Select(x => x.Name))}");
 
-			if (!String.IsNullOrEmpty(lastOrderName))
+			var lastOrderName = Settings.LastOrder;
+			if (lastOrderName.IsValid())
 			{
-				var lastOrderIndex = ModOrderList.IndexOf(ModOrderList.FirstOrDefault(x => x.Name == lastOrderName));
-				if (lastOrderIndex != -1) selectIndex = lastOrderIndex;
+				var lastOrderIndex = ModOrderList.IndexOfOptional(ModOrderList.FirstOrDefault(x => x.Name == lastOrderName));
+				if (lastOrderIndex.HasValue) selectIndex = lastOrderIndex.Value.Index;
 			}
 
 			RxApp.MainThreadScheduler.Schedule(() =>
@@ -1009,7 +1007,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		// Blinky animation on the tools/download buttons if the extender is required by mods and is missing
 		if (mod.ExtenderModStatus.HasFlag(ModExtenderStatus.MissingUpdater))
 		{
-			ViewModelLocator.CommandBar.HighlightExtenderDownload = true;
+			ViewModelLocator.CommandBar.SetExtenderHighlight(true);
 		}
 	}
 
@@ -1017,7 +1015,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	{
 		if (ModManager.AddonMods.Count > 0)
 		{
-			ViewModelLocator.CommandBar.HighlightExtenderDownload = false;
+			ViewModelLocator.CommandBar.SetExtenderHighlight(false);
 
 			foreach (var mod in ModManager.AllMods)
 			{
@@ -1758,7 +1756,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		this.WhenAnyValue(x => x.SelectedModOrder, x => x.SelectedModOrder.Name, (order, name) => order?.Name).Subscribe(name =>
 		{
-			if (name.IsValid() && Settings.LastOrder != name)
+			if (!IsRefreshing && name.IsValid() && Settings.LastOrder != name)
 			{
 				Settings.LastOrder = name;
 				ViewModelLocator.Main.QueueSave();
@@ -2027,7 +2025,7 @@ public class DesignModOrderViewModel : IModOrderViewModel
 			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\PlayerProfiles\\Public\\modsettings.lsx"
 		});
 
-		_testAdventureMods.Add(new ModData()
+		_testAdventureMods.Add(new ModData("cb555efe-2d9e-131f-8195-a89329d218ea")
 		{
 			Name = "Main"
 		});

@@ -25,15 +25,14 @@ namespace ModManager
 
 			for (var i = 0; i < 30; i++)
 			{
-				TestMods.Add(new ModEntry(new ModData()
+				TestMods.Add(new ModEntry(new ModData($"{i}")
 				{ 
 					Index = i, 
 					Name = $"Mod {i+1}",
 					Description = $"Random mod {i+1}",
 					Author = i % 2 <= 0 ? "LaughingLeader" : "Rando",
 					LastModified = DateTimeOffset.Now,
-					Version = new LarianVersion((ulong)ran.Next(0, 24), (ulong)ran.Next(0, 48), (ulong)ran.Next(0, 128), (ulong)ran.Next(0, 256)),
-					UUID = $"{i}" 
+					Version = new LarianVersion((ulong)ran.Next(0, 24), (ulong)ran.Next(0, 48), (ulong)ran.Next(0, 128), (ulong)ran.Next(0, 256))
 				}));
 			}
 		}

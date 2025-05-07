@@ -6,7 +6,7 @@ public interface IModEntry : ISelectable
 {
 	ModEntryType EntryType { get; }
 
-	string? UUID { get; }
+	string UUID { get; }
 	string? DisplayName { get; }
 	string? Version { get; }
 	string? Author { get; }

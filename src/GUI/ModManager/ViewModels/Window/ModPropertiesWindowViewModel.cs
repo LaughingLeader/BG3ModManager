@@ -188,9 +188,8 @@ public class DesignModPropertiesWindowViewModel : ModPropertiesWindowViewModel
 {
 	public DesignModPropertiesWindowViewModel()
 	{
-		Mod = new ModData()
+		Mod = new ModData("98a0d3f4-1c87-444c-8559-51c1d5ba650f")
 		{
-			UUID = "98a0d3f4-1c87-444c-8559-51c1d5ba650f",
 			Name = "Test Mod",
 			FilePath = "%LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\Mods\\TestMod.pak",
 			Author = "LaughingLeader",
