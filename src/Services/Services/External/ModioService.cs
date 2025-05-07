@@ -1,4 +1,6 @@
-﻿using Modio;
+﻿using DynamicData.Binding;
+
+using Modio;
 using Modio.Filters;
 using Modio.Models;
 
@@ -23,8 +25,8 @@ public class ModioService : ReactiveObject, IModioService
 
 	[Reactive] public string ApiKey { get; set; }
 	[Reactive] public bool LimitExceeded { get; set; }
-	[ObservableAsProperty] public bool IsInitialized { get; }
-	[ObservableAsProperty] public bool CanFetchData { get; }
+	[Reactive] public bool IsInitialized { get; private set; }
+	[Reactive] public bool CanFetchData { get; private set; }
 
 	[MemberNotNullWhen(true, nameof(_client))]
 	private bool TryInitClient()
@@ -35,7 +37,7 @@ public class ModioService : ReactiveObject, IModioService
 			try
 			{
 				_client = new Client(new Uri("https://g-6715.modapi.io/v1/"), new Credentials(ApiKey));
-				this.RaisePropertyChanged(nameof(_client));
+				IsInitialized = true;
 				return _client != null;
 			}
 			catch (Exception ex)
@@ -165,7 +167,30 @@ public class ModioService : ReactiveObject, IModioService
 	{
 		_fs = fileSystemService;
 
-		this.WhenAnyValue(x => x._client).Select(x => x != null).ToPropertyEx(this, x => x.IsInitialized, deferSubscription: false);
-		this.WhenAnyValue(x => x.IsInitialized, x => x.LimitExceeded).Select(x => x.Item1 && !x.Item2).ToPropertyEx(this, x => x.CanFetchData, deferSubscription: false);
+		this.WhenAnyValue(x => x.IsInitialized, x => x.LimitExceeded)
+			.Select(x => x.Item1 && !x.Item2)
+			.BindTo(this, x => x.CanFetchData);
+
+		string? lastKey = null;
+		this.WhenAnyValue(x => x.ApiKey).ObserveOn(RxApp.TaskpoolScheduler).Subscribe(key =>
+		{
+			if(key.IsValid())
+			{
+				if (key != lastKey)
+				{
+					IsInitialized = false;
+					_client?.Dispose();
+					if (TryInitClient())
+					{
+						lastKey = key;
+					}
+				}
+			}
+			else
+			{
+				_client?.Dispose();
+			}
+		});
+
 	}
 }

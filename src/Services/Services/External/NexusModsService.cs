@@ -361,7 +361,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 			_client?.Dispose();
 			_dataLoader?.Dispose();
 
-			if (!String.IsNullOrEmpty(key))
+			if (key.IsValid())
 			{
 				_client = NexusModsClient.Create(key, appName, appVersion, _apiLimits);
 				_dataLoader = new InfosInquirer(_client);

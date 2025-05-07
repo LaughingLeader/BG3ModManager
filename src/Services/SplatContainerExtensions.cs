@@ -13,13 +13,21 @@ public static class SplatContainerExtensions
 	/// <param name="services">The IoC services container.</param>
 	public static IMutableDependencyResolver AddCommonServices(this IMutableDependencyResolver services)
 	{
-		SplatRegistrations.RegisterLazySingleton<IEnvironmentService, EnvironmentService>();
+		var env = new EnvironmentService();
+		var fileSystem = new FileSystem();
+		var fileSystemService = new FileSystemService(fileSystem);
 
-		SplatRegistrations.RegisterLazySingleton<IFileSystem, FileSystem>();
-		SplatRegistrations.RegisterLazySingleton<IFileSystemService, FileSystemService>();
+		SplatRegistrations.RegisterConstant<IEnvironmentService>(env);
+
+		SplatRegistrations.RegisterConstant<IFileSystem>(fileSystem);
+		SplatRegistrations.RegisterConstant<IFileSystemService>(fileSystemService);
 		SplatRegistrations.RegisterLazySingleton<IFileWatcherService, FileWatcherService>();
 
 		SplatRegistrations.RegisterLazySingleton<HttpClient, AppHttpClient>();
+
+		SplatRegistrations.RegisterConstant<INexusModsService>(new NexusModsService(env));
+		SplatRegistrations.RegisterConstant<IGitHubService>(new GitHubService(env));
+		SplatRegistrations.RegisterConstant<IModioService>(new ModioService(fileSystemService));
 
 		SplatRegistrations.SetupIOC();
 
@@ -39,10 +47,6 @@ public static class SplatContainerExtensions
 
 		SplatRegistrations.RegisterConstant<ISettingsService>(settingsService);
 		SplatRegistrations.RegisterConstant<IPathwaysService>(new PathwaysService(settingsService));
-
-		SplatRegistrations.RegisterLazySingleton<INexusModsService, NexusModsService>();
-		SplatRegistrations.RegisterLazySingleton<IGitHubService, GitHubService>();
-		SplatRegistrations.RegisterLazySingleton<IModioService, ModioService>();
 
 		SplatRegistrations.RegisterLazySingleton<IAppUpdaterService, AppUpdaterService>();
 

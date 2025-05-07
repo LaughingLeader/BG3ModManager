@@ -1139,7 +1139,7 @@ Directory the zip will be extracted to:
 	public void RefreshAllModUpdatesBackground()
 	{
 		_refreshAllModUpdatesBackgroundTask?.Dispose();
-		_refreshAllModUpdatesBackgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
+		_refreshAllModUpdatesBackgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromMilliseconds(250), async (sch, token) =>
 		{
 			await UpdateRefreshingStateAsync(true);
 
