@@ -209,7 +209,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 			if (successes >= 3)
 			{
 				_globalCommands.ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
-				ViewModelLocator.CommandBar.HighlightExtenderDownload = false;
+				ViewModelLocator.CommandBar.SetExtenderHighlight(false);
 				Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 				_justDownloadedScriptExtender = true;
 			}
@@ -1128,17 +1128,26 @@ Directory the zip will be extracted to:
 
 	private IDisposable _refreshAllModUpdatesBackgroundTask;
 
+	private async Task UpdateRefreshingStateAsync(bool b)
+	{
+		await Observable.Start(() =>
+		{
+			IsRefreshingModUpdates = b;
+		}, RxApp.MainThreadScheduler);
+	}
+
 	public void RefreshAllModUpdatesBackground()
 	{
-		IsRefreshingModUpdates = true;
 		_refreshAllModUpdatesBackgroundTask?.Dispose();
 		_refreshAllModUpdatesBackgroundTask = RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
 		{
+			await UpdateRefreshingStateAsync(true);
+
 			if (Settings.UpdateSettings.UpdateGitHubMods) await RefreshGitHubModsUpdatesBackgroundAsync(sch, token);
 			if (Settings.UpdateSettings.UpdateNexusMods) await RefreshNexusModsUpdatesBackgroundAsync(sch, token);
 			if (Settings.UpdateSettings.UpdateModioMods) await RefreshModioUpdatesBackgroundAsync(sch, token);
 
-			IsRefreshingModUpdates = false;
+			await UpdateRefreshingStateAsync(false);
 		});
 	}
 

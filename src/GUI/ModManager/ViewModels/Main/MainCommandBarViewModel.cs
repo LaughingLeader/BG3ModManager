@@ -271,6 +271,14 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		throw new NotImplementedException();
 	}
 
+	public void SetExtenderHighlight(bool enabled)
+	{
+		RxApp.MainThreadScheduler.Schedule(() =>
+		{
+			HighlightExtenderDownload = enabled;
+		});
+	}
+
 	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs) : this()
 	{
 		ModOrder = modOrder;
@@ -281,22 +289,6 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 		var hasActiveMods = modOrder.WhenAnyValue(x => x.TotalActiveMods, x => x > 0);
 		var canExecuteHasActive = canExecuteModOrderCommands.CombineLatest(hasActiveMods).AllTrue();
-		modOrder.WhenAnyValue(x => x.TotalActiveMods).Subscribe(x =>
-		{
-			DivinityApp.Log($"Total: {x}");
-		});
-		main.WhenAnyValue(x => x.Views.CurrentView).Subscribe(x =>
-		{
-			DivinityApp.Log($"CurrentViewModel: {x}");
-		});
-		canExecuteModOrderCommands.Subscribe(x =>
-		{
-			DivinityApp.Log($"canExecuteModOrderCommands: {x}");
-		});
-		canExecuteHasActive.Subscribe(x =>
-		{
-			DivinityApp.Log($"canExecuteHasActive: {x}");
-		});
 
 		AddNewOrderCommand = ReactiveCommand.Create(() => modOrder.AddNewModOrder(), canExecuteModOrderCommands);
 
@@ -307,7 +299,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			main.SaveSettings();
 		}, canExecuteCommands);
 
-		var anyDownloadAllowed = modOrder.WhenAnyValue(x => x.GitHubModSupportEnabled, x => x.NexusModsSupportEnabled, x => x.ModioSupportEnabled).Select(x => x.Item1 || x.Item2 || x.Item3);
+		var anyDownloadAllowed = modOrder.WhenAnyValue(x => x.GitHubModSupportEnabled, x => x.NexusModsSupportEnabled, x => x.ModioSupportEnabled).Select(x => x.Item1 || x.Item2 || x.Item3).ObserveOn(RxApp.MainThreadScheduler);
 
 		CheckAllModUpdatesCommand = ReactiveCommand.Create(main.RefreshAllModUpdatesBackground, anyDownloadAllowed.AllTrue(canExecuteCommands));
 		CheckForGitHubModUpdatesCommand = ReactiveCommand.Create(main.RefreshGitHubModsUpdatesBackground, modOrder.WhenAnyValue(x => x.GitHubModSupportEnabled).AllTrue(canExecuteCommands));
