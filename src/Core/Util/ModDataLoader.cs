@@ -8,6 +8,7 @@ using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
 using ModManager.Models.Mod.Game;
+using ModManager.Services;
 using ModManager.Util.Pak;
 
 using System.Diagnostics.CodeAnalysis;
@@ -338,7 +339,51 @@ public static partial class ModDataLoader
 		return null;
 	}
 
-	private static async Task TryLoadConfigFiles(VFS vfs, ModData modData, string modsFolder, CancellationToken token)
+	public static async Task TryLoadConfigFilesFromPath(IFileSystemService fs, string modsFolder, ModData modData, CancellationToken token)
+	{
+		var extenderConfigPath = Path.Join(modsFolder, DivinityApp.EXTENDER_MOD_CONFIG);
+		var modManagerConfigPath = fs.Path.Join(modsFolder, ModConfig.FileName);
+		try
+		{
+			
+			if (fs.File.Exists(extenderConfigPath))
+			{
+				var extenderConfig = await JsonUtils.DeserializeFromPathAsync<ModScriptExtenderConfig>(extenderConfigPath, token);
+
+				if (extenderConfig != null)
+				{
+					modData.ScriptExtenderData = extenderConfig;
+					if (modData.ScriptExtenderData.RequiredVersion > -1) modData.HasScriptExtenderSettings = true;
+				}
+				else
+				{
+					DivinityApp.Log($"Failed to parse {DivinityApp.EXTENDER_MOD_CONFIG} for '{modsFolder}'.");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error loading '{extenderConfigPath}':\n{ex}");
+		}
+
+		try
+		{
+			if (fs.File.Exists(modManagerConfigPath))
+			{
+				var modManagerConfig = await JsonUtils.DeserializeFromPathAsync<ModConfig>(modManagerConfigPath, token);
+				if (modManagerConfig != null)
+				{
+					modData.ApplyModConfig(modManagerConfig);
+				}
+			}
+		}
+		catch(Exception ex)
+		{
+			DivinityApp.Log($"Error loading '{modManagerConfigPath}':\n{ex}");
+		}
+	}
+
+	public static async Task TryLoadConfigFiles(VFS vfs, ModData modData, string modsFolder, CancellationToken token)
 	{
 		Stream? extenderConfigStream = null;
 		Stream? modManagerConfigStream = null;

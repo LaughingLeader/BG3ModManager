@@ -137,6 +137,9 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 					mod.IsEditorMod = true;
 					mod.FilePath = metaFilePath;
 
+					var parentFolder = _fs.Path.GetDirectoryName(metaFilePath)!;
+					await ModDataLoader.TryLoadConfigFilesFromPath(_fs, parentFolder, mod, token);
+
 					try
 					{
 						mod.LastModified = _fs.File.GetLastWriteTime(metaFilePath);

@@ -30,9 +30,9 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 
 	private static readonly Regex _githubUrlPattern = GitHubUrlPattern();
 
-	public static ValueTuple<string, string> GitHubUrlToParts(string url)
+	public static ValueTuple<string, string> GitHubUrlToParts(string? url)
 	{
-		if (!String.IsNullOrEmpty(url) && !url.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
+		if (url.IsValid() && !url.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
 		{
 			var match = _githubUrlPattern.Match(url);
 			if (match.Success)
