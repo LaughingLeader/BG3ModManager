@@ -125,7 +125,7 @@ public class LarianVersion : ReactiveObject
 #endif
 	}
 
-	public override string ToString() => String.Format("{0}.{1}.{2}.{3}", Major, Minor, Revision, Build);
+	public override string ToString() => string.Format("{0}.{1}.{2}.{3}", Major, Minor, Revision, Build);
 
 #if !DOS2
 	public void ParseInt(ulong nextVersionInt)

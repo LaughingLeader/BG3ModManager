@@ -155,7 +155,7 @@ public static class ModUtils
 		loader.ResolveUsageRef();
 		loader.ValidateEntries();
 
-		var files = context.Errors.Select(x => x.Location?.FileName).Where(x => !String.IsNullOrEmpty(x)).ToList().Distinct().ToList();
+		var files = context.Errors.Select(x => x.Location?.FileName).Where(x => !string.IsNullOrEmpty(x)).ToList().Distinct().ToList();
 		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(vfs, x, token)).ToArray());
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 

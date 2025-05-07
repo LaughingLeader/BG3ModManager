@@ -28,7 +28,7 @@ public class BackgroundCommandService : IBackgroundCommandService
 				using (var sr = new StreamReader(_pipe, Encoding.UTF8))
 				{
 					var message = await sr.ReadToEndAsync();
-					if (!String.IsNullOrEmpty(message))
+					if (!string.IsNullOrEmpty(message))
 					{
 						if (message.IndexOf("nxm://") > -1)
 						{

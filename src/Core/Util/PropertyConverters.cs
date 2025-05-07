@@ -16,11 +16,11 @@ public static class PropertyConverters
 	/// </summary>
 	/// <param name="str"></param>
 	/// <returns></returns>
-	public static Visibility StringToVisibility(string str, Visibility fallback = Visibility.Collapsed) => !String.IsNullOrEmpty(str) ? Visibility.Visible : fallback;
+	public static Visibility StringToVisibility(string str, Visibility fallback = Visibility.Collapsed) => !string.IsNullOrEmpty(str) ? Visibility.Visible : fallback;
 	public static Visibility StringToVisibility(string str) => StringToVisibility(str, Visibility.Collapsed);
-	public static Visibility StringToVisibilityReversed(string str, Visibility fallback = Visibility.Collapsed) => String.IsNullOrEmpty(str) ? Visibility.Visible : fallback;
+	public static Visibility StringToVisibilityReversed(string str, Visibility fallback = Visibility.Collapsed) => string.IsNullOrEmpty(str) ? Visibility.Visible : fallback;
 	public static Visibility StringToVisibilityReversed(string str) => StringToVisibilityReversed(str, Visibility.Collapsed);
-	public static Visibility UriToVisibility(Uri uri) => !String.IsNullOrEmpty(uri?.ToString()) ? Visibility.Visible : Visibility.Collapsed;
+	public static Visibility UriToVisibility(Uri uri) => !string.IsNullOrEmpty(uri?.ToString()) ? Visibility.Visible : Visibility.Collapsed;
 	public static Visibility IntToVisibility(int i) => i > 0 ? Visibility.Visible : Visibility.Collapsed;
 #else
 	[Obsolete]
@@ -35,13 +35,13 @@ public static class PropertyConverters
 	/// </summary>
 	/// <param name="str"></param>
 	/// <returns></returns>
-	public static bool StringToVisibility(string str) => !String.IsNullOrEmpty(str);
-	public static bool StringToVisibilityReversed(string str) => String.IsNullOrEmpty(str);
-	public static bool UriToVisibility(Uri uri) => !String.IsNullOrEmpty(uri?.ToString());
+	public static bool StringToVisibility(string str) => !string.IsNullOrEmpty(str);
+	public static bool StringToVisibilityReversed(string str) => string.IsNullOrEmpty(str);
+	public static bool UriToVisibility(Uri uri) => !string.IsNullOrEmpty(uri?.ToString());
 	public static bool IntToVisibility(int i) => i > 0;
 #endif
 
-	public static bool StringToBool(string str) => !String.IsNullOrEmpty(str);
+	public static bool StringToBool(string str) => !string.IsNullOrEmpty(str);
 	public static bool AnyBool(ValueTuple<bool, bool, bool> x) => x.Item1 || x.Item2 || x.Item3;
 	public static string DateToString(DateTimeOffset date) => date.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture);
 }

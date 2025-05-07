@@ -91,7 +91,7 @@ public static class FileUtils
 			var n = 1;
 			do
 			{
-				fullPath = Path.Join(path, String.Format("{0} ({1}){2}", filenameWOExt, (n++), ext));
+				fullPath = Path.Join(path, string.Format("{0} ({1}){2}", filenameWOExt, (n++), ext));
 			}
 			while (File.Exists(fullPath));
 		}
@@ -194,7 +194,7 @@ public static class FileUtils
 			}
 
 			var files = EnumerateFiles(filePath, RecursiveOptions, (f) => !ignoredFiles.Any(x => IgnoreFile(f, x)))
-				.ToDictionary(k => k.Replace(rootPath, String.Empty), v => v);
+				.ToDictionary(k => k.Replace(rootPath, string.Empty), v => v);
 
 			foreach (var file in files)
 			{
@@ -442,7 +442,7 @@ public static class FileUtils
 		{
 			try
 			{
-				if (!String.IsNullOrEmpty(path) && File.Exists(path))
+				if (!string.IsNullOrEmpty(path) && File.Exists(path))
 				{
 					var info = new FileInfo(path);
 					var security = info.GetAccessControl();
@@ -474,7 +474,7 @@ public static class FileUtils
 		{
 			try
 			{
-				if (!String.IsNullOrEmpty(path) && Directory.Exists(path))
+				if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
 				{
 					var info = new DirectoryInfo(path);
 					var security = info.GetAccessControl();
@@ -482,7 +482,7 @@ public static class FileUtils
 					var rules = security.GetAccessRules(true, true, usersSid.GetType()).OfType<FileSystemAccessRule>();
 					if (!rules.Any(r => r.FileSystemRights == _readAccessRights || r.FileSystemRights == FileSystemRights.FullControl))
 					{
-						DivinityApp.Log($"Lacking permission for directory '{path}'. Rights({String.Join(";", rules.Select(x => x.FileSystemRights))})");
+						DivinityApp.Log($"Lacking permission for directory '{path}'. Rights({string.Join(";", rules.Select(x => x.FileSystemRights))})");
 						return false;
 					}
 				}

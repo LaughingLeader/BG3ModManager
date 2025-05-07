@@ -39,7 +39,7 @@ public class GitHubModsCacheHandler : ReactiveObject, IExternalModCacheHandler<G
 
 			foreach (var mod in mods)
 			{
-				if (mod.GitHubData != null && !String.IsNullOrEmpty(mod.GitHubData.Author) && !String.IsNullOrEmpty(mod.GitHubData.Repository))
+				if (mod.GitHubData != null && !string.IsNullOrEmpty(mod.GitHubData.Author) && !string.IsNullOrEmpty(mod.GitHubData.Repository))
 				{
 					var latestRelease = await github.GetLatestReleaseAsync(mod.GitHubData.Author, mod.GitHubData.Repository);
 					if (latestRelease != null)

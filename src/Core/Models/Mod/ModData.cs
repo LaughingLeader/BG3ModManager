@@ -595,11 +595,11 @@ public class ModData : ReactiveObject, IModData
 	{
 		var result = exportType switch
 		{
-			ModExportType.XML => String.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt, PublishHandle),
+			ModExportType.XML => string.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt, PublishHandle),
 			ModExportType.JSON => JsonSerializer.Serialize(this, _serializerSettings),
 			ModExportType.TXT => StringUtils.ModToTextLine(this),
 			ModExportType.TSV => StringUtils.ModToTSVLine(this),
-			_ => String.Empty,
+			_ => string.Empty,
 		};
 		return result;
 	}

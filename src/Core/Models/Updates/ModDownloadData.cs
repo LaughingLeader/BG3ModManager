@@ -30,7 +30,7 @@ public class ModDownloadData : ReactiveObject
 
 	private static void MoveOldPakToRecycleBin(string previousFilePath, string newFilePath)
 	{
-		if (!String.IsNullOrEmpty(previousFilePath) && FileNamesMatch(previousFilePath, newFilePath))
+		if (!string.IsNullOrEmpty(previousFilePath) && FileNamesMatch(previousFilePath, newFilePath))
 		{
 			RecycleBinHelper.DeleteFile(previousFilePath, false, false);
 		}

@@ -26,7 +26,7 @@ public class AppUpdaterService(IFileSystemService fs, IGitHubService githubServi
 	public async Task<bool> DownloadAndInstallUpdateAsync()
 	{
 		var tempDir = TempDirectory;
-		if (String.IsNullOrEmpty(tempDir))
+		if (string.IsNullOrEmpty(tempDir))
 		{
 			tempDir = _fs.Path.Join(_fs.Path.GetTempPath(), AppTitle);
 		}
@@ -37,7 +37,7 @@ public class AppUpdaterService(IFileSystemService fs, IGitHubService githubServi
 		if(result)
 		{
 			var installerResult = await UpdateTools.DownloadExtractInstallerToAsync(tempDir);
-			if(!String.IsNullOrEmpty(installerResult))
+			if(!string.IsNullOrEmpty(installerResult))
 			{
 				var installer = _fs.Path.Join(tempDir, installerResult);
 				var destinationDir = _fs.Path.GetDirectoryName(_environment.AppDirectory);
@@ -51,7 +51,7 @@ public class AppUpdaterService(IFileSystemService fs, IGitHubService githubServi
 
 	public async Task<AppUpdateResult> CheckForUpdatesAsync()
 	{
-		if(!String.IsNullOrEmpty(GitHubUser) && !String.IsNullOrEmpty(GitHubRepo))
+		if(!string.IsNullOrEmpty(GitHubUser) && !string.IsNullOrEmpty(GitHubRepo))
 		{
 			var latestRelease = await _github.GetLatestReleaseAsync(GitHubUser, GitHubRepo);
 			if (latestRelease != null)

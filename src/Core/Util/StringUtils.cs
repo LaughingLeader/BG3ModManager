@@ -47,7 +47,7 @@ public static class StringUtils
 
 	private static void MaybeAddReplacement(string key, string path)
 	{
-		if (!String.IsNullOrEmpty(path))
+		if (!string.IsNullOrEmpty(path))
 		{
 			replacePaths.Add(key, path);
 		}
@@ -62,7 +62,7 @@ public static class StringUtils
 
 	public static string ReplaceSpecialPathways(string input)
 	{
-		if (!String.IsNullOrEmpty(input))
+		if (!string.IsNullOrEmpty(input))
 		{
 			foreach (var kvp in replacePaths)
 			{
@@ -74,7 +74,7 @@ public static class StringUtils
 
 	public static Uri StringToUri(string value)
 	{
-		if (!String.IsNullOrEmpty(value))
+		if (!string.IsNullOrEmpty(value))
 		{
 			return new Uri(value);
 		}
@@ -88,8 +88,8 @@ public static class StringUtils
 		{
 			index = "Override";
 		}
-		var urls = String.Join(";", mod.GetAllURLs());
-		return $"{index}\t{mod.Name}\t{mod.AuthorDisplayName}\t{mod.OutputPakName}\t{String.Join(", ", mod.Tags)}\t{String.Join(", ", mod.Dependencies.Items.Select(y => y.Name))}\t{urls}";
+		var urls = string.Join(";", mod.GetAllURLs());
+		return $"{index}\t{mod.Name}\t{mod.AuthorDisplayName}\t{mod.OutputPakName}\t{string.Join(", ", mod.Tags)}\t{string.Join(", ", mod.Dependencies.Items.Select(y => y.Name))}\t{urls}";
 	}
 
 	public static string ModToTextLine(ModData mod)
@@ -99,7 +99,7 @@ public static class StringUtils
 		{
 			index = "Override";
 		}
-		var urls = String.Join(";", mod.GetAllURLs());
+		var urls = string.Join(";", mod.GetAllURLs());
 		return $"{index} {mod.Name} ({mod.OutputPakName}) {urls}";
 	}
 }

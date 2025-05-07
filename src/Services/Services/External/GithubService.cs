@@ -64,7 +64,7 @@ public class GitHubService : IGitHubService
 					if (mod.GitHubData.Url.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
 					{
 						var contents = await WebHelper.DownloadUrlAsStringAsync(mod.GitHubData.Url, token);
-						if (!String.IsNullOrEmpty(contents) && JsonUtils.TrySafeDeserialize<GitHubRepositoryJsonData>(contents, out var data))
+						if (!string.IsNullOrEmpty(contents) && JsonUtils.TrySafeDeserialize<GitHubRepositoryJsonData>(contents, out var data))
 						{
 							var latest = data.GetLatest(mod.UUID);
 							if (latest != null && mod.Version < latest.Version)

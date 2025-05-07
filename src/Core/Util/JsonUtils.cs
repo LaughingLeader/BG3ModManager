@@ -81,7 +81,7 @@ public static class JsonUtils
 			if (fileBytes != null)
 			{
 				var contents = Encoding.UTF8.GetString(fileBytes);
-				if (!String.IsNullOrEmpty(contents))
+				if (!string.IsNullOrEmpty(contents))
 				{
 					return JsonSerializer.Deserialize<T?>(contents, opts ?? _serializerSettings);
 				}
@@ -100,7 +100,7 @@ public static class JsonUtils
 		{
 			using var sr = new StreamReader(stream, Encoding.UTF8);
 			var text = await sr.ReadToEndAsync(token);
-			if (!String.IsNullOrWhiteSpace(text))
+			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
 			}

@@ -24,12 +24,12 @@ internal class FileWatcherWrapper : ReactiveObject, IFileWatcherWrapper
 
 	internal virtual string GetDefaultDirectory()
 	{
-		return String.Empty;
+		return string.Empty;
 	}
 
 	public void SetDirectory(string path)
 	{
-		if (!String.IsNullOrEmpty(path))
+		if (!string.IsNullOrEmpty(path))
 		{
 			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 			DirectoryPath = path;
@@ -40,8 +40,8 @@ internal class FileWatcherWrapper : ReactiveObject, IFileWatcherWrapper
 		}
 	}
 
-	private static bool IsDirectoryPath(string path) => !String.IsNullOrEmpty(path) && Directory.Exists(path);
-	private static string PathOrEmpty(string path) => IsDirectoryPath(path) ? path : String.Empty;
+	private static bool IsDirectoryPath(string path) => !string.IsNullOrEmpty(path) && Directory.Exists(path);
+	private static string PathOrEmpty(string path) => IsDirectoryPath(path) ? path : string.Empty;
 
 	private IDisposable _pauseToggleTask = null;
 

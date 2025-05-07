@@ -43,7 +43,7 @@ public class GameLaunchParamEntry : ReactiveObject
 		Description = description;
 		DebugModeOnly = debug;
 
-		this.WhenAnyValue(x => x.Description).Select(x => !String.IsNullOrEmpty(x)).ToUIProperty(this, x => x.HasToolTip);
+		this.WhenAnyValue(x => x.Description).Select(x => !string.IsNullOrEmpty(x)).ToUIProperty(this, x => x.HasToolTip);
 	}
 }
 
@@ -99,13 +99,13 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 
 	public async Task<Unit> GetExtenderUpdatesAsync(ExtenderUpdateChannel channel = ExtenderUpdateChannel.Release)
 	{
-		var url = String.Format(DivinityApp.EXTENDER_MANIFESTS_URL, channel.GetDescription());
+		var url = string.Format(DivinityApp.EXTENDER_MANIFESTS_URL, channel.GetDescription());
 		DivinityApp.Log($"Checking for script extender manifest info at '{url}'");
 		var text = await WebHelper.DownloadUrlAsStringAsync(url, CancellationToken.None);
 		//#if DEBUG
 		//			DivinityApp.Log($"Manifest info:\n{text}");
 		//#endif
-		if (!String.IsNullOrEmpty(text))
+		if (!string.IsNullOrEmpty(text))
 		{
 			if (JsonUtils.TrySafeDeserialize<ScriptExtenderUpdateData>(text, out var data))
 			{
@@ -123,11 +123,11 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 						ScriptExtenderUpdates.Add(_emptyVersion);
 						ScriptExtenderUpdates.AddRange(res.Versions.OrderByDescending(x => x.BuildDate));
 						if (lastBuildDate != null) nextVersion = ScriptExtenderUpdates.FirstOrDefault(x => x.BuildDate == lastBuildDate);
-						if (nextVersion == null && !String.IsNullOrEmpty(lastDigest))
+						if (nextVersion == null && !string.IsNullOrEmpty(lastDigest))
 						{
 							nextVersion = ScriptExtenderUpdates.FirstOrDefault(x => x.Digest == lastDigest);
 						}
-						if (nextVersion == null && !String.IsNullOrEmpty(lastVersion))
+						if (nextVersion == null && !string.IsNullOrEmpty(lastVersion))
 						{
 							nextVersion = ScriptExtenderUpdates.FirstOrDefault(x => x.Version == lastVersion);
 						}
@@ -273,7 +273,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 					{
 						AppServices.Commands.ShowAlert(msg, AlertType.Danger);
 					}
-					else if (!String.IsNullOrEmpty(msg))
+					else if (!string.IsNullOrEmpty(msg))
 					{
 						AppServices.Commands.ShowAlert(msg, AlertType.Success, 10);
 					}*/
@@ -469,7 +469,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 			if (Settings.GameLaunchParams == null) Settings.GameLaunchParams = "";
 			if (Settings.GameLaunchParams.IndexOf(param) < 0)
 			{
-				if (String.IsNullOrWhiteSpace(Settings.GameLaunchParams))
+				if (string.IsNullOrWhiteSpace(Settings.GameLaunchParams))
 				{
 					Settings.GameLaunchParams = param;
 				}

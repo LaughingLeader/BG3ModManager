@@ -142,7 +142,7 @@ public static partial class ModDataLoader
 
 	private static ulong SafeConvertStringUnsigned(string str)
 	{
-		if (!String.IsNullOrWhiteSpace(str) && UInt64.TryParse(str, out var val))
+		if (!string.IsNullOrWhiteSpace(str) && UInt64.TryParse(str, out var val))
 		{
 			return val;
 		}
@@ -152,7 +152,7 @@ public static partial class ModDataLoader
 	public static string EscapeXml(string s)
 	{
 		var toxml = s;
-		if (!String.IsNullOrEmpty(toxml))
+		if (!string.IsNullOrEmpty(toxml))
 		{
 			// replace literal values with entities
 			toxml = toxml.Replace("&", "&amp;");
@@ -166,7 +166,7 @@ public static partial class ModDataLoader
 
 	public static string EscapeXmlAttributes(string xmlstring)
 	{
-		if (!String.IsNullOrEmpty(xmlstring))
+		if (!string.IsNullOrEmpty(xmlstring))
 		{
 			xmlstring = XamlValuePattern().Replace(xmlstring, new MatchEvaluator((m) =>
 			{
@@ -178,7 +178,7 @@ public static partial class ModDataLoader
 
 	public static string UnescapeXml(string str)
 	{
-		if (!String.IsNullOrEmpty(str))
+		if (!string.IsNullOrEmpty(str))
 		{
 			str = str.Replace("&amp;", "&");
 			str = str.Replace("&apos;", "'");
@@ -258,7 +258,7 @@ public static partial class ModDataLoader
 				//}
 
 				var tagsText = GetAttributeWithId(moduleInfoNode, "Tags", "");
-				if (!String.IsNullOrWhiteSpace(tagsText))
+				if (!string.IsNullOrWhiteSpace(tagsText))
 				{
 					modData.AddTags(tagsText.Split(';'));
 				}
@@ -282,7 +282,7 @@ public static partial class ModDataLoader
 								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							};
 
-							if (!String.IsNullOrEmpty(entryMod.UUID))
+							if (!string.IsNullOrEmpty(entryMod.UUID))
 							{
 								modData.Dependencies.AddOrUpdate(entryMod);
 							}
@@ -309,7 +309,7 @@ public static partial class ModDataLoader
 								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							};
 
-							if (!String.IsNullOrEmpty(entryMod.UUID))
+							if (!string.IsNullOrEmpty(entryMod.UUID))
 							{
 								modData.Conflicts.AddOrUpdate(entryMod);
 							}
@@ -634,11 +634,11 @@ public static partial class ModDataLoader
 							modData.IsForceLoadedMergedMod = hasModFolderData;
 							if (baseGameFiles.Count > 0 && baseGameFiles.Count < DivinityApp.MAX_FILE_OVERRIDE_DISPLAY)
 							{
-								modData.BuiltinOverrideModsText = String.Join(Environment.NewLine, baseGameFiles.OrderBy(x => x));
+								modData.BuiltinOverrideModsText = string.Join(Environment.NewLine, baseGameFiles.OrderBy(x => x));
 							}
 							else
 							{
-								modData.BuiltinOverrideModsText = String.Join(Environment.NewLine, builtinModOverrides.Values.OrderBy(x => x.Name).Select(x => $"{x.Folder} ({x.Name})"));
+								modData.BuiltinOverrideModsText = string.Join(Environment.NewLine, builtinModOverrides.Values.OrderBy(x => x.Name).Select(x => $"{x.Folder} ({x.Name})"));
 							}
 							modData.IsForceLoaded = true;
 						}
@@ -981,7 +981,7 @@ public static partial class ModDataLoader
 			var res = await LoadResourceAsync(playerprofilesFile.FullName);
 			if (res != null && res.Regions.TryGetValue("UserProfiles", out var region))
 			{
-				//DivinityApp.LogMessage($"ActiveProfile | Getting root node '{String.Join(";", region.Attributes.Keys)}'");
+				//DivinityApp.LogMessage($"ActiveProfile | Getting root node '{string.Join(";", region.Attributes.Keys)}'");
 
 				if (region.Attributes.TryGetValue("ActiveProfile", out var att))
 				{
@@ -1148,7 +1148,7 @@ public static partial class ModDataLoader
 								//TODO Missing mod data
 							}
 						}
-						DivinityApp.Log(String.Join("\n", order.Order.Select(x => x.UUID)));
+						DivinityApp.Log(string.Join("\n", order.Order.Select(x => x.UUID)));
 						var modGUIDs = allMods.Select(x => x.UUID).ToHashSet();
 						order.Name = Path.GetFileNameWithoutExtension(loadOrderFile);
 						return order;
@@ -1382,18 +1382,18 @@ public static partial class ModDataLoader
 
 		foreach (var mod in orderList)
 		{
-			if (!String.IsNullOrWhiteSpace(mod.UUID))
+			if (!string.IsNullOrWhiteSpace(mod.UUID))
 			{
 				//Use Export to support lists with categories/things that don't need exporting
 				var modText = mod.Export(ModExportType.XML);
-				if (!String.IsNullOrEmpty(modText))
+				if (!string.IsNullOrEmpty(modText))
 				{
 					modShortDescText += modText + Environment.NewLine;
 				}
 			}
 		}
 
-		return String.Format(DivinityApp.XML_MOD_SETTINGS_TEMPLATE, modShortDescText);
+		return string.Format(DivinityApp.XML_MOD_SETTINGS_TEMPLATE, modShortDescText);
 	}
 
 	public static string CreateHandle() => Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");
@@ -1544,7 +1544,7 @@ public static partial class ModDataLoader
 				}
 				else
 				{
-					DivinityApp.Log($"Couldn't find Mods node '{String.Join(";", resource.Regions.Values.First().Children.Keys)}'.");
+					DivinityApp.Log($"Couldn't find Mods node '{string.Join(";", resource.Regions.Values.First().Children.Keys)}'.");
 				}
 			}
 		}
@@ -1636,7 +1636,7 @@ public static partial class ModDataLoader
 					}
 				}
 
-				if (!String.IsNullOrEmpty(filePath))
+				if (!string.IsNullOrEmpty(filePath))
 				{
 					modData.FilePath = filePath;
 					var fileTimeFile = filePath;
@@ -1657,7 +1657,7 @@ public static partial class ModDataLoader
 					}
 				}
 
-				modData.IsLarianMod = modData.Author.Contains("Larian") || String.IsNullOrEmpty(modData.Author);
+				modData.IsLarianMod = modData.Author.Contains("Larian") || string.IsNullOrEmpty(modData.Author);
 				var isBaseMod = (modData.UUID != null && DivinityApp.IgnoredMods.Lookup(modData.UUID).HasValue) || modData.IsLarianMod;
 				if (isBaseMod)
 				{

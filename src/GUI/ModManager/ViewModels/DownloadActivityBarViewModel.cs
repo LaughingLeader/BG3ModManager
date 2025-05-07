@@ -21,7 +21,7 @@ public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
 			ProgressValue = value;
-			if (!String.IsNullOrEmpty(text))
+			if (!string.IsNullOrEmpty(text))
 			{
 				ProgressText = text;
 			}
@@ -34,7 +34,7 @@ public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 		{
 			CancelAction.Invoke();
 		}
-		else if (!String.IsNullOrEmpty(ProgressText))
+		else if (!string.IsNullOrEmpty(ProgressText))
 		{
 			RxApp.MainThreadScheduler.Schedule(() =>
 			{

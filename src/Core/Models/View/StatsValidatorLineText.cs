@@ -31,7 +31,7 @@ public class StatsValidatorLineText : TreeViewEntry
 				DivinityApp.Log($"{ex}");
 			}
 		}
-		return String.Empty;
+		return string.Empty;
 	}
 
 	public StatsValidatorLineText()

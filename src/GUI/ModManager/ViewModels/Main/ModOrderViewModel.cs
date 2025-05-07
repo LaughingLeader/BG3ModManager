@@ -203,7 +203,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			//TODO Update since ScreenReaderHelper used native dlls like Tolk
 			*//*if (ActiveMods.Count > 0)
 			{
-				var text = String.Join(", ", ActiveMods.Select(x => x.DisplayName));
+				var text = string.Join(", ", ActiveMods.Select(x => x.DisplayName));
 				ScreenReaderHelper.Speak($"{ActiveMods.Count} mods in the active order, including:", true);
 				ScreenReaderHelper.Speak(text, false);
 				//ShowAlert($"Active mods: {text}", AlertType.Info, 10);
@@ -309,7 +309,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var loadedProfiles = await LoadProfilesAsync();
 			main.Progress.IncreaseValue(taskStepAmount);
 
-			if (String.IsNullOrEmpty(selectedProfileUUID) && (loadedProfiles != null && loadedProfiles.Count > 0))
+			if (string.IsNullOrEmpty(selectedProfileUUID) && (loadedProfiles != null && loadedProfiles.Count > 0))
 			{
 				DivinityApp.Log("Loading current profile...");
 				main.Progress.WorkText = "Loading current profile...";
@@ -366,7 +366,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			try
 			{
-				if (String.IsNullOrEmpty(lastAdventureMod))
+				if (string.IsNullOrEmpty(lastAdventureMod))
 				{
 					var activeAdventureMod = SelectedModOrder?.Order.FirstOrDefault(x => modManager.GetModType(x.UUID) == "Adventure");
 					if (activeAdventureMod != null)
@@ -429,7 +429,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				var publicProfile = Profiles.FirstOrDefault(p => p.FolderName == "Public");
 				var defaultIndex = 0;
 
-				if (String.IsNullOrWhiteSpace(selectedProfileUUID) || selectedProfileUUID == publicProfile?.UUID)
+				if (string.IsNullOrWhiteSpace(selectedProfileUUID) || selectedProfileUUID == publicProfile?.UUID)
 				{
 					SelectedProfileIndex = defaultIndex;
 				}
@@ -512,12 +512,12 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				var missingMessage = missingResults.GetMissingMessage();
 				var missingDependencies = missingResults.GetDependenciesMessage();
 
-				if (!String.IsNullOrWhiteSpace(missingMessage))
+				if (!string.IsNullOrWhiteSpace(missingMessage))
 				{
 					messages.Add(missingMessage);
 				}
 
-				if (!String.IsNullOrWhiteSpace(missingDependencies))
+				if (!string.IsNullOrWhiteSpace(missingDependencies))
 				{
 					messages.Add($"Missing Dependencies:\n{missingDependencies}");
 				}
@@ -544,7 +544,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			var missingResults = new MissingModsResults();
 
-			//DivinityApp.LogMessage($"Mod Order: {String.Join("\n", order.Order.Select(x => x.Name))}");
+			//DivinityApp.LogMessage($"Mod Order: {string.Join("\n", order.Order.Select(x => x.Name))}");
 			DivinityApp.Log("Checking mods for extender requirements.");
 			for (int i = 0; i < order.Order.Count; i++)
 			{
@@ -622,7 +622,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var outputPath = SelectedModOrder.FilePath;
 			var outputName = ModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
 
-			if (String.IsNullOrWhiteSpace(SelectedModOrder.FilePath))
+			if (string.IsNullOrWhiteSpace(SelectedModOrder.FilePath))
 			{
 				SelectedModOrder.FilePath = Path.Join(outputDirectory, outputName);
 				outputPath = SelectedModOrder.FilePath;
@@ -660,7 +660,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private static string GetOrdersDirectory()
 	{
 		var loadOrderDirectory = Settings.LoadOrderPath;
-		if (String.IsNullOrWhiteSpace(loadOrderDirectory))
+		if (string.IsNullOrWhiteSpace(loadOrderDirectory))
 		{
 			loadOrderDirectory = DivinityApp.GetAppDirectory("Orders");
 		}
@@ -886,11 +886,11 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			ModOrderList.Clear();
 			ModOrderList.Add(currentOrder);
 
-			DivinityApp.Log($"Profile ({profile.Name}) order: {String.Join(";", profile.ActiveMods.Select(x => x.Name))}");
+			DivinityApp.Log($"Profile ({profile.Name}) order: {string.Join(";", profile.ActiveMods.Select(x => x.Name))}");
 
 			ModOrderList.AddRange(ExternalModOrders);
 
-			DivinityApp.Log($"ModOrderList: {String.Join(";", ModOrderList.Select(x => x.Name))}");
+			DivinityApp.Log($"ModOrderList: {string.Join(";", ModOrderList.Select(x => x.Name))}");
 
 			var lastOrderName = Settings.LastOrder;
 			if (lastOrderName.IsValid())
@@ -935,7 +935,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		{
 			SelectedModOrderIndex = 0;
 			ModOrderList.Remove(order);
-			if (!String.IsNullOrEmpty(order.FilePath) && File.Exists(order.FilePath))
+			if (!string.IsNullOrEmpty(order.FilePath) && File.Exists(order.FilePath))
 			{
 				RecycleBinHelper.DeleteFile(order.FilePath, false, false);
 				AppServices.Commands.ShowAlert($"Sent load order '{order.FilePath}' to the recycle bin", AlertType.Warning, 25);
@@ -1191,7 +1191,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				LastRenamingOrderName = "";
 			}
-			else if (!String.IsNullOrEmpty(LastRenamingOrderName))
+			else if (!string.IsNullOrEmpty(LastRenamingOrderName))
 			{
 				SelectedModOrder.Name = LastRenamingOrderName;
 				LastRenamingOrderName = "";
@@ -1321,7 +1321,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		if (missingModsFromProfileOrder != null && missingModsFromProfileOrder.Count > 0)
 		{
 			missingModsFromProfileOrder.ForEach(x => missingResults.Missing.Add(x.UUID, x));
-			DivinityApp.Log($"Missing mods (from profile): {String.Join(";", missingModsFromProfileOrder)}");
+			DivinityApp.Log($"Missing mods (from profile): {string.Join(";", missingModsFromProfileOrder)}");
 		}
 
 		var loadOrderIndex = 0;
@@ -1353,7 +1353,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 					{
 						foreach (var dependency in mod.Dependencies.Items)
 						{
-							if (!String.IsNullOrWhiteSpace(dependency.UUID) && !ModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID))
+							if (!string.IsNullOrWhiteSpace(dependency.UUID) && !ModDataLoader.IgnoreMod(dependency.UUID) && !modManager.ModExists(dependency.UUID))
 							{
 								missingResults.AddDependency(dependency, mod);
 							}
@@ -1493,7 +1493,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var newOrder = ModDataLoader.GetLoadOrderFromSave(result.File, GetOrdersDirectory());
 			if (newOrder != null)
 			{
-				DivinityApp.Log($"Imported mod order: {String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
+				DivinityApp.Log($"Imported mod order: {string.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
 				return newOrder;
 			}
 			else
@@ -1556,7 +1556,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var newOrder = ModDataLoader.LoadOrderFromFile(result.File, ModManager.AllMods);
 			if (newOrder != null)
 			{
-				DivinityApp.Log($"Imported mod order:\n{String.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
+				DivinityApp.Log($"Imported mod order:\n{string.Join(Environment.NewLine + "\t", newOrder.Order.Select(x => x.Name))}");
 				if (newOrder.IsDecipheredOrder)
 				{
 					if (SelectedModOrder != null)

@@ -31,7 +31,7 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 		if (data.Item1 != null)
 		{
 			var url = data.Item1.GetURL(data.Item2);
-			if (!String.IsNullOrEmpty(url))
+			if (!string.IsNullOrEmpty(url))
 			{
 				return new Uri(url);
 			}
@@ -53,13 +53,13 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 		var description = data.Item1;
 		var url = data.Item2;
 		var result = "";
-		if (!String.IsNullOrEmpty(description))
+		if (!string.IsNullOrEmpty(description))
 		{
 			result = description;
 		}
-		if (url != null && !String.IsNullOrEmpty(url.AbsoluteUri))
+		if (url != null && !string.IsNullOrEmpty(url.AbsoluteUri))
 		{
-			if (!String.IsNullOrEmpty(result)) result += Environment.NewLine;
+			if (!string.IsNullOrEmpty(result)) result += Environment.NewLine;
 			result += url.AbsoluteUri;
 		}
 		return result;

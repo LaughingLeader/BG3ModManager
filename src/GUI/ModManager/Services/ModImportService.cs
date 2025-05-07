@@ -34,8 +34,8 @@ public class ModImportService(IDialogService _dialogService)
 
 	private static readonly string[] _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
 	private static readonly string[] _compressedFormats = [".bz2", ".xz", ".zst"];
-	private static readonly string _archiveFormatsStr = String.Join(";", _archiveFormats.Select(x => "*" + x));
-	private static readonly string _compressedFormatsStr = String.Join(";", _compressedFormats.Select(x => "*" + x));
+	private static readonly string _archiveFormatsStr = string.Join(";", _archiveFormats.Select(x => "*" + x));
+	private static readonly string _compressedFormatsStr = string.Join(";", _compressedFormats.Select(x => "*" + x));
 
 	private static readonly FileTypeFilter _allType = new("All files (*.*)|*.*", ["*.*"]);
 	private static readonly FileTypeFilter _archiveFormatsType = new("Archive file (*.7z,*.rar;*.zip)", _archiveFormats);
@@ -69,24 +69,24 @@ public class ModImportService(IDialogService _dialogService)
 	{
 		var directory = prioritizePath;
 
-		if (!String.IsNullOrEmpty(prioritizePath) && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
+		if (!string.IsNullOrEmpty(prioritizePath) && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
 		{
 			directory = actualDir;
 		}
 		else
 		{
-			if (!String.IsNullOrEmpty(Settings.LastImportDirectoryPath))
+			if (!string.IsNullOrEmpty(Settings.LastImportDirectoryPath))
 			{
 				directory = Settings.LastImportDirectoryPath;
 			}
 
-			if (!Directory.Exists(directory) && !String.IsNullOrEmpty(Pathways.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(Pathways.LastSaveFilePath, out var lastDir))
+			if (!Directory.Exists(directory) && !string.IsNullOrEmpty(Pathways.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(Pathways.LastSaveFilePath, out var lastDir))
 			{
 				directory = lastDir;
 			}
 		}
 
-		if (String.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+		if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
 		{
 			directory = DivinityApp.GetAppDirectory();
 		}
@@ -235,7 +235,7 @@ public class ModImportService(IDialogService _dialogService)
 						{
 							Directory.CreateDirectory(logsDir);
 						}
-						File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+						File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
 					}
 
 					var messages = new List<string>();
@@ -275,7 +275,7 @@ public class ModImportService(IDialogService _dialogService)
 						{
 							messages.Add($"{result.Mods.Count} mod(s)");
 						}
-						var msg = String.Join(", ", messages);
+						var msg = string.Join(", ", messages);
 						AppServices.Commands.ShowAlert($"Successfully imported {msg}", AlertType.Success, 20, "Import Order");
 					}
 					else
@@ -307,7 +307,7 @@ public class ModImportService(IDialogService _dialogService)
 					if (file.Key.EndsWith(".pak", StringComparison.OrdinalIgnoreCase))
 					{
 						using var entryStream = file.OpenEntryStream();
-						tempFile = await TempFile.CreateAsync(String.Join("\\", filePath, file.Key), entryStream, token);
+						tempFile = await TempFile.CreateAsync(string.Join("\\", filePath, file.Key), entryStream, token);
 						var meta = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 						if (meta == null)
 						{
@@ -478,7 +478,7 @@ public class ModImportService(IDialogService _dialogService)
 					{
 						Directory.CreateDirectory(logsDir);
 					}
-					File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+					File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
 				}
 
 				var total = result.Mods.Count;
@@ -491,7 +491,7 @@ public class ModImportService(IDialogService _dialogService)
 					else if (total == 1)
 					{
 						var modFileName = result.Mods.First().FileName;
-						var fileNames = String.Join(", ", files.Select(x => Path.GetFileName(x)));
+						var fileNames = string.Join(", ", files.Select(x => Path.GetFileName(x)));
 						AppServices.Commands.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
 					}
 					else
@@ -579,7 +579,7 @@ public class ModImportService(IDialogService _dialogService)
 						{
 							Directory.CreateDirectory(logsDir);
 						}
-						File.WriteAllText(errorOutputPath, String.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+						File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
 					}
 
 					var total = result.Mods.Count;
@@ -659,7 +659,7 @@ public class ModImportService(IDialogService _dialogService)
 			var tempDir = DivinityApp.GetAppDirectory("Temp");
 			Directory.CreateDirectory(tempDir);
 
-			if (String.IsNullOrEmpty(outputPath))
+			if (string.IsNullOrEmpty(outputPath))
 			{
 				var baseOrderName = selectedModOrder.Name;
 				if (selectedModOrder.IsModSettings)
@@ -779,11 +779,11 @@ public class ModImportService(IDialogService _dialogService)
 		else if (fileType.Equals(".tsv", StringComparison.OrdinalIgnoreCase))
 		{
 			outputText = "Index\tName\tAuthor\tFileName\tTags\tDependencies\tURL\n";
-			outputText += String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(x => !String.IsNullOrEmpty(x)));
+			outputText += string.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(x => !string.IsNullOrEmpty(x)));
 		}
 		else
 		{
-			outputText = String.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(x => !String.IsNullOrEmpty(x)));
+			outputText = string.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(x => !string.IsNullOrEmpty(x)));
 		}
 		try
 		{

@@ -21,14 +21,14 @@ public class PathwaysService : IPathwaysService
 			}
 		}
 		string appDataFolder;
-		if (!String.IsNullOrEmpty(_settingsService.ManagerSettings.DocumentsFolderPathOverride))
+		if (!string.IsNullOrEmpty(_settingsService.ManagerSettings.DocumentsFolderPathOverride))
 		{
 			appDataFolder = _settingsService.ManagerSettings.DocumentsFolderPathOverride;
 		}
 		else
 		{
 			appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify);
-			if (String.IsNullOrEmpty(appDataFolder) || !Directory.Exists(appDataFolder))
+			if (string.IsNullOrEmpty(appDataFolder) || !Directory.Exists(appDataFolder))
 			{
 				var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify);
 				if (Directory.Exists(userFolder))
@@ -51,14 +51,14 @@ public class PathwaysService : IPathwaysService
 		{
 			var localAppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify);
 
-			if (String.IsNullOrWhiteSpace(_settingsService.AppSettings.DefaultPathways.DocumentsGameFolder))
+			if (string.IsNullOrWhiteSpace(_settingsService.AppSettings.DefaultPathways.DocumentsGameFolder))
 			{
 				_settingsService.AppSettings.DefaultPathways.DocumentsGameFolder = "Larian Studios\\Baldur's Gate 3";
 			}
 
 			var gameDataFolder = Path.Join(localAppDataFolder, _settingsService.AppSettings.DefaultPathways.DocumentsGameFolder);
 
-			if (!String.IsNullOrEmpty(gameDataFolderOverride) && Directory.Exists(gameDataFolderOverride))
+			if (!string.IsNullOrEmpty(gameDataFolderOverride) && Directory.Exists(gameDataFolderOverride))
 			{
 				gameDataFolder = gameDataFolderOverride;
 				var parentDir = Directory.GetParent(gameDataFolder);
@@ -117,13 +117,13 @@ public class PathwaysService : IPathwaysService
 				DivinityApp.Log($"Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify) return a non-existent path?\nResult({Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify)})");
 			}
 
-			if (String.IsNullOrWhiteSpace(currentGameDataPath) || !Directory.Exists(currentGameDataPath))
+			if (string.IsNullOrWhiteSpace(currentGameDataPath) || !Directory.Exists(currentGameDataPath))
 			{
 				var defaultPathways = _settingsService.AppSettings.DefaultPathways;
 				var installPath = RegistryHelper.GetGameInstallPath(defaultPathways.Steam.RootFolderName,
 					defaultPathways.GOG.Registry_32, defaultPathways.GOG.Registry_64, defaultPathways.Steam.AppID);
 
-				if (!String.IsNullOrEmpty(installPath) && Directory.Exists(installPath))
+				if (!string.IsNullOrEmpty(installPath) && Directory.Exists(installPath))
 				{
 					Data.InstallPath = installPath;
 					if (!File.Exists(_settingsService.ManagerSettings.GameExecutablePath))

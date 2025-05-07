@@ -45,7 +45,7 @@ public partial class AppUpdateWindowViewModel : ReactiveObject, IClosableViewMod
 
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
-			if (!String.IsNullOrEmpty(markdownText))
+			if (!string.IsNullOrEmpty(markdownText))
 			{
 				markdownText = RemoveEmptyLinesPattern.Replace(markdownText, string.Empty);
 				UpdateChangelogView = markdownText;

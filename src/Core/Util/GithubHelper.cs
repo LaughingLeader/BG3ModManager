@@ -12,14 +12,14 @@ public static class GitHubHelper
 	[Obsolete]
 	public static async Task<string> GetLatestReleaseJsonStringAsync(string repo, CancellationToken token)
 	{
-		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
+		var response = await WebHelper.GetAsync(string.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
 		return await response.Content.ReadAsStringAsync();
 	}
 
 	[Obsolete]
 	public static async Task<string> GetAllReleaseJsonStringAsync(string repo, CancellationToken token)
 	{
-		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_RELEASES, repo), _completionOption, token);
+		var response = await WebHelper.GetAsync(string.Format(GIT_URL_REPO_RELEASES, repo), _completionOption, token);
 		return await response.Content.ReadAsStringAsync();
 	}
 
@@ -44,7 +44,7 @@ public static class GitHubHelper
 			}
 #if DEBUG
 			var lines = jsonData.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-			DivinityApp.Log($"Can't find 'browser_download_url' in:\n{String.Join(Environment.NewLine, lines)}");
+			DivinityApp.Log($"Can't find 'browser_download_url' in:\n{string.Join(Environment.NewLine, lines)}");
 #endif
 		}
 		return null;
@@ -52,7 +52,7 @@ public static class GitHubHelper
 
 	public static async Task<string?> GetLatestReleaseLinkAsync(string repo, CancellationToken token)
 	{
-		var response = await WebHelper.GetAsync(String.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
+		var response = await WebHelper.GetAsync(string.Format(GIT_URL_REPO_LATEST, repo), _completionOption, token);
 		if (response != null)
 		{
 			var data = await response.Content.ReadAsStringAsync(token);

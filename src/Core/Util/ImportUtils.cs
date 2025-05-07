@@ -60,8 +60,8 @@ public static class ImportUtils
 
 	private static readonly List<string> _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
 	private static readonly List<string> _compressedFormats = [".bz2", ".xz", ".zst"];
-	private static readonly string _archiveFormatsStr = String.Join(";", _archiveFormats.Select(x => "*" + x));
-	private static readonly string _compressedFormatsStr = String.Join(";", _compressedFormats.Select(x => "*" + x));
+	private static readonly string _archiveFormatsStr = string.Join(";", _archiveFormats.Select(x => "*" + x));
+	private static readonly string _compressedFormatsStr = string.Join(";", _compressedFormats.Select(x => "*" + x));
 
 	public static async Task<bool> ImportArchiveAsync(ImportParameters options)
 	{
@@ -127,7 +127,7 @@ public static class ImportUtils
 								var result = new byte[length];
 								await entryStream.ReadAsync(result, 0, length);
 								var text = Encoding.UTF8.GetString(result);
-								if (!String.IsNullOrWhiteSpace(text))
+								if (!string.IsNullOrWhiteSpace(text))
 								{
 									options.ImportedJsonFiles.Add(new ImportedJsonFile { FileName = Path.GetFileNameWithoutExtension(file.Key), Text = text });
 								}
@@ -161,7 +161,7 @@ public static class ImportUtils
 				{
 					options.Result.Orders.Add(order);
 					order.Name = entry.FileName;
-					DivinityApp.Log($"Imported mod order from archive: {String.Join(@"\n\t", order.Order.Select(x => x.Name))}");
+					DivinityApp.Log($"Imported mod order from archive: {string.Join(@"\n\t", order.Order.Select(x => x.Name))}");
 				}
 			}
 		}
@@ -295,7 +295,7 @@ public static class ImportUtils
 					{
 						options.Result.Orders.Add(order);
 						order.Name = entry.FileName;
-						DivinityApp.Log($"Imported mod order from archive: {String.Join(@"\n\t", order.Order.Select(x => x.Name))}");
+						DivinityApp.Log($"Imported mod order from archive: {string.Join(@"\n\t", order.Order.Select(x => x.Name))}");
 					}
 				}
 			}

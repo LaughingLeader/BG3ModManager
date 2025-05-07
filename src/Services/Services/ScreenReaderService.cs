@@ -36,7 +36,7 @@ public class ScreenReaderService(IFileSystemService fs) : IScreenReaderService
 	{
 		if (EnsureInit(false))
 		{
-			return !String.IsNullOrWhiteSpace(CrossSpeakManager.Instance.DetectScreenReader());
+			return !string.IsNullOrWhiteSpace(CrossSpeakManager.Instance.DetectScreenReader());
 		}
 		return false;
 	}

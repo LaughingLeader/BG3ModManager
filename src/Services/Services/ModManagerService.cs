@@ -238,7 +238,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		{
 			DivinityApp.Log($"{dupeCount} duplicate(s) found:");
 			DivinityApp.Log("=======");
-			DivinityApp.Log($"{String.Join(Environment.NewLine, dupes.Select(x => x.ToString()))}");
+			DivinityApp.Log($"{string.Join(Environment.NewLine, dupes.Select(x => x.ToString()))}");
 			DivinityApp.Log("=======");
 			_commands.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
 			await _interactions.DeleteMods.Handle(new DeleteModsRequest(dupes.ToModInterface(), true));

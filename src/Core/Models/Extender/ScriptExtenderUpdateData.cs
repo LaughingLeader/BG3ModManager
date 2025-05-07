@@ -42,13 +42,13 @@ public class ScriptExtenderUpdateVersion : ReactiveObject
 
 	private static string ToDisplayName(ValueTuple<string, string, string> data)
 	{
-		if (String.IsNullOrEmpty(data.Item1)) return "Latest";
+		if (string.IsNullOrEmpty(data.Item1)) return "Latest";
 		var result = data.Item1;
-		if (!String.IsNullOrEmpty(data.Item2))
+		if (!string.IsNullOrEmpty(data.Item2))
 		{
 			result += $" ({data.Item2})";
 		}
-		if (!String.IsNullOrEmpty(data.Item3))
+		if (!string.IsNullOrEmpty(data.Item3))
 		{
 			result += $" - {data.Item3}";
 		}
@@ -57,7 +57,7 @@ public class ScriptExtenderUpdateVersion : ReactiveObject
 
 	public ScriptExtenderUpdateVersion()
 	{
-		this.WhenAnyValue(x => x.Version).Select(x => String.IsNullOrEmpty(x))
+		this.WhenAnyValue(x => x.Version).Select(x => string.IsNullOrEmpty(x))
 			.ToUIProperty(this, x => x.IsEmpty);
 
 		this.WhenAnyValue(x => x.BuildDate).Select(TimestampToReadableString)

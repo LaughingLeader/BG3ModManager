@@ -234,7 +234,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 	private void OnToolboxOutput(object sender, DataReceivedEventArgs e)
 	{
-		if (!String.IsNullOrEmpty(e.Data)) DivinityApp.Log($"[Toolbox] {e.Data}");
+		if (!string.IsNullOrEmpty(e.Data)) DivinityApp.Log($"[Toolbox] {e.Data}");
 	}
 
 	public void UpdateExtender(bool updateMods = true, CancellationToken? t = null)
@@ -294,10 +294,10 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	{
 		if (!OpenRepoLinkToDownload)
 		{
-			if (!String.IsNullOrWhiteSpace(Settings.GameExecutablePath) && File.Exists(Settings.GameExecutablePath))
+			if (!string.IsNullOrWhiteSpace(Settings.GameExecutablePath) && File.Exists(Settings.GameExecutablePath))
 			{
 				var exeDir = Path.GetDirectoryName(Settings.GameExecutablePath);
-				var messageText = String.Format(@"Download and install the Script Extender?
+				var messageText = string.Format(@"Download and install the Script Extender?
 The Script Extender is used by mods to extend the scripting language of the game, allowing new functionality.
 The extender needs to only be installed once, as it automatically updates when you launch the game.
 Download url: 
@@ -342,7 +342,7 @@ Directory the zip will be extracted to:
 					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 					DivinityApp.Log($"Found the Extender at '{extenderUpdaterPath}'.");
 					var extenderInfo = FileVersionInfo.GetVersionInfo(extenderUpdaterPath);
-					if (!String.IsNullOrEmpty(extenderInfo.FileVersion))
+					if (!string.IsNullOrEmpty(extenderInfo.FileVersion))
 					{
 						var version = extenderInfo.FileVersion.Split('.')[0];
 						if (int.TryParse(version, out var intVersion))
@@ -463,7 +463,7 @@ Directory the zip will be extracted to:
 						PathwayData.ScriptExtenderLatestReleaseVersion = latestRelease.TagName;
 					}
 				}
-				if (!String.IsNullOrEmpty(latestReleaseZipUrl))
+				if (!string.IsNullOrEmpty(latestReleaseZipUrl))
 				{
 					OpenRepoLinkToDownload = false;
 					PathwayData.ScriptExtenderLatestReleaseUrl = latestReleaseZipUrl;
@@ -594,7 +594,7 @@ Directory the zip will be extracted to:
 		{
 			if (!File.Exists(Settings.GameExecutablePath))
 			{
-				if (String.IsNullOrWhiteSpace(Settings.GameExecutablePath))
+				if (string.IsNullOrWhiteSpace(Settings.GameExecutablePath))
 				{
 					_globalCommands.ShowAlert("No game executable path set", AlertType.Danger, 30);
 				}
@@ -607,7 +607,7 @@ Directory the zip will be extracted to:
 		}
 
 		var exeArgs = new List<string>();
-		var userLaunchParams = !String.IsNullOrEmpty(Settings.GameLaunchParams) ? Settings.GameLaunchParams : "";
+		var userLaunchParams = !string.IsNullOrEmpty(Settings.GameLaunchParams) ? Settings.GameLaunchParams : "";
 
 		if (Settings.GameStoryLogEnabled && !Settings.ExtenderSettings.EnableLogging)
 		{
@@ -629,7 +629,7 @@ Directory the zip will be extracted to:
 			exeArgs.Add($"-modded {isModded}");
 		}
 
-		if (!String.IsNullOrEmpty(userLaunchParams))
+		if (!string.IsNullOrEmpty(userLaunchParams))
 		{
 			foreach (var entry in exeArgs)
 			{
@@ -639,7 +639,7 @@ Directory the zip will be extracted to:
 
 		exeArgs.Add(userLaunchParams);
 
-		var launchParams = String.Join(" ", exeArgs);
+		var launchParams = string.Join(" ", exeArgs);
 
 		if (!Settings.LaunchThroughSteam)
 		{
@@ -689,7 +689,7 @@ Directory the zip will be extracted to:
 
 		Settings.WhenAnyValue(x => x.GameExecutablePath).Subscribe(path =>
 		{
-			if (!String.IsNullOrEmpty(path)) gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
+			if (!string.IsNullOrEmpty(path)) gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
 		});
 
 		var whenGameExeProperties = this.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
@@ -700,16 +700,16 @@ Directory the zip will be extracted to:
 
 		var canOpenLogDirectory = Settings.WhenAnyValue(x => x.ExtenderLogDirectory, (f) => Directory.Exists(f));
 
-		var canDownloadScriptExtender = this.WhenAnyValue(x => x.PathwayData.ScriptExtenderLatestReleaseUrl, (p) => !String.IsNullOrEmpty(p));
+		var canDownloadScriptExtender = this.WhenAnyValue(x => x.PathwayData.ScriptExtenderLatestReleaseUrl, (p) => !string.IsNullOrEmpty(p));
 		Keys.DownloadScriptExtender.AddAction(() => AskToDownloadScriptExtender(), canDownloadScriptExtender);
 
-		var canOpenModsFolder = this.WhenAnyValue(x => x.PathwayData.AppDataModsPath, (p) => !String.IsNullOrEmpty(p) && Directory.Exists(p));
+		var canOpenModsFolder = this.WhenAnyValue(x => x.PathwayData.AppDataModsPath, (p) => !string.IsNullOrEmpty(p) && Directory.Exists(p));
 		Keys.OpenModsFolder.AddAction(() =>
 		{
 			FileUtils.TryOpenPath(PathwayData.AppDataModsPath);
 		}, canOpenModsFolder);
 
-		var canOpenGameFolder = Settings.WhenAnyValue(x => x.GameExecutablePath, (p) => !String.IsNullOrEmpty(p) && File.Exists(p));
+		var canOpenGameFolder = Settings.WhenAnyValue(x => x.GameExecutablePath, (p) => !string.IsNullOrEmpty(p) && File.Exists(p));
 		Keys.OpenGameFolder.AddAction(() =>
 		{
 			var folder = Path.GetDirectoryName(Settings.GameExecutablePath);
@@ -727,7 +727,7 @@ Directory the zip will be extracted to:
 		Keys.OpenWorkshopFolder.AddAction(() =>
 		{
 			//DivinityApp.Log($"WorkshopSupportEnabled:{WorkshopSupportEnabled} canOpenWorkshopFolder CanExecute:{OpenWorkshopFolderCommand.CanExecute(null)}");
-			if (!String.IsNullOrEmpty(Settings.WorkshopPath) && Directory.Exists(Settings.WorkshopPath))
+			if (!string.IsNullOrEmpty(Settings.WorkshopPath) && Directory.Exists(Settings.WorkshopPath))
 			{
 				FileUtils.TryOpenPath(Settings.WorkshopPath);
 			}
@@ -822,7 +822,7 @@ Directory the zip will be extracted to:
 		var success = true;
 		if (!_settings.TryLoadAll(out var errors))
 		{
-			var errorMessage = String.Join("\n", errors.Select(x => x.ToString()));
+			var errorMessage = string.Join("\n", errors.Select(x => x.ToString()));
 			_globalCommands.ShowAlert($"Error loading settings: {errorMessage}", AlertType.Danger);
 			success = false;
 		}
@@ -908,7 +908,7 @@ Directory the zip will be extracted to:
 	{
 		if (!_settings.TrySaveAll(out var errors))
 		{
-			var errorMessage = String.Join("\n", errors.Select(x => x.ToString()));
+			var errorMessage = string.Join("\n", errors.Select(x => x.ToString()));
 			_globalCommands.ShowAlert($"Error saving settings: {errorMessage}", AlertType.Danger);
 		}
 		else
@@ -935,24 +935,24 @@ Directory the zip will be extracted to:
 	{
 		var directory = prioritizePath;
 
-		if (!String.IsNullOrEmpty(prioritizePath) && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
+		if (!string.IsNullOrEmpty(prioritizePath) && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
 		{
 			directory = actualDir;
 		}
 		else
 		{
-			if (!String.IsNullOrEmpty(Settings.LastImportDirectoryPath))
+			if (!string.IsNullOrEmpty(Settings.LastImportDirectoryPath))
 			{
 				directory = Settings.LastImportDirectoryPath;
 			}
 
-			if (!Directory.Exists(directory) && !String.IsNullOrEmpty(PathwayData.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(PathwayData.LastSaveFilePath, out var lastDir))
+			if (!Directory.Exists(directory) && !string.IsNullOrEmpty(PathwayData.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(PathwayData.LastSaveFilePath, out var lastDir))
 			{
 				directory = lastDir;
 			}
 		}
 
-		if (String.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+		if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
 		{
 			directory = DivinityApp.GetAppDirectory();
 		}
@@ -1272,7 +1272,7 @@ Directory the zip will be extracted to:
 						var originalDirectory = Path.GetDirectoryName(pickFile.File);
 						var desiredDirectory = Path.GetDirectoryName(renameFile.File);
 
-						if (!String.IsNullOrEmpty(profileSavesDirectory) && FileUtils.IsSubdirectoryOf(profileSavesDirectory, desiredDirectory))
+						if (!string.IsNullOrEmpty(profileSavesDirectory) && FileUtils.IsSubdirectoryOf(profileSavesDirectory, desiredDirectory))
 						{
 							if (originalDirectory == desiredDirectory)
 							{
@@ -1466,7 +1466,7 @@ Directory the zip will be extracted to:
 		}
 		else
 		{
-			var msg = $"Extract the following mods?\n'{String.Join("\n", _manager.SelectedPakMods.Select(x => $"{x.DisplayName}"))}";
+			var msg = $"Extract the following mods?\n'{string.Join("\n", _manager.SelectedPakMods.Select(x => $"{x.DisplayName}"))}";
 			var result = await _interactions.ShowMessageBox.Handle(new("Extract Mods?", msg, InteractionMessageBoxType.YesNo));
 			if (result)
 			{
@@ -1719,7 +1719,7 @@ Directory the zip will be extracted to:
 							else if (total == 1)
 							{
 								var modFileName = result.Mods.First().FileName;
-								var fileNames = String.Join(", ", files.Select(x => Path.GetFileName(x)));
+								var fileNames = string.Join(", ", files.Select(x => Path.GetFileName(x)));
 								_globalCommands.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
 							}
 							else
@@ -1793,7 +1793,7 @@ Directory the zip will be extracted to:
 		});
 
 		var canDownloadNexusFiles = this.WhenAnyValue(x => x.Settings.UpdateSettings.NexusModsAPIKey, x => x.NexusModsSupportEnabled)
-			.Select(x => !String.IsNullOrEmpty(x.Item1) && x.Item2);
+			.Select(x => !string.IsNullOrEmpty(x.Item1) && x.Item2);
 		Keys.DownloadNXMLink.AddCanExecuteCondition(canDownloadNexusFiles);
 		Keys.DownloadNXMLink.AddAction(() =>
 		{

@@ -118,7 +118,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 					}
 				}
 
-				//DivinityApp.LogMessage("Ignored mods:\n" + String.Join("\n", DivinityApp.IgnoredMods.Select(x => x.Name)));
+				//DivinityApp.LogMessage("Ignored mods:\n" + string.Join("\n", DivinityApp.IgnoredMods.Select(x => x.Name)));
 			}
 		}
 	}
@@ -171,7 +171,7 @@ public class SettingsService : ReactiveObject, ISettingsService
 			var time = DateTime.Now.Ticks;
 			foreach (var mod in updatedMods)
 			{
-				if (!String.IsNullOrEmpty(mod.UUID)) ModConfig.LastUpdated[mod.UUID] = time;
+				if (!string.IsNullOrEmpty(mod.UUID)) ModConfig.LastUpdated[mod.UUID] = time;
 			}
 			ModConfig.Save(out _);
 		}

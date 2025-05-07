@@ -61,7 +61,7 @@ public static class RegistryHelper
 				if (JunctionPoint.Exists(path))
 				{
 					var realPath = JunctionPoint.GetTarget(path);
-					if (!String.IsNullOrEmpty(realPath))
+					if (!string.IsNullOrEmpty(realPath))
 					{
 						return realPath;
 					}
@@ -113,7 +113,7 @@ public static class RegistryHelper
 		if (LastSteamInstallPath != "")
 		{
 			var steamWorkshopPath = GetSteamWorkshopPath();
-			if (!String.IsNullOrEmpty(steamWorkshopPath))
+			if (!string.IsNullOrEmpty(steamWorkshopPath))
 			{
 				var workshopFolder = Path.Join(steamWorkshopPath, "content", appid);
 				DivinityApp.Log($"Looking for game workshop folder at '{workshopFolder}'.");
@@ -147,7 +147,7 @@ public static class RegistryHelper
 		{
 			if (LastSteamInstallPath != "")
 			{
-				if (!String.IsNullOrEmpty(lastGamePath) && Directory.Exists(lastGamePath))
+				if (!string.IsNullOrEmpty(lastGamePath) && Directory.Exists(lastGamePath))
 				{
 					return lastGamePath;
 				}
@@ -163,7 +163,7 @@ public static class RegistryHelper
 							if (prop.Key == "installdir")
 							{
 								var installDir = prop.Value?.Value<string>();
-								if (!String.IsNullOrEmpty(installDir))
+								if (!string.IsNullOrEmpty(installDir))
 								{
 									steamGameInstallPath = installDir;
 									DivinityApp.Log($"Using appmanifest installDir '{installDir}'");
@@ -201,7 +201,7 @@ public static class RegistryHelper
 									if (path != null && path.Value is VValue innerValue)
 									{
 										var p = innerValue.Value<string>();
-										if (!String.IsNullOrEmpty(p) && Directory.Exists(p))
+										if (!string.IsNullOrEmpty(p) && Directory.Exists(p))
 										{
 											DivinityApp.Log($"Found steam library folder at '{p}'.");
 											libraryFolders.Add(p);
@@ -218,7 +218,7 @@ public static class RegistryHelper
 						foreach (var folderPath in libraryFolders)
 						{
 							var checkFolder = Path.Join(folderPath, "steamapps", "common", steamGameInstallPath);
-							if (!String.IsNullOrEmpty(checkFolder) && Directory.Exists(checkFolder))
+							if (!string.IsNullOrEmpty(checkFolder) && Directory.Exists(checkFolder))
 							{
 								DivinityApp.Log($"Found game at '{checkFolder}'.");
 								lastGamePath = checkFolder;
@@ -235,7 +235,7 @@ public static class RegistryHelper
 			}
 
 			var gogGamePath = GetGOGInstallPath(gogRegKey32, gogRegKey64);
-			if (!String.IsNullOrEmpty(gogGamePath) && Directory.Exists(gogGamePath))
+			if (!string.IsNullOrEmpty(gogGamePath) && Directory.Exists(gogGamePath))
 			{
 				isGOG = true;
 				lastGamePath = gogGamePath;
@@ -254,9 +254,9 @@ public static class RegistryHelper
 	public static bool IsAssociatedWithNXMProtocol(string appExePath)
 	{
 		//Get the "(Default)" key value
-		var shellCommand = GetKey(Registry.ClassesRoot, REG_NXM_PROTOCOL_COMMAND, String.Empty)?.ToString();
+		var shellCommand = GetKey(Registry.ClassesRoot, REG_NXM_PROTOCOL_COMMAND, string.Empty)?.ToString();
 		DivinityApp.Log($"{REG_NXM_PROTOCOL_COMMAND}: {shellCommand}");
-		if (!String.IsNullOrEmpty(shellCommand))
+		if (!string.IsNullOrEmpty(shellCommand))
 		{
 			return shellCommand.IndexOf(appExePath, StringComparison.OrdinalIgnoreCase) > -1;
 		}
@@ -268,20 +268,20 @@ public static class RegistryHelper
 		try
 		{
 			var reg = Registry.ClassesRoot;
-			var shellCommand = GetKey(Registry.ClassesRoot, REG_NXM_PROTOCOL_COMMAND, String.Empty)?.ToString();
-			if (String.IsNullOrEmpty(shellCommand))
+			var shellCommand = GetKey(Registry.ClassesRoot, REG_NXM_PROTOCOL_COMMAND, string.Empty)?.ToString();
+			if (string.IsNullOrEmpty(shellCommand))
 			{
 				var baseKey = reg.CreateSubKey("nxm", true);
-				baseKey.SetValue(String.Empty, "URL:NXM Protocol", RegistryValueKind.String);
+				baseKey.SetValue(string.Empty, "URL:NXM Protocol", RegistryValueKind.String);
 				baseKey.SetValue("URL Protocol", "", RegistryValueKind.String);
 				var shellCommandKey = baseKey.CreateSubKey("shell").CreateSubKey("open").CreateSubKey("command");
-				shellCommandKey.SetValue(String.Empty, $"\"{appExePath}\" \"%1\"", RegistryValueKind.String);
+				shellCommandKey.SetValue(string.Empty, $"\"{appExePath}\" \"%1\"", RegistryValueKind.String);
 				reg.Close();
 			}
 			else if (shellCommand.IndexOf(appExePath, StringComparison.OrdinalIgnoreCase) == -1)
 			{
 				var key = reg.OpenSubKey(REG_NXM_PROTOCOL_COMMAND, true);
-				key.SetValue(String.Empty, $"\"{appExePath}\" \"%1\"", RegistryValueKind.String);
+				key.SetValue(string.Empty, $"\"{appExePath}\" \"%1\"", RegistryValueKind.String);
 			}
 			reg.Close();
 			return true;

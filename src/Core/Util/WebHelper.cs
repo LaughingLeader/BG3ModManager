@@ -42,6 +42,6 @@ public static class WebHelper
 		{
 			DivinityApp.Log($"Error downloading url ({downloadUrl}):\n{ex}");
 		}
-		return String.Empty;
+		return string.Empty;
 	}
 }

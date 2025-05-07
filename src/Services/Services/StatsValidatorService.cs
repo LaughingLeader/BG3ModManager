@@ -182,7 +182,7 @@ public class StatsValidatorService : IStatsValidatorService
 		loader.ResolveUsageRef();
 		loader.ValidateEntries();
 
-		List<string> files = context.Errors.Select(x => x.Location?.FileName).Where(x => !String.IsNullOrEmpty(x)).Distinct().ToList()!;
+		List<string> files = context.Errors.Select(x => x.Location?.FileName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList()!;
 		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(validationVFS, x, _gameDataPath, token)).ToArray());
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 

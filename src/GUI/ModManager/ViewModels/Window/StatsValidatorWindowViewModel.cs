@@ -50,7 +50,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 			result += "[WARN] ";
 		}
 
-		if (!String.IsNullOrEmpty(message.Location?.FileName))
+		if (!string.IsNullOrEmpty(message.Location?.FileName))
 		{
 			var baseName = Path.GetFileName(message.Location.FileName);
 			result += $"{baseName}:{message.Location.StartLine}: ";
@@ -84,14 +84,14 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 				{
 					lineText.Add(lines[i].Trim());
 				}
-				return String.Join(Environment.NewLine, lineText);
+				return string.Join(Environment.NewLine, lineText);
 			}
 			else if (lines != null && startLine < lines.Length)
 			{
 				return lines[startLine].Trim();
 			}
 		}
-		return String.Empty;
+		return string.Empty;
 	}
 
 	public void Load(ValidateModStatsResults result)
@@ -115,7 +115,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 			foreach (var fileGroup in entries)
 			{
 				var name = fileGroup.Key;
-				if (String.IsNullOrEmpty(name)) name = "Unknown";
+				if (string.IsNullOrEmpty(name)) name = "Unknown";
 				StatsValidatorFileResults fileResults = new() { FilePath = name };
 				foreach (var entry in fileGroup)
 				{

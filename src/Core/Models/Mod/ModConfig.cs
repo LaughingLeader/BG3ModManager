@@ -37,18 +37,18 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 			var match = _githubUrlPattern.Match(url);
 			if (match.Success)
 			{
-				var author = match.Groups[1]?.Value ?? String.Empty;
-				var repo = match.Groups[2]?.Value ?? String.Empty;
+				var author = match.Groups[1]?.Value ?? string.Empty;
+				var repo = match.Groups[2]?.Value ?? string.Empty;
 				return (author, repo);
 			}
 		}
-		return (String.Empty, String.Empty);
+		return (string.Empty, string.Empty);
 	}
 
 	public ModConfig()
 	{
 		var parseGitHubUrl = this.WhenAnyValue(x => x.GitHub).Select(GitHubUrlToParts);
-		parseGitHubUrl.Select(x => x.Item1).ToPropertyEx(this, x => x.GitHubAuthor, String.Empty, false, RxApp.MainThreadScheduler);
-		parseGitHubUrl.Select(x => x.Item2).ToPropertyEx(this, x => x.GitHubRepository, String.Empty, false, RxApp.MainThreadScheduler);
+		parseGitHubUrl.Select(x => x.Item1).ToPropertyEx(this, x => x.GitHubAuthor, string.Empty, false, RxApp.MainThreadScheduler);
+		parseGitHubUrl.Select(x => x.Item2).ToPropertyEx(this, x => x.GitHubRepository, string.Empty, false, RxApp.MainThreadScheduler);
 	}
 }
