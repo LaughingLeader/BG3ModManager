@@ -81,7 +81,7 @@ public static class ModUtils
 		vfs.AttachGameDirectory(gameDataPath, true);
 		foreach (var mod in mods)
 		{
-			if (!mod.IsEditorMod)
+			if (!mod.IsLooseMod)
 			{
 				if (File.Exists(mod.FilePath)) vfs.AttachPackage(mod.FilePath);
 			}

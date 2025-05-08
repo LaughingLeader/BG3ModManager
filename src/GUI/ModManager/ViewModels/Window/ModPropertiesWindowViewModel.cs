@@ -102,7 +102,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 		result += mod != null ? $"{mod.Name} Properties" : "Mod Properties";
 		return result;
 	}
-	private static string GetModType(ModData mod) => mod?.IsEditorMod == true ? "Toolkit Project" : "Pak";
+	private static string GetModType(ModData mod) => mod?.IsLooseMod == true ? "Toolkit Project" : "Pak";
 	private static string GetModFilePath(ModData mod) => StringUtils.ReplaceSpecialPathways(mod.FilePath);
 
 	private static string GetModSize(ModData mod)
@@ -113,7 +113,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 		{
 			if (mod != null && File.Exists(mod.FilePath))
 			{
-				if (mod.IsEditorMod)
+				if (mod.IsLooseMod)
 				{
 					var dir = new FileInfo(mod.FilePath).Directory!;
 					var length = dir.EnumerateFiles("*.*", SearchOption.AllDirectories).Sum(file => file.Length);
@@ -145,7 +145,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 		whenModSet.Select(GetModType).ToUIProperty(this, x => x.ModType);
 		whenModSet.Select(GetModSize).ToUIProperty(this, x => x.ModSizeText);
 		whenModSet.Select(GetModFilePath).ToUIProperty(this, x => x.ModFilePath);
-		whenModSet.Select(x => x.IsEditorMod).ToUIProperty(this, x => x.IsEditorMod);
+		whenModSet.Select(x => x.IsLooseMod).ToUIProperty(this, x => x.IsEditorMod);
 		whenModSet.Select(x => x.FileName).ToUIProperty(this, x => x.ModFileName);
 		whenModSet.Select(x => x.Name).ToUIProperty(this, x => x.ModName);
 		whenModSet.Select(x => x.Description).ToUIProperty(this, x => x.ModDescription);

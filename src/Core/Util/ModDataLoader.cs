@@ -11,6 +11,7 @@ using ModManager.Models.Mod.Game;
 using ModManager.Services;
 using ModManager.Util.Pak;
 
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -471,18 +472,18 @@ public static partial class ModDataLoader
 	}
 
 	private static async Task<List<ModData>> InternalLoadModDataFromPakAsync(Package pak, string pakPath,
-		Dictionary<string, ModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
+		IDictionary<string, ModData>? builtinFolders, CancellationToken token, bool skipFileParsing = false)
 	{
 		var pakName = Path.GetFileNameWithoutExtension(pakPath);
 
-		builtinMods ??= [];
+		builtinFolders ??= new Dictionary<string, ModData>();
 
 		var metaFiles = new List<PackagedFileInfo>();
 		var hasBuiltinDirectory = false;
 		var isOverridingBuiltinDirectory = false;
 		var hasModFolderData = false;
 		var hasOsirisScripts = DivinityOsirisModStatus.NONE;
-		var builtinModOverrides = new Dictionary<string, ModData>();
+		var builtinModOverrides = new ConcurrentDictionary<string, ModData>();
 		var files = new HashSet<string>();
 		var baseGameFiles = new HashSet<string>();
 
@@ -534,6 +535,7 @@ public static partial class ModDataLoader
 					else
 					{
 						var modFolderMatch = _ModFolderPattern.Match(entryFile);
+
 						if (modFolderMatch.Success)
 						{
 							var modFolder = Path.GetFileName(modFolderMatch.Groups[2].Value.TrimEnd(Path.DirectorySeparatorChar));
@@ -563,10 +565,10 @@ public static partial class ModDataLoader
 								}
 							}
 
-							if (builtinMods.TryGetValue(modFolder, out var builtinMod))
+							if (builtinFolders.TryGetValue(modFolder, out var builtinMod))
 							{
 								hasBuiltinDirectory = true;
-								if (!IgnoreBuiltinPath.Any(x => f.Name.Contains(x)))
+								if (!IgnoreBuiltinPath.Any(f.Name.Contains))
 								{
 									isOverridingBuiltinDirectory = true;
 
@@ -584,7 +586,7 @@ public static partial class ModDataLoader
 
 									if (!builtinModOverrides.ContainsKey(modFolder))
 									{
-										builtinModOverrides[builtinMod.Folder] = builtinMod;
+										builtinModOverrides.TryAdd(builtinMod.Folder!, builtinMod);
 										DivinityApp.Log($"Found a mod with a builtin directory. Pak({pakName}) Folder({modFolder}) File({f.Name})");
 									}
 								}
@@ -679,11 +681,17 @@ public static partial class ModDataLoader
 		{
 			if (isOverridingBuiltinDirectory)
 			{
+				var pakFolderName = pakName;
+				var firstFolderOverride = builtinModOverrides.FirstOrDefault();
+				if (firstFolderOverride.Key.IsValid())
+				{
+					pakFolderName = firstFolderOverride.Key;
+				}
 				loadedData.Add(new ModData(pakName)
 				{
 					FilePath = pakPath,
 					Name = pakName,
-					Folder = builtinModOverrides.FirstOrDefault().Key,
+					Folder = pakFolderName,
 					Description = "This file overrides base game data.",
 					ModType = "File Override",
 					LastModified = fileModified,
@@ -695,7 +703,7 @@ public static partial class ModDataLoader
 		return loadedData;
 	}
 
-	public static async Task<List<ModData>?> LoadModDataFromPakAsync(string pakPath, Dictionary<string, ModData>? builtinMods, CancellationToken token)
+	public static async Task<List<ModData>?> LoadModDataFromPakAsync(string pakPath, IDictionary<string, ModData>? builtinFolders, CancellationToken token)
 	{
 		try
 		{
@@ -703,7 +711,7 @@ public static partial class ModDataLoader
 			{
 				var pr = new PackageReader();
 				using var pak = pr.Read(pakPath);
-				return await InternalLoadModDataFromPakAsync(pak, pakPath, builtinMods, token);
+				return await InternalLoadModDataFromPakAsync(pak, pakPath, builtinFolders, token);
 			}
 		}
 		catch (Exception ex)
@@ -713,7 +721,7 @@ public static partial class ModDataLoader
 		return null;
 	}
 
-	public static async Task<List<ModData>?> LoadModDataFromPakAsync(FileStream stream, string pakPath, Dictionary<string, ModData>? builtinMods, CancellationToken token)
+	public static async Task<List<ModData>?> LoadModDataFromPakAsync(FileStream stream, string pakPath, IDictionary<string, ModData>? builtinFolders, CancellationToken token)
 	{
 		try
 		{
@@ -722,7 +730,7 @@ public static partial class ModDataLoader
 				stream.Position = 0;
 				var pr = new PackageReader();
 				using var pak = pr.Read(pakPath, stream);
-				return await InternalLoadModDataFromPakAsync(pak, pakPath, builtinMods, token);
+				return await InternalLoadModDataFromPakAsync(pak, pakPath, builtinFolders, token);
 			}
 		}
 		catch (Exception ex)
@@ -732,11 +740,11 @@ public static partial class ModDataLoader
 		return null;
 	}
 
-	public static async Task<List<ModData>?> LoadModDataFromPakAsync(Package package, Dictionary<string, ModData>? builtinMods, CancellationToken token, bool skipFileParsing = false)
+	public static async Task<List<ModData>?> LoadModDataFromPakAsync(Package package, IDictionary<string, ModData>? builtinFolders, CancellationToken token, bool skipFileParsing = false)
 	{
 		try
 		{
-			return await InternalLoadModDataFromPakAsync(package, package.PackagePath, builtinMods, token, skipFileParsing);
+			return await InternalLoadModDataFromPakAsync(package, package.PackagePath, builtinFolders, token, skipFileParsing);
 		}
 		catch (Exception ex)
 		{
@@ -1642,7 +1650,7 @@ public static partial class ModDataLoader
 					if (Path.Equals(filePath, modInfo.ModsPath))
 					{
 						fileTimeFile = Path.GetFullPath(modInfo.Meta, directoryPath);
-						modData.IsEditorMod = true;
+						modData.IsLooseMod = true;
 					}
 
 					try
@@ -1681,12 +1689,19 @@ public static partial class ModDataLoader
 	{
 		var time = DateTimeOffset.Now;
 
-		ModDirectoryLoadingResults baseMods = null!;
+		ConcurrentDictionary<string, ModData> baseMods = [];
+
+		foreach (var mod in DivinityApp.IgnoredMods.Items)
+		{
+			baseMods.TryAdd(mod.Folder!, mod);
+		}
+
+		ModDirectoryLoadingResults dataDirMods = null!;
 
 		if(Directory.Exists(gameDataPath))
 		{
 			using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
-			baseMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
+			dataDirMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
 
 			DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{gameDataPath}'");
 
@@ -1694,23 +1709,15 @@ public static partial class ModDataLoader
 		}
 		else
 		{
-			baseMods = new ModDirectoryLoadingResults(gameDataPath);
+			dataDirMods = new ModDirectoryLoadingResults(gameDataPath);
 		}
 
-		foreach (var mod in DivinityApp.IgnoredMods.Items)
-		{
-			if (mod.UUID.IsValid() && !baseMods.Mods.ContainsKey(mod.UUID))
-			{
-				baseMods.Mods[mod.UUID] = mod;
-			}
-		}
-
-		using var userPakParser = new DirectoryPakParser(userModsPath, FileUtils.FlatSearchOptions, baseMods.Mods, []);
+		using var userPakParser = new DirectoryPakParser(userModsPath, FileUtils.FlatSearchOptions, baseMods, []);
 		var userMods = await userPakParser.ProcessAsync(detectDuplicates: true, parseLooseMetaFiles: false, token);
 
 		DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{userModsPath}'");
 
-		return new ModsLoadingResults(baseMods, userMods);
+		return new ModsLoadingResults(dataDirMods, userMods);
 	}
 
 	public static ModuleInfo? TryGetMetaFromPakFileStream(FileStream stream, string filePath, CancellationToken token)

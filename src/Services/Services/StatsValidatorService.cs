@@ -131,7 +131,7 @@ public class StatsValidatorService : IStatsValidatorService
 
 		foreach (var mod in mods)
 		{
-			if (!mod.IsEditorMod)
+			if (!mod.IsLooseMod)
 			{
 				if (_fs.File.Exists(mod.FilePath))
 				{

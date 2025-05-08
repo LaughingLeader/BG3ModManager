@@ -94,7 +94,7 @@ public struct ModFilterData
 
 			if (PropertyContains("Editor"))
 			{
-				if (mod.IsEditorMod) return true;
+				if (mod.IsLooseMod) return true;
 			}
 
 			if (PropertyContains("Modified") || PropertyContains("Updated"))

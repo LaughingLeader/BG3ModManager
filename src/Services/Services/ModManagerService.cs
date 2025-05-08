@@ -272,7 +272,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 
 		var selectedModsConnection = _modsConnection.AutoRefresh(x => x.IsSelected, TimeSpan.FromMilliseconds(25)).AutoRefresh(x => x.IsActive, TimeSpan.FromMilliseconds(25)).Filter(x => x.IsSelected);
 
-		selectedModsConnection.Filter(x => x.IsSelected && !x.IsEditorMod && File.Exists(x.FilePath)).Bind(out _selectedPakMods).Subscribe();
+		selectedModsConnection.Filter(x => x.IsSelected && !x.IsLooseMod && File.Exists(x.FilePath)).Bind(out _selectedPakMods).Subscribe();
 		selectedModsConnection.Filter(x => x.IsActive).Count().ToUIProperty(this, x => x.ActiveSelected);
 		selectedModsConnection.Filter(x => !x.IsActive).Count().ToUIProperty(this, x => x.InactiveSelected);
 		forceLoadedObs.AutoRefresh(x => x.IsSelected).Filter(x => x.IsSelected).Count().ToUIProperty(this, x => x.OverrideModsSelected);

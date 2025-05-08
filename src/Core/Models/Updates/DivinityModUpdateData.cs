@@ -73,7 +73,7 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 		Mod = mod;
 		DownloadData = downloadData;
 
-		this.WhenAnyValue(x => x.Mod.IsEditorMod).ToUIProperty(this, x => x.IsEditorMod);
+		this.WhenAnyValue(x => x.Mod.IsLooseMod).ToUIProperty(this, x => x.IsEditorMod);
 		this.WhenAnyValue(x => x.Mod.AuthorDisplayName).ToUIProperty(this, x => x.Author);
 		this.WhenAnyValue(x => x.Mod.Version.Version).ToUIProperty(this, x => x.CurrentVersion);
 		this.WhenAnyValue(x => x.Mod.FilePath).ToUIProperty(this, x => x.LocalFilePath);

@@ -34,6 +34,7 @@
 		<PackageReference Include="Avalonia.Themes.Fluent" />
 		<PackageReference Include="Avalonia.Xaml.Behaviors" />
 		<PackageReference Include="Avalonia.Xaml.Interactions" />
+		<PackageReference Include="Avalonia.Labs.Controls" />
 		<PackageReference Include="Material.Icons.Avalonia" />
 		<PackageReference Include="AsyncImageLoader.Avalonia" />
 		<PackageReference Include="ConfigureAwait.Fody" PrivateAssets="all" />
@@ -67,5 +68,9 @@
 		<!-- Exclude the output of source generators from the compilation -->
 		<Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
 		<None Include="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\Mod\" />
 	</ItemGroup>
 </Project>

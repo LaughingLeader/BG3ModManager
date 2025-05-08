@@ -7,8 +7,11 @@ using ModManager.Models.Modio;
 using ModManager.Models.NexusMods;
 using ModManager.Util;
 
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ModManager.Models.Mod;
 
@@ -93,12 +96,15 @@ public class ModData : ReactiveObject, IModData
 	[ObservableAsProperty] public int TotalConflicts { get; }
 
 	[Reactive] public bool HasScriptExtenderSettings { get; set; }
-
-	[Reactive] public bool IsEditorMod { get; set; }
 	[Reactive] public bool IsActive { get; set; }
 	[Reactive] public bool IsSelected { get; set; }
 	[Reactive] public bool IsExpanded { get; set; }
 	[Reactive] public bool IsDraggable { get; set; }
+
+	[Reactive] public bool IsLooseMod { get; set; }
+
+	[Reactive] public bool IsToolkitProject { get; set; }
+	[Reactive] public ToolkitProjectMetaData? ToolkitProjectMeta { get; set; }
 
 	public string? OutputPakName
 	{
@@ -128,6 +134,8 @@ public class ModData : ReactiveObject, IModData
 	[ObservableAsProperty] public string ForceAllowInLoadOrderLabel { get; }
 	[ObservableAsProperty] public string ToggleModNameLabel { get; }
 	[ObservableAsProperty] public string? DisplayVersion { get; }
+	[ObservableAsProperty] public string ModDisplayTypeName { get; }
+	[ObservableAsProperty] public string ModDisplayTypeForeground { get; }
 	[ObservableAsProperty] public string? LastModifiedDateText { get; }
 	[ObservableAsProperty] public string? Notes { get; }
 	[ObservableAsProperty] public string? OsirisStatusToolTipText { get; }
@@ -182,30 +190,30 @@ public class ModData : ReactiveObject, IModData
 	[Reactive] public NexusModsModData NexusModsData { get; set; }
 	[Reactive] public GitHubModData GitHubData { get; set; }
 
-	private static string GetDisplayName(ValueTuple<string?, string?, string?, string?, bool, bool, string?> x)
+	private static string GetDisplayName(string? name, string? fileName, string? folder, string uuid, bool isLooseMod, bool isToolkitProject, bool displayFileForName, string? nameOverride)
 	{
-		var name = x.Item1;
-		var fileName = x.Item2;
-		var folder = x.Item3;
-		var uuid = x.Item4;
-		var isEditorMod = x.Item5;
-		var displayFileForName = x.Item6;
-		var nameOverride = x.Item7;
 		if (displayFileForName)
 		{
-			if (!isEditorMod)
+			if (!isLooseMod)
 			{
 				if (fileName.IsValid()) return fileName;
 			}
 			else if(folder.IsValid())
 			{
-				return folder + " [Toolkit Project]";
+				if(isToolkitProject)
+				{
+					return folder + " [Toolkit Project]";
+				}
+				else
+				{
+					return folder + " [Loose Mod]";
+				}
 			}
 		}
 		else
 		{
-			if (nameOverride.IsValid() == true) return nameOverride;
-			if (name.IsValid() == true) return name;
+			if (nameOverride.IsValid()) return nameOverride;
+			if (name.IsValid()) return name;
 		}
 		return "";
 	}
@@ -606,6 +614,26 @@ public class ModData : ReactiveObject, IModData
 		return result;
 	}
 
+	private static string GetModDisplayTypeName(ValueTuple<bool, bool, bool, string?> x)
+	{
+		(bool isLooseMod, bool IsToolkitProject, bool isForceLoaded, string? modType) = x;
+
+		if (IsToolkitProject) return "Toolkit Project";
+		if (isLooseMod) return "Loose Mod";
+		if (isForceLoaded) return "Override";
+		return modType != "Adventure" ? "Add-on" : "Adventure";
+	}
+
+	private static string GetModDisplayTypeForeground(ValueTuple<bool, bool, bool, string?> x)
+	{
+		(bool isLooseMod, bool IsToolkitProject, bool isForceLoaded, string? modType) = x;
+
+		if (IsToolkitProject) return "Lime";
+		if (isLooseMod) return "Yellow";
+		if (isForceLoaded) return "Orange";
+		return string.Empty;
+	}
+
 	public ModData(string uuid)
 	{
 		Version = LarianVersion.Empty;
@@ -637,8 +665,11 @@ public class ModData : ReactiveObject, IModData
 		this.WhenAnyValue(x => x.FilePath).Select(f => Path.GetFileName(f)).BindTo(this, x => x.FileName);
 		this.WhenAnyValue(x => x.Author, x => x.NexusModsData.Author, x => x.GitHubData.Author, x => x.ModioData.Author, x => x.IsLarianMod).Select(GetAuthor).BindTo(this, x => x.AuthorDisplayName);
 
-		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName, x => x.NameOverride)
-			.Select(GetDisplayName).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.DisplayName);
+		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsLooseMod, 
+			x => x.IsToolkitProject, x => x.DisplayFileForName, x => x.NameOverride, GetDisplayName)
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.BindTo(this, x => x.DisplayName);
+
 		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.HasDescription);
 
 		this.WhenAnyValue(x => x.AuthorDisplayName).Select(Validators.IsValid).ToUIPropertyImmediate(this, x => x.HasAuthor);
@@ -691,7 +722,7 @@ public class ModData : ReactiveObject, IModData
 			.Select(CheckForInvalidUUID)
 			.ToUIPropertyImmediate(this, x => x.HasInvalidUUID);
 
-		this.WhenAnyValue(x => x.IsEditorMod, x => x.DisplayExtraIcons)
+		this.WhenAnyValue(x => x.IsLooseMod, x => x.DisplayExtraIcons)
 			.AllTrue()
 			.ToUIPropertyImmediate(this, x => x.HasToolkitIcon);
 
@@ -716,14 +747,21 @@ public class ModData : ReactiveObject, IModData
 			.Select(x => x.Item1.IsValid() || x.Item2.IsValid())
 			.BindTo(this, x => x.HasColorOverride);
 
-		this.WhenAnyValue(x => x.IsForceLoadedMergedMod, x => x.IsEditorMod, x => x.IsForceLoaded, x => x.ForceAllowInLoadOrder, x => x.IsActive)
+		this.WhenAnyValue(x => x.IsForceLoadedMergedMod, x => x.IsLooseMod, x => x.IsForceLoaded, x => x.ForceAllowInLoadOrder, x => x.IsActive)
 			.ObserveOn(RxApp.MainThreadScheduler).Subscribe(UpdateColors);
 
 		this.WhenAnyValue(x => x.Description, x => x.HasDependencies, x => x.UUID).
 			Select(x => x.Item1.IsValid() || x.Item2 || x.Item3.IsValid())
 			.ToUIProperty(this, x => x.HasToolTip, true);
 
-		this.WhenAnyValue(x => x.IsEditorMod, x => x.IsHidden, x => x.FilePath,
+		var whenModDisplayType = this.WhenAnyValue(x => x.IsLooseMod, x => x.IsToolkitProject, x => x.IsForceLoaded, x => x.ModType);
+		whenModDisplayType.Select(GetModDisplayTypeName)
+			.ToUIProperty(this, x => x.ModDisplayTypeName, "Add-on");
+
+		whenModDisplayType.Select(GetModDisplayTypeForeground)
+			.ToUIProperty(this, x => x.ModDisplayTypeForeground, string.Empty);
+
+		this.WhenAnyValue(x => x.IsLooseMod, x => x.IsHidden, x => x.FilePath,
 			(isEditorMod, isHidden, path) => !isEditorMod && !isHidden && path.IsValid())
 			.ToUIPropertyImmediate(this, x => x.CanDelete);
 

@@ -1,23 +1,26 @@
 ﻿using LSLib.LS;
 
+using ModManager.Extensions;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
+using ModManager.Models.Mod.Game;
 using ModManager.Services;
 
 using System.Collections.Concurrent;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ModManager.Util.Pak;
 
 public partial class DirectoryPakParser(string directoryPath, EnumerationOptions? opts = null,
-	Dictionary<string, ModData>? baseMods = null, HashSet<string>? packageBlackList = null) : IDisposable
+	IDictionary<string, ModData>? baseMods = null, HashSet<string>? packageBlackList = null) : IDisposable
 {
 	private bool _isDisposed;
 	private readonly List<Package> _packages = [];
 	private readonly IFileSystemService _fs = Locator.Current.GetService<IFileSystemService>()!;
 	private readonly IEnvironmentService _environment = Locator.Current.GetService<IEnvironmentService>()!;
 	private readonly EnumerationOptions _opts = opts ?? FileUtils.FlatSearchOptions;
-	private readonly Dictionary<string, ModData> _baseMods = baseMods ?? [];
+	private readonly IDictionary<string, ModData> _baseMods = baseMods ?? new Dictionary<string, ModData>();
 	private readonly HashSet<string> _packageBlackList = packageBlackList ?? PackageBlacklistBG3;
 
 	public string? DirectoryPath { get; } = directoryPath;
@@ -52,7 +55,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		"Effects.pak",
 		"Engine.pak",
 		"EngineShaders.pak",
-		"Game.pak",
+		//"Game.pak",
 		"GamePlatform.pak",
 		"Gustav_NavCloud.pak",
 		"Gustav_Textures.pak",
@@ -89,7 +92,6 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 
 	private async Task<ModDirectoryLoadingResults> LoadPackagesAsync(bool detectDuplicates, bool parseLooseMetaFiles, CancellationToken token)
 	{
-
 		var opts = new ParallelOptions()
 		{
 			CancellationToken = token,
@@ -126,46 +128,85 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		});
 
 
-		if (parseLooseMetaFiles && Path.Combine(directoryPath, "Mods") is var modProjectDirectory && Directory.Exists(modProjectDirectory))
+		if (parseLooseMetaFiles)
 		{
-			var metaFiles = Directory.EnumerateFiles(modProjectDirectory, "meta.lsx", FileUtils.RecursiveOptions);
-			await Parallel.ForEachAsync(metaFiles, opts, async (metaFilePath, t) =>
+			var modsMetaDirectory = Path.Join(directoryPath, "Mods");
+			var projectsMetaDirectory = Path.Join(directoryPath, "Projects");
+
+			var toolkitProjects = new ConcurrentDictionary<string, ToolkitProjectMetaData>();
+
+			if (projectsMetaDirectory.IsExistingDirectory())
 			{
-				var mod = await ModDataLoader.GetModDataFromMeta(metaFilePath, t);
-				if (mod != null)
+				var toolkitMetaFiles = Directory.EnumerateFiles(projectsMetaDirectory, "meta.lsx", FileUtils.RecursiveOptions);
+
+				await Parallel.ForEachAsync(toolkitMetaFiles, opts, async (toolkitMetaPath, t) =>
 				{
-					mod.IsEditorMod = true;
-					mod.FilePath = metaFilePath;
-
-					var parentFolder = _fs.Path.GetDirectoryName(metaFilePath)!;
-					await ModDataLoader.TryLoadConfigFilesFromPath(_fs, parentFolder, mod, token);
-
 					try
 					{
-						mod.LastModified = _fs.File.GetLastWriteTime(metaFilePath);
+						var lsxResource = await ModDataLoader.LoadResourceAsync(toolkitMetaPath, LSLib.LS.Enums.ResourceFormat.LSX);
+						if(lsxResource != null)
+						{
+							var toolkitMeta = ToolkitProjectMetaData.FromResource(lsxResource);
+							if(toolkitMeta.Module.IsValid())
+							{
+								toolkitMeta.FilePath = toolkitMetaPath;
+								toolkitProjects.TryAdd(toolkitMeta.Module, toolkitMeta);
+							}
+						}
 					}
 					catch (Exception ex)
 					{
-						DivinityApp.Log($"Error getting last modified date for '{mod.FilePath}': {ex}");
+						DivinityApp.Log($"Error parsing '{toolkitMetaPath}':\n{ex}");
 					}
+				});
+			}
 
-					if (detectDuplicates)
+			if(modsMetaDirectory.IsExistingDirectory())
+			{
+				var metaFiles = Directory.EnumerateFiles(modsMetaDirectory, "meta.lsx", FileUtils.RecursiveOptions);
+				await Parallel.ForEachAsync(metaFiles, opts, async (metaFilePath, t) =>
+				{
+					var mod = await ModDataLoader.GetModDataFromMeta(metaFilePath, t);
+					if (mod != null)
 					{
-						if (loadedMods.ContainsKey(mod.UUID))
+						mod.IsLooseMod = true;
+						mod.FilePath = metaFilePath;
+						if (toolkitProjects.TryGetValue(mod.UUID, out var toolkitData))
 						{
-							dupes.Add(mod);
+							mod.IsToolkitProject = true;
+							mod.ToolkitProjectMeta = toolkitData;
+						}
+
+						var parentFolder = _fs.Path.GetDirectoryName(metaFilePath)!;
+						await ModDataLoader.TryLoadConfigFilesFromPath(_fs, parentFolder, mod, token);
+
+						try
+						{
+							mod.LastModified = _fs.File.GetLastWriteTime(metaFilePath);
+						}
+						catch (Exception ex)
+						{
+							DivinityApp.Log($"Error getting last modified date for '{mod.FilePath}': {ex}");
+						}
+
+						if (detectDuplicates)
+						{
+							if (loadedMods.ContainsKey(mod.UUID))
+							{
+								dupes.Add(mod);
+							}
+							else
+							{
+								loadedMods[mod.UUID] = mod;
+							}
 						}
 						else
 						{
 							loadedMods[mod.UUID] = mod;
 						}
 					}
-					else
-					{
-						loadedMods[mod.UUID] = mod;
-					}
-				}
-			});
+				});
+			}
 		}
 
 		return new ModDirectoryLoadingResults(DirectoryPath)

@@ -1312,7 +1312,7 @@ Directory the zip will be extracted to:
 	{
 		Window = window;
 
-		var canExtractAdventure = ViewModelLocator.ModOrder.WhenAnyValue(x => x.SelectedAdventureMod).Select(x => x != null && !x.IsEditorMod && !x.IsLarianMod);
+		var canExtractAdventure = ViewModelLocator.ModOrder.WhenAnyValue(x => x.SelectedAdventureMod).Select(x => x != null && !x.IsLooseMod && !x.IsLarianMod);
 		//Keys.ExtractSelectedAdventure.AddAsyncAction(ExtractSelectedAdventure, canExtractAdventure);
 
 		ViewModelLocator.DeleteFiles.WhenAnyValue(x => x.IsVisible).ToUIProperty(this, x => x.IsDeletingFiles);
@@ -1467,7 +1467,7 @@ Directory the zip will be extracted to:
 	{
 		var mod = ViewModelLocator.ModOrder.SelectedAdventureMod;
 
-		if (mod == null || mod.IsEditorMod || mod.IsLarianMod || !File.Exists(mod.FilePath))
+		if (mod == null || mod.IsLooseMod || mod.IsLarianMod || !File.Exists(mod.FilePath))
 		{
 			var displayName = mod != null ? mod.DisplayName : "";
 			_globalCommands.ShowAlert($"Current adventure mod '{displayName}' is not extractable", AlertType.Warning, 30);

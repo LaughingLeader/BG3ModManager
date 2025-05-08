@@ -697,7 +697,7 @@ public class ModImportService(IDialogService _dialogService)
 				foreach (var mod in modPaks)
 				{
 					if (token.IsCancellationRequested) return false;
-					if (!mod.IsEditorMod)
+					if (!mod.IsLooseMod)
 					{
 						var fileName = Path.GetFileName(mod.FilePath);
 						await WriteZipAsync(zipWriter, fileName, mod.FilePath, token);
