@@ -35,6 +35,8 @@ public class ProfileData : ReactiveObject
 
 	public ProfileData()
 	{
-		this.WhenAnyValue(x => x.FilePath).Select(x => !string.IsNullOrEmpty(x) ? Path.Join(x, "modsettings.lsx") : "").BindTo(this, x => x.ModSettingsFile);
+		this.WhenAnyValue(x => x.FilePath)
+			.Select(x => x.IsValid() ? Path.Join(x, "modsettings.lsx") : string.Empty)
+			.BindTo(this, x => x.ModSettingsFile);
 	}
 }

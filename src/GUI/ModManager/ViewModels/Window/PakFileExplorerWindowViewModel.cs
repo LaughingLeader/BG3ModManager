@@ -6,6 +6,7 @@ using DynamicData.Binding;
 
 using LSLib.LS;
 
+using ModManager.Extensions;
 using ModManager.Helpers;
 using ModManager.Models.View;
 using ModManager.Services;
@@ -343,7 +344,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 		this.WhenAnyValue(x => x.PakFilePath)
 			.WhereNotNull()
-			.Where(x => !string.IsNullOrEmpty(x) && File.Exists(x))
+			.Where(StringExtensions.IsExistingFile)
 			.ObserveOn(RxApp.MainThreadScheduler)
 			.Subscribe(OnPakPathChanged);
 	}

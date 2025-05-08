@@ -20,6 +20,7 @@ public class ModioModData : ReactiveObject
 	[ObservableAsProperty] public string? Description { get; }
 	[ObservableAsProperty] public DateTimeOffset LastUpdated { get; }
 	[ObservableAsProperty] public string? ExternalLink { get; }
+	[ObservableAsProperty] public string? Author { get; }
 
 	private static readonly string _modPageUrlPattern = "https://mod.io/g/baldursgate3/m/{0}";
 
@@ -37,6 +38,7 @@ public class ModioModData : ReactiveObject
 		whenData.Select(x => x.DescriptionPlaintext).ToUIProperty(this, x => x.Description);
 		whenData.Select(x => x.DateUpdated).Select(DateTimeOffset.FromUnixTimeSeconds).ToUIProperty(this, x => x.LastUpdated);
 		whenData.Select(x => x.NameId).Select(x => string.Format(_modPageUrlPattern, x)).ToUIProperty(this, x => x.ExternalLink);
+		whenData.Select(x => x.SubmittedBy?.Username).ToUIProperty(this, x => x.Author);
 
 		this.WhenAnyValue(x => x.Id).Select(x => x != 0).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.IsEnabled);
 	}

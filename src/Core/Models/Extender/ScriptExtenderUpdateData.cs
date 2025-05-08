@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using ModManager.Extensions;
+
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace ModManager.Models.Extender;
@@ -9,14 +11,14 @@ public class ScriptExtenderUpdateData
 	[DataMember] public int ManifestMinorVersion { get; set; }
 	[DataMember] public int ManifestVersion { get; set; }
 	[DataMember] public string? NoMatchingVersionNotice { get; set; }
-	[DataMember] public List<ScriptExtenderUpdateResource> Resources { get; set; }
+	[DataMember] public List<ScriptExtenderUpdateResource>? Resources { get; set; }
 }
 
 [DataContract]
 public class ScriptExtenderUpdateResource
 {
 	[DataMember] public string? Name { get; set; }
-	[DataMember] public List<ScriptExtenderUpdateVersion> Versions { get; set; }
+	[DataMember] public List<ScriptExtenderUpdateVersion>? Versions { get; set; }
 }
 
 [DataContract]
@@ -40,15 +42,15 @@ public class ScriptExtenderUpdateVersion : ReactiveObject
 		return date.ToString(DivinityApp.DateTimeExtenderBuildFormat, CultureInfo.InstalledUICulture);
 	}
 
-	private static string ToDisplayName(ValueTuple<string, string, string> data)
+	private static string ToDisplayName(ValueTuple<string?, string?, string?> data)
 	{
-		if (string.IsNullOrEmpty(data.Item1)) return "Latest";
+		if (!data.Item1.IsValid()) return "Latest";
 		var result = data.Item1;
-		if (!string.IsNullOrEmpty(data.Item2))
+		if (data.Item2.IsValid())
 		{
 			result += $" ({data.Item2})";
 		}
-		if (!string.IsNullOrEmpty(data.Item3))
+		if (data.Item3.IsValid())
 		{
 			result += $" - {data.Item3}";
 		}
@@ -57,7 +59,7 @@ public class ScriptExtenderUpdateVersion : ReactiveObject
 
 	public ScriptExtenderUpdateVersion()
 	{
-		this.WhenAnyValue(x => x.Version).Select(x => string.IsNullOrEmpty(x))
+		this.WhenAnyValue(x => x.Version).Select(x => !x.IsValid())
 			.ToUIProperty(this, x => x.IsEmpty);
 
 		this.WhenAnyValue(x => x.BuildDate).Select(TimestampToReadableString)

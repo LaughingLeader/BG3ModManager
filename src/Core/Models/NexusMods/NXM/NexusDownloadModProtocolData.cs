@@ -16,7 +16,7 @@ public class NexusDownloadModProtocolData : INexusModsProtocol
 	public string? Key { get; set; }
 	public int Expires { get; set; }
 
-	public bool IsValid => !string.IsNullOrEmpty(GameDomain) && ModId > 0 && FileId > 0 && UserId > 0 && !string.IsNullOrEmpty(Key) && Expires > 0;
+	public bool IsValid => GameDomain.IsValid() && ModId > 0 && FileId > 0 && UserId > 0 && Key.IsValid() && Expires > 0;
 
 	public string AsUrl => $"nxm://{GameDomain}/mods/{ModId}/files/{FileId}?key={Key}&expires={Expires}&user_id={UserId}";
 
@@ -34,7 +34,7 @@ public class NexusDownloadModProtocolData : INexusModsProtocol
 	public static NexusDownloadModProtocolData FromUrl(string url)
 	{
 		var data = new NexusDownloadModProtocolData();
-		if (!string.IsNullOrEmpty(url))
+		if (url.IsValid())
 		{
 			var urlData = _pattern.Match(url);
 			if (urlData.Success)

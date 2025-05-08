@@ -69,13 +69,13 @@ public class ModImportService(IDialogService _dialogService)
 	{
 		var directory = prioritizePath;
 
-		if (!string.IsNullOrEmpty(prioritizePath) && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
+		if (prioritizePath.IsValid() && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
 		{
 			directory = actualDir;
 		}
 		else
 		{
-			if (!string.IsNullOrEmpty(Settings.LastImportDirectoryPath))
+			if (Settings.LastImportDirectoryPath.IsValid())
 			{
 				directory = Settings.LastImportDirectoryPath;
 			}
@@ -86,7 +86,7 @@ public class ModImportService(IDialogService _dialogService)
 			}
 		}
 
-		if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+		if (!directory.IsExistingDirectory())
 		{
 			directory = DivinityApp.GetAppDirectory();
 		}
@@ -659,7 +659,7 @@ public class ModImportService(IDialogService _dialogService)
 			var tempDir = DivinityApp.GetAppDirectory("Temp");
 			Directory.CreateDirectory(tempDir);
 
-			if (string.IsNullOrEmpty(outputPath))
+			if (!outputPath.IsValid())
 			{
 				var baseOrderName = selectedModOrder.Name;
 				if (selectedModOrder.IsModSettings)
@@ -779,11 +779,11 @@ public class ModImportService(IDialogService _dialogService)
 		else if (fileType.Equals(".tsv", StringComparison.OrdinalIgnoreCase))
 		{
 			outputText = "Index\tName\tAuthor\tFileName\tTags\tDependencies\tURL\n";
-			outputText += string.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(x => !string.IsNullOrEmpty(x)));
+			outputText += string.Join("\n", exportMods.Select(x => x.Export(ModExportType.TSV)).Where(Validators.IsValid));
 		}
 		else
 		{
-			outputText = string.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(x => !string.IsNullOrEmpty(x)));
+			outputText = string.Join("\n", exportMods.Select(x => x.Export(ModExportType.TXT)).Where(Validators.IsValid));
 		}
 		try
 		{

@@ -142,7 +142,7 @@ public static partial class ModDataLoader
 
 	private static ulong SafeConvertStringUnsigned(string str)
 	{
-		if (!string.IsNullOrWhiteSpace(str) && UInt64.TryParse(str, out var val))
+		if (str.IsValid() && UInt64.TryParse(str, out var val))
 		{
 			return val;
 		}
@@ -152,7 +152,7 @@ public static partial class ModDataLoader
 	public static string EscapeXml(string s)
 	{
 		var toxml = s;
-		if (!string.IsNullOrEmpty(toxml))
+		if (toxml.IsValid())
 		{
 			// replace literal values with entities
 			toxml = toxml.Replace("&", "&amp;");
@@ -166,7 +166,7 @@ public static partial class ModDataLoader
 
 	public static string EscapeXmlAttributes(string xmlstring)
 	{
-		if (!string.IsNullOrEmpty(xmlstring))
+		if (xmlstring.IsValid())
 		{
 			xmlstring = XamlValuePattern().Replace(xmlstring, new MatchEvaluator((m) =>
 			{
@@ -178,7 +178,7 @@ public static partial class ModDataLoader
 
 	public static string UnescapeXml(string str)
 	{
-		if (!string.IsNullOrEmpty(str))
+		if (str.IsValid())
 		{
 			str = str.Replace("&amp;", "&");
 			str = str.Replace("&apos;", "'");
@@ -258,7 +258,7 @@ public static partial class ModDataLoader
 				//}
 
 				var tagsText = GetAttributeWithId(moduleInfoNode, "Tags", "");
-				if (!string.IsNullOrWhiteSpace(tagsText))
+				if (tagsText.IsValid())
 				{
 					modData.AddTags(tagsText.Split(';'));
 				}
@@ -282,7 +282,7 @@ public static partial class ModDataLoader
 								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							};
 
-							if (!string.IsNullOrEmpty(entryMod.UUID))
+							if (entryMod.UUID.IsValid())
 							{
 								modData.Dependencies.AddOrUpdate(entryMod);
 							}
@@ -309,7 +309,7 @@ public static partial class ModDataLoader
 								Version = LarianVersion.FromInt(SafeConvertStringUnsigned(GetAttributeWithId(node, VersionAttributes, ""))),
 							};
 
-							if (!string.IsNullOrEmpty(entryMod.UUID))
+							if (entryMod.UUID.IsValid())
 							{
 								modData.Conflicts.AddOrUpdate(entryMod);
 							}
@@ -833,12 +833,12 @@ public static partial class ModDataLoader
 					}
 				}
 
-				if (string.IsNullOrEmpty(name))
+				if (!name.IsValid())
 				{
 					name = folderName;
 				}
 
-				if (string.IsNullOrEmpty(displayedName))
+				if (!displayedName.IsValid())
 				{
 					displayedName = name;
 				}
@@ -1382,11 +1382,11 @@ public static partial class ModDataLoader
 
 		foreach (var mod in orderList)
 		{
-			if (!string.IsNullOrWhiteSpace(mod.UUID))
+			if (mod.UUID.IsValid())
 			{
 				//Use Export to support lists with categories/things that don't need exporting
 				var modText = mod.Export(ModExportType.XML);
-				if (!string.IsNullOrEmpty(modText))
+				if (modText.IsValid())
 				{
 					modShortDescText += modText + Environment.NewLine;
 				}
@@ -1564,8 +1564,7 @@ public static partial class ModDataLoader
 		{
 			using var reader = File.OpenText(configFile);
 			var text = await reader.ReadToEndAsync();
-			if (!string.IsNullOrWhiteSpace(text) &&
-				JsonUtils.TrySafeDeserialize<ModScriptExtenderConfig>(text, out var config))
+			if (text.IsValid() && JsonUtils.TrySafeDeserialize<ModScriptExtenderConfig>(text, out var config))
 			{
 				return config;
 			}
@@ -1583,8 +1582,7 @@ public static partial class ModDataLoader
 		{
 			using var sr = new StreamReader(stream);
 			var text = await sr.ReadToEndAsync();
-			if (!string.IsNullOrWhiteSpace(text)
-				&& JsonUtils.TrySafeDeserialize<ModScriptExtenderConfig>(text, out var config))
+			if (text.IsValid() && JsonUtils.TrySafeDeserialize<ModScriptExtenderConfig>(text, out var config))
 			{
 				return config;
 			}
@@ -1620,7 +1618,7 @@ public static partial class ModDataLoader
 			if (modData != null)
 			{
 				var filePath = modInfo.PackagePath;
-				if (string.IsNullOrEmpty(filePath))
+				if (!filePath.IsValid())
 				{
 					filePath = modInfo.ModsPath;
 				}
@@ -1636,7 +1634,7 @@ public static partial class ModDataLoader
 					}
 				}
 
-				if (!string.IsNullOrEmpty(filePath))
+				if (filePath.IsValid())
 				{
 					modData.FilePath = filePath;
 					var fileTimeFile = filePath;
@@ -1657,7 +1655,7 @@ public static partial class ModDataLoader
 					}
 				}
 
-				modData.IsLarianMod = modData.Author.Contains("Larian") || string.IsNullOrEmpty(modData.Author);
+				modData.IsLarianMod = modData.Author?.Contains("Larian") == true || !modData.Author.IsValid();
 				var isBaseMod = (modData.UUID != null && DivinityApp.IgnoredMods.Lookup(modData.UUID).HasValue) || modData.IsLarianMod;
 				if (isBaseMod)
 				{

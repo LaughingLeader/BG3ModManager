@@ -127,7 +127,7 @@ public static class ImportUtils
 								var result = new byte[length];
 								await entryStream.ReadAsync(result, 0, length);
 								var text = Encoding.UTF8.GetString(result);
-								if (!string.IsNullOrWhiteSpace(text))
+								if (text.IsValid())
 								{
 									options.ImportedJsonFiles.Add(new ImportedJsonFile { FileName = Path.GetFileNameWithoutExtension(file.Key), Text = text });
 								}

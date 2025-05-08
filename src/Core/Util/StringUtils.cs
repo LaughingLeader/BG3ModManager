@@ -72,9 +72,9 @@ public static class StringUtils
 		return input;
 	}
 
-	public static Uri StringToUri(string value)
+	public static Uri? StringToUri(string? value)
 	{
-		if (!string.IsNullOrEmpty(value))
+		if (value.IsValid())
 		{
 			return new Uri(value);
 		}

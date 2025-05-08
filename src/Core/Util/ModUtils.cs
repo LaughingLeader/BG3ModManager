@@ -1,6 +1,7 @@
 ﻿using LSLib.LS;
 using LSLib.Stats;
 
+using ModManager.Extensions;
 using ModManager.Models.Mod;
 
 using System.Xml;
@@ -155,10 +156,10 @@ public static class ModUtils
 		loader.ResolveUsageRef();
 		loader.ValidateEntries();
 
-		var files = context.Errors.Select(x => x.Location?.FileName).Where(x => !string.IsNullOrEmpty(x)).ToList().Distinct().ToList();
+		var files = context.Errors.Select(x => x.Location?.FileName).Where(Validators.IsValid).ToList().Distinct().ToList();
 		var textData = await Task.WhenAll(files.Select(x => GetFileTextAsync(vfs, x, token)).ToArray());
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 
-		return new ValidateModStatsResults(new List<ModData>(mods), context.Errors, fileDict, DateTimeOffset.Now - time);
+		return new ValidateModStatsResults([.. mods], context.Errors, fileDict, DateTimeOffset.Now - time);
 	}
 }

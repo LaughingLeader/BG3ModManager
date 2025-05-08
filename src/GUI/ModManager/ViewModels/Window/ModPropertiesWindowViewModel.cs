@@ -73,7 +73,7 @@ public class ModPropertiesWindowViewModel : ReactiveObject
 		if (Mod?.ModManagerConfig == null) throw new NullReferenceException($"ModManagerConfig is null for mod ({Mod})");
 		var modConfigService = AppServices.Get<ISettingsService>().ModConfig;
 
-		if (string.IsNullOrEmpty(Mod.ModManagerConfig.Id)) Mod.ModManagerConfig.Id = Mod.UUID;
+		if (!Mod.ModManagerConfig.Id.IsValid()) Mod.ModManagerConfig.Id = Mod.UUID;
 
 		modConfigService.Mods.AddOrUpdate(Mod.ModManagerConfig);
 

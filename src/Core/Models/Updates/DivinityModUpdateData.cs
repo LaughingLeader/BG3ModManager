@@ -19,19 +19,19 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 	[ObservableAsProperty] public string? CurrentVersion { get; }
 	[ObservableAsProperty] public string? UpdateVersion { get; }
 	[ObservableAsProperty] public string? SourceText { get; }
-	[ObservableAsProperty] public Uri UpdateLink { get; }
+	[ObservableAsProperty] public Uri? UpdateLink { get; }
 	[ObservableAsProperty] public string? LocalFilePath { get; }
 	[ObservableAsProperty] public string? LocalFileDateText { get; }
 	[ObservableAsProperty] public string? UpdateFilePath { get; }
 	[ObservableAsProperty] public string? UpdateDateText { get; }
 	[ObservableAsProperty] public string? UpdateToolTip { get; }
 
-	private Uri SourceToLink(ValueTuple<ModData, ModSourceType> data)
+	private Uri? SourceToLink(ValueTuple<ModData, ModSourceType> data)
 	{
 		if (data.Item1 != null)
 		{
 			var url = data.Item1.GetURL(data.Item2);
-			if (!string.IsNullOrEmpty(url))
+			if (url.IsValid())
 			{
 				return new Uri(url);
 			}
@@ -53,22 +53,25 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 		var description = data.Item1;
 		var url = data.Item2;
 		var result = "";
-		if (!string.IsNullOrEmpty(description))
+		if (description.IsValid())
 		{
 			result = description;
 		}
-		if (url != null && !string.IsNullOrEmpty(url.AbsoluteUri))
+		if (url?.AbsoluteUri.IsValid() == true)
 		{
-			if (!string.IsNullOrEmpty(result)) result += Environment.NewLine;
+			if (result.IsValid()) result += Environment.NewLine;
 			result += url.AbsoluteUri;
 		}
 		return result;
 	}
 
-	public DivinityModUpdateData()
+	public DivinityModUpdateData(ModData mod, ModDownloadData downloadData)
 	{
 		IsSelected = true;
 		CanDrag = true;
+
+		Mod = mod;
+		DownloadData = downloadData;
 
 		this.WhenAnyValue(x => x.Mod.IsEditorMod).ToUIProperty(this, x => x.IsEditorMod);
 		this.WhenAnyValue(x => x.Mod.AuthorDisplayName).ToUIProperty(this, x => x.Author);

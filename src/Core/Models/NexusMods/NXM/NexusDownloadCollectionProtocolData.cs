@@ -13,7 +13,7 @@ public class NexusDownloadCollectionProtocolData : INexusModsProtocol
 	public string? Slug { get; set; }
 	public int Revision { get; set; }
 
-	public bool IsValid => !string.IsNullOrEmpty(GameDomain) && !string.IsNullOrEmpty(Slug) && Revision > -1;
+	public bool IsValid => GameDomain.IsValid() && Slug.IsValid() && Revision > -1;
 
 	public string AsUrl => $"nxm://{GameDomain}/collections/{Slug}/revisions/{Revision}";
 
@@ -31,7 +31,7 @@ public class NexusDownloadCollectionProtocolData : INexusModsProtocol
 	public static NexusDownloadCollectionProtocolData FromUrl(string url)
 	{
 		var data = new NexusDownloadCollectionProtocolData();
-		if (!string.IsNullOrEmpty(url))
+		if (url.IsValid())
 		{
 			var urlData = _pattern.Match(url);
 			if (urlData.Success)

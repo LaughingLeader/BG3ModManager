@@ -6,7 +6,7 @@ using System.Text;
 namespace ModManager.ModUpdater.Cache;
 public static class IExternalModCacheDataExtensions
 {
-	public static async Task<T> LoadCacheAsync<T>(this IExternalModCacheHandler<T> handler, string currentAppVersion, CancellationToken token) where T : IModCacheData
+	public static async Task<T?> LoadCacheAsync<T>(this IExternalModCacheHandler<T> handler, string currentAppVersion, CancellationToken token) where T : IModCacheData
 	{
 		var filePath = DivinityApp.GetAppDirectory("Data", handler.FileName);
 
@@ -15,7 +15,7 @@ public static class IExternalModCacheDataExtensions
 			var cachedData = await JsonUtils.DeserializeFromPathAsync<T>(filePath, token);
 			if (cachedData != null)
 			{
-				if (string.IsNullOrEmpty(cachedData.LastVersion) || cachedData.LastVersion != currentAppVersion)
+				if (!cachedData.LastVersion.IsValid() || cachedData.LastVersion != currentAppVersion)
 				{
 					cachedData.LastUpdated = -1;
 				}

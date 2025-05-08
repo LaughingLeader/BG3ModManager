@@ -35,6 +35,6 @@ public class GitHubModData : ReactiveObject
 		parseGitHubUrl.Select(x => x.Item1).ToUIPropertyImmediate(this, x => x.Author);
 		parseGitHubUrl.Select(x => x.Item2).ToUIPropertyImmediate(this, x => x.Repository);
 
-		this.WhenAnyValue(x => x.Url, url => !string.IsNullOrEmpty(url)).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.IsEnabled);
+		this.WhenAnyValue(x => x.Url, url => url.IsValid()).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.IsEnabled);
 	}
 }

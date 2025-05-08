@@ -234,7 +234,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 	private void OnToolboxOutput(object sender, DataReceivedEventArgs e)
 	{
-		if (!string.IsNullOrEmpty(e.Data)) DivinityApp.Log($"[Toolbox] {e.Data}");
+		if (e.Data.IsValid()) DivinityApp.Log($"[Toolbox] {e.Data}");
 	}
 
 	public void UpdateExtender(bool updateMods = true, CancellationToken? t = null)
@@ -294,7 +294,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	{
 		if (!OpenRepoLinkToDownload)
 		{
-			if (!string.IsNullOrWhiteSpace(Settings.GameExecutablePath) && File.Exists(Settings.GameExecutablePath))
+			if (Settings.GameExecutablePath.IsExistingFile())
 			{
 				var exeDir = Path.GetDirectoryName(Settings.GameExecutablePath);
 				var messageText = string.Format(@"Download and install the Script Extender?
@@ -342,7 +342,7 @@ Directory the zip will be extracted to:
 					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 					DivinityApp.Log($"Found the Extender at '{extenderUpdaterPath}'.");
 					var extenderInfo = FileVersionInfo.GetVersionInfo(extenderUpdaterPath);
-					if (!string.IsNullOrEmpty(extenderInfo.FileVersion))
+					if (extenderInfo.FileVersion.IsValid())
 					{
 						var version = extenderInfo.FileVersion.Split('.')[0];
 						if (int.TryParse(version, out var intVersion))
@@ -463,7 +463,7 @@ Directory the zip will be extracted to:
 						PathwayData.ScriptExtenderLatestReleaseVersion = latestRelease.TagName;
 					}
 				}
-				if (!string.IsNullOrEmpty(latestReleaseZipUrl))
+				if (latestReleaseZipUrl.IsValid())
 				{
 					OpenRepoLinkToDownload = false;
 					PathwayData.ScriptExtenderLatestReleaseUrl = latestReleaseZipUrl;
@@ -607,7 +607,7 @@ Directory the zip will be extracted to:
 		}
 
 		var exeArgs = new List<string>();
-		var userLaunchParams = !string.IsNullOrEmpty(Settings.GameLaunchParams) ? Settings.GameLaunchParams : "";
+		var userLaunchParams = Settings.GameLaunchParams.IsValid() ? Settings.GameLaunchParams : "";
 
 		if (Settings.GameStoryLogEnabled && !Settings.ExtenderSettings.EnableLogging)
 		{
@@ -629,7 +629,7 @@ Directory the zip will be extracted to:
 			exeArgs.Add($"-modded {isModded}");
 		}
 
-		if (!string.IsNullOrEmpty(userLaunchParams))
+		if (userLaunchParams.IsValid())
 		{
 			foreach (var entry in exeArgs)
 			{
@@ -689,7 +689,7 @@ Directory the zip will be extracted to:
 
 		Settings.WhenAnyValue(x => x.GameExecutablePath).Subscribe(path =>
 		{
-			if (!string.IsNullOrEmpty(path)) gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
+			if (path.IsValid()) gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
 		});
 
 		var whenGameExeProperties = this.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
@@ -809,7 +809,7 @@ Directory the zip will be extracted to:
 
 		Settings.WhenAnyValue(x => x.DeleteModCrashSanityCheck, x => x.GameExecutablePath).ObserveOn(RxApp.MainThreadScheduler).Subscribe(x =>
 		{
-			if (x.Item1 && !string.IsNullOrEmpty(x.Item2) && Settings.ExtenderSettings.InsanityCheck != true && !Settings.SettingsWindowIsOpen)
+			if (x.Item1 && x.Item2.IsValid() && Settings.ExtenderSettings.InsanityCheck != true && !Settings.SettingsWindowIsOpen)
 			{
 				Settings.ExtenderSettings.InsanityCheck = true;
 				_settings.SaveExtenderSettings();
@@ -931,28 +931,28 @@ Directory the zip will be extracted to:
 
 
 
-	private string GetInitialStartingDirectory(string prioritizePath = "")
+	private string GetInitialStartingDirectory(string? prioritizePath = "")
 	{
 		var directory = prioritizePath;
 
-		if (!string.IsNullOrEmpty(prioritizePath) && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
+		if (prioritizePath.IsValid() && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
 		{
 			directory = actualDir;
 		}
 		else
 		{
-			if (!string.IsNullOrEmpty(Settings.LastImportDirectoryPath))
+			if (Settings.LastImportDirectoryPath.IsValid())
 			{
 				directory = Settings.LastImportDirectoryPath;
 			}
 
-			if (!Directory.Exists(directory) && !string.IsNullOrEmpty(PathwayData.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(PathwayData.LastSaveFilePath, out var lastDir))
+			if (!Directory.Exists(directory) && PathwayData.LastSaveFilePath.IsValid() && FileUtils.TryGetDirectoryOrParent(PathwayData.LastSaveFilePath, out var lastDir))
 			{
 				directory = lastDir;
 			}
 		}
 
-		if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+		if (!directory.IsExistingDirectory())
 		{
 			directory = DivinityApp.GetAppDirectory();
 		}
@@ -1272,12 +1272,12 @@ Directory the zip will be extracted to:
 						var originalDirectory = Path.GetDirectoryName(pickFile.File);
 						var desiredDirectory = Path.GetDirectoryName(renameFile.File);
 
-						if (!string.IsNullOrEmpty(profileSavesDirectory) && FileUtils.IsSubdirectoryOf(profileSavesDirectory, desiredDirectory))
+						if (profileSavesDirectory.IsValid() && desiredDirectory.IsValid() && FileUtils.IsSubdirectoryOf(profileSavesDirectory, desiredDirectory))
 						{
 							if (originalDirectory == desiredDirectory)
 							{
 								var dirInfo = new DirectoryInfo(originalDirectory);
-								if (dirInfo.Name.Equals(Path.GetFileNameWithoutExtension(pickFile.File)))
+								if (dirInfo != null && dirInfo.Parent != null && dirInfo.Name.Equals(Path.GetFileNameWithoutExtension(pickFile.File)))
 								{
 									desiredDirectory = Path.Join(dirInfo.Parent.FullName, Path.GetFileNameWithoutExtension(renameFile.File));
 									RecycleBinHelper.DeleteFile(pickFile.File, false, false);

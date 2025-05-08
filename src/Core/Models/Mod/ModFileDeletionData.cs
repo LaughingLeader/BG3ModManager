@@ -18,7 +18,7 @@ public class ModFileDeletionData : ReactiveObject
 			if (isDeletingDuplicates && loadedMods != null)
 			{
 				var duplicatesStr = loadedMods.FirstOrDefault(x => x.UUID == entry.UUID)?.FilePath;
-				if (!string.IsNullOrEmpty(duplicatesStr))
+				if (duplicatesStr.IsValid())
 				{
 					data.Duplicates = duplicatesStr;
 				}

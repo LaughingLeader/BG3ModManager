@@ -15,9 +15,9 @@ public class GitHubRepositoryJsonData : ReactiveObject
 {
 	[Reactive, DataMember] public ObservableCollectionExtended<GitHubReleaseJsonEntry> Releases { get; set; }
 
-	public GitHubReleaseJsonEntry GetLatest(string uuid = "")
+	public GitHubReleaseJsonEntry? GetLatest(string? uuid = "")
 	{
-		if (!string.IsNullOrEmpty(uuid))
+		if (uuid.IsValid())
 		{
 			return Releases.Where(x => x.UUID == uuid).OrderBy(x => x.Version).FirstOrDefault();
 		}

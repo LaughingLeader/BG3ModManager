@@ -115,7 +115,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 			foreach (var fileGroup in entries)
 			{
 				var name = fileGroup.Key;
-				if (string.IsNullOrEmpty(name)) name = "Unknown";
+				if (!name.IsValid()) name = "Unknown";
 				StatsValidatorFileResults fileResults = new() { FilePath = name };
 				foreach (var entry in fileGroup)
 				{

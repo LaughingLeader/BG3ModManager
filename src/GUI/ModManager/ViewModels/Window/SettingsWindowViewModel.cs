@@ -43,7 +43,7 @@ public class GameLaunchParamEntry : ReactiveObject
 		Description = description;
 		DebugModeOnly = debug;
 
-		this.WhenAnyValue(x => x.Description).Select(x => !string.IsNullOrEmpty(x)).ToUIProperty(this, x => x.HasToolTip);
+		this.WhenAnyValue(x => x.Description).Select(Validators.IsValid).ToUIProperty(this, x => x.HasToolTip);
 	}
 }
 
@@ -102,10 +102,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 		var url = string.Format(DivinityApp.EXTENDER_MANIFESTS_URL, channel.GetDescription());
 		DivinityApp.Log($"Checking for script extender manifest info at '{url}'");
 		var text = await WebHelper.DownloadUrlAsStringAsync(url, CancellationToken.None);
-		//#if DEBUG
-		//			DivinityApp.Log($"Manifest info:\n{text}");
-		//#endif
-		if (!string.IsNullOrEmpty(text))
+		if (text.IsValid())
 		{
 			if (JsonUtils.TrySafeDeserialize<ScriptExtenderUpdateData>(text, out var data))
 			{
@@ -123,11 +120,11 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 						ScriptExtenderUpdates.Add(_emptyVersion);
 						ScriptExtenderUpdates.AddRange(res.Versions.OrderByDescending(x => x.BuildDate));
 						if (lastBuildDate != null) nextVersion = ScriptExtenderUpdates.FirstOrDefault(x => x.BuildDate == lastBuildDate);
-						if (nextVersion == null && !string.IsNullOrEmpty(lastDigest))
+						if (nextVersion == null && lastDigest.IsValid())
 						{
 							nextVersion = ScriptExtenderUpdates.FirstOrDefault(x => x.Digest == lastDigest);
 						}
-						if (nextVersion == null && !string.IsNullOrEmpty(lastVersion))
+						if (nextVersion == null && lastVersion.IsValid())
 						{
 							nextVersion = ScriptExtenderUpdates.FirstOrDefault(x => x.Version == lastVersion);
 						}

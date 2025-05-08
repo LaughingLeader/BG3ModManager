@@ -16,12 +16,12 @@ public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 	[ObservableAsProperty] public string? CurrentText { get; }
 	[ObservableAsProperty] public bool IsAnimating { get; }
 
-	public void UpdateProgress(double value, string text = "")
+	public void UpdateProgress(double value, string? text = null)
 	{
 		RxApp.MainThreadScheduler.Schedule(() =>
 		{
 			ProgressValue = value;
-			if (!string.IsNullOrEmpty(text))
+			if (text.IsValid())
 			{
 				ProgressText = text;
 			}
@@ -34,7 +34,7 @@ public class DownloadActivityBarViewModel : ReactiveObject, IClosableViewModel
 		{
 			CancelAction.Invoke();
 		}
-		else if (!string.IsNullOrEmpty(ProgressText))
+		else if (ProgressText.IsValid())
 		{
 			RxApp.MainThreadScheduler.Schedule(() =>
 			{

@@ -79,7 +79,7 @@ public partial class ModListViewModel : ReactiveObject
 						{
 							var prop = match.Groups[1]?.Value;
 							var value = match.Groups[3]?.Value;
-							if (string.IsNullOrEmpty(value)) value = "";
+							if (!value.IsValid()) value = "";
 							if (!string.IsNullOrWhiteSpace(prop))
 							{
 								searchProps.Add(new ModFilterData()
@@ -97,7 +97,7 @@ public partial class ModListViewModel : ReactiveObject
 				remainingSearch = remainingSearch.Replace("\"", "");
 
 				//If no Name property is specified, use the remaining unmatched text for that
-				if (!string.IsNullOrWhiteSpace(remainingSearch) && !searchProps.Any(f => f.PropertyContains("Name")))
+				if (remainingSearch.IsValid() && !searchProps.Any(f => f.PropertyContains("Name")))
 				{
 					remainingSearch = remainingSearch.Trim();
 					searchProps.Add(new ModFilterData()

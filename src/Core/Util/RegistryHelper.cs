@@ -3,6 +3,8 @@ using Gameloop.Vdf.Linq;
 
 using Microsoft.Win32;
 
+using ModManager.Extensions;
+
 namespace ModManager.Util;
 
 public static class RegistryHelper
@@ -56,12 +58,12 @@ public static class RegistryHelper
 		try
 		{
 			var driveType = FileUtils.GetPathDriveType(path);
-			if (driveType == System.IO.DriveType.Fixed)
+			if (driveType == DriveType.Fixed)
 			{
 				if (JunctionPoint.Exists(path))
 				{
 					var realPath = JunctionPoint.GetTarget(path);
-					if (!string.IsNullOrEmpty(realPath))
+					if (realPath.IsValid())
 					{
 						return realPath;
 					}
@@ -94,38 +96,6 @@ public static class RegistryHelper
 		return "";
 	}
 
-	public static string GetSteamWorkshopPath()
-	{
-		if (LastSteamInstallPath != "")
-		{
-			var workshopFolder = Path.Join(LastSteamInstallPath, PATH_Steam_WorkshopFolder);
-			DivinityApp.Log($"Looking for workshop folder at '{workshopFolder}'.");
-			if (Directory.Exists(workshopFolder))
-			{
-				return workshopFolder;
-			}
-		}
-		return "";
-	}
-
-	public static string GetWorkshopPath(string appid)
-	{
-		if (LastSteamInstallPath != "")
-		{
-			var steamWorkshopPath = GetSteamWorkshopPath();
-			if (!string.IsNullOrEmpty(steamWorkshopPath))
-			{
-				var workshopFolder = Path.Join(steamWorkshopPath, "content", appid);
-				DivinityApp.Log($"Looking for game workshop folder at '{workshopFolder}'.");
-				if (Directory.Exists(workshopFolder))
-				{
-					return workshopFolder;
-				}
-			}
-		}
-		return "";
-	}
-
 	public static string GetGOGInstallPath(string gogRegKey32, string gogRegKey64)
 	{
 		var reg = Registry.LocalMachine;
@@ -147,13 +117,13 @@ public static class RegistryHelper
 		{
 			if (LastSteamInstallPath != "")
 			{
-				if (!string.IsNullOrEmpty(lastGamePath) && Directory.Exists(lastGamePath))
+				if (lastGamePath.IsExistingDirectory())
 				{
 					return lastGamePath;
 				}
 
 				var appManifest = Path.Join(LastSteamInstallPath, "steamapps", $"appmanifest_{steamAppId}.acf");
-				if (File.Exists(appManifest))
+				if (appManifest.IsExistingFile())
 				{
 					var manifestData = VdfConvert.Deserialize(File.ReadAllText(appManifest));
 					if (manifestData != null)
@@ -163,7 +133,7 @@ public static class RegistryHelper
 							if (prop.Key == "installdir")
 							{
 								var installDir = prop.Value?.Value<string>();
-								if (!string.IsNullOrEmpty(installDir))
+								if (installDir.IsValid())
 								{
 									steamGameInstallPath = installDir;
 									DivinityApp.Log($"Using appmanifest installDir '{installDir}'");
@@ -201,7 +171,7 @@ public static class RegistryHelper
 									if (path != null && path.Value is VValue innerValue)
 									{
 										var p = innerValue.Value<string>();
-										if (!string.IsNullOrEmpty(p) && Directory.Exists(p))
+										if (p.IsExistingDirectory())
 										{
 											DivinityApp.Log($"Found steam library folder at '{p}'.");
 											libraryFolders.Add(p);
@@ -218,7 +188,7 @@ public static class RegistryHelper
 						foreach (var folderPath in libraryFolders)
 						{
 							var checkFolder = Path.Join(folderPath, "steamapps", "common", steamGameInstallPath);
-							if (!string.IsNullOrEmpty(checkFolder) && Directory.Exists(checkFolder))
+							if (checkFolder.IsExistingDirectory())
 							{
 								DivinityApp.Log($"Found game at '{checkFolder}'.");
 								lastGamePath = checkFolder;
@@ -235,7 +205,7 @@ public static class RegistryHelper
 			}
 
 			var gogGamePath = GetGOGInstallPath(gogRegKey32, gogRegKey64);
-			if (!string.IsNullOrEmpty(gogGamePath) && Directory.Exists(gogGamePath))
+			if (gogGamePath.IsExistingDirectory())
 			{
 				isGOG = true;
 				lastGamePath = gogGamePath;
@@ -256,7 +226,7 @@ public static class RegistryHelper
 		//Get the "(Default)" key value
 		var shellCommand = GetKey(Registry.ClassesRoot, REG_NXM_PROTOCOL_COMMAND, string.Empty)?.ToString();
 		DivinityApp.Log($"{REG_NXM_PROTOCOL_COMMAND}: {shellCommand}");
-		if (!string.IsNullOrEmpty(shellCommand))
+		if (shellCommand.IsValid())
 		{
 			return shellCommand.IndexOf(appExePath, StringComparison.OrdinalIgnoreCase) > -1;
 		}
@@ -269,7 +239,7 @@ public static class RegistryHelper
 		{
 			var reg = Registry.ClassesRoot;
 			var shellCommand = GetKey(Registry.ClassesRoot, REG_NXM_PROTOCOL_COMMAND, string.Empty)?.ToString();
-			if (string.IsNullOrEmpty(shellCommand))
+			if (!shellCommand.IsValid())
 			{
 				var baseKey = reg.CreateSubKey("nxm", true);
 				baseKey.SetValue(string.Empty, "URL:NXM Protocol", RegistryValueKind.String);

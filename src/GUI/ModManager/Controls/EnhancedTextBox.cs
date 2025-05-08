@@ -47,7 +47,7 @@ public class EnhancedTextBox : TextBox
 	{
 		if(e.Property == TextProperty && e.NewValue is string text)
 		{
-			CanClear = !string.IsNullOrEmpty(text);
+			CanClear = text.IsValid();
 		}
 	}
 }

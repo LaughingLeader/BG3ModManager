@@ -24,7 +24,7 @@ public class StatsValidatorErrorEntry : TreeViewEntry
 		this.WhenAnyValue(x => x.Code, code => code == DiagnosticCode.StatSyntaxError).ToUIProperty(this, x => x.IsError);
 		LineText = lineText;
 		//TODO Highlight the text accoding to the StartColumn/EndColumn
-		if (!string.IsNullOrEmpty(lineText) && error.Location != null)
+		if (lineText.IsValid() && error.Location != null)
 		{
 			AddChild(new StatsValidatorLineText
 			{

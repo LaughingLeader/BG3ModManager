@@ -33,7 +33,7 @@ public struct ModFilterData
 
 	public readonly bool Match(IModEntry entry)
 	{
-		if (string.IsNullOrWhiteSpace(FilterValue)) return true;
+		if (!FilterValue.IsValid()) return true;
 
 		if (PropertyContains("Author") && entry.Author.IsValid())
 		{

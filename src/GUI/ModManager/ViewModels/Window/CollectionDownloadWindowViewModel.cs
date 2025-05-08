@@ -51,7 +51,7 @@ public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewMo
 	private static string ToTitleText(string? name, string? author)
 	{
 		var text = name ?? string.Empty;
-		if (!string.IsNullOrEmpty(author))
+		if (author.IsValid())
 		{
 			text += " by " + author;
 		}

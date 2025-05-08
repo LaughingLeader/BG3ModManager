@@ -104,11 +104,11 @@ public class ModData : ReactiveObject, IModData
 	{
 		get
 		{
-			if (!string.IsNullOrEmpty(UUID) && Folder?.Contains(UUID) == false)
+			if (UUID.IsValid() && Folder?.Contains(UUID) == false)
 			{
 				return $"{Folder}_{UUID}.pak";
 			}
-			else if (!string.IsNullOrEmpty(FileName))
+			else if (FileName.IsValid())
 			{
 				return $"{FileName}.pak";
 			}
@@ -195,17 +195,17 @@ public class ModData : ReactiveObject, IModData
 		{
 			if (!isEditorMod)
 			{
-				if (!string.IsNullOrEmpty(fileName)) return fileName;
+				if (fileName.IsValid()) return fileName;
 			}
-			else if(!string.IsNullOrEmpty(folder))
+			else if(folder.IsValid())
 			{
 				return folder + " [Toolkit Project]";
 			}
 		}
 		else
 		{
-			if (nameOverride?.IsValid() == true) return nameOverride;
-			if (name?.IsValid() == true) return name;
+			if (nameOverride.IsValid() == true) return nameOverride;
+			if (name.IsValid() == true) return name;
 		}
 		return "";
 	}
@@ -294,7 +294,7 @@ public class ModData : ReactiveObject, IModData
 
 	public void AddTag(string tag)
 	{
-		if (!string.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
+		if (tag.IsValid() && !Tags.Contains(tag))
 		{
 			Tags.Add(tag);
 			Tags.Sort((x, y) => string.Compare(x, y, true));
@@ -310,7 +310,7 @@ public class ModData : ReactiveObject, IModData
 		var addedTags = false;
 		foreach (var tag in tags)
 		{
-			if (!string.IsNullOrWhiteSpace(tag) && !Tags.Contains(tag))
+			if (tag.IsValid() && !Tags.Contains(tag))
 			{
 				Tags.Add(tag);
 				addedTags = true;
@@ -327,11 +327,11 @@ public class ModData : ReactiveObject, IModData
 	{
 		var outputPackage = Path.ChangeExtension(Folder, "pak");
 		//Imported Classic Projects
-		if (!Folder.Contains(UUID))
+		if (Folder.IsValid() && !Folder.Contains(UUID))
 		{
 			outputPackage = Path.ChangeExtension(Path.Join(Folder + "_" + UUID), "pak");
 		}
-		return outputPackage.Equals(fileName, comparison);
+		return outputPackage?.Equals(fileName, comparison) == true;
 	}
 
 	public bool IsNewerThan(DateTimeOffset date)
@@ -382,17 +382,17 @@ public class ModData : ReactiveObject, IModData
 	{
 		var urls = new List<string>();
 		var modioUrl = GetURL(ModSourceType.MODIO, asProtocol);
-		if (!string.IsNullOrEmpty(modioUrl))
+		if (modioUrl.IsValid())
 		{
 			urls.Add(modioUrl);
 		}
 		var nexusUrl = GetURL(ModSourceType.NEXUSMODS, asProtocol);
-		if (!string.IsNullOrEmpty(nexusUrl))
+		if (nexusUrl.IsValid())
 		{
 			urls.Add(nexusUrl);
 		}
 		var githubUrl = GetURL(ModSourceType.GITHUB, asProtocol);
-		if (!string.IsNullOrEmpty(githubUrl))
+		if (githubUrl.IsValid())
 		{
 			urls.Add(githubUrl);
 		}
@@ -502,20 +502,22 @@ public class ModData : ReactiveObject, IModData
 		}
 
 		if (config.NexusModsId > DivinityApp.NEXUSMODS_MOD_ID_START) NexusModsData.ModId = config.NexusModsId;
-		if (!string.IsNullOrEmpty(config.ModioId)) ModioData.NameId = config.ModioId;
-		if (!string.IsNullOrWhiteSpace(config.GitHub)) GitHubData.Url = config.GitHub;
+		if (config.ModioId.IsValid()) ModioData.NameId = config.ModioId;
+		if (config.GitHub.IsValid()) GitHubData.Url = config.GitHub;
 	}
 
-	private static string GetAuthor(ValueTuple<string?, string?, string?, bool> x)
+	private static string GetAuthor(ValueTuple<string?, string?, string?, string?, bool> x)
 	{
 		var metaAuthor = x.Item1;
 		var nexusAuthor = x.Item2;
 		var githubAuthor = x.Item3;
-		var isLarianMod = x.Item4;
+		var modioAuthor = x.Item4;
+		var isLarianMod = x.Item5;
 
-		if (!string.IsNullOrEmpty(metaAuthor)) return metaAuthor;
-		if (!string.IsNullOrEmpty(nexusAuthor)) return nexusAuthor;
-		if (!string.IsNullOrEmpty(githubAuthor)) return githubAuthor;
+		if (modioAuthor.IsValid()) return modioAuthor;
+		if (metaAuthor.IsValid()) return metaAuthor;
+		if (nexusAuthor.IsValid()) return nexusAuthor;
+		if (githubAuthor.IsValid()) return githubAuthor;
 
 		if (isLarianMod) return "Larian Studios";
 
@@ -633,7 +635,7 @@ public class ModData : ReactiveObject, IModData
 		GitHubData = new GitHubModData();
 
 		this.WhenAnyValue(x => x.FilePath).Select(f => Path.GetFileName(f)).BindTo(this, x => x.FileName);
-		this.WhenAnyValue(x => x.Author, x => x.NexusModsData.Author, x => x.GitHubData.Author, x => x.IsLarianMod).Select(GetAuthor).BindTo(this, x => x.AuthorDisplayName);
+		this.WhenAnyValue(x => x.Author, x => x.NexusModsData.Author, x => x.GitHubData.Author, x => x.ModioData.Author, x => x.IsLarianMod).Select(GetAuthor).BindTo(this, x => x.AuthorDisplayName);
 
 		this.WhenAnyValue(x => x.Name, x => x.FileName, x => x.Folder, x => x.UUID, x => x.IsEditorMod, x => x.DisplayFileForName, x => x.NameOverride)
 			.Select(GetDisplayName).ObserveOn(RxApp.MainThreadScheduler).BindTo(this, x => x.DisplayName);
@@ -711,21 +713,25 @@ public class ModData : ReactiveObject, IModData
 		});
 
 		this.WhenAnyValue(x => x.ListColor, x => x.SelectedColor)
-			.Select(x => !string.IsNullOrEmpty(x.Item1) || !string.IsNullOrEmpty(x.Item2))
+			.Select(x => x.Item1.IsValid() || x.Item2.IsValid())
 			.BindTo(this, x => x.HasColorOverride);
 
 		this.WhenAnyValue(x => x.IsForceLoadedMergedMod, x => x.IsEditorMod, x => x.IsForceLoaded, x => x.ForceAllowInLoadOrder, x => x.IsActive)
 			.ObserveOn(RxApp.MainThreadScheduler).Subscribe(UpdateColors);
 
 		this.WhenAnyValue(x => x.Description, x => x.HasDependencies, x => x.UUID).
-			Select(x => !string.IsNullOrEmpty(x.Item1) || x.Item2 || !string.IsNullOrEmpty(x.Item3))
+			Select(x => x.Item1.IsValid() || x.Item2 || x.Item3.IsValid())
 			.ToUIProperty(this, x => x.HasToolTip, true);
 
 		this.WhenAnyValue(x => x.IsEditorMod, x => x.IsHidden, x => x.FilePath,
-			(isEditorMod, isHidden, path) => !isEditorMod && !isHidden && !string.IsNullOrEmpty(path)).ToUIPropertyImmediate(this, x => x.CanDelete);
+			(isEditorMod, isHidden, path) => !isEditorMod && !isHidden && path.IsValid())
+			.ToUIPropertyImmediate(this, x => x.CanDelete);
 
 		var whenExtenderProp = this.WhenAnyValue(x => x.ExtenderModStatus, x => x.ScriptExtenderData.RequiredVersion, x => x.CurrentExtenderVersion);
-		whenExtenderProp.Select(x => ExtenderStatusToToolTipText(x.Item1, x.Item2, x.Item3)).ToUIProperty(this, x => x.ScriptExtenderSupportToolTipText);
+		
+		whenExtenderProp.Select(x => ExtenderStatusToToolTipText(x.Item1, x.Item2, x.Item3))
+			.ToUIProperty(this, x => x.ScriptExtenderSupportToolTipText);
+
 		this.WhenAnyValue(x => x.ExtenderModStatus).Select(x => x != ModExtenderStatus.None)
 			.ToUIPropertyImmediate(this, x => x.HasExtenderStatus);
 
