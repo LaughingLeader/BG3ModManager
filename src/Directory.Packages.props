@@ -8,6 +8,7 @@
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.2.8" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.2.8" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.8" />
+    <PackageVersion Include="Avalonia.Labs.Controls" Version="11.2.0" />
     <PackageVersion Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.2.7.1" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.8" />

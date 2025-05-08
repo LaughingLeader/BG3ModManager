@@ -4,12 +4,7 @@ using Material.Icons;
 
 using ModManager.Models.Mod;
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModManager.Converters;
 public class ForceAllowInLoadOrderIconConverter : IValueConverter

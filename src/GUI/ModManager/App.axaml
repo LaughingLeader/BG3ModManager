@@ -1,6 +1,7 @@
 <Application x:Class="ModManager.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:labs="using:Avalonia.Labs.Controls"
     xmlns:local="using:ModManager"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:suki="clr-namespace:SukiUI;assembly=SukiUI"
@@ -79,6 +80,7 @@
 
 	<Application.Styles>
 		<FluentTheme />
+		<labs:ControlThemes />
 		<suki:SukiTheme ThemeColor="Blue" />
 		<materialIcons:MaterialIconStyles />
 		<StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />

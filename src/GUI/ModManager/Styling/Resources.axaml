@@ -12,7 +12,8 @@
     xmlns:theme="using:SukiUI.Theme">
 
 	<conv:ForceAllowInLoadOrderIconConverter x:Key="ForceAllowInLoadOrderIconConverter" />
-	<modconv:ModBackgroundColorConverter x:Key="ModBackgroundColorConverter" />
+	<conv:StringToBrushConverter x:Key="StringToBrushConverter" />
+	<conv:ModBackgroundColorConverter x:Key="ModBackgroundColorConverter" />
 
 	<ControlTemplate x:Key="CompactTextBox" TargetType="TextBox">
 		<Border>

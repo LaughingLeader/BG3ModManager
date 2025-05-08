@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media;
 
-namespace ModManager.Converters;
+namespace ModManager.Styling;
 internal static class ColorBrushCache
 {
 	private static readonly Dictionary<string, IBrush> _colorBrushCache;
@@ -9,6 +9,8 @@ internal static class ColorBrushCache
 	{
 		_colorBrushCache = [];
 	}
+
+	//private var 
 
 	public static IBrush GetBrush(string value)
 	{
@@ -43,7 +45,7 @@ internal static class ColorBrushCache
 			{
 				if(resourceObj is IBrush resourceBrush)
 				{
-					_colorBrushCache.Add(value, resourceBrush);
+					//_colorBrushCache.Add(value, resourceBrush);
 					return resourceBrush;
 				}
 				if (resourceObj is Color resourceColor)
@@ -60,4 +62,6 @@ internal static class ColorBrushCache
 		}
 		return Brushes.Transparent;
 	}
+
+	public static IBrush ThemeForegroundBrush => GetResourceBrush("ThemeForegroundBrush");
 }
