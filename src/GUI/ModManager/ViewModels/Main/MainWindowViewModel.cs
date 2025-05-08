@@ -1011,18 +1011,14 @@ Directory the zip will be extracted to:
 				{
 					if (_manager.TryGetMod(kvp.Key, out var mod))
 					{
-						var updateData = new DivinityModUpdateData()
+						var updateData = new DivinityModUpdateData(mod, new ModDownloadData()
 						{
-							Mod = mod,
-							DownloadData = new ModDownloadData()
-							{
-								DownloadPath = kvp.Value.BrowserDownloadLink,
-								DownloadPathType = ModDownloadPathType.URL,
-								DownloadSourceType = ModSourceType.GITHUB,
-								Version = kvp.Value.Version,
-								Date = kvp.Value.Date
-							},
-						};
+							DownloadPath = kvp.Value.BrowserDownloadLink,
+							DownloadPathType = ModDownloadPathType.URL,
+							DownloadSourceType = ModSourceType.GITHUB,
+							Version = kvp.Value.Version,
+							Date = kvp.Value.Date
+						});
 						ViewModelLocator.ModUpdates.Add(updateData);
 					}
 				}
@@ -1051,18 +1047,14 @@ Directory the zip will be extracted to:
 			{
 				foreach (var update in updates.Values)
 				{
-					var updateData = new DivinityModUpdateData()
+					var updateData = new DivinityModUpdateData(update.Mod, new ModDownloadData()
 					{
-						Mod = update.Mod,
-						DownloadData = new ModDownloadData()
-						{
-							DownloadPath = update.DownloadLink.Uri.ToString(),
-							DownloadPathType = ModDownloadPathType.URL,
-							DownloadSourceType = ModSourceType.NEXUSMODS,
-							Version = update.File.ModVersion,
-							Date = DateUtils.UnixTimeStampToDateTime(update.File.UploadedTimestamp)
-						},
-					};
+						DownloadPath = update.DownloadLink.Uri.ToString(),
+						DownloadPathType = ModDownloadPathType.URL,
+						DownloadSourceType = ModSourceType.NEXUSMODS,
+						Version = update.File.ModVersion,
+						Date = DateUtils.UnixTimeStampToDateTime(update.File.UploadedTimestamp)
+					});
 					if (!isPremium)
 					{
 						var nxmEnabled = "";
@@ -1102,16 +1094,12 @@ Directory the zip will be extracted to:
 					if (_manager.TryGetMod(kvp.Key, out var mod))
 					{
 						//TODO
-						var updateData = new DivinityModUpdateData()
+						var updateData = new DivinityModUpdateData(mod, new ModDownloadData()
 						{
-							Mod = mod,
-							DownloadData = new ModDownloadData()
-							{
-								DownloadPath = kvp.Value.BinaryUrl?.ToString(),
-								DownloadPathType = ModDownloadPathType.URL,
-								DownloadSourceType = ModSourceType.MODIO
-							},
-						};
+							DownloadPath = kvp.Value.BinaryUrl?.ToString(),
+							DownloadPathType = ModDownloadPathType.URL,
+							DownloadSourceType = ModSourceType.MODIO
+						});
 						ViewModelLocator.ModUpdates.Add(updateData);
 					}
 				}

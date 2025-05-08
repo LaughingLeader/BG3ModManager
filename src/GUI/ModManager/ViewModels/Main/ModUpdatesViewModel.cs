@@ -87,7 +87,7 @@ public class ModUpdatesViewModel : ReactiveObject, IRoutableViewModel
 		}
 	}
 
-	private async Task<UpdateTaskResult> AwaitDownloadPartition(IEnumerator<DivinityModUpdateData> partition, double progressIncrement, 
+	private async Task<UpdateTaskResult> AwaitDownloadPartition(IEnumerator<DivinityModUpdateData> partition, double progressIncrement,
 		string outputFolder, CancellationToken token)
 	{
 		var result = new UpdateTaskResult();
@@ -170,30 +170,24 @@ public class DesignModUpdatesViewModel : ModUpdatesViewModel
 {
 	public DesignModUpdatesViewModel() : base()
 	{
-		Add(new DivinityModUpdateData()
-		{
-			Mod = new ModData("0") { Name = "Test Mod", Author = "LaughingLeader"},
-			DownloadData = new ModDownloadData()
+		Add(new DivinityModUpdateData(new ModData("0") { Name = "Test Mod", Author = "LaughingLeader" },
+			new ModDownloadData()
 			{
 				DownloadPath = "",
 				DownloadPathType = ModDownloadPathType.URL,
 				DownloadSourceType = ModSourceType.GITHUB,
 				Version = "1.0.0.1",
 				Date = DateTimeOffset.Now
-			},
-		});
-		Add(new DivinityModUpdateData()
-		{
-			Mod = new ModData("1") { Name = "Test Mod 2", Author = "LaughingLeader" },
-			DownloadData = new ModDownloadData()
+			}));
+		Add(new DivinityModUpdateData(new ModData("1") { Name = "Test Mod 2", Author = "LaughingLeader" },
+			new ModDownloadData()
 			{
 				DownloadPath = "",
 				DownloadPathType = ModDownloadPathType.URL,
 				DownloadSourceType = ModSourceType.NEXUSMODS,
 				Version = "0.1.0.0",
 				Date = DateTimeOffset.Now
-			},
-		});
+			}));
 	}
 }
 

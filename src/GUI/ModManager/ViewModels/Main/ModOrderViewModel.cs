@@ -622,7 +622,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			var outputPath = SelectedModOrder.FilePath;
 			var outputName = ModDataLoader.MakeSafeFilename(Path.Join(SelectedModOrder.Name + ".json"), '_');
 
-			if (!SelectedModOrder.FilePath.IsExistingFile()))
+			if (!SelectedModOrder.FilePath.IsExistingFile())
 			{
 				SelectedModOrder.FilePath = Path.Join(outputDirectory, outputName);
 				outputPath = SelectedModOrder.FilePath;
@@ -872,11 +872,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				else
 				{
-					var x = new MissingModData
+					var x = new MissingModData(activeMod.UUID)
 					{
 						Index = i,
-						Name = activeMod.Name,
-						UUID = activeMod.UUID
+						Name = activeMod.Name
 					};
 					missingMods.Add(x);
 				}

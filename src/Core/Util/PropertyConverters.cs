@@ -21,7 +21,7 @@ public static class PropertyConverters
 	/// <returns></returns>
 	public static bool StringToVisibility(string? str) => str.IsValid();
 	public static bool StringToVisibilityReversed(string? str) => !str.IsValid();
-	public static bool UriToVisibility(Uri uri) => uri.IsValid());
+	public static bool UriToVisibility(Uri uri) => uri.IsValid();
 	public static bool IntToVisibility(int i) => i > 0;
 
 	public static bool StringToBool(string? str) => str.IsValid();
