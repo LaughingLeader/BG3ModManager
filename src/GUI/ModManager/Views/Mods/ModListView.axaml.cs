@@ -1,4 +1,5 @@
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Selection;
 using Avalonia.Interactivity;
@@ -10,6 +11,8 @@ using DynamicData;
 
 using ModManager.Models.Mod;
 using ModManager.ViewModels.Mods;
+
+using System.Reflection;
 
 namespace ModManager.Views.Mods;
 public partial class ModListView : ReactiveUserControl<ModListViewModel>
@@ -220,6 +223,48 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 		e.Row.PointerReleased += OnPointerReleased;
 	}
 
+	private Control? _openedToolTip = null;
+
+	private static readonly MethodInfo _m_OnPointerWheelChanged = typeof(ScrollContentPresenter).GetMethod("OnPointerWheelChanged", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+	private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+	{
+		if (_openedToolTip != null)
+		{
+			var scrollViewer = _openedToolTip.FindDescendantOfType<ScrollViewer>();
+			if (scrollViewer != null)
+			{
+				var verticalScrollBar = scrollViewer.FindVisualDescendantWithName<ScrollBar>("PART_VerticalScrollBar");
+				var scrollContentPresenter = scrollViewer.FindDescendantOfType<ScrollContentPresenter>();
+				if (verticalScrollBar?.IsVisible == true && scrollContentPresenter != null)
+				{
+					e.Source = _openedToolTip;
+					_m_OnPointerWheelChanged?.Invoke(scrollContentPresenter, [e]);
+					e.Handled = true;
+				}
+			}
+		}
+	}
+
+	private void OnToolTipOpenedChanged(AvaloniaPropertyChangedEventArgs<bool> e)
+	{
+		if (e.NewValue.HasValue && e.Sender is Control sender)
+		{
+			if (e.NewValue.Value)
+			{
+				var tooltip = ToolTip.GetTip(sender);
+				if (tooltip != null && tooltip is Control tt)
+				{
+					_openedToolTip = tt;
+				}
+			}
+			else
+			{
+				_openedToolTip = null;
+			}
+		}
+	}
+
 	public ModListView()
 	{
 		InitializeComponent();
@@ -231,6 +276,9 @@ public partial class ModListView : ReactiveUserControl<ModListViewModel>
 		}
 
 		ModsTreeDataGrid.RowPrepared += OnRowPrepared;
+
+		AddHandler(InputElement.PointerWheelChangedEvent, OnPointerWheelChanged, RoutingStrategies.Tunnel);
+		ToolTip.IsOpenProperty.Changed.Subscribe(OnToolTipOpenedChanged);
 
 		this.WhenActivated(d =>
 		{
