@@ -53,20 +53,6 @@ public static class ModelExtensions
 		}
 	}
 
-	public static readonly JsonSerializerOptions _defaultSerializerSettings = new()
-	{
-		AllowTrailingCommas = true,
-		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-		TypeInfoResolver = System.Text.Json.Serialization.Metadata.DataContractResolver.Default
-	};
-
-	static ModelExtensions()
-	{
-		_defaultSerializerSettings.Converters.Add(new JsonStringEnumConverter());
-		_defaultSerializerSettings.Converters.Add(new DictionaryToSourceCacheConverter<ModConfig>());
-	}
-
 	public static bool Save<T>(this T data, out Exception? error) where T : ISerializableSettings
 	{
 		error = null;
@@ -75,7 +61,7 @@ public static class ModelExtensions
 			var directory = data.GetDirectory();
 			var filePath = Path.Join(directory, data.FileName);
 			Directory.CreateDirectory(directory);
-			var contents = JsonSerializer.Serialize(data, data.GetType(), _defaultSerializerSettings);
+			var contents = JsonSerializer.Serialize(data, data.GetType(), JsonUtils.DefaultSerializerSettings);
 			File.WriteAllText(filePath, contents);
 			return true;
 		}
@@ -98,7 +84,7 @@ public static class ModelExtensions
 			{
 				var outputType = data.GetType();
 				var text = File.ReadAllText(filePath);
-				var settings = JsonSerializer.Deserialize(text, outputType, _defaultSerializerSettings);
+				var settings = JsonSerializer.Deserialize(text, outputType, JsonUtils.DefaultSerializerSettings);
 				if (settings != null)
 				{
 					var props = TypeDescriptor.GetProperties(outputType);

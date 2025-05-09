@@ -70,7 +70,6 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 
 	[DataMember, Reactive]
 	[SettingsEntry("On Game Launch", "When the game launches through the mod manager, this action will be performed", nameof(ActionOnGameLaunchIndex))]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public GameLaunchWindowAction ActionOnGameLaunch { get; set; }
 
 	[DefaultValue(false)]

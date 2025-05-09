@@ -8,5 +8,7 @@ public enum ExtenderUpdateChannel
 	[Description("Release")]
 	Release,
 	[Description("Devel")]
-	Devel
+	Devel,
+	[Description("Nightly")]
+	Nightly
 }

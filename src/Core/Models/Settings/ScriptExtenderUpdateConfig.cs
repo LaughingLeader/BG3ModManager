@@ -13,10 +13,9 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 	[Reactive] public bool UpdaterIsAvailable { get; set; }
 	[Reactive] public int UpdaterVersion { get; set; }
 
-	[SettingsEntry("Update Channel", "Use a specific update channel", DisableAutoGen = true)]
+	[SettingsEntry("Update Channel", "Use a specific update channel")]
 	[DataMember, Reactive]
 	[DefaultValue(ExtenderUpdateChannel.Release)]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public ExtenderUpdateChannel UpdateChannel { get; set; }
 
 	[SettingsEntry("Target Version", "Update to a specific version of the script extender (ex. '5.0.0.0')")]

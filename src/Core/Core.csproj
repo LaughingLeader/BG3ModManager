@@ -35,6 +35,5 @@
 		<PackageReference Include="System.Net.Http" />
 		<PackageReference Include="System.Text.RegularExpressions" />
 		<PackageReference Include="System.IO.Abstractions" />
-		<PackageReference Include="ZCS.DataContractResolver" />
 	</ItemGroup>
 </Project>

@@ -3,10 +3,196 @@
 using ModManager.Json;
 using ModManager.Models.Mod;
 
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization.Metadata;
 
 namespace ModManager.Util;
+
+/// <summary>
+/// Source: https://github.com/zcsizmadia/ZCS.DataContractResolver
+/// Added an extra check for DefaultValueAttribute, since this attribute is ignored in the regular resolver.
+/// This is so we can have defaultly true booleans and so on not serialize (when normally only false is ignored).
+/// </summary>
+public class DataContractDefaultValueResolver : DefaultJsonTypeInfoResolver
+{
+	private static Lazy<DataContractDefaultValueResolver> s_defaultInstance = new(() => new DataContractDefaultValueResolver());
+
+	public static DataContractDefaultValueResolver Default => s_defaultInstance.Value;
+
+	private static bool IsNullOrDefault(object? obj)
+	{
+		if (obj is null)
+		{
+			return true;
+		}
+
+		Type type = obj.GetType();
+
+		if (!type.IsValueType)
+		{
+			return false;
+		}
+
+		return Activator.CreateInstance(type)?.Equals(obj) == true;
+	}
+
+	private static bool ShouldSerialize(object _, object? obj) => !IsNullOrDefault(obj);
+
+	private static IEnumerable<MemberInfo> EnumerateFieldsAndProperties(Type type, BindingFlags bindingFlags)
+	{
+		foreach (FieldInfo fieldInfo in type.GetFields(bindingFlags))
+		{
+			yield return fieldInfo;
+		}
+
+		foreach (PropertyInfo propertyInfo in type.GetProperties(bindingFlags))
+		{
+			yield return propertyInfo;
+		}
+	}
+
+	private static IEnumerable<JsonPropertyInfo> CreateDataMembers(JsonTypeInfo jsonTypeInfo)
+	{
+		bool isDataContract = jsonTypeInfo.Type.GetCustomAttribute<DataContractAttribute>() != null;
+		BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+
+		if (isDataContract)
+		{
+			bindingFlags |= BindingFlags.NonPublic;
+		}
+
+		foreach (MemberInfo memberInfo in EnumerateFieldsAndProperties(jsonTypeInfo.Type, bindingFlags))
+		{
+			if (memberInfo == null)
+			{
+				continue;
+			}
+
+			DefaultValueAttribute? defaultAttr = null;
+			DataMemberAttribute? attr = null;
+			if (isDataContract)
+			{
+				attr = memberInfo.GetCustomAttribute<DataMemberAttribute>();
+				defaultAttr = memberInfo.GetCustomAttribute<DefaultValueAttribute>();
+				if (attr == null)
+				{
+					continue;
+				}
+			}
+			else
+			{
+				if (memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
+				{
+					continue;
+				}
+			}
+
+			Func<object, object?>? getValue = null;
+			Action<object, object?>? setValue = null;
+			Type? propertyType = null;
+			string? propertyName = null;
+
+			if (memberInfo.MemberType == MemberTypes.Field && memberInfo is FieldInfo fieldInfo)
+			{
+				propertyName = attr?.Name ?? fieldInfo.Name;
+				propertyType = fieldInfo.FieldType;
+				getValue = fieldInfo.GetValue;
+				setValue = fieldInfo.SetValue;
+			}
+			else
+			if (memberInfo.MemberType == MemberTypes.Property && memberInfo is PropertyInfo propertyInfo)
+			{
+				propertyName = attr?.Name ?? propertyInfo.Name;
+				propertyType = propertyInfo.PropertyType;
+				if (propertyInfo.CanRead)
+				{
+					getValue = propertyInfo.GetValue;
+				}
+				if (propertyInfo.CanWrite)
+				{
+					setValue = propertyInfo.SetValue;
+				}
+			}
+			else
+			{
+				continue;
+			}
+
+			JsonPropertyInfo jsonPropertyInfo = jsonTypeInfo.CreateJsonPropertyInfo(propertyType, propertyName);
+			if (jsonPropertyInfo == null)
+			{
+				continue;
+			}
+
+			jsonPropertyInfo.Get = getValue;
+			jsonPropertyInfo.Set = setValue;
+
+			if (attr != null)
+			{
+				jsonPropertyInfo.IsRequired = attr.IsRequired;
+				jsonPropertyInfo.Order = attr.Order;
+
+				if(defaultAttr != null)
+				{
+					//jsonPropertyInfo.ShouldSerialize = (_, obj) => obj != null && obj.Equals(defaultAttr.Value) == false;
+					jsonPropertyInfo.ShouldSerialize = (_, obj) => obj?.Equals(defaultAttr.Value) == false;
+					//jsonPropertyInfo.ShouldSerialize = (_, obj) =>
+					//{
+					//	DivinityApp.Log($"ShouldSerialize: {jsonPropertyInfo.Name}: {obj}");
+					//	return false;
+					//};
+				}
+				else
+				{
+					//jsonPropertyInfo.ShouldSerialize = !attr.EmitDefaultValue ? ((_, obj) => !IsNullOrDefault(obj)) : null;
+					jsonPropertyInfo.ShouldSerialize = ShouldSerialize;
+				}
+			}
+
+			if (!jsonPropertyInfo.IsRequired)
+			{
+				var requiredAttr = memberInfo.GetCustomAttribute<RequiredAttribute>();
+				if (requiredAttr != null)
+				{
+					jsonPropertyInfo.IsRequired = true;
+				}
+			}
+
+			yield return jsonPropertyInfo;
+		}
+	}
+
+	public static JsonTypeInfo GetTypeInfo(JsonTypeInfo jsonTypeInfo)
+	{
+		if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object)
+		{
+			foreach (var jsonPropertyInfo in CreateDataMembers(jsonTypeInfo).OrderBy((x) => x.Order))
+			{
+				jsonTypeInfo.Properties.Add(jsonPropertyInfo);
+			}
+		}
+
+		return jsonTypeInfo;
+	}
+
+	public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
+	{
+		JsonTypeInfo jsonTypeInfo = base.GetTypeInfo(type, options);
+
+		if (jsonTypeInfo.Kind != JsonTypeInfoKind.Object)
+		{
+			return jsonTypeInfo;
+		}
+
+		jsonTypeInfo.Properties.Clear();
+
+		return GetTypeInfo(jsonTypeInfo);
+	}
+}
 
 public static class JsonUtils
 {
@@ -15,8 +201,9 @@ public static class JsonUtils
 		AllowTrailingCommas = true,
 		WriteIndented = true,
 		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-		TypeInfoResolver = System.Text.Json.Serialization.Metadata.DataContractResolver.Default,
-		
+		TypeInfoResolver = DataContractDefaultValueResolver.Default,
+		//TypeInfoResolver = ModManagerJsonContext.Default,
+		PropertyNameCaseInsensitive = true,
 	};
 
 	public static JsonSerializerOptions DefaultSerializerSettings => _defaultSerializerSettings;
