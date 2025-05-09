@@ -1,5 +1,8 @@
 ﻿using LSLib.LS;
 
+using ModManager.Json;
+using ModManager.Models.Mod;
+
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -7,21 +10,32 @@ namespace ModManager.Util;
 
 public static class JsonUtils
 {
-	private static readonly JsonSerializerOptions _serializerSettings = new()
+	private static readonly JsonSerializerOptions _defaultSerializerSettings = new()
 	{
 		AllowTrailingCommas = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+		WriteIndented = true,
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+		TypeInfoResolver = System.Text.Json.Serialization.Metadata.DataContractResolver.Default,
+		
 	};
 
-	public static T? Deserialize<T>(string text, JsonSerializerOptions? opts = null) => JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
+	public static JsonSerializerOptions DefaultSerializerSettings => _defaultSerializerSettings;
 
-	public static T? DeserializeFromPath<T>(string path, JsonSerializerOptions? opts = null) => Deserialize<T?>(File.ReadAllText(path), opts ?? _serializerSettings);
+	static JsonUtils()
+	{
+		_defaultSerializerSettings.Converters.Add(new JsonStringEnumConverter());
+		_defaultSerializerSettings.Converters.Add(new DictionaryToSourceCacheConverter<ModConfig>());
+	}
+
+	public static T? Deserialize<T>(string text, JsonSerializerOptions? opts = null) => JsonSerializer.Deserialize<T?>(text, opts ?? _defaultSerializerSettings);
+
+	public static T? DeserializeFromPath<T>(string path, JsonSerializerOptions? opts = null) => Deserialize<T?>(File.ReadAllText(path), opts ?? _defaultSerializerSettings);
 
 	public static T? SafeDeserialize<T>(string text, JsonSerializerOptions? opts = null)
 	{
 		try
 		{
-			var result = JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
+			var result = JsonSerializer.Deserialize<T?>(text, opts ?? _defaultSerializerSettings);
 			if (result != null)
 			{
 				return result;
@@ -41,7 +55,7 @@ public static class JsonUtils
 			if (File.Exists(path))
 			{
 				var contents = File.ReadAllText(path);
-				return SafeDeserialize<T?>(contents, opts ?? _serializerSettings);
+				return SafeDeserialize<T?>(contents, opts ?? _defaultSerializerSettings);
 			}
 			else
 			{
@@ -57,7 +71,7 @@ public static class JsonUtils
 
 	public static bool TrySafeDeserialize<T>(string text, [NotNullWhen(true)] out T? result, JsonSerializerOptions? opts = null)
 	{
-		result = JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
+		result = JsonSerializer.Deserialize<T?>(text, opts ?? _defaultSerializerSettings);
 		return result != null;
 	}
 
@@ -66,7 +80,7 @@ public static class JsonUtils
 		if (File.Exists(path))
 		{
 			var contents = File.ReadAllText(path);
-			result = JsonSerializer.Deserialize<T?>(contents, opts ?? _serializerSettings);
+			result = JsonSerializer.Deserialize<T?>(contents, opts ?? _defaultSerializerSettings);
 			return result != null;
 		}
 		result = default;
@@ -83,7 +97,7 @@ public static class JsonUtils
 				var contents = Encoding.UTF8.GetString(fileBytes);
 				if (contents.IsValid())
 				{
-					return JsonSerializer.Deserialize<T?>(contents, opts ?? _serializerSettings);
+					return JsonSerializer.Deserialize<T?>(contents, opts ?? _defaultSerializerSettings);
 				}
 			}
 		}
@@ -102,7 +116,7 @@ public static class JsonUtils
 			var text = await sr.ReadToEndAsync(token);
 			if (text.IsValid())
 			{
-				return JsonSerializer.Deserialize<T?>(text, opts ?? _serializerSettings);
+				return JsonSerializer.Deserialize<T?>(text, opts ?? _defaultSerializerSettings);
 			}
 		}
 		catch (Exception ex)

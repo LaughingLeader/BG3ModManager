@@ -149,7 +149,11 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 				CheckForUpdates(false, true);
 			}
 
-			IsInitialized = true;
+			if(!IsInitialized)
+			{
+				InitSettingsBindings();
+				IsInitialized = true;
+			}
 			_globalCommands.CanExecuteCommands = true;
 		}, RxApp.MainThreadScheduler);
 
@@ -1326,10 +1330,11 @@ Directory the zip will be extracted to:
 			Window.Activate();
 		});
 
-		InitSettingsBindings();
-
-		await LoadSettings();
-		SaveSettings();
+		var loaded = await LoadSettings();
+		if(!loaded)
+		{
+			SaveSettings();
+		}
 
 		AppServices.Get<WindowManagerService>().RestoreSavedWindowPosition();
 

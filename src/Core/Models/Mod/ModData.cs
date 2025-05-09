@@ -7,11 +7,8 @@ using ModManager.Models.Modio;
 using ModManager.Models.NexusMods;
 using ModManager.Util;
 
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Serialization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ModManager.Models.Mod;
 
@@ -594,19 +591,12 @@ public class ModData : ReactiveObject, IModData
 		return $"Missing Dependencies:\n{string.Join(Environment.NewLine, MissingDependencies.Items.Select(x => x.Name).Order())}";
 	}
 
-	private static readonly JsonSerializerOptions _serializerSettings = new()
-	{
-		AllowTrailingCommas = true,
-		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-	};
-
 	public string? Export(ModExportType exportType)
 	{
 		var result = exportType switch
 		{
 			ModExportType.XML => string.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt, PublishHandle),
-			ModExportType.JSON => JsonSerializer.Serialize(this, _serializerSettings),
+			ModExportType.JSON => JsonSerializer.Serialize(this, JsonUtils.DefaultSerializerSettings),
 			ModExportType.TXT => StringUtils.ModToTextLine(this),
 			ModExportType.TSV => StringUtils.ModToTSVLine(this),
 			_ => string.Empty,

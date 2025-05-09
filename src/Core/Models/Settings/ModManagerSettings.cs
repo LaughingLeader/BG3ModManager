@@ -1,8 +1,6 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 
-using ModManager.Extensions;
-
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;

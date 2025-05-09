@@ -21,12 +21,12 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 
 	[SettingsEntry("Target Version", "Update to a specific version of the script extender (ex. '5.0.0.0')")]
 	[DataMember, Reactive]
-	[DefaultValue("")]
+	[DefaultValue(null)]
 	public string? TargetVersion { get; set; }
 
 	[SettingsEntry("Target Resource Digest", "Use a specific Digest for the target update", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
-	[DefaultValue("")]
+	[DefaultValue(null)]
 	public string? TargetResourceDigest { get; set; }
 
 	[SettingsEntry("Disable Updates", "Disable automatic updating to the latest extender version")]
@@ -46,17 +46,17 @@ public class ScriptExtenderUpdateConfig : ReactiveObject
 
 	[SettingsEntry("Manifest URL", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
-	[DefaultValue("")]
+	[DefaultValue(null)]
 	public string? ManifestURL { get; set; }
 
 	[SettingsEntry("Manifest Name", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
-	[DefaultValue("")]
+	[DefaultValue(null)]
 	public string? ManifestName { get; set; }
 
 	[SettingsEntry("CachePath", "", BindVisibilityTo = nameof(DevOptionsEnabled))]
 	[DataMember, Reactive]
-	[DefaultValue("")]
+	[DefaultValue(null)]
 	public string? CachePath { get; set; }
 
 	[SettingsEntry("Validate Signature", "", BindVisibilityTo = nameof(DevOptionsEnabled))]

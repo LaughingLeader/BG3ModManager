@@ -53,13 +53,6 @@ public class ModImportService(IDialogService _dialogService)
 	private static readonly ReaderOptions _importReaderOptions = new() { ArchiveEncoding = _archiveEncoding };
 	private static readonly WriterOptions _exportWriterOptions = new(CompressionType.Deflate) { ArchiveEncoding = _archiveEncoding };
 
-	private static readonly JsonSerializerOptions _loadOrderExportOptions = new()
-	{
-		AllowTrailingCommas = true,
-		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.Never
-	};
-
 	public static bool IsImportableFile(string ext)
 	{
 		return ext == ".pak" || _archiveFormats.Contains(ext) || _compressedFormats.Contains(ext);
@@ -683,8 +676,11 @@ public class ModImportService(IDialogService _dialogService)
 				using var stream = File.OpenWrite(outputPath);
 				using var zipWriter = WriterFactory.Open(stream, ArchiveType.Zip, _exportWriterOptions);
 
+				var serializeOpts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
+				serializeOpts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+
 				var orderFileName = ModDataLoader.MakeSafeFilename(Path.Join(selectedModOrder.Name + ".json"), '_');
-				var contents = JsonSerializer.Serialize(selectedModOrder, _loadOrderExportOptions);
+				var contents = JsonSerializer.Serialize(selectedModOrder, serializeOpts);
 
 				using var ms = new MemoryStream();
 				using var swriter = new StreamWriter(ms);
@@ -773,8 +769,10 @@ public class ModImportService(IDialogService _dialogService)
 		var outputText = "";
 		if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 		{
+			var serializeOpts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
+			serializeOpts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
 			var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => SerializedModData.FromMod((ModData)x)).ToList();
-			outputText = JsonSerializer.Serialize(serializedMods, _loadOrderExportOptions);
+			outputText = JsonSerializer.Serialize(serializedMods, serializeOpts);
 		}
 		else if (fileType.Equals(".tsv", StringComparison.OrdinalIgnoreCase))
 		{

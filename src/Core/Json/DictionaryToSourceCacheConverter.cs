@@ -39,7 +39,7 @@ public class DictionaryToSourceCacheConverter<TValue> : JsonConverter<SourceCach
 				var cache = new SourceCache<TValue, string>(x => x.Id);
 				foreach (var entry in entries)
 				{
-					cache.AddOrUpdate(entry);
+					if (entry != null) cache.AddOrUpdate(entry);
 				}
 
 				return cache;

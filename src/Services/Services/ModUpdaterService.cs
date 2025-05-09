@@ -28,11 +28,9 @@ public class ModUpdaterService : ReactiveObject, IModUpdaterService
 
 	[Reactive] public bool IsRefreshing { get; set; }
 
-	private static readonly JsonSerializerOptions DefaultSerializerSettings = new()
+	private static readonly JsonSerializerOptions DefaultSerializerSettings = new(JsonUtils.DefaultSerializerSettings)
 	{
-		AllowTrailingCommas = true,
-		WriteIndented = false,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+		WriteIndented = false
 	};
 
 	public async Task<bool> UpdateInfoAsync(IEnumerable<ModData> mods, CancellationToken token)

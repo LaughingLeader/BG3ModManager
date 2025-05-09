@@ -2,6 +2,7 @@
 
 namespace ModManager;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum GameLaunchWindowAction
 {
 	[Description("Do nothing")]

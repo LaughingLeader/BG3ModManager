@@ -1,8 +1,11 @@
-﻿using ModManager.Models.Settings;
+﻿using ModManager.Json;
+using ModManager.Models.Mod;
+using ModManager.Models.Settings;
 using ModManager.Util;
 
 using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.Serialization.Json;
 
 namespace ModManager;
 
@@ -54,8 +57,15 @@ public static class ModelExtensions
 	{
 		AllowTrailingCommas = true,
 		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+		TypeInfoResolver = System.Text.Json.Serialization.Metadata.DataContractResolver.Default
 	};
+
+	static ModelExtensions()
+	{
+		_defaultSerializerSettings.Converters.Add(new JsonStringEnumConverter());
+		_defaultSerializerSettings.Converters.Add(new DictionaryToSourceCacheConverter<ModConfig>());
+	}
 
 	public static bool Save<T>(this T data, out Exception? error) where T : ISerializableSettings
 	{

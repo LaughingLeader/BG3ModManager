@@ -177,19 +177,14 @@ public class SettingsService : ReactiveObject, ISettingsService
 		}
 	}
 
-	private static readonly JsonSerializerOptions _extenderConfigOptions = new()
-	{
-		AllowTrailingCommas = true,
-		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull
-	};
-
 	public bool SaveExtenderSettings()
 	{
 		var outputFile = Path.Join(Path.GetDirectoryName(ManagerSettings.GameExecutablePath), DivinityApp.EXTENDER_CONFIG_FILE);
 		try
 		{
-			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, _extenderConfigOptions);
+			var opts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
+			if (ManagerSettings.ExtenderSettings.ExportDefaultExtenderSettings) opts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, opts);
 			File.WriteAllText(outputFile, contents);
 			return true;
 		}
@@ -205,7 +200,9 @@ public class SettingsService : ReactiveObject, ISettingsService
 		var outputFile = Path.Join(Path.GetDirectoryName(ManagerSettings.GameExecutablePath), DivinityApp.EXTENDER_UPDATER_CONFIG_FILE);
 		try
 		{
-			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, _extenderConfigOptions);
+			var opts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
+			if (ManagerSettings.ExtenderSettings.ExportDefaultExtenderSettings) opts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, opts);
 			File.WriteAllText(outputFile, contents);
 			return true;
 		}
@@ -226,17 +223,5 @@ public class SettingsService : ReactiveObject, ISettingsService
 
 		_loadSettings = [ManagerSettings, ModConfig];
 		_saveSettings = [ManagerSettings, ModConfig];
-
-		ManagerSettings.ExtenderSettings.WhenAnyValue(x => x.ExportDefaultExtenderSettings).Subscribe(b =>
-		{
-			if (!b)
-			{
-				_extenderConfigOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull;
-			}
-			else
-			{
-				_extenderConfigOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
-			}
-		});
 	}
 }

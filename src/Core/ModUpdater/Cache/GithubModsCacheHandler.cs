@@ -1,5 +1,6 @@
 ﻿using ModManager.Models.Cache;
 using ModManager.Models.Mod;
+using ModManager.Util;
 
 namespace ModManager.ModUpdater.Cache;
 
@@ -9,12 +10,7 @@ public class GitHubModsCacheHandler : ReactiveObject, IExternalModCacheHandler<G
 	public string FileName => "githubdata.json";
 
 	//Format GitHub data so people can more easily edit/add mods manually.
-	public JsonSerializerOptions SerializerSettings { get; } = new()
-	{
-		AllowTrailingCommas = true,
-		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-	};
+	public JsonSerializerOptions SerializerSettings => JsonUtils.DefaultSerializerSettings;
 
 	[Reactive] public bool IsEnabled { get; set; }
 	public GitHubModsCachedData CacheData { get; set; }

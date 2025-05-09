@@ -1,6 +1,5 @@
 ﻿using ModManager.Models.Mod.Game;
 
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace ModManager.Models.Mod;

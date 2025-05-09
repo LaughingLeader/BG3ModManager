@@ -58,13 +58,6 @@ public static partial class ModDataLoader
 	private static readonly Regex _modMetaPattern = ModMetaPattern();
 	private static readonly Regex _ModFolderPattern = ModFolderPattern();
 
-	private static readonly JsonSerializerOptions _indentedJsonSettings = new()
-	{
-		AllowTrailingCommas = true,
-		WriteIndented = true,
-		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-	};
-
 	public static bool IgnoreMod([NotNullWhen(true)] string? modUUID)
 	{
 		return modUUID.IsValid() && DivinityApp.IgnoredMods.Lookup(modUUID).HasValue;
@@ -1009,7 +1002,7 @@ public static partial class ModDataLoader
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
-		var contents = JsonSerializer.Serialize(order, _indentedJsonSettings);
+		var contents = JsonSerializer.Serialize(order, JsonUtils.DefaultSerializerSettings);
 
 		FileUtils.WriteTextFile(outputFilePath, contents);
 
@@ -1023,7 +1016,7 @@ public static partial class ModDataLoader
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
-		var contents = JsonSerializer.Serialize(order, _indentedJsonSettings);
+		var contents = JsonSerializer.Serialize(order, JsonUtils.DefaultSerializerSettings);
 
 		await FileUtils.WriteTextFileAsync(outputFilePath, contents);
 
@@ -1304,7 +1297,7 @@ public static partial class ModDataLoader
 			settings["DisplayModsDetectedMsg"] = enableModWarnings;
 		}
 
-		var contents = JsonSerializer.Serialize(settings, _indentedJsonSettings);
+		var contents = JsonSerializer.Serialize(settings, JsonUtils.DefaultSerializerSettings);
 
 		await FileUtils.WriteTextFileAsync(settingsFilePath, contents);
 
