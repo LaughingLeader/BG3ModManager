@@ -15,6 +15,18 @@
 			<Color x:Key="ModListCardBackground">#282A36</Color>
 
 			<Color x:Key="ModPropertiesBackground">#B5B5B5</Color>
+
+			<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Opacity="0.1" Color="Black" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Opacity="0.1" Color="Black" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Opacity="0.6" Color="Black" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+			<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Opacity="0.4" Color="Black" />
+
+			<Color x:Key="ProgressionBarBackgroundColor">#FFFFFF</Color>
+			<Color x:Key="ProgressionBarForegroundColor">#0000FF</Color>
 		</ResourceDictionary>
 		<ResourceDictionary x:Key="Dark">
 			<Color x:Key="ModListHoveredTextForeground">#73FFBB</Color>
@@ -26,6 +38,22 @@
 			<Color x:Key="ModListCardBackground">#282A36</Color>
 
 			<Color x:Key="ModPropertiesBackground">#323442</Color>
+
+			<!--
+				Makes TreeDataGrid work without a fluent theme
+				https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/246#issuecomment-1874873016
+			-->
+			<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="#4A4A5E" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="#38394A" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="#38394A" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+			<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="#425595" />
+
+			<Color x:Key="ProgressionBarBackgroundColor">#FFFFFF</Color>
+			<Color x:Key="ProgressionBarForegroundColor">#0000FF</Color>
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

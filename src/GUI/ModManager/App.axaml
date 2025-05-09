@@ -20,33 +20,6 @@
 				<ResourceInclude Source="avares://ModManager/Styling/Controls/TimeSpanUpDown.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 
-			<ResourceDictionary.ThemeDictionaries>
-				<!--
-					Makes TreeDataGrid work without a fluent theme
-					https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/246#issuecomment-1874873016
-				-->
-				<ResourceDictionary x:Key="Default">
-					<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Opacity="0.1" Color="Black" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Opacity="0.1" Color="Black" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Opacity="0.6" Color="Black" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
-					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Opacity="0.4" Color="Black" />
-				</ResourceDictionary>
-				<ResourceDictionary x:Key="Dark">
-					<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="#4A4A5E" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="#38394A" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="#38394A" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
-					<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
-					<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="#425595" />
-				</ResourceDictionary>
-			</ResourceDictionary.ThemeDictionaries>
-
 			<!--  TreeDataGrid Resources  -->
 			<Color x:Key="SystemBaseMediumLowColor">Transparent</Color>
 			<Color x:Key="SystemBaseHighColor">WhiteSmoke</Color>

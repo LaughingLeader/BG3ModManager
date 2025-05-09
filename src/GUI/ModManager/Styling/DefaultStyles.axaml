@@ -5,7 +5,7 @@
 	xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
 	xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 	xmlns:rxui="using:Avalonia.ReactiveUI"
-	xmlns:suki="using:SukiUI">
+	xmlns:suki="using:SukiUI.Controls">
 
 	<Style Selector="Button.icon">
 		<Setter Property="Padding" Value="0" />
@@ -97,6 +97,11 @@
 
 	<Style Selector="Window">
 		<Setter Property="TextElement.Foreground" Value="{DynamicResource SukiText}" />
+	</Style>
+
+	<Style Selector="suki|CircleProgressBar">
+		<Setter Property="ArcBackground" Value="{DynamicResource ProgressionBarBackgroundColor}" />
+		<Setter Property="ArcForeground" Value="{DynamicResource ProgressionBarForegroundColor}" />
 	</Style>
 
 	<!--  This fixes an issue where setting the Foreground of a MaterialIcon directly makes it not change color on hover.  -->

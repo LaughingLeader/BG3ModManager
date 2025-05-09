@@ -125,6 +125,8 @@ Mod commissioned by Spell&amp;Shield</TextBlock.Text>
 			<Color x:Key="SukiText">#e4e6e8</Color>
 			<Color x:Key="SukiLowText">#584537</Color>
 			<Color x:Key="SukiDisabledText">#9CD9D8</Color>
+			
+			<Color x:Key="SukiPrimaryColor">#6600FF</Color>
 
 			<BoxShadows x:Key="SukiLowShadow">0 0 3 0 #353535</BoxShadows>
 			<BoxShadows x:Key="SukiSwitchShadow">0 1 5 0 #555555</BoxShadows>
@@ -137,6 +139,25 @@ Mod commissioned by Spell&amp;Shield</TextBlock.Text>
         <GradientStop Color="#00000000" Offset="0.5"/>
         <GradientStop Color="#90000000" Offset="0"/>
 			</LinearGradientBrush>
+
+			<Color x:Key="ModListHoveredTextForeground">#1ECC5B</Color>
+			<Color x:Key="ModListHoveredCellBackground">#66FFFFFF</Color>
+			<Color x:Key="ModListHoveredCellSelectedBackground">#c0b8b0</Color>
+			<Color x:Key="ModListHoveredCellBorder">#523c28</Color>
+			<Color x:Key="ModListCardBackground">#E1282A36</Color>
+			<Color x:Key="ModPropertiesBackground">#000000</Color>
+
+			<Color x:Key="ProgressionBarBackgroundColor">#2c343a</Color>
+			<Color x:Key="ProgressionBarForegroundColor">#6600FF</Color>
+
+			<SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="#4A4A5E" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="#38394A" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="#38394A" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
+			<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="#c0b8b0" />
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>
