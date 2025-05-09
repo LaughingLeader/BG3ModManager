@@ -9,21 +9,23 @@ namespace ModManager.Views.Generated
     partial class ScriptExtenderUpdateConfigView
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock TargetVersionTextBlock;
+        internal global::Avalonia.Controls.TextBlock UpdateChannelTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock TargetResourceDigestTextBlock;
+        internal global::Avalonia.Controls.TextBlock CachePathTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock DebugTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock DisableUpdatesTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock IPv4OnlyTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock DebugTextBlock;
+        internal global::Avalonia.Controls.TextBlock ManifestNameTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock ManifestURLTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock ManifestNameTextBlock;
+        internal global::Avalonia.Controls.TextBlock TargetResourceDigestTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock CachePathTextBlock;
+        internal global::Avalonia.Controls.TextBlock TargetVersionTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock ValidateSignatureTextBlock;
 
@@ -42,14 +44,15 @@ namespace ModManager.Views.Generated
             }
 
             var __thisNameScope__ = this.FindNameScope();
-            TargetVersionTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("TargetVersionTextBlock");
-            TargetResourceDigestTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("TargetResourceDigestTextBlock");
+            UpdateChannelTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateChannelTextBlock");
+            CachePathTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("CachePathTextBlock");
+            DebugTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DebugTextBlock");
             DisableUpdatesTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableUpdatesTextBlock");
             IPv4OnlyTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("IPv4OnlyTextBlock");
-            DebugTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DebugTextBlock");
-            ManifestURLTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ManifestURLTextBlock");
             ManifestNameTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ManifestNameTextBlock");
-            CachePathTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("CachePathTextBlock");
+            ManifestURLTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ManifestURLTextBlock");
+            TargetResourceDigestTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("TargetResourceDigestTextBlock");
+            TargetVersionTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("TargetVersionTextBlock");
             ValidateSignatureTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ValidateSignatureTextBlock");
         }
     }

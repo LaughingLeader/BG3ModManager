@@ -11,37 +11,49 @@
 	d:DesignHeight="900"
     d:DesignWidth="1600"
 	mc:Ignorable="d">
-	<controls:AutoGrid RowCount="9" RowHeight="auto">
-		<controls:AutoGrid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="*" />
-		</controls:AutoGrid.ColumnDefinitions>
-
-		<TextBlock Classes="left" x:Name="TargetVersionTextBlock" Text="Target Version" ToolTip.Tip="Update to a specific version of the script extender (ex. '5.0.0.0')" />
-		<TextBox Classes="compact" Text="{Binding TargetVersion}" ToolTip.Tip="{Binding ElementName=TargetVersionTextBlock, Path=(ToolTip.Tip)}"/>
+	<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+		<!--UpdateChannel,Update Channel,ExtenderUpdateChannel,Enum-->
+		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" x:Name="UpdateChannelTextBlock" Text="Update Channel" ToolTip.Tip="Use a specific update channel" />
+		<ComboBox Grid.Row="0" Grid.Column="1" Classes="right" SelectedIndex="{Binding UpdateChannel, FallbackValue=0}" ToolTip.Tip="{Binding ElementName=UpdateChannelTextBlock, Path=(ToolTip.Tip)}">
+			<ComboBoxItem Content="Release" ToolTip.Tip="Release" />
+			<ComboBoxItem Content="Devel" ToolTip.Tip="Devel" />
+			<ComboBoxItem Content="Nightly" ToolTip.Tip="Nightly" />
+		</ComboBox>
 		
-		<TextBlock Classes="left" x:Name="TargetResourceDigestTextBlock" Text="Target Resource Digest" ToolTip.Tip="Use a specific Digest for the target update" />
-		<TextBox Classes="compact" Text="{Binding TargetResourceDigest}" ToolTip.Tip="{Binding ElementName=TargetResourceDigestTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<!--CachePath,CachePath,String,Class-->
+		<TextBlock Grid.Row="1" Grid.Column="0" Classes="left" x:Name="CachePathTextBlock" Text="CachePath" ToolTip.Tip="" />
+		<TextBox Grid.Row="1" Grid.Column="1" Classes="compact" Text="{Binding CachePath}" ToolTip.Tip="{Binding ElementName=CachePathTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Classes="left" x:Name="DisableUpdatesTextBlock" Text="Disable Updates" ToolTip.Tip="Disable automatic updating to the latest extender version" />
-		<CheckBox Classes="right" IsChecked ="{Binding DisableUpdates}" ToolTip.Tip="{Binding ElementName=DisableUpdatesTextBlock, Path=(ToolTip.Tip)}"/>
+		<!--Debug,Debug,Boolean,Struct-->
+		<TextBlock Grid.Row="2" Grid.Column="0" Classes="left" x:Name="DebugTextBlock" Text="Debug" ToolTip.Tip="Enable debug mode in the extender updater, which prints more messages to the console window" />
+		<CheckBox Grid.Row="2" Grid.Column="1" Classes="right" IsChecked ="{Binding Debug}" ToolTip.Tip="{Binding ElementName=DebugTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="IPv4OnlyTextBlock" Text="IPv4Only" ToolTip.Tip="Use only IPv4 when fetching the latest update" />
-		<CheckBox Classes="right" IsChecked ="{Binding IPv4Only}" ToolTip.Tip="{Binding ElementName=IPv4OnlyTextBlock, Path=(ToolTip.Tip)}"/>
+		<!--DisableUpdates,Disable Updates,Boolean,Struct-->
+		<TextBlock Grid.Row="3" Grid.Column="0" Classes="left" x:Name="DisableUpdatesTextBlock" Text="Disable Updates" ToolTip.Tip="Disable automatic updating to the latest extender version" />
+		<CheckBox Grid.Row="3" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableUpdates}" ToolTip.Tip="{Binding ElementName=DisableUpdatesTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="DebugTextBlock" Text="Debug" ToolTip.Tip="Enable debug mode in the extender updater, which prints more messages to the console window" />
-		<CheckBox Classes="right" IsChecked ="{Binding Debug}" ToolTip.Tip="{Binding ElementName=DebugTextBlock, Path=(ToolTip.Tip)}"/>
+		<!--IPv4Only,IPv4Only,Boolean,Struct-->
+		<TextBlock Grid.Row="4" Grid.Column="0" Classes="left" x:Name="IPv4OnlyTextBlock" Text="IPv4Only" ToolTip.Tip="Use only IPv4 when fetching the latest update" />
+		<CheckBox Grid.Row="4" Grid.Column="1" Classes="right" IsChecked ="{Binding IPv4Only}" ToolTip.Tip="{Binding ElementName=IPv4OnlyTextBlock, Path=(ToolTip.Tip)}"/>
 		
-		<TextBlock Classes="left" x:Name="ManifestURLTextBlock" Text="Manifest URL" ToolTip.Tip="" />
-		<TextBox Classes="compact" Text="{Binding ManifestURL}" ToolTip.Tip="{Binding ElementName=ManifestURLTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<!--ManifestName,Manifest Name,String,Class-->
+		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" x:Name="ManifestNameTextBlock" Text="Manifest Name" ToolTip.Tip="" />
+		<TextBox Grid.Row="5" Grid.Column="1" Classes="compact" Text="{Binding ManifestName}" ToolTip.Tip="{Binding ElementName=ManifestNameTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Classes="left" x:Name="ManifestNameTextBlock" Text="Manifest Name" ToolTip.Tip="" />
-		<TextBox Classes="compact" Text="{Binding ManifestName}" ToolTip.Tip="{Binding ElementName=ManifestNameTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<!--ManifestURL,Manifest URL,String,Class-->
+		<TextBlock Grid.Row="6" Grid.Column="0" Classes="left" x:Name="ManifestURLTextBlock" Text="Manifest URL" ToolTip.Tip="" />
+		<TextBox Grid.Row="6" Grid.Column="1" Classes="compact" Text="{Binding ManifestURL}" ToolTip.Tip="{Binding ElementName=ManifestURLTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Classes="left" x:Name="CachePathTextBlock" Text="CachePath" ToolTip.Tip="" />
-		<TextBox Classes="compact" Text="{Binding CachePath}" ToolTip.Tip="{Binding ElementName=CachePathTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<!--TargetResourceDigest,Target Resource Digest,String,Class-->
+		<TextBlock Grid.Row="7" Grid.Column="0" Classes="left" x:Name="TargetResourceDigestTextBlock" Text="Target Resource Digest" ToolTip.Tip="Use a specific Digest for the target update" />
+		<TextBox Grid.Row="7" Grid.Column="1" Classes="compact" Text="{Binding TargetResourceDigest}" ToolTip.Tip="{Binding ElementName=TargetResourceDigestTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Classes="left" x:Name="ValidateSignatureTextBlock" Text="Validate Signature" ToolTip.Tip="" />
-		<CheckBox Classes="right" IsChecked ="{Binding ValidateSignature}" ToolTip.Tip="{Binding ElementName=ValidateSignatureTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
-	</controls:AutoGrid>
+		<!--TargetVersion,Target Version,String,Class-->
+		<TextBlock Grid.Row="8" Grid.Column="0" Classes="left" x:Name="TargetVersionTextBlock" Text="Target Version" ToolTip.Tip="Update to a specific version of the script extender (ex. '5.0.0.0')" />
+		<TextBox Grid.Row="8" Grid.Column="1" Classes="compact" Text="{Binding TargetVersion}" ToolTip.Tip="{Binding ElementName=TargetVersionTextBlock, Path=(ToolTip.Tip)}"/>
+		
+		<!--ValidateSignature,Validate Signature,Boolean,Struct-->
+		<TextBlock Grid.Row="9" Grid.Column="0" Classes="left" x:Name="ValidateSignatureTextBlock" Text="Validate Signature" ToolTip.Tip="" />
+		<CheckBox Grid.Row="9" Grid.Column="1" Classes="right" IsChecked ="{Binding ValidateSignature}" ToolTip.Tip="{Binding ElementName=ValidateSignatureTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+	</Grid>
 </UserControl>

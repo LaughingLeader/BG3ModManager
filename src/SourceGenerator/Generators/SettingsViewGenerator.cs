@@ -48,6 +48,40 @@ public class SettingsViewGenerator : IIncrementalGenerator
 		}
 	}
 
+	internal class SortSettings : IComparer<SettingsEntryData>
+	{
+		private static string[] _priorityList = [
+			"GameExecutablePath",
+			"GameDataPath",
+			"DocumentsFolderPathOverride",
+			"LoadOrderPath",
+			"NexusModsAPIKey",
+			"ModioAPIKey",
+			"CustomProfile",
+			"LogDirectory",
+			"UpdateChannel",
+		];
+
+		public int Compare(SettingsEntryData s1, SettingsEntryData s2)
+		{
+			if (_priorityList.Contains(s1.PropertyName) && _priorityList.Contains(s2.PropertyName))
+			{
+				return s1.DisplayName.CompareTo(s2.DisplayName);
+			}
+			if (_priorityList.Contains(s1.PropertyName))
+			{
+				return -1;
+			}
+			if (_priorityList.Contains(s2.PropertyName))
+			{
+				return 1;
+			}
+			return s1.DisplayName.CompareTo(s2.DisplayName);
+		}
+
+		public static readonly SortSettings Default = new();
+	}
+
 	private static ValueTuple<INamedTypeSymbol, List<SettingsViewToGenerate>>? GetToGenerate(SemanticModel semanticModel, SyntaxNode declarationSyntax)
 	{
 		var symbol = semanticModel.GetDeclaredSymbol(declarationSyntax);
@@ -69,7 +103,7 @@ public class SettingsViewGenerator : IIncrementalGenerator
 
 					if (entries.Count > 0)
 					{
-						views.Add(new SettingsViewToGenerate(propertySymbol, entries));
+						views.Add(new SettingsViewToGenerate(propertySymbol, [.. entries.OrderBy(x => x, SortSettings.Default)]));
 					}
 				}
 			}

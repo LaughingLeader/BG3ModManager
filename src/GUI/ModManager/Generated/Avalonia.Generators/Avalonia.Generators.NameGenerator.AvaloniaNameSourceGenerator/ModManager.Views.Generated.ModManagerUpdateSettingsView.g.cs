@@ -9,21 +9,21 @@ namespace ModManager.Views.Generated
     partial class ModManagerUpdateSettingsView
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock UpdateScriptExtenderTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock UpdateGitHubModsTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock UpdateNexusModsTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock UpdateModioModsTextBlock;
+        internal global::Avalonia.Controls.TextBlock ModioAPIKeyTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock NexusModsAPIKeyTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock ModioAPIKeyTextBlock;
+        internal global::Avalonia.Controls.TextBlock AllowAdultContentTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock MinimumUpdateTimePeriodTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock AllowAdultContentTextBlock;
+        internal global::Avalonia.Controls.TextBlock UpdateGitHubModsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock UpdateModioModsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock UpdateNexusModsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock UpdateScriptExtenderTextBlock;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -40,14 +40,14 @@ namespace ModManager.Views.Generated
             }
 
             var __thisNameScope__ = this.FindNameScope();
-            UpdateScriptExtenderTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateScriptExtenderTextBlock");
-            UpdateGitHubModsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateGitHubModsTextBlock");
-            UpdateNexusModsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateNexusModsTextBlock");
-            UpdateModioModsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateModioModsTextBlock");
-            NexusModsAPIKeyTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("NexusModsAPIKeyTextBlock");
             ModioAPIKeyTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ModioAPIKeyTextBlock");
-            MinimumUpdateTimePeriodTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("MinimumUpdateTimePeriodTextBlock");
+            NexusModsAPIKeyTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("NexusModsAPIKeyTextBlock");
             AllowAdultContentTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("AllowAdultContentTextBlock");
+            MinimumUpdateTimePeriodTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("MinimumUpdateTimePeriodTextBlock");
+            UpdateGitHubModsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateGitHubModsTextBlock");
+            UpdateModioModsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateModioModsTextBlock");
+            UpdateNexusModsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateNexusModsTextBlock");
+            UpdateScriptExtenderTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("UpdateScriptExtenderTextBlock");
         }
     }
 }

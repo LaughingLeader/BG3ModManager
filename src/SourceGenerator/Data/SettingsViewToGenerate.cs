@@ -1,5 +1,6 @@
 ﻿using ModManager.SourceGenerator.Utils;
 
+using System.Diagnostics;
 using System.Text;
 
 namespace ModManager.SourceGenerator.Data;
@@ -66,36 +67,44 @@ public readonly record struct SettingsViewToGenerate
 			var textBlockName = $"{entry.PropertyName}TextBlock";
 			var tooltipBinding = $"{{Binding ElementName={textBlockName}, Path=(ToolTip.Tip)}}";
 
-			code.AppendLine($"<TextBlock Classes=\"left\" x:Name=\"{textBlockName}\" Text=\"{entry.DisplayName}\" ToolTip.Tip=\"{entry.ToolTip}\" />");
-
 			var controlText = "";
 			var bindTo = !string.IsNullOrEmpty(entry.BindTo) ? entry.BindTo : entry.PropertyName;
 			var isSingleLine = true;
 			var addedRightColumn = true;
+			var isMultiLine = false;
+
+			//code.AppendLine($"<!--{entry.PropertyName},{entry.DisplayName},{entry.PropertyTypeName},{entry.PropertyType.TypeKind}-->");
 
 			switch (entry.PropertyTypeName)
 			{
 				case "Boolean":
-					controlText = $"<CheckBox Classes=\"right\" IsChecked =\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+					controlText = $"<CheckBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" IsChecked =\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 					break;
 				case "String":
-					controlText = $"<TextBox Classes=\"compact\" Text=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+					controlText = $"<TextBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"compact\" Text=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 					break;
 				case "TimeSpan":
-					controlText = $"<controls:TimeSpanUpDown Classes=\"right\" Value=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+					controlText = $"<controls:TimeSpanUpDown Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" Value=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+					break;
+				case nameof(Int32):
+					controlText = $"<NumericUpDown Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" Value=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 					break;
 				default:
 					if (entry.PropertyType.TypeKind == TypeKind.Enum)
 					{
+						var comboCode = new CodeBuilder();
+						comboCode.StartScope("");
+						comboCode.StartScope("");
+
 						isSingleLine = false;
-						var comboText = $"<ComboBox Classes=\"right\" SelectedIndex=\"{{Binding {bindTo}, FallbackValue=0}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+						var comboText = $"<ComboBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" SelectedIndex=\"{{Binding {bindTo}, FallbackValue=0}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 						if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
 						{
 							comboText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
 						}
 						comboText += ">";
-						code.AppendLine(comboText);
-						code.StartScope("");
+						comboCode.AppendLine(comboText);
+						comboCode.StartScope("");
 						
 						foreach(var member in entry.PropertyType.GetMembers())
 						{
@@ -118,34 +127,50 @@ public readonly record struct SettingsViewToGenerate
 								}
 
 								tooltip ??= string.Empty;
-								code.AppendLine($"<ComboBoxItem Content=\"{member.Name}\" ToolTip.Tip=\"{tooltip}\" />");
+								comboCode.AppendLine($"<ComboBoxItem Content=\"{member.Name}\" ToolTip.Tip=\"{tooltip}\" />");
 							}
 						}
 
-						code.EndScope("");
-						code.AppendLine("</ComboBox>");
+						comboCode.EndScope("");
+						comboCode.AppendLine("</ComboBox>");
+
+						controlText = comboCode.ToString().Trim();
+						isMultiLine = true;
 					}
 					else
 					{
+						//controlText = $"<TextBlock Tag=\"{entry.PropertyType.TypeKind},{entry.PropertyTypeName}\" Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" Value=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 						addedRightColumn = false;
 					}
 					break;
 			}
 
-			if(isSingleLine && addedRightColumn)
+			if (!string.IsNullOrWhiteSpace(controlText))
 			{
-				if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
+				code.AppendLine($"<TextBlock Grid.Row=\"{totalRows}\" Grid.Column=\"0\" Classes=\"left\" x:Name=\"{textBlockName}\" Text=\"{entry.DisplayName}\" ToolTip.Tip=\"{entry.ToolTip}\" />");
+				if(isMultiLine)
 				{
-					controlText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
+					code.AppendLine(controlText);
 				}
-				controlText += "/>";
+				else
+				{
+					if (isSingleLine && addedRightColumn)
+					{
+						if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
+						{
+							controlText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
+						}
+						controlText += "/>";
 
-				code.AppendLine(controlText);
+						code.AppendLine(controlText);
+					}
+				}
+
+				code.AppendLine(string.Empty);
+				totalRows++;
 			}
-			
-			code.AppendLine(string.Empty);
-			totalRows++;
 		}
+		var rowDefinitionsStr = string.Join(",", Enumerable.Repeat("Auto", totalRows));
 		return @$"<!--auto-generated-->
 <UserControl
 	x:Class=""ModManager.Views.Generated.{DisplayName}""
@@ -159,14 +184,9 @@ public readonly record struct SettingsViewToGenerate
 	d:DesignHeight=""900""
     d:DesignWidth=""1600""
 	mc:Ignorable=""d"">
-	<controls:AutoGrid RowCount=""{totalRows}"" RowHeight=""auto"">
-		<controls:AutoGrid.ColumnDefinitions>
-			<ColumnDefinition Width=""*"" />
-			<ColumnDefinition Width=""*"" />
-		</controls:AutoGrid.ColumnDefinitions>
-
+	<Grid ColumnDefinitions=""*,*"" RowDefinitions=""{rowDefinitionsStr}"">
 		{code.ToString().Trim()}
-	</controls:AutoGrid>
+	</Grid>
 </UserControl>";
 	}
 }

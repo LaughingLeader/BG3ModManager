@@ -13,39 +13,39 @@ namespace ModManager.Views.Generated
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock GameExecutablePathTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock GameStoryLogEnabledTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock DisableLauncherTelemetryTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock DisableLauncherModWarningsTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock LaunchDX11TextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock SkipLauncherTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock LaunchThroughSteamTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock LimitToSingleInstanceTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock LoadOrderPathTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock DocumentsFolderPathOverrideTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock AutoAddDependenciesWhenExportingTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock CheckForUpdatesTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock DocumentsFolderPathOverrideTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock ShiftListFocusOnSwapTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock ActionOnGameLaunchTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock DisableMissingModWarningsTextBlock;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock SaveWindowLocationTextBlock;
+        internal global::Avalonia.Controls.TextBlock EnableColorblindSupportTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
         internal global::Avalonia.Controls.TextBlock DeleteModCrashSanityCheckTextBlock;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
-        internal global::Avalonia.Controls.TextBlock EnableColorblindSupportTextBlock;
+        internal global::Avalonia.Controls.TextBlock LaunchDX11TextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock GameStoryLogEnabledTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock LaunchThroughSteamTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock DisableLauncherTelemetryTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock DisableLauncherModWarningsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock LimitToSingleInstanceTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock ActionOnGameLaunchTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock SaveWindowLocationTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock ShiftListFocusOnSwapTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock DisableMissingModWarningsTextBlock;
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::Avalonia.Controls.TextBlock SkipLauncherTextBlock;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -64,23 +64,23 @@ namespace ModManager.Views.Generated
             var __thisNameScope__ = this.FindNameScope();
             GameDataPathTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("GameDataPathTextBlock");
             GameExecutablePathTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("GameExecutablePathTextBlock");
-            GameStoryLogEnabledTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("GameStoryLogEnabledTextBlock");
-            DisableLauncherTelemetryTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableLauncherTelemetryTextBlock");
-            DisableLauncherModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableLauncherModWarningsTextBlock");
-            LaunchDX11TextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LaunchDX11TextBlock");
-            SkipLauncherTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SkipLauncherTextBlock");
-            LaunchThroughSteamTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LaunchThroughSteamTextBlock");
-            LimitToSingleInstanceTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LimitToSingleInstanceTextBlock");
             LoadOrderPathTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LoadOrderPathTextBlock");
+            DocumentsFolderPathOverrideTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DocumentsFolderPathOverrideTextBlock");
             AutoAddDependenciesWhenExportingTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("AutoAddDependenciesWhenExportingTextBlock");
             CheckForUpdatesTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("CheckForUpdatesTextBlock");
-            DocumentsFolderPathOverrideTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DocumentsFolderPathOverrideTextBlock");
-            ShiftListFocusOnSwapTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ShiftListFocusOnSwapTextBlock");
-            ActionOnGameLaunchTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ActionOnGameLaunchTextBlock");
-            DisableMissingModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableMissingModWarningsTextBlock");
-            SaveWindowLocationTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SaveWindowLocationTextBlock");
-            DeleteModCrashSanityCheckTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DeleteModCrashSanityCheckTextBlock");
             EnableColorblindSupportTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("EnableColorblindSupportTextBlock");
+            DeleteModCrashSanityCheckTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DeleteModCrashSanityCheckTextBlock");
+            LaunchDX11TextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LaunchDX11TextBlock");
+            GameStoryLogEnabledTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("GameStoryLogEnabledTextBlock");
+            LaunchThroughSteamTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LaunchThroughSteamTextBlock");
+            DisableLauncherTelemetryTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableLauncherTelemetryTextBlock");
+            DisableLauncherModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableLauncherModWarningsTextBlock");
+            LimitToSingleInstanceTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("LimitToSingleInstanceTextBlock");
+            ActionOnGameLaunchTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ActionOnGameLaunchTextBlock");
+            SaveWindowLocationTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SaveWindowLocationTextBlock");
+            ShiftListFocusOnSwapTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("ShiftListFocusOnSwapTextBlock");
+            DisableMissingModWarningsTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("DisableMissingModWarningsTextBlock");
+            SkipLauncherTextBlock = __thisNameScope__?.Find<global::Avalonia.Controls.TextBlock>("SkipLauncherTextBlock");
         }
     }
 }
