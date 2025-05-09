@@ -23,6 +23,7 @@ public static class AppServices
 	public static IInteractionsService Interactions => Get<IInteractionsService>()!;
 	public static IDialogService Dialog => Get<IDialogService>()!;
 	public static IScreenReaderService ScreenReader => Get<IScreenReaderService>()!;
+	public static AppKeysService Keybindings => Get<AppKeysService>()!;
 
 	static AppServices()
 	{

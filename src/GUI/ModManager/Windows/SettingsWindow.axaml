@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:genview="using:ModManager.Views.Generated"
     xmlns:local="using:ModManager.Windows"
+    xmlns:manager="using:ModManager"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
@@ -22,19 +23,19 @@
 		<suki:SukiBackground IsHitTestVisible="False" />
 		<TabControl x:Name="SettingsTabControl" Margin="48" SelectedIndex="{Binding SelectedTabIndex}">
 			<TabItem Header="General" ToolTip.Tip="Mod Manager Settings (Data/settings.json)">
-				<genview:ModManagerSettingsView x:Name="GeneralSettingsView" />
+				<genview:ModManagerSettingsView x:Name="GeneralSettingsView" DataContext="{Binding Settings}" />
 			</TabItem>
-			<TabItem Header="Updater" ToolTip.Tip="Update Settings (Data/settings.json)">
-				<genview:ModManagerUpdateSettingsView x:Name="UpdateSettingsView" />
+			<TabItem Header="Mod Updating" ToolTip.Tip="Update Settings (Data/settings.json)">
+				<genview:ModManagerUpdateSettingsView x:Name="UpdateSettingsView" DataContext="{Binding UpdateSettings}" />
 			</TabItem>
 			<TabItem Header="Script Extender" ToolTip.Tip="Script Extender Settings (ScriptExtenderSettings.json)">
-				<genview:ScriptExtenderSettingsView x:Name="ExtenderSettingsView" />
+				<genview:ScriptExtenderSettingsView x:Name="ExtenderSettingsView" DataContext="{Binding ExtenderSettings}" />
 			</TabItem>
 			<TabItem Header="Script Extender Updater" ToolTip.Tip="Script Extender Updater Settings (ScriptExtenderUpdaterConfig.json)">
-				<genview:ScriptExtenderUpdateConfigView x:Name="ExtenderUpdateSettingsView" />
+				<genview:ScriptExtenderUpdateConfigView x:Name="ExtenderUpdateSettingsView" DataContext="{Binding ExtenderUpdaterSettings}" />
 			</TabItem>
 			<TabItem Header="Keybindings" ToolTip.Tip="Keybinding Settings (Data/keybindings.json)">
-				<view:KeybindingsView x:Name="KeybindingsView" />
+				<view:KeybindingsView x:Name="KeybindingsView" DataContext="{Binding Source={x:Static manager:ViewModelLocator.Keybindings}}" />
 			</TabItem>
 			<TabItem Header="Advanced" ToolTip.Tip="Advanced Mod Manager Settings (Data/settings.json)">
 				<controls:AutoGrid RowCount="4" RowHeight="auto">
