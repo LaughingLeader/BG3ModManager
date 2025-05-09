@@ -12,7 +12,8 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/General.axaml" />
-				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/Dracula.axaml" />
+				<!--<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/Dracula.axaml" />-->
+				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/BaldursDrip.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/CompactSukiMenu.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/Controls/FilterButtonExpander.axaml" />
 				<!--<ResourceInclude Source="avares://ModManager/Styling/Controls/TimePickerFix.axaml" />-->

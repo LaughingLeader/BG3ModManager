@@ -1,0 +1,142 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Design.PreviewWith>
+		<Border Width="400" Padding="20" Background="Black">
+			<StackPanel Spacing="10">
+				<ComboBox PlaceholderText="Select an item">
+					<ComboBoxItem>Item 1</ComboBoxItem>
+					<ComboBoxItem>Item 2</ComboBoxItem>
+				</ComboBox>
+				<ComboBox Width="200"
+				    HorizontalContentAlignment="Center"
+				    IsEnabled="False"
+				    SelectedIndex="1">
+					<ComboBoxItem>Item 1</ComboBoxItem>
+					<ComboBoxItem>Item 2</ComboBoxItem>
+				</ComboBox>
+				<Border BorderThickness="4" MaxWidth="400">
+					<TextBlock TextWrapping="Wrap" xml:space="preserve">
+						<TextBlock.Text>Whether cursed or born with the condition Wereborn are rangers that have mastered their lycanthropy, turning their bodies into living, bestial weapons capable of overcoming any enemy, making the werewolf form something truly to behold.
+
+Progression:
+
+Level 3
+Wereborn Transformation: Transform into your true Werewolf form.
+
+While in Werewolf form:
+Gain +4 to STR, DEX and CON and base AC of 14.
+Savage Leap: Your jump distance is doubled and any fall damage you take is halved.
+Lupine Speed: You can move an additional 2m.
+Claw Attack: Lash out with your sharp claws, dealing 2d4+3 slashing damage.
+Blood Rend: Lash out with your claws, inflicting Bleeding on the target and dealing damage.
+Bestial Presence: Wereborn exude an intimidating presence, giving them advantage on Intimidation checks.
+Savage Fortitude: Regenerate 2 Health at the start of your turn.
+
+Level 5
+Werewolf form AC 14 -&gt; 16
+Savage Fortitude 2 HP -&gt; 4 HP
+Savage Charge: Lunge forward, slashing all enemies in your path and possibly knocking them Prone.
+Bestial Grace: You are Immune to fall damage.
+Dread Howl: Once per Short Rest, let out a terrifying howl that may Fear nearby enemies and make them drop everything as they flee.
+
+Level 7
+Werewolf form AC 16 -&gt; 18
+Savage Fortitude 4 HP -&gt; 6 HP
+Savage Fortitude: each turn the werewolf regenerates 2 HP
+Bloodlust: You gain Advantage on attacks against Bleeding targets.
+Blood Frenzy: You fall into a frenzy, thirsting for blood and gaining Haste.
+
+Level 10
+Werewolf form AC 18 -&gt; 20
+Savage Fortitude 6 HP -&gt; 8 HP
+Claw Attack 2d4+3 -&gt; 2d6+5
+Savage Shredding: Lash out with your sharp claws, dealing damage and reducing the Armor of the target by 3.
+
+Level 12
+Werewolf form AC 20 -&gt; 22
+STR, DEX and CON +4 -&gt; +6
+Savage Fortitude 8 HP -&gt; 10 HP
+Lupine Speed 2m -&gt; 3m
+Savage Leap x2 -&gt; x3
+Savage Invulnerability: You are Immune to non-magical Bludgeoning, Slashing, and Piercing damage.
+Intimidating Presence: Nearby enemies must succeed a Saving Throw at the start of their turn or become Frightened.
+
+Mod commissioned by Spell&amp;Shield</TextBlock.Text>
+					</TextBlock>
+				</Border>
+			</StackPanel>
+		</Border>
+	</Design.PreviewWith>
+	<ResourceDictionary.ThemeDictionaries>
+		<ResourceDictionary x:Key="Dark">
+			<Color x:Key="MediumGray">#595f65</Color>
+			<Color x:Key="BackgroundGray">#262e35</Color>
+			<Color x:Key="BorderGray">#bdc0c4</Color>
+	
+			<Color x:Key="ThemeAccentColor">#FF1098DF</Color>
+			<Color x:Key="ThemeAccentColor2">#FF56BDEC</Color>
+			<Color x:Key="ThemeAccentColor3">#FF2EAEEB</Color>
+			<Color x:Key="ThemeAccentColor4">#FF0B80C1</Color>
+			<Color x:Key="ThemeAccentBadgeColor">#FF0864A1</Color>
+	
+			<Color x:Key="ThemeCardColor">#FFFFFF</Color>
+			<Color x:Key="ThemeBackgroundColor">#4b5258</Color>
+			<Color x:Key="ThemeBorderLowColor">#2c343a</Color>
+			<Color x:Key="ThemeBorderMidColor">#6d7378</Color>
+			<Color x:Key="ThemeBorderHighColor">#9fa3a7</Color>
+	
+			<Color x:Key="ThemeControlLowColor">#FF868999</Color>
+			<Color x:Key="ThemeControlMidColor">#FFF5F5F5</Color>
+			<Color x:Key="ThemeControlMidHighColor">#FFC2C3C9</Color>
+			<Color x:Key="ThemeControlHighColor">#FF686868</Color>
+			<Color x:Key="ThemeControlVeryHighColor">#FF5B5B5B</Color>
+	
+			<Color x:Key="ThemeControlHighlightLowColor">#FFF0F0F0</Color>
+			<Color x:Key="ThemeControlHighlightMidColor">#FFD0D0D0</Color>
+			<Color x:Key="ThemeControlHighlightHighColor">#FF808080</Color>
+			<Color x:Key="ThemeForegroundColor">#FF000000</Color>
+			<Color x:Key="ThemeForegroundLowColor">#FF808080</Color>
+	
+			<Color x:Key="HighlightBadgeColor">#30fd7d00</Color>
+			<Color x:Key="HighlightColor">#fd7d00</Color>
+			<Color x:Key="HighlightHoverColor">#ed6d00</Color>
+			<Color x:Key="HighlightForegroundColor">#FFFFFFFF</Color>
+			<Color x:Key="ErrorColor">#FFFF0000</Color>
+			<Color x:Key="ErrorLowColor">#AAFF0000</Color>
+
+			<Color x:Key="ControlSukiGlassCardBackground">#49262e35</Color>
+
+			<Color x:Key="SukiBackground">Transparent</Color>
+			<Color x:Key="SukiStrongBackground">#0c0c0c</Color>
+			<Color x:Key="SukiLightBackground">Transparent</Color>
+			<Color x:Key="SukiCardBackground">#0c0c0c</Color>
+			<Color x:Key="SukiPopupBackground">#000000</Color>
+			<Color x:Key="SukiGlassCardBackground">#49262e35</Color>
+			<Color x:Key="SukiGlassCardOpaqueBackground">#0c0c0c</Color>
+			<Color x:Key="SukiControlTouchBackground">#0c0c0c</Color>
+			<Color x:Key="SukiDialogBackground">#000000</Color>
+
+			<Color x:Key="SukiBorderBrush">#523c28</Color>
+			<Color x:Key="SukiControlBorderBrush">#523c28</Color>
+			<Color x:Key="SukiMediumBorderBrush">#523c28</Color>
+			<Color x:Key="SukiLightBorderBrush">#523c28</Color>
+			<Color x:Key="SukiMenuBorderBrush">#523c28</Color>
+			<Color x:Key="GlassBorderBrush">#523c28</Color>
+
+			<Color x:Key="SukiText">#e4e6e8</Color>
+			<Color x:Key="SukiLowText">#584537</Color>
+			<Color x:Key="SukiDisabledText">#9CD9D8</Color>
+
+			<BoxShadows x:Key="SukiLowShadow">0 0 3 0 #353535</BoxShadows>
+			<BoxShadows x:Key="SukiSwitchShadow">0 1 5 0 #555555</BoxShadows>
+			<BoxShadows x:Key="SukiSmallPopupShadow">0 0 4 1 #101010</BoxShadows>
+			<BoxShadows x:Key="SukiPopupShadow">1 1 14 1 #101010</BoxShadows>
+			<BoxShadows x:Key="SukiBigPopupShadow">1 4 17 0 #111111</BoxShadows>
+
+			<LinearGradientBrush x:Key="PopupGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+				<GradientStop Color="#00000000" Offset="1"/>
+        <GradientStop Color="#00000000" Offset="0.5"/>
+        <GradientStop Color="#90000000" Offset="0"/>
+			</LinearGradientBrush>
+		</ResourceDictionary>
+	</ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

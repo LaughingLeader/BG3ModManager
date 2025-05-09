@@ -14,6 +14,13 @@
     ToolTip.Placement="RightEdgeAlignedTop"
     ToolTip.ShowDelay="100"
     mc:Ignorable="d">
+	<UserControl.Styles>
+		<Style Selector="TextBlock">
+			<Style Selector="^:pointerover">
+				<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
+			</Style>
+		</Style>
+	</UserControl.Styles>
 	<ToolTip.Tip>
 		<StackPanel MaxWidth="700" Background="Transparent" Orientation="Vertical">
 			<Grid>
@@ -156,10 +163,7 @@
 	<Panel Background="Transparent">
 		<!--<Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent" />-->
 		<StackPanel Orientation="Horizontal">
-			<TextBlock VerticalAlignment="Center"
-			    IsHitTestVisible="False"
-			    Text="{Binding DisplayName}"
-			    TextAlignment="Left" />
+			<TextBlock VerticalAlignment="Center" Text="{Binding DisplayName}" TextAlignment="Left" />
 		</StackPanel>
 	</Panel>
 </UserControl>
