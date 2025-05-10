@@ -2,7 +2,7 @@
 
 namespace ModManager.Enums.Extender;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<ExtenderUpdateChannel>))]
 public enum ExtenderUpdateChannel
 {
 	[Description("Release")]

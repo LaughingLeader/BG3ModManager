@@ -623,7 +623,13 @@ public static partial class ModDataLoader
 						}
 
 						modData.OsirisModStatus = hasOsirisScripts;
-						modData.Files = files;
+						if(files != null && files.Count > 0)
+						{
+							foreach (var file in files)
+							{
+								modData.Files.Add(file);
+							}
+						}
 						if (isOverridingBuiltinDirectory)
 						{
 							modData.IsForceLoadedMergedMod = hasModFolderData;

@@ -2,31 +2,13 @@
 
 public class DivinityConflictGroup : ReactiveObject
 {
-	private string header;
+	[Reactive] public string? Header { get; set; }
 
-	public string? Header
-	{
-		get => header;
-		set { this.RaiseAndSetIfChanged(ref header, value); }
-	}
-
-	private int totalConflicts = 0;
-
-	public int TotalConflicts
-	{
-		get => totalConflicts;
-		set { this.RaiseAndSetIfChanged(ref totalConflicts, value); }
-	}
+	[Reactive] public int TotalConflicts { get; set; }
 
 	public List<DivinityConflictEntryData> Conflicts { get; set; } = [];
 
-	private int selectedConflictIndex = 0;
-
-	public int SelectedConflictIndex
-	{
-		get => selectedConflictIndex;
-		set { this.RaiseAndSetIfChanged(ref selectedConflictIndex, value); }
-	}
+	[Reactive] public int SelectedConflictIndex { get; set; }
 
 	public void OnActivated(CompositeDisposable disposables)
 	{

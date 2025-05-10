@@ -1,11 +1,13 @@
 ﻿using LSLib.LS;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ModManager.Extensions;
 
 static public class ResourceExtensions
 {
 
-	public static Node FindNode(this Node node, string name)
+	public static Node? FindNode(this Node node, string name)
 	{
 		if (node.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 		{
@@ -17,7 +19,7 @@ static public class ResourceExtensions
 		}
 	}
 
-	public static Node FindNode(this Dictionary<string, List<Node>> children, string name)
+	public static Node? FindNode(this Dictionary<string, List<Node>> children, string name)
 	{
 		foreach (var kvp in children)
 		{
@@ -38,7 +40,7 @@ static public class ResourceExtensions
 		return null;
 	}
 
-	public static Node FindNode(this Region region, string name)
+	public static Node? FindNode(this Region region, string name)
 	{
 		foreach (var kvp in region.Children)
 		{
@@ -57,7 +59,7 @@ static public class ResourceExtensions
 		return null;
 	}
 
-	public static Node FindNode(this Resource resource, string name)
+	public static Node? FindNode(this Resource resource, string name)
 	{
 		foreach (var region in resource.Regions.Values)
 		{
@@ -71,19 +73,19 @@ static public class ResourceExtensions
 		return null;
 	}
 
-	public static bool TryFindNode(this Resource resource, string name, out Node targetNode)
+	public static bool TryFindNode(this Resource resource, string name, [NotNullWhen(true)] out Node? targetNode)
 	{
 		targetNode = FindNode(resource, name);
 		return targetNode != null;
 	}
 
-	public static bool TryFindNode(this Region region, string name, out Node targetNode)
+	public static bool TryFindNode(this Region region, string name, [NotNullWhen(true)] out Node? targetNode)
 	{
 		targetNode = FindNode(region, name);
 		return targetNode != null;
 	}
 
-	public static Region FindRegion(this Resource resource, string name)
+	public static Region? FindRegion(this Resource resource, string name)
 	{
 		foreach (var region in resource.Regions.Values)
 		{
@@ -96,7 +98,7 @@ static public class ResourceExtensions
 		return null;
 	}
 
-	public static bool TryFindRegion(this Resource resource, string name, out Region targetRegion)
+	public static bool TryFindRegion(this Resource resource, string name, [NotNullWhen(true)] out Region? targetRegion)
 	{
 		foreach (var region in resource.Regions.Values)
 		{

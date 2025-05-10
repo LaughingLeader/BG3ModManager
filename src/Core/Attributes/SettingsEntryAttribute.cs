@@ -32,11 +32,11 @@ public static class SettingsEntryAttributeExtensions
 		return props;
 	}
 
-	public static IObservable<ReactiveObject> WhenAnySettingsChange(this ReactiveObject model)
+	public static IObservable<ReactiveObject?> WhenAnySettingsChange(this ReactiveObject model)
 	{
-		var props = model.GetType().GetProperties()
-			.Select(x => SettingsAttributeProperty.FromProperty(x))
-			.Where(x => x.Attribute != null).Select(x => x.Property.Name).ToArray();
+		string[] props = [.. model.GetType().GetProperties()
+			.Select(SettingsAttributeProperty.FromProperty)
+			.Where(x => x.Attribute != null).Select(x => x.Property.Name)];
 		return model.WhenAnyPropertyChanged(props);
 	}
 }
@@ -51,7 +51,7 @@ public struct SettingsAttributeProperty
 		return new SettingsAttributeProperty
 		{
 			Property = property,
-			Attribute = property.GetCustomAttribute<SettingsEntryAttribute>()
+			Attribute = property.GetCustomAttribute<SettingsEntryAttribute>() ?? new SettingsEntryAttribute()
 		};
 	}
 }

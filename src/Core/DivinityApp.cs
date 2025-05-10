@@ -135,7 +135,7 @@ public static class DivinityApp
 		//Process.GetCurrentProcess()?.MainModule?.FileName
 	}
 
-	public static event PropertyChangedEventHandler StaticPropertyChanged;
+	public static event PropertyChangedEventHandler? StaticPropertyChanged;
 
 	private static void NotifyStaticPropertyChanged([CallerMemberName] string? name = null)
 	{
@@ -170,7 +170,7 @@ public static class DivinityApp
 
 	private static readonly Action<string> BaseLogMethod = s => Trace.WriteLine(s);
 
-	private static Action<string> _overwrittenLogMethod;
+	private static Action<string>? _overwrittenLogMethod;
 	public static Action<string> LogMethod
 	{
 		get => _overwrittenLogMethod ?? BaseLogMethod;

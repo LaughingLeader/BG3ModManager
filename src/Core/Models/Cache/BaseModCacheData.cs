@@ -5,7 +5,7 @@ namespace ModManager.Models.Cache;
 public interface IModCacheData
 {
 	long LastUpdated { get; set; }
-	string LastVersion { get; set; }
+	string? LastVersion { get; set; }
 	bool CacheUpdated { get; set; }
 }
 

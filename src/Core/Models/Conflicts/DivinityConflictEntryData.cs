@@ -4,35 +4,15 @@ namespace ModManager.Models.Conflicts;
 
 public class DivinityConflictEntryData : ReactiveObject
 {
-	private string target;
-
-	public string? Target
-	{
-		get => target;
-		set { this.RaiseAndSetIfChanged(ref target, value); }
-	}
-
-	private string name;
-
-	public string? Name
-	{
-		get => name;
-		set { this.RaiseAndSetIfChanged(ref name, value); }
-	}
+	[Reactive] public string? Target { get; set; }
+	[Reactive] public string? Name { get; set; }
 
 	public List<DivinityConflictModData> ConflictModDataList { get; set; } = [];
 }
 
-public class DivinityConflictModData : ReactiveObject
+public class DivinityConflictModData(ModData mod, string val = "") : ReactiveObject
 {
-	private readonly ModData modData;
-	public ModData Mod => modData;
+	public ModData Mod => mod;
 
-	public string? Value { get; set; }
-
-	public DivinityConflictModData(ModData mod, string val = "")
-	{
-		modData = mod;
-		Value = val;
-	}
+	public string? Value { get; set; } = val;
 }

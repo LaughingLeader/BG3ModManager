@@ -17,7 +17,7 @@ namespace ModManager.Models.Mod;
 public class ModData : ReactiveObject, IModData
 {
 	private static readonly SortExpressionComparer<ModuleShortDesc> _moduleSort = SortExpressionComparer<ModuleShortDesc>
-			.Ascending(p => p.UUID.IsValid() && !DivinityApp.IgnoredMods.Lookup(p.UUID).HasValue).ThenByAscending(p => p.Name);
+			.Ascending(p => p.UUID.IsValid() && !DivinityApp.IgnoredMods.Lookup(p.UUID).HasValue).ThenByAscending(p => p.Name ?? string.Empty);
 
 	#region meta.lsx Properties
 	[Reactive, DataMember] public string UUID { get; set; }
@@ -80,7 +80,7 @@ public class ModData : ReactiveObject, IModData
 
 	[Reactive] public int CurrentExtenderVersion { get; set; }
 
-	[Reactive] public ModScriptExtenderConfig ScriptExtenderData { get; set; }
+	[Reactive] public ModScriptExtenderConfig? ScriptExtenderData { get; set; }
 
 
 	protected ReadOnlyObservableCollection<ModuleShortDesc> _displayedDependencies;
@@ -128,11 +128,11 @@ public class ModData : ReactiveObject, IModData
 	// This is a property instead of an ObservableAsProperty so the name is set immediately
 	[Reactive] public string? DisplayName { get; private set; }
 
-	[ObservableAsProperty] public string ForceAllowInLoadOrderLabel { get; }
-	[ObservableAsProperty] public string ToggleModNameLabel { get; }
+	[ObservableAsProperty] public string? ForceAllowInLoadOrderLabel { get; }
+	[ObservableAsProperty] public string? ToggleModNameLabel { get; }
 	[ObservableAsProperty] public string? DisplayVersion { get; }
-	[ObservableAsProperty] public string ModDisplayTypeName { get; }
-	[ObservableAsProperty] public string ModDisplayTypeForeground { get; }
+	[ObservableAsProperty] public string? ModDisplayTypeName { get; }
+	[ObservableAsProperty] public string? ModDisplayTypeForeground { get; }
 	[ObservableAsProperty] public string? LastModifiedDateText { get; }
 	[ObservableAsProperty] public string? Notes { get; }
 	[ObservableAsProperty] public string? OsirisStatusToolTipText { get; }
@@ -156,7 +156,7 @@ public class ModData : ReactiveObject, IModData
 	[ObservableAsProperty] public bool HasToolTip { get; }
 	[ObservableAsProperty] public bool HasInvalidUUID { get; }
 	[ObservableAsProperty] public bool HasMissingDependency { get; }
-	[ObservableAsProperty] public string MissingDependencyToolTip { get; }
+	[ObservableAsProperty] public string? MissingDependencyToolTip { get; }
 	[ObservableAsProperty] public bool HasToolkitIcon { get; }
 
 	[ObservableAsProperty] public ScriptExtenderIconType ExtenderIcon { get; }
@@ -647,6 +647,7 @@ public class ModData : ReactiveObject, IModData
 		Conflicts = new SourceCache<ModuleShortDesc, string>(x => x.UUID);
 
 		Tags = [];
+		Files = [];
 
 		ModioData = new ModioModData();
 		NexusModsData = new NexusModsModData();

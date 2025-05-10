@@ -2,7 +2,7 @@
 
 public static class DictionaryExtensions
 {
-	public static object FindKeyValue(this Dictionary<string, object> dict, string key, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+	public static object? FindKeyValue(this Dictionary<string, object> dict, string key, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
 	{
 		foreach (var kvp in dict)
 		{
@@ -20,7 +20,7 @@ public static class DictionaryExtensions
 		return null;
 	}
 
-	private static object FindKeyValue_Recursive(object obj, string key, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+	private static object? FindKeyValue_Recursive(object obj, string key, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
 	{
 		if (obj.GetType() == typeof(Dictionary<string, object>))
 		{
@@ -47,7 +47,7 @@ public static class DictionaryExtensions
 		return null;
 	}
 
-	public static bool TryFindKeyValue(this Dictionary<string, object> dict, string key, out object valObj, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+	public static bool TryFindKeyValue(this Dictionary<string, object> dict, string key, out object? valObj, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
 	{
 		foreach (var kvp in dict)
 		{
@@ -86,7 +86,7 @@ public static class DictionaryExtensions
 	this IEnumerable<TSource> source,
 	Func<TSource, TKey?> keySelector,
 	Func<TSource, TElement> elementSelector,
-	IEqualityComparer<TKey>? comparer = null)
+	IEqualityComparer<TKey>? comparer = null) where TKey : notnull
 	{
 		var dictionary = new Dictionary<TKey, TElement>(comparer);
 

@@ -13,8 +13,6 @@ public class SettingsViewGenerator : IIncrementalGenerator
 	private const string GenerateViewAttributeName = "ModManager.GenerateViewAttribute";
 	private const string SettingsEntryAttributeName = "ModManager.SettingsEntryAttribute";
 
-	private static IncrementalValueProvider<string?>? projectDirProvider;
-
 	private static IEnumerable<ValueTuple<IPropertySymbol, AttributeData>> GetSettingsAttributes(IPropertySymbol propertySymbol)
 	{
 		foreach (var attribute in propertySymbol.GetAttributes())

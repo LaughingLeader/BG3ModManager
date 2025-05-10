@@ -13,7 +13,7 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 	/// The mod UUID or FileName (override paks) associated with this config.
 	/// </summary>
 	public bool IsLoaded { get; set; }
-	public string? Id { get; set; }
+	public string Id { get; set; }
 
 	[Reactive, DataMember] public string? Notes { get; set; }
 
@@ -45,8 +45,15 @@ public partial class ModConfig : ReactiveObject, IObjectWithId
 		return (string.Empty, string.Empty);
 	}
 
-	public ModConfig()
+	[JsonConstructor]
+	public ModConfig() : this(string.Empty)
 	{
+
+	}
+
+	public ModConfig(string id)
+	{
+		Id = id;
 		var parseGitHubUrl = this.WhenAnyValue(x => x.GitHub).Select(GitHubUrlToParts);
 		parseGitHubUrl.Select(x => x.Item1).ToPropertyEx(this, x => x.GitHubAuthor, string.Empty, false, RxApp.MainThreadScheduler);
 		parseGitHubUrl.Select(x => x.Item2).ToPropertyEx(this, x => x.GitHubRepository, string.Empty, false, RxApp.MainThreadScheduler);

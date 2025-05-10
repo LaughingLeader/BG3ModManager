@@ -4,7 +4,7 @@ public readonly record struct SettingsEntryData
 	public readonly string PropertyName;
 	public readonly ITypeSymbol PropertyType;
 	public readonly string PropertyTypeName;
-	public readonly string? DisplayName;
+	public readonly string DisplayName;
 	public readonly string? ToolTip;
 	public readonly string? BindTo;
 	public readonly string? BindVisibilityTo;
@@ -15,7 +15,7 @@ public readonly record struct SettingsEntryData
 		PropertyName = propertyName;
 		PropertyType = propertyType;
 		PropertyTypeName = propertyType.Name;
-		DisplayName = name;
+		DisplayName = name ?? propertyName;
 		ToolTip = tooltip;
 		BindTo = bindTo;
 		BindVisibilityTo = bindVisibilityTo;

@@ -5,7 +5,7 @@ public class ModCategory : ReactiveObject, IModEntry
 {
 	public ModEntryType EntryType => ModEntryType.Category;
 
-	[Reactive] public string? UUID { get; set; }
+	[Reactive] public string UUID { get; set; }
 	[Reactive] public string? DisplayName { get; set; }
 	[Reactive] public int Index { get; set; }
 	[Reactive] public bool IsActive { get; set; }
@@ -28,8 +28,9 @@ public class ModCategory : ReactiveObject, IModEntry
 
 	public string? Export(ModExportType exportType) => string.Empty;
 
-	public ModCategory()
+	public ModCategory(string uuid)
 	{
+		UUID = uuid;
 		this.WhenAnyValue(x => x.IsHidden).Subscribe(b =>
 		{
 			if (!b) IsSelected = false;
