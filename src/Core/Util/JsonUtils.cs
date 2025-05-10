@@ -212,6 +212,7 @@ public static class JsonUtils
 	{
 		_defaultSerializerSettings.Converters.Add(new JsonStringEnumConverter());
 		_defaultSerializerSettings.Converters.Add(new DictionaryToSourceCacheConverter<ModConfig>());
+		_defaultSerializerSettings.Converters.Add(new JsonArrayToSourceListConverter<string>());
 	}
 
 	public static T? Deserialize<T>(string text, JsonSerializerOptions? opts = null) => JsonSerializer.Deserialize<T?>(text, opts ?? _defaultSerializerSettings);
