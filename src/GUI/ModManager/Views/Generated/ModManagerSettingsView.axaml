@@ -12,71 +12,65 @@
     d:DesignWidth="1600"
 	mc:Ignorable="d">
 	<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" x:Name="GameDataPathTextBlock" Text="Game Data Path" ToolTip.Tip="The path to the Data folder, for loading editor mods
-Example: Baldur's Gate 3/Data" />
-		<TextBox Grid.Row="0" Grid.Column="1" Classes="compact" Text="{Binding GameDataPath}" ToolTip.Tip="{Binding ElementName=GameDataPathTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" Text="Game Data Path" ToolTip.Tip="The path to the Data folder, for loading editor mods&#x0a;Example: Baldur's Gate 3/Data" />
+		<TextBox Grid.Row="0" Grid.Column="1" Classes="compact" Text="{Binding GameDataPath}" ToolTip.Tip="The path to the Data folder, for loading editor mods&#x0a;Example: Baldur's Gate 3/Data"/>
 		
-		<TextBlock Grid.Row="1" Grid.Column="0" Classes="left" x:Name="GameExecutablePathTextBlock" Text="Game Executable Path" ToolTip.Tip="The path to bg3.exe" />
-		<TextBox Grid.Row="1" Grid.Column="1" Classes="compact" Text="{Binding GameExecutablePath}" ToolTip.Tip="{Binding ElementName=GameExecutablePathTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="1" Grid.Column="0" Classes="left" Text="Game Executable Path" ToolTip.Tip="The path to bg3.exe" />
+		<TextBox Grid.Row="1" Grid.Column="1" Classes="compact" Text="{Binding GameExecutablePath}" ToolTip.Tip="The path to bg3.exe"/>
 		
-		<TextBlock Grid.Row="2" Grid.Column="0" Classes="left" x:Name="LoadOrderPathTextBlock" Text="Load Orders Path" ToolTip.Tip="The folder containing mod load order .json files" />
-		<TextBox Grid.Row="2" Grid.Column="1" Classes="compact" Text="{Binding LoadOrderPath}" ToolTip.Tip="{Binding ElementName=LoadOrderPathTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="2" Grid.Column="0" Classes="left" Text="Load Orders Path" ToolTip.Tip="The folder containing mod load order .json files" />
+		<TextBox Grid.Row="2" Grid.Column="1" Classes="compact" Text="{Binding LoadOrderPath}" ToolTip.Tip="The folder containing mod load order .json files"/>
 		
-		<TextBlock Grid.Row="3" Grid.Column="0" Classes="left" x:Name="DocumentsFolderPathOverrideTextBlock" Text="Override AppData Path" ToolTip.Tip="[EXPERIMENTAL]
-Override the default location to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3
-This folder is used when exporting load orders, loading profiles, and loading mods" />
-		<TextBox Grid.Row="3" Grid.Column="1" Classes="compact" Text="{Binding DocumentsFolderPathOverride}" ToolTip.Tip="{Binding ElementName=DocumentsFolderPathOverrideTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="3" Grid.Column="0" Classes="left" Text="Override AppData Path" ToolTip.Tip="[EXPERIMENTAL]&#x0a;Override the default location to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3&#x0a;This folder is used when exporting load orders, loading profiles, and loading mods" />
+		<TextBox Grid.Row="3" Grid.Column="1" Classes="compact" Text="{Binding DocumentsFolderPathOverride}" ToolTip.Tip="[EXPERIMENTAL]&#x0a;Override the default location to %LOCALAPPDATA%\Larian Studios\Baldur's Gate 3&#x0a;This folder is used when exporting load orders, loading profiles, and loading mods"/>
 		
-		<TextBlock Grid.Row="4" Grid.Column="0" Classes="left" x:Name="AutoAddDependenciesWhenExportingTextBlock" Text="Add Missing Dependencies When Exporting" ToolTip.Tip="Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order" />
-		<CheckBox Grid.Row="4" Grid.Column="1" Classes="right" IsChecked ="{Binding AutoAddDependenciesWhenExporting}" ToolTip.Tip="{Binding ElementName=AutoAddDependenciesWhenExportingTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="4" Grid.Column="0" Classes="left" Text="Add Missing Dependencies When Exporting" ToolTip.Tip="Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order" />
+		<CheckBox Grid.Row="4" Grid.Column="1" Classes="right" IsChecked ="{Binding AutoAddDependenciesWhenExporting}" ToolTip.Tip="Automatically add dependency mods above their dependents in the exported load order, if omitted from the active order"/>
 		
-		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" x:Name="CheckForUpdatesTextBlock" Text="Automatically Check For Updates" ToolTip.Tip="Automatically check for updates when the program starts" />
-		<CheckBox Grid.Row="5" Grid.Column="1" Classes="right" IsChecked ="{Binding CheckForUpdates}" ToolTip.Tip="{Binding ElementName=CheckForUpdatesTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" Text="Automatically Check For Updates" ToolTip.Tip="Automatically check for updates when the program starts" />
+		<CheckBox Grid.Row="5" Grid.Column="1" Classes="right" IsChecked ="{Binding CheckForUpdates}" ToolTip.Tip="Automatically check for updates when the program starts"/>
 		
-		<TextBlock Grid.Row="6" Grid.Column="0" Classes="left" x:Name="EnableColorblindSupportTextBlock" Text="Colorblind Support" ToolTip.Tip="Enables some colorblind support, such as displaying icons for toolkit projects (which normally have a green background)" />
-		<CheckBox Grid.Row="6" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableColorblindSupport}" ToolTip.Tip="{Binding ElementName=EnableColorblindSupportTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="6" Grid.Column="0" Classes="left" Text="Colorblind Support" ToolTip.Tip="Enables some colorblind support, such as displaying icons for toolkit projects (which normally have a green background)" />
+		<CheckBox Grid.Row="6" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableColorblindSupport}" ToolTip.Tip="Enables some colorblind support, such as displaying icons for toolkit projects (which normally have a green background)"/>
 		
-		<TextBlock Grid.Row="7" Grid.Column="0" Classes="left" x:Name="DeleteModCrashSanityCheckTextBlock" Text="Delete ModCrashSanityCheck" ToolTip.Tip="Automatically delete the %LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/ModCrashSanityCheck folder,
-which may make certain mods deactivate if it exists" />
-		<CheckBox Grid.Row="7" Grid.Column="1" Classes="right" IsChecked ="{Binding DeleteModCrashSanityCheck}" ToolTip.Tip="{Binding ElementName=DeleteModCrashSanityCheckTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="7" Grid.Column="0" Classes="left" Text="Delete ModCrashSanityCheck" ToolTip.Tip="Automatically delete the %LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/ModCrashSanityCheck folder,&#x0a;which may make certain mods deactivate if it exists" />
+		<CheckBox Grid.Row="7" Grid.Column="1" Classes="right" IsChecked ="{Binding DeleteModCrashSanityCheck}" ToolTip.Tip="Automatically delete the %LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/ModCrashSanityCheck folder,&#x0a;which may make certain mods deactivate if it exists"/>
 		
-		<TextBlock Grid.Row="8" Grid.Column="0" Classes="left" x:Name="LaunchDX11TextBlock" Text="DirectX 11" ToolTip.Tip="If enabled, when launching the game, bg3_dx11.exe is used instead" />
-		<CheckBox Grid.Row="8" Grid.Column="1" Classes="right" IsChecked ="{Binding LaunchDX11}" ToolTip.Tip="{Binding ElementName=LaunchDX11TextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="8" Grid.Column="0" Classes="left" Text="DirectX 11" ToolTip.Tip="If enabled, when launching the game, bg3_dx11.exe is used instead" />
+		<CheckBox Grid.Row="8" Grid.Column="1" Classes="right" IsChecked ="{Binding LaunchDX11}" ToolTip.Tip="If enabled, when launching the game, bg3_dx11.exe is used instead"/>
 		
-		<TextBlock Grid.Row="9" Grid.Column="0" Classes="left" x:Name="GameStoryLogEnabledTextBlock" Text="Enable Story Log" ToolTip.Tip="When launching the game, enable the Osiris story log (osiris.log)" />
-		<CheckBox Grid.Row="9" Grid.Column="1" Classes="right" IsChecked ="{Binding GameStoryLogEnabled}" ToolTip.Tip="{Binding ElementName=GameStoryLogEnabledTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="9" Grid.Column="0" Classes="left" Text="Enable Story Log" ToolTip.Tip="When launching the game, enable the Osiris story log (osiris.log)" />
+		<CheckBox Grid.Row="9" Grid.Column="1" Classes="right" IsChecked ="{Binding GameStoryLogEnabled}" ToolTip.Tip="When launching the game, enable the Osiris story log (osiris.log)"/>
 		
-		<TextBlock Grid.Row="10" Grid.Column="0" Classes="left" x:Name="LaunchThroughSteamTextBlock" Text="Launch Through Steam" ToolTip.Tip="Launch the game through steam, instead of by the exe directly" />
-		<CheckBox Grid.Row="10" Grid.Column="1" Classes="right" IsChecked ="{Binding LaunchThroughSteam}" ToolTip.Tip="{Binding ElementName=LaunchThroughSteamTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="10" Grid.Column="0" Classes="left" Text="Launch Through Steam" ToolTip.Tip="Launch the game through steam, instead of by the exe directly" />
+		<CheckBox Grid.Row="10" Grid.Column="1" Classes="right" IsChecked ="{Binding LaunchThroughSteam}" ToolTip.Tip="Launch the game through steam, instead of by the exe directly"/>
 		
-		<TextBlock Grid.Row="11" Grid.Column="0" Classes="left" x:Name="DisableLauncherTelemetryTextBlock" Text="Launcher - Disable Telemetry" ToolTip.Tip="Disable the telemetry options in the launcher
-Telemetry is always disabled if mods are active" />
-		<CheckBox Grid.Row="11" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableLauncherTelemetry}" ToolTip.Tip="{Binding ElementName=DisableLauncherTelemetryTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="11" Grid.Column="0" Classes="left" Text="Launcher - Disable Telemetry" ToolTip.Tip="Disable the telemetry options in the launcher&#x0a;Telemetry is always disabled if mods are active" />
+		<CheckBox Grid.Row="11" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableLauncherTelemetry}" ToolTip.Tip="Disable the telemetry options in the launcher&#x0a;Telemetry is always disabled if mods are active"/>
 		
-		<TextBlock Grid.Row="12" Grid.Column="0" Classes="left" x:Name="DisableLauncherModWarningsTextBlock" Text="Launcher - Disable Warnings" ToolTip.Tip="Disable the mod/data mismatch warnings in the launcher" />
-		<CheckBox Grid.Row="12" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableLauncherModWarnings}" ToolTip.Tip="{Binding ElementName=DisableLauncherModWarningsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="12" Grid.Column="0" Classes="left" Text="Launcher - Disable Warnings" ToolTip.Tip="Disable the mod/data mismatch warnings in the launcher" />
+		<CheckBox Grid.Row="12" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableLauncherModWarnings}" ToolTip.Tip="Disable the mod/data mismatch warnings in the launcher"/>
 		
-		<TextBlock Grid.Row="13" Grid.Column="0" Classes="left" x:Name="LimitToSingleInstanceTextBlock" Text="Limit to Single Instance" ToolTip.Tip="Prevent the mod manager from launching multiple instances of the game
-This can be bypassed by holding Shift when clicking on the launch button" />
-		<CheckBox Grid.Row="13" Grid.Column="1" Classes="right" IsChecked ="{Binding LimitToSingleInstance}" ToolTip.Tip="{Binding ElementName=LimitToSingleInstanceTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="13" Grid.Column="0" Classes="left" Text="Limit to Single Instance" ToolTip.Tip="Prevent the mod manager from launching multiple instances of the game&#x0a;This can be bypassed by holding Shift when clicking on the launch button" />
+		<CheckBox Grid.Row="13" Grid.Column="1" Classes="right" IsChecked ="{Binding LimitToSingleInstance}" ToolTip.Tip="Prevent the mod manager from launching multiple instances of the game&#x0a;This can be bypassed by holding Shift when clicking on the launch button"/>
 		
-		<TextBlock Grid.Row="14" Grid.Column="0" Classes="left" x:Name="ActionOnGameLaunchTextBlock" Text="On Game Launch" ToolTip.Tip="When the game launches through the mod manager, this action will be performed" />
-		<ComboBox Grid.Row="14" Grid.Column="1" Classes="right" SelectedIndex="{Binding ActionOnGameLaunchIndex, FallbackValue=0}" ToolTip.Tip="{Binding ElementName=ActionOnGameLaunchTextBlock, Path=(ToolTip.Tip)}">
-			<ComboBoxItem Content="None" ToolTip.Tip="Do nothing" />
-			<ComboBoxItem Content="Minimize" ToolTip.Tip="Minimize the window" />
-			<ComboBoxItem Content="Close" ToolTip.Tip="Close the window" />
+		<TextBlock Grid.Row="14" Grid.Column="0" Classes="left" Text="On Game Launch" ToolTip.Tip="Close the window" />
+		<ComboBox Grid.Row="14" Grid.Column="1" Classes="right" SelectedIndex="{Binding ActionOnGameLaunchIndex, FallbackValue=0}" ToolTip.Tip="When the game launches through the mod manager, this action will be performed">
+			<ComboBoxItem Content="None" ToolTip.Tip="" />
+			<ComboBoxItem Content="Minimize" ToolTip.Tip="" />
+			<ComboBoxItem Content="Close" ToolTip.Tip="" />
 		</ComboBox>
 		
-		<TextBlock Grid.Row="15" Grid.Column="0" Classes="left" x:Name="SaveWindowLocationTextBlock" Text="Save Window Location" ToolTip.Tip="Save and restore the window location when the application starts." />
-		<CheckBox Grid.Row="15" Grid.Column="1" Classes="right" IsChecked ="{Binding SaveWindowLocation}" ToolTip.Tip="{Binding ElementName=SaveWindowLocationTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="15" Grid.Column="0" Classes="left" Text="Save Window Location" ToolTip.Tip="Save and restore the window location when the application starts." />
+		<CheckBox Grid.Row="15" Grid.Column="1" Classes="right" IsChecked ="{Binding SaveWindowLocation}" ToolTip.Tip="Save and restore the window location when the application starts."/>
 		
-		<TextBlock Grid.Row="16" Grid.Column="0" Classes="left" x:Name="ShiftListFocusOnSwapTextBlock" Text="Shift Focus on Swap" ToolTip.Tip="When moving selected mods to the opposite list with Enter, move focus to that list as well" />
-		<CheckBox Grid.Row="16" Grid.Column="1" Classes="right" IsChecked ="{Binding ShiftListFocusOnSwap}" ToolTip.Tip="{Binding ElementName=ShiftListFocusOnSwapTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="16" Grid.Column="0" Classes="left" Text="Shift Focus on Swap" ToolTip.Tip="When moving selected mods to the opposite list with Enter, move focus to that list as well" />
+		<CheckBox Grid.Row="16" Grid.Column="1" Classes="right" IsChecked ="{Binding ShiftListFocusOnSwap}" ToolTip.Tip="When moving selected mods to the opposite list with Enter, move focus to that list as well"/>
 		
-		<TextBlock Grid.Row="17" Grid.Column="0" Classes="left" x:Name="DisableMissingModWarningsTextBlock" Text="Skip Checking for Missing Mods" ToolTip.Tip="If a load order is missing mods, no warnings will be displayed" />
-		<CheckBox Grid.Row="17" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableMissingModWarnings}" ToolTip.Tip="{Binding ElementName=DisableMissingModWarningsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="17" Grid.Column="0" Classes="left" Text="Skip Checking for Missing Mods" ToolTip.Tip="If a load order is missing mods, no warnings will be displayed" />
+		<CheckBox Grid.Row="17" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableMissingModWarnings}" ToolTip.Tip="If a load order is missing mods, no warnings will be displayed"/>
 		
-		<TextBlock Grid.Row="18" Grid.Column="0" Classes="left" x:Name="SkipLauncherTextBlock" Text="Steam - Skip Launcher" ToolTip.Tip="Creates a steam_appid.txt in the bin folder if it doesn't exist, allowing you to bypassing the launcher when running the game exe directly" />
-		<CheckBox Grid.Row="18" Grid.Column="1" Classes="right" IsChecked ="{Binding SkipLauncher}" ToolTip.Tip="{Binding ElementName=SkipLauncherTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="18" Grid.Column="0" Classes="left" Text="Steam - Skip Launcher" ToolTip.Tip="Creates a steam_appid.txt in the bin folder if it doesn't exist, allowing you to bypassing the launcher when running the game exe directly" />
+		<CheckBox Grid.Row="18" Grid.Column="1" Classes="right" IsChecked ="{Binding SkipLauncher}" ToolTip.Tip="Creates a steam_appid.txt in the bin folder if it doesn't exist, allowing you to bypassing the launcher when running the game exe directly"/>
 	</Grid>
 </UserControl>

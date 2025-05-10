@@ -110,4 +110,5 @@ public static class ReactiveExtensions
 	public static IObservable<bool> AllTrue(this IObservable<bool> first, IObservable<bool> second, IObservable<bool> third) => first.CombineLatest(second, third).AllTrue();
 	public static IObservable<bool> AllTrue(this IObservable<(bool First, bool Second)> obs) => obs.Select(x => x.First && x.Second);
 	public static IObservable<bool> AllTrue(this IObservable<(bool First, bool Second, bool Third)> obs) => obs.Select(x => x.First && x.Second && x.Third);
+	public static IObservable<bool> AnyTrue(this IObservable<(bool First, bool Second)> obs) => obs.Select(x => x.First || x.Second);
 }

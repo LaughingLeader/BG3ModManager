@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ModManager.SourceGenerator.Data;
 public readonly record struct SettingsViewToGenerate
@@ -65,7 +66,13 @@ public readonly record struct SettingsViewToGenerate
 			if (entry.DisableAutoGen) continue;
 
 			var textBlockName = $"{entry.PropertyName}TextBlock";
-			var tooltipBinding = $"{{Binding ElementName={textBlockName}, Path=(ToolTip.Tip)}}";
+			var tooltip = entry.ToolTip;
+			if (tooltip != null)
+			{
+				tooltip = Regex.Replace(tooltip, @"\r\n?|\n", "&#x0a;");
+			}
+			var tooltipBinding = tooltip;
+			//var tooltipBinding = $"{{Binding ElementName={textBlockName}, Path=(ToolTip.Tip)}}";
 
 			var controlText = "";
 			var bindTo = !string.IsNullOrEmpty(entry.BindTo) ? entry.BindTo : entry.PropertyName;
@@ -111,7 +118,7 @@ public readonly record struct SettingsViewToGenerate
 							//Avoid adding .ctor etc
 							if (member.Kind == SymbolKind.Field)
 							{
-								string? tooltip = "";
+								string? entryToolTip = "";
 								var attributes = member.GetAttributes();
 								var descriptionAttribute = member.GetAttributes().FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == DescriptionAttributeName);
 								if (descriptionAttribute != null)
@@ -126,8 +133,8 @@ public readonly record struct SettingsViewToGenerate
 									}
 								}
 
-								tooltip ??= string.Empty;
-								comboCode.AppendLine($"<ComboBoxItem Content=\"{member.Name}\" ToolTip.Tip=\"{tooltip}\" />");
+								entryToolTip ??= string.Empty;
+								comboCode.AppendLine($"<ComboBoxItem Content=\"{member.Name}\" ToolTip.Tip=\"{entryToolTip}\" />");
 							}
 						}
 
@@ -147,8 +154,15 @@ public readonly record struct SettingsViewToGenerate
 
 			if (!string.IsNullOrWhiteSpace(controlText))
 			{
-				code.AppendLine($"<TextBlock Grid.Row=\"{totalRows}\" Grid.Column=\"0\" Classes=\"left\" x:Name=\"{textBlockName}\" Text=\"{entry.DisplayName}\" ToolTip.Tip=\"{entry.ToolTip}\" />");
-				if(isMultiLine)
+				var labelLine = $"<TextBlock Grid.Row=\"{totalRows}\" Grid.Column=\"0\" Classes=\"left\" Text=\"{entry.DisplayName}\" ToolTip.Tip=\"{tooltip}\"";
+				if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
+				{
+					labelLine += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
+				}
+				labelLine += " />";
+				code.AppendLine(labelLine);
+
+				if (isMultiLine)
 				{
 					code.AppendLine(controlText);
 				}
@@ -171,6 +185,7 @@ public readonly record struct SettingsViewToGenerate
 			}
 		}
 		var rowDefinitionsStr = string.Join(",", Enumerable.Repeat("Auto", totalRows));
+		//var rowDefinitionsStr = string.Join(",", Enumerable.Repeat("*", totalRows));
 		return @$"<!--auto-generated-->
 <UserControl
 	x:Class=""ModManager.Views.Generated.{DisplayName}""

@@ -60,6 +60,7 @@ public class SettingsViewGenerator : IIncrementalGenerator
 			"CustomProfile",
 			"LogDirectory",
 			"UpdateChannel",
+			"LuaBuiltinResourceDirectory",
 		];
 
 		public int Compare(SettingsEntryData s1, SettingsEntryData s2)

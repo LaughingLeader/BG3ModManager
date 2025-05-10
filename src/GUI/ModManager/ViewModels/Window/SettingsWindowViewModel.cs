@@ -319,6 +319,11 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		ExtenderSettings = _settings.ExtenderSettings;
 		ExtenderUpdaterSettings = _settings.ExtenderUpdaterSettings;
 
+		this.RaisePropertyChanged(nameof(Settings));
+		this.RaisePropertyChanged(nameof(UpdateSettings));
+		this.RaisePropertyChanged(nameof(ExtenderSettings));
+		this.RaisePropertyChanged(nameof(ExtenderUpdaterSettings));
+
 		ScriptExtenderUpdates = [_emptyVersion];
 		LaunchParams =
 		[
@@ -524,5 +529,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		{
 			CanSaveSettings = true;
 		});
+
+		
 	}
 }

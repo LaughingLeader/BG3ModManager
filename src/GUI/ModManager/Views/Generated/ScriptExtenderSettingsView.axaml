@@ -12,94 +12,82 @@
     d:DesignWidth="1600"
 	mc:Ignorable="d">
 	<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" x:Name="CustomProfileTextBlock" Text="Custom Profile" ToolTip.Tip="Use a profile other than Public
-This should be the profile folder name" />
-		<TextBox Grid.Row="0" Grid.Column="1" Classes="compact" Text="{Binding CustomProfile}" ToolTip.Tip="{Binding ElementName=CustomProfileTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" Text="Custom Profile" ToolTip.Tip="Use a profile other than Public&#x0a;This should be the profile folder name" />
+		<TextBox Grid.Row="0" Grid.Column="1" Classes="compact" Text="{Binding CustomProfile}" ToolTip.Tip="Use a profile other than Public&#x0a;This should be the profile folder name"/>
 		
-		<TextBlock Grid.Row="1" Grid.Column="0" Classes="left" x:Name="LogDirectoryTextBlock" Text="Log Directory" ToolTip.Tip="Directory where the generated Osiris logs will be stored
-Default is Documents\OsirisLogs" />
-		<TextBox Grid.Row="1" Grid.Column="1" Classes="compact" Text="{Binding LogDirectory}" ToolTip.Tip="{Binding ElementName=LogDirectoryTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="1" Grid.Column="0" Classes="left" Text="Log Directory" ToolTip.Tip="Directory where the generated Osiris logs will be stored&#x0a;Default is Documents\OsirisLogs" />
+		<TextBox Grid.Row="1" Grid.Column="1" Classes="compact" Text="{Binding LogDirectory}" ToolTip.Tip="Directory where the generated Osiris logs will be stored&#x0a;Default is Documents\OsirisLogs"/>
 		
-		<TextBlock Grid.Row="2" Grid.Column="0" Classes="left" x:Name="ClearOnResetTextBlock" Text="Clear Console On Reset" ToolTip.Tip="Clears the extender console when the reset command is used" />
-		<CheckBox Grid.Row="2" Grid.Column="1" Classes="right" IsChecked ="{Binding ClearOnReset}" ToolTip.Tip="{Binding ElementName=ClearOnResetTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="2" Grid.Column="0" Classes="left" Text="Lua Builtin Directory" ToolTip.Tip="An additional directory where the Script Extender will check for builtin scripts&#x0a;This setting is meant for developers, to make it easier to test builtin script changes" IsVisible="{Binding DevOptionsEnabled}" />
+		<TextBox Grid.Row="2" Grid.Column="1" Classes="compact" Text="{Binding LuaBuiltinResourceDirectory}" ToolTip.Tip="An additional directory where the Script Extender will check for builtin scripts&#x0a;This setting is meant for developers, to make it easier to test builtin script changes" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="3" Grid.Column="0" Classes="left" x:Name="CreateConsoleTextBlock" Text="Create Console Window" ToolTip.Tip="Creates a console window that logs extender internals
-Mainly useful for debugging" />
-		<CheckBox Grid.Row="3" Grid.Column="1" Classes="right" IsChecked ="{Binding CreateConsole}" ToolTip.Tip="{Binding ElementName=CreateConsoleTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="3" Grid.Column="0" Classes="left" Text="Clear Console On Reset" ToolTip.Tip="Clears the extender console when the reset command is used" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="3" Grid.Column="1" Classes="right" IsChecked ="{Binding ClearOnReset}" ToolTip.Tip="Clears the extender console when the reset command is used" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="4" Grid.Column="0" Classes="left" x:Name="DefaultToClientConsoleTextBlock" Text="Default to Client Side" ToolTip.Tip="Defaults the extender console to the client-side
-This is setting is intended for developers" />
-		<CheckBox Grid.Row="4" Grid.Column="1" Classes="right" IsChecked ="{Binding DefaultToClientConsole}" ToolTip.Tip="{Binding ElementName=DefaultToClientConsoleTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="4" Grid.Column="0" Classes="left" Text="Create Console Window" ToolTip.Tip="Creates a console window that logs extender internals&#x0a;Mainly useful for debugging" />
+		<CheckBox Grid.Row="4" Grid.Column="1" Classes="right" IsChecked ="{Binding CreateConsole}" ToolTip.Tip="Creates a console window that logs extender internals&#x0a;Mainly useful for debugging"/>
 		
-		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" x:Name="DisableLauncherTextBlock" Text="Disable Launcher" ToolTip.Tip="Prevents the exe from force-opening the launcher
-May not work correctly if extender auto-updating is enabled, or the --skip-launcher launch param is set" />
-		<CheckBox Grid.Row="5" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableLauncher}" ToolTip.Tip="{Binding ElementName=DisableLauncherTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" Text="Default to Client Side" ToolTip.Tip="Defaults the extender console to the client-side&#x0a;This is setting is intended for developers" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="5" Grid.Column="1" Classes="right" IsChecked ="{Binding DefaultToClientConsole}" ToolTip.Tip="Defaults the extender console to the client-side&#x0a;This is setting is intended for developers" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="6" Grid.Column="0" Classes="left" x:Name="DisableModValidationTextBlock" Text="Disable Mod Validation" ToolTip.Tip="Disable module hashing when loading mods
-Speeds up mod loading with no drawbacks" />
-		<CheckBox Grid.Row="6" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableModValidation}" ToolTip.Tip="{Binding ElementName=DisableModValidationTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="6" Grid.Column="0" Classes="left" Text="Disable Launcher" ToolTip.Tip="Prevents the exe from force-opening the launcher&#x0a;May not work correctly if extender auto-updating is enabled, or the --skip-launcher launch param is set" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="6" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableLauncher}" ToolTip.Tip="Prevents the exe from force-opening the launcher&#x0a;May not work correctly if extender auto-updating is enabled, or the --skip-launcher launch param is set" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="7" Grid.Column="0" Classes="left" x:Name="InsanityCheckTextBlock" Text="Disable ModCrashSanityCheck" ToolTip.Tip="Disables the ModCrashSanityCheck jank that disables mods the next time the game runs" />
-		<CheckBox Grid.Row="7" Grid.Column="1" Classes="right" IsChecked ="{Binding InsanityCheck}" ToolTip.Tip="{Binding ElementName=InsanityCheckTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="7" Grid.Column="0" Classes="left" Text="Disable Mod Validation" ToolTip.Tip="Disable module hashing when loading mods&#x0a;Speeds up mod loading with no drawbacks" />
+		<CheckBox Grid.Row="7" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableModValidation}" ToolTip.Tip="Disable module hashing when loading mods&#x0a;Speeds up mod loading with no drawbacks"/>
 		
-		<TextBlock Grid.Row="8" Grid.Column="0" Classes="left" x:Name="DisableStoryMergeTextBlock" Text="Disable Story Merge" ToolTip.Tip="Prevents story.div.osi merging, which automatically happens when mods are present
-May only occur when loading a save" />
-		<CheckBox Grid.Row="8" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableStoryMerge}" ToolTip.Tip="{Binding ElementName=DisableStoryMergeTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="8" Grid.Column="0" Classes="left" Text="Disable ModCrashSanityCheck" ToolTip.Tip="Disables the ModCrashSanityCheck jank that disables mods the next time the game runs" />
+		<CheckBox Grid.Row="8" Grid.Column="1" Classes="right" IsChecked ="{Binding InsanityCheck}" ToolTip.Tip="Disables the ModCrashSanityCheck jank that disables mods the next time the game runs"/>
 		
-		<TextBlock Grid.Row="9" Grid.Column="0" Classes="left" x:Name="DisableStoryPatchingTextBlock" Text="Disable Story Patching" ToolTip.Tip="Prevents patching story.bin with story.div.osi when loading saves, effectively preventing the Osiris scripts in the save from updating" />
-		<CheckBox Grid.Row="9" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableStoryPatching}" ToolTip.Tip="{Binding ElementName=DisableStoryPatchingTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="9" Grid.Column="0" Classes="left" Text="Disable Story Merge" ToolTip.Tip="Prevents story.div.osi merging, which automatically happens when mods are present&#x0a;May only occur when loading a save" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="9" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableStoryMerge}" ToolTip.Tip="Prevents story.div.osi merging, which automatically happens when mods are present&#x0a;May only occur when loading a save" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="10" Grid.Column="0" Classes="left" x:Name="DumpNetworkStringsTextBlock" Text="Dump Network Strings" ToolTip.Tip="Dumps the NetworkFixedString table to LogDirectory
-Mainly useful for debugging desync issues" />
-		<CheckBox Grid.Row="10" Grid.Column="1" Classes="right" IsChecked ="{Binding DumpNetworkStrings}" ToolTip.Tip="{Binding ElementName=DumpNetworkStringsTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="10" Grid.Column="0" Classes="left" Text="Disable Story Patching" ToolTip.Tip="Prevents patching story.bin with story.div.osi when loading saves, effectively preventing the Osiris scripts in the save from updating" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="10" Grid.Column="1" Classes="right" IsChecked ="{Binding DisableStoryPatching}" ToolTip.Tip="Prevents patching story.bin with story.div.osi when loading saves, effectively preventing the Osiris scripts in the save from updating" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="11" Grid.Column="0" Classes="left" x:Name="EnableAchievementsTextBlock" Text="Enable Achievements" ToolTip.Tip="Re-enable achievements for modded games" />
-		<CheckBox Grid.Row="11" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableAchievements}" ToolTip.Tip="{Binding ElementName=EnableAchievementsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="11" Grid.Column="0" Classes="left" Text="Dump Network Strings" ToolTip.Tip="Dumps the NetworkFixedString table to LogDirectory&#x0a;Mainly useful for debugging desync issues" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="11" Grid.Column="1" Classes="right" IsChecked ="{Binding DumpNetworkStrings}" ToolTip.Tip="Dumps the NetworkFixedString table to LogDirectory&#x0a;Mainly useful for debugging desync issues" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="12" Grid.Column="0" Classes="left" x:Name="DeveloperModeTextBlock" Text="Enable Developer Mode" ToolTip.Tip="Enables various debug functionality for development purposes
-This can be checked by mods to enable additional log messages and more" />
-		<CheckBox Grid.Row="12" Grid.Column="1" Classes="right" IsChecked ="{Binding DeveloperMode}" ToolTip.Tip="{Binding ElementName=DeveloperModeTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="12" Grid.Column="0" Classes="left" Text="Enable Achievements" ToolTip.Tip="Re-enable achievements for modded games" />
+		<CheckBox Grid.Row="12" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableAchievements}" ToolTip.Tip="Re-enable achievements for modded games"/>
 		
-		<TextBlock Grid.Row="13" Grid.Column="0" Classes="left" x:Name="EnableExtensionsTextBlock" Text="Enable Extensions" ToolTip.Tip="Enables or disables extender API functionality" />
-		<CheckBox Grid.Row="13" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableExtensions}" ToolTip.Tip="{Binding ElementName=EnableExtensionsTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="13" Grid.Column="0" Classes="left" Text="Enable Developer Mode" ToolTip.Tip="Enables various debug functionality for development purposes&#x0a;This can be checked by mods to enable additional log messages and more" />
+		<CheckBox Grid.Row="13" Grid.Column="1" Classes="right" IsChecked ="{Binding DeveloperMode}" ToolTip.Tip="Enables various debug functionality for development purposes&#x0a;This can be checked by mods to enable additional log messages and more"/>
 		
-		<TextBlock Grid.Row="14" Grid.Column="0" Classes="left" x:Name="EnableLuaDebuggerTextBlock" Text="Enable Lua Debugger" ToolTip.Tip="Enables the Lua debugger interface (vscode extension)" />
-		<CheckBox Grid.Row="14" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableLuaDebugger}" ToolTip.Tip="{Binding ElementName=EnableLuaDebuggerTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="14" Grid.Column="0" Classes="left" Text="Enable Extensions" ToolTip.Tip="Enables or disables extender API functionality" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="14" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableExtensions}" ToolTip.Tip="Enables or disables extender API functionality" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="15" Grid.Column="0" Classes="left" x:Name="EnableDebuggerTextBlock" Text="Enable Osiris Debugger" ToolTip.Tip="Enables the Osiris debugger interface (vscode extension)" />
-		<CheckBox Grid.Row="15" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableDebugger}" ToolTip.Tip="{Binding ElementName=EnableDebuggerTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="15" Grid.Column="0" Classes="left" Text="Enable Lua Debugger" ToolTip.Tip="Enables the Lua debugger interface (vscode extension)" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="15" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableLuaDebugger}" ToolTip.Tip="Enables the Lua debugger interface (vscode extension)" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="16" Grid.Column="0" Classes="left" x:Name="EnableLoggingTextBlock" Text="Enable Osiris Logging" ToolTip.Tip="Enable logging of Osiris activity (rule evaluation, queries, etc.) to a log file" />
-		<CheckBox Grid.Row="16" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableLogging}" ToolTip.Tip="{Binding ElementName=EnableLoggingTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="16" Grid.Column="0" Classes="left" Text="Enable Osiris Debugger" ToolTip.Tip="Enables the Osiris debugger interface (vscode extension)" IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="16" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableDebugger}" ToolTip.Tip="Enables the Osiris debugger interface (vscode extension)" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="17" Grid.Column="0" Classes="left" x:Name="ExportDefaultExtenderSettingsTextBlock" Text="Export Default Values" ToolTip.Tip="Export all values, even if it matches a default extender value" />
-		<CheckBox Grid.Row="17" Grid.Column="1" Classes="right" IsChecked ="{Binding ExportDefaultExtenderSettings}" ToolTip.Tip="{Binding ElementName=ExportDefaultExtenderSettingsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="17" Grid.Column="0" Classes="left" Text="Enable Osiris Logging" ToolTip.Tip="Enable logging of Osiris activity (rule evaluation, queries, etc.) to a log file" />
+		<CheckBox Grid.Row="17" Grid.Column="1" Classes="right" IsChecked ="{Binding EnableLogging}" ToolTip.Tip="Enable logging of Osiris activity (rule evaluation, queries, etc.) to a log file"/>
 		
-		<TextBlock Grid.Row="18" Grid.Column="0" Classes="left" x:Name="LogRuntimeTextBlock" Text="Log Runtime" ToolTip.Tip="Log extender console and script output to a log file" />
-		<CheckBox Grid.Row="18" Grid.Column="1" Classes="right" IsChecked ="{Binding LogRuntime}" ToolTip.Tip="{Binding ElementName=LogRuntimeTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="18" Grid.Column="0" Classes="left" Text="Export Default Values" ToolTip.Tip="Export all values, even if it matches a default extender value" />
+		<CheckBox Grid.Row="18" Grid.Column="1" Classes="right" IsChecked ="{Binding ExportDefaultExtenderSettings}" ToolTip.Tip="Export all values, even if it matches a default extender value"/>
 		
-		<TextBlock Grid.Row="19" Grid.Column="0" Classes="left" x:Name="LogCompileTextBlock" Text="Log Script Compilation" ToolTip.Tip="Log Osiris story compilation to a log file" />
-		<CheckBox Grid.Row="19" Grid.Column="1" Classes="right" IsChecked ="{Binding LogCompile}" ToolTip.Tip="{Binding ElementName=LogCompileTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="19" Grid.Column="0" Classes="left" Text="Log Runtime" ToolTip.Tip="Log extender console and script output to a log file" />
+		<CheckBox Grid.Row="19" Grid.Column="1" Classes="right" IsChecked ="{Binding LogRuntime}" ToolTip.Tip="Log extender console and script output to a log file"/>
 		
-		<TextBlock Grid.Row="20" Grid.Column="0" Classes="left" x:Name="LogFailedCompileTextBlock" Text="Log Working Story Errors" ToolTip.Tip="Log errors during Osiris story compilation to a log file (LogFailedCompile)" />
-		<CheckBox Grid.Row="20" Grid.Column="1" Classes="right" IsChecked ="{Binding LogFailedCompile}" ToolTip.Tip="{Binding ElementName=LogFailedCompileTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="20" Grid.Column="0" Classes="left" Text="Log Script Compilation" ToolTip.Tip="Log Osiris story compilation to a log file" />
+		<CheckBox Grid.Row="20" Grid.Column="1" Classes="right" IsChecked ="{Binding LogCompile}" ToolTip.Tip="Log Osiris story compilation to a log file"/>
 		
-		<TextBlock Grid.Row="21" Grid.Column="0" Classes="left" x:Name="LuaBuiltinResourceDirectoryTextBlock" Text="Lua Builtin Directory" ToolTip.Tip="An additional directory where the Script Extender will check for builtin scripts
-This setting is meant for developers, to make it easier to test builtin script changes" />
-		<TextBox Grid.Row="21" Grid.Column="1" Classes="compact" Text="{Binding LuaBuiltinResourceDirectory}" ToolTip.Tip="{Binding ElementName=LuaBuiltinResourceDirectoryTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="21" Grid.Column="0" Classes="left" Text="Log Working Story Errors" ToolTip.Tip="Log errors during Osiris story compilation to a log file (LogFailedCompile)" />
+		<CheckBox Grid.Row="21" Grid.Column="1" Classes="right" IsChecked ="{Binding LogFailedCompile}" ToolTip.Tip="Log errors during Osiris story compilation to a log file (LogFailedCompile)"/>
 		
-		<TextBlock Grid.Row="22" Grid.Column="0" Classes="left" x:Name="DebuggerFlagsTextBlock" Text="Osiris Debugger Flags" ToolTip.Tip="Debugger flags to set
-Default: 0" />
-		<NumericUpDown Grid.Row="22" Grid.Column="1" Classes="right" Value="{Binding DebuggerFlags}" ToolTip.Tip="{Binding ElementName=DebuggerFlagsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="22" Grid.Column="0" Classes="left" Text="Osiris Debugger Flags" ToolTip.Tip="Debugger flags to set&#x0a;Default: 0" />
+		<NumericUpDown Grid.Row="22" Grid.Column="1" Classes="right" Value="{Binding DebuggerFlags}" ToolTip.Tip="Debugger flags to set&#x0a;Default: 0"/>
 		
-		<TextBlock Grid.Row="23" Grid.Column="0" Classes="left" x:Name="DebuggerPortTextBlock" Text="Osiris Debugger Port" ToolTip.Tip="Port number the Osiris debugger will listen on
-Default: 9999" />
-		<NumericUpDown Grid.Row="23" Grid.Column="1" Classes="right" Value="{Binding DebuggerPort}" ToolTip.Tip="{Binding ElementName=DebuggerPortTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="23" Grid.Column="0" Classes="left" Text="Osiris Debugger Port" ToolTip.Tip="Port number the Osiris debugger will listen on&#x0a;Default: 9999" IsVisible="{Binding DevOptionsEnabled}" />
+		<NumericUpDown Grid.Row="23" Grid.Column="1" Classes="right" Value="{Binding DebuggerPort}" ToolTip.Tip="Port number the Osiris debugger will listen on&#x0a;Default: 9999" IsVisible="{Binding DevOptionsEnabled}"/>
 		
-		<TextBlock Grid.Row="24" Grid.Column="0" Classes="left" x:Name="SendCrashReportsTextBlock" Text="Send Crash Reports" ToolTip.Tip="Upload minidumps to the crash report collection server after a game crash" />
-		<CheckBox Grid.Row="24" Grid.Column="1" Classes="right" IsChecked ="{Binding SendCrashReports}" ToolTip.Tip="{Binding ElementName=SendCrashReportsTextBlock, Path=(ToolTip.Tip)}"/>
+		<TextBlock Grid.Row="24" Grid.Column="0" Classes="left" Text="Send Crash Reports" ToolTip.Tip="Upload minidumps to the crash report collection server after a game crash" />
+		<CheckBox Grid.Row="24" Grid.Column="1" Classes="right" IsChecked ="{Binding SendCrashReports}" ToolTip.Tip="Upload minidumps to the crash report collection server after a game crash"/>
 		
-		<TextBlock Grid.Row="25" Grid.Column="0" Classes="left" x:Name="ShowPerfWarningsTextBlock" Text="Show Performance Warnings" ToolTip.Tip="Print warnings to the extender console window, which indicates when the server-side part of the game lags behind (a.k.a. warnings about ticks taking too long)." />
-		<CheckBox Grid.Row="25" Grid.Column="1" Classes="right" IsChecked ="{Binding ShowPerfWarnings}" ToolTip.Tip="{Binding ElementName=ShowPerfWarningsTextBlock, Path=(ToolTip.Tip)}" IsVisible="{Binding DevOptionsEnabled}"/>
+		<TextBlock Grid.Row="25" Grid.Column="0" Classes="left" Text="Show Performance Warnings" ToolTip.Tip="Print warnings to the extender console window, which indicates when the server-side part of the game lags behind (a.k.a. warnings about ticks taking too long)." IsVisible="{Binding DevOptionsEnabled}" />
+		<CheckBox Grid.Row="25" Grid.Column="1" Classes="right" IsChecked ="{Binding ShowPerfWarnings}" ToolTip.Tip="Print warnings to the extender console window, which indicates when the server-side part of the game lags behind (a.k.a. warnings about ticks taking too long)." IsVisible="{Binding DevOptionsEnabled}"/>
 	</Grid>
 </UserControl>

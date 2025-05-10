@@ -17,11 +17,11 @@ public class SettingsService : ReactiveObject, ISettingsService
 {
 	private readonly IFileSystemService _fs;
 
-	public AppSettings AppSettings { get; private set; }
-	public ModManagerSettings ManagerSettings { get; private set; }
-	public UserModConfig ModConfig { get; private set; }
-	public ScriptExtenderSettings ExtenderSettings { get; private set; }
-	public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; private set; }
+	public AppSettings AppSettings { get; init; }
+	public ModManagerSettings ManagerSettings { get; init; }
+	public UserModConfig ModConfig { get; init; }
+	public ScriptExtenderSettings ExtenderSettings { get; init; }
+	public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; init; }
 
 	private readonly List<ISerializableSettings> _loadSettings;
 	private readonly List<ISerializableSettings> _saveSettings;
@@ -224,8 +224,11 @@ public class SettingsService : ReactiveObject, ISettingsService
 		_loadSettings = [ManagerSettings, ModConfig, ExtenderSettings, ExtenderUpdaterSettings];
 		_saveSettings = [ManagerSettings, ModConfig, ExtenderSettings, ExtenderUpdaterSettings];
 
-		ManagerSettings.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderSettings, x => x.DevOptionsEnabled);
-		ManagerSettings.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderUpdaterSettings, x => x.DevOptionsEnabled);
+		var whenDebugMode = ManagerSettings.WhenAnyValue(x => x.DebugModeEnabled);
+		var whenDevMode = ExtenderSettings.WhenAnyValue(x => x.DeveloperMode);
+		var whenDevOptions = whenDebugMode.CombineLatest(whenDevMode).AnyTrue();
+		whenDevOptions.BindTo(ExtenderSettings, x => x.DevOptionsEnabled);
+		whenDevOptions.BindTo(ExtenderUpdaterSettings, x => x.DevOptionsEnabled);
 
 		this.WhenAnyValue(x => x.ManagerSettings.DefaultExtenderLogDirectory, x => x.ExtenderSettings.LogDirectory)
 		.Select(x => GetExtenderLogsDirectory(x.Item1, x.Item2))

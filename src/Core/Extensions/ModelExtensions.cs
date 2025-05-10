@@ -13,6 +13,36 @@ namespace ModManager;
 
 public static class ModelExtensions
 {
+	private static readonly Dictionary<string, PropertyInfo[]> _typeDataMemberProperties;
+
+	private static void AddTypeProperties(Type type)
+	{
+		var name = type.Name;
+		var props = type.GetRuntimeProperties().Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute))).ToArray();
+		_typeDataMemberProperties.Add(name, props);
+	}
+
+	static ModelExtensions()
+	{
+		_typeDataMemberProperties = [];
+
+		AddTypeProperties(typeof(ModManagerSettings));
+		AddTypeProperties(typeof(UserModConfig));
+		AddTypeProperties(typeof(ScriptExtenderSettings));
+		AddTypeProperties(typeof(ScriptExtenderUpdateConfig));
+	}
+
+	private static PropertyInfo[]? GetDataMemberProperties(Type type)
+	{
+		if (!_typeDataMemberProperties.ContainsKey(type.Name)) AddTypeProperties(type);
+
+		if (_typeDataMemberProperties.TryGetValue(type.Name, out var result))
+		{
+			return result;
+		}
+		return null;
+	}
+
 	public static void SetToDefault(this ReactiveObject model)
 	{
 		var props = TypeDescriptor.GetProperties(model.GetType());
@@ -113,7 +143,22 @@ public static class ModelExtensions
 					var settings = JsonSerializer.Deserialize(text, outputType, JsonUtils.DefaultSerializerSettings);
 					if (settings != null)
 					{
-						var props = TypeDescriptor.GetProperties(outputType);
+						var props = GetDataMemberProperties(outputType);
+						if(props != null)
+						{
+							foreach(var prop in props)
+							{
+								var value = prop.GetValue(settings);
+								var existing = prop.GetValue(data);
+								if (value != null && existing != value)
+								{
+									data.RaisePropertyChanging(prop.Name);
+									prop.SetValue(data, value);
+									data.RaisePropertyChanged(prop.Name);
+								}
+							}
+						}
+						/*var props = TypeDescriptor.GetProperties(outputType);
 						foreach (PropertyDescriptor pr in props)
 						{
 							var value = pr.GetValue(settings);
@@ -122,7 +167,7 @@ public static class ModelExtensions
 								pr.SetValue(data, value);
 								data.RaisePropertyChanged(pr.Name);
 							}
-						}
+						}*/
 						return true;
 					}
 				}

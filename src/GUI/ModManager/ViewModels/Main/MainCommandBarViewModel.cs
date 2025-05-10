@@ -376,10 +376,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			}
 		}, canToggleUpdatesView);
 
-		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(() => ToggleWindow<PakFileExplorerWindow>(), canExecuteCommands);
-		ToggleVersionGeneratorWindowCommand = ReactiveCommand.Create(() => ToggleWindow<VersionGeneratorWindow>(), canExecuteCommands);
-		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(() => ToggleWindow<StatsValidatorWindow>(), canExecuteCommands);
-		ToggleSettingsWindowCommand = ReactiveCommand.Create(() => ToggleWindow<SettingsWindow>(), canExecuteCommands);
+		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(ToggleWindow<PakFileExplorerWindow>, canExecuteCommands);
+		ToggleVersionGeneratorWindowCommand = ReactiveCommand.Create(ToggleWindow<VersionGeneratorWindow>, canExecuteCommands);
+		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(ToggleWindow<StatsValidatorWindow>, canExecuteCommands);
+		ToggleSettingsWindowCommand = ReactiveCommand.Create(ToggleWindow<SettingsWindow>, canExecuteCommands);
 		ToggleAboutWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 
 		ToggleKeybindingsCommand = ReactiveCommand.Create(() =>
