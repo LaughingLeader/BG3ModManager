@@ -1,9 +1,10 @@
-﻿using ModManager.ViewModels;
+﻿using ModManager.Controls;
+using ModManager.ViewModels;
 using ModManager.ViewModels.Settings;
 using ModManager.Views.Generated;
 
 namespace ModManager.Windows;
-public partial class StatsValidatorWindow : ReactiveWindow<StatsValidatorWindowViewModel>
+public partial class StatsValidatorWindow : HideWindowBase<StatsValidatorWindowViewModel>
 {
 	public StatsValidatorWindow()
 	{

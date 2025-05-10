@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
+using ModManager.Controls;
 using ModManager.ViewModels;
 
 using SukiUI.Toasts;
@@ -11,7 +12,7 @@ using System.Globalization;
 
 namespace ModManager;
 
-public partial class VersionGeneratorWindow : ReactiveWindow<VersionGeneratorViewModel>
+public partial class VersionGeneratorWindow : HideWindowBase<VersionGeneratorViewModel>
 {
 	private readonly ISukiToastManager _toastManager = new SukiToastManager();
 

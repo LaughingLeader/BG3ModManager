@@ -3,10 +3,11 @@ using Avalonia.Controls.Presenters;
 
 using Material.Icons;
 
+using ModManager.Controls;
 using ModManager.ViewModels;
 
 namespace ModManager.Windows;
-public partial class ModPropertiesWindow : ReactiveWindow<ModPropertiesWindowViewModel>
+public partial class ModPropertiesWindow : HideWindowBase<ModPropertiesWindowViewModel>
 {
 	public ModPropertiesWindow()
 	{

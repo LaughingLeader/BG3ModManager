@@ -1,3 +1,4 @@
+using ModManager.Controls;
 using ModManager.Models.Settings;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Settings;
@@ -7,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace ModManager.Windows;
-public partial class SettingsWindow : ReactiveWindow<SettingsWindowViewModel>
+public partial class SettingsWindow : HideWindowBase<SettingsWindowViewModel>
 {
 	private static SettingsWindowTab ValidateIndex(int index)
 	{
@@ -45,12 +46,6 @@ public partial class SettingsWindow : ReactiveWindow<SettingsWindowViewModel>
 				this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible);
 				SettingsTabControl.GetObservable(TabIndexProperty).Select(ValidateIndex).BindTo(ViewModel, x => x.SelectedTabIndex);
 				ViewModel.WhenAnyValue(x => x.SelectedTabIndex).Select(x => (int)x).BindTo(SettingsTabControl, x => x.TabIndex);
-
-				var settings = AppServices.Settings.ManagerSettings;
-				GeneralSettingsView.ViewModel = settings;
-				UpdateSettingsView.ViewModel = settings.UpdateSettings;
-				ExtenderSettingsView.ViewModel = settings.ExtenderSettings;
-				ExtenderUpdateSettingsView.ViewModel = settings.ExtenderUpdaterSettings;
 
 				if(TryGetSettingsEntry(nameof(ModManagerSettings.DebugModeEnabled), out var debugModeAttribute))
 				{

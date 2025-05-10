@@ -1,10 +1,11 @@
 using Avalonia.Media;
 
+using ModManager.Controls;
 using ModManager.ViewModels.Window;
 
 namespace ModManager.Windows;
 
-public partial class PakFileExplorerWindow : ReactiveWindow<PakFileExplorerWindowViewModel>
+public partial class PakFileExplorerWindow : HideWindowBase<PakFileExplorerWindowViewModel>
 {
 	public PakFileExplorerWindow()
 	{
