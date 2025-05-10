@@ -23,6 +23,10 @@ public static class SplatContainerExtensions
 		SplatRegistrations.RegisterConstant<IFileSystemService>(fileSystemService);
 		SplatRegistrations.RegisterLazySingleton<IFileWatcherService, FileWatcherService>();
 
+		var settingsService = new SettingsService(fileSystemService);
+		SplatRegistrations.RegisterConstant<ISettingsService>(settingsService);
+		SplatRegistrations.RegisterConstant<IPathwaysService>(new PathwaysService(settingsService));
+
 		SplatRegistrations.RegisterLazySingleton<HttpClient, AppHttpClient>();
 
 		SplatRegistrations.RegisterConstant<INexusModsService>(new NexusModsService(env));
@@ -40,13 +44,8 @@ public static class SplatContainerExtensions
 	/// <param name="services">The IoC services container.</param>
 	public static IMutableDependencyResolver AddAppServices(this IMutableDependencyResolver services)
 	{
-		var settingsService = new SettingsService();
-
 		SplatRegistrations.RegisterLazySingleton<IInteractionsService, InteractionsService>();
 		SplatRegistrations.RegisterLazySingleton<IGlobalCommandsService, GlobalCommandsService>();
-
-		SplatRegistrations.RegisterConstant<ISettingsService>(settingsService);
-		SplatRegistrations.RegisterConstant<IPathwaysService>(new PathwaysService(settingsService));
 
 		SplatRegistrations.RegisterLazySingleton<IAppUpdaterService, AppUpdaterService>();
 

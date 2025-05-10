@@ -55,9 +55,12 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 	[Reactive] public bool IsInitialized { get; private set; }
 
-	public AppSettings AppSettings { get; private set; }
-	public ModManagerSettings Settings { get; private set; }
-	public UserModConfig UserModConfig { get; private set; }
+	public AppSettings AppSettings => _settings.AppSettings;
+	public ModManagerSettings Settings => _settings.ManagerSettings;
+	public UserModConfig UserModConfig => _settings.ModConfig;
+	public ScriptExtenderSettings ExtenderSettings => _settings.ExtenderSettings;
+	public ScriptExtenderUpdateConfig ExtenderUpdaterSettings => _settings.ExtenderUpdaterSettings;
+
 	[Reactive] public bool AppSettingsLoaded { get; set; }
 	[Reactive] public bool GameIsRunning { get; private set; }
 	[Reactive] public bool CanForceLaunchGame { get; set; }
@@ -214,7 +217,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 			{
 				_globalCommands.ShowAlert($"Successfully installed the Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} to '{exeDir}'", AlertType.Success, 20);
 				ViewModelLocator.CommandBar.SetExtenderHighlight(false);
-				Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+				ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 				_justDownloadedScriptExtender = true;
 			}
 			else
@@ -223,7 +226,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 			}
 		}, RxApp.MainThreadScheduler);
 
-		if (Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
+		if (ExtenderUpdaterSettings.UpdaterIsAvailable)
 		{
 			await LoadExtenderSettingsAsync(token);
 			await Observable.Start(() => UpdateExtender(true), RxApp.TaskpoolScheduler);
@@ -252,7 +255,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 				var toolboxPath = DivinityApp.GetToolboxPath();
 
 				if (File.Exists(toolboxPath) && File.Exists(extenderUpdaterPath)
-					&& Settings.ExtenderUpdaterSettings.UpdaterVersion >= 4
+					&& _settings.ExtenderUpdaterSettings.UpdaterVersion >= 4
 					&& RuntimeHelper.NetCoreRuntimeGreaterThanOrEqualTo(7))
 				{
 					DivinityApp.Log($"Running '{toolboxPath}' to update the script extender.");
@@ -343,7 +346,7 @@ Directory the zip will be extracted to:
 				var fvi = FileVersionInfo.GetVersionInfo(extenderUpdaterPath);
 				if (fvi != null && fvi.ProductName.IndexOf("Script Extender", StringComparison.OrdinalIgnoreCase) >= 0)
 				{
-					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+					_settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 					DivinityApp.Log($"Found the Extender at '{extenderUpdaterPath}'.");
 					var extenderInfo = FileVersionInfo.GetVersionInfo(extenderUpdaterPath);
 					if (extenderInfo.FileVersion.IsValid())
@@ -351,7 +354,7 @@ Directory the zip will be extracted to:
 						var version = extenderInfo.FileVersion.Split('.')[0];
 						if (int.TryParse(version, out var intVersion))
 						{
-							Settings.ExtenderUpdaterSettings.UpdaterVersion = intVersion;
+							_settings.ExtenderUpdaterSettings.UpdaterVersion = intVersion;
 						}
 					}
 				}
@@ -364,7 +367,7 @@ Directory the zip will be extracted to:
 			{
 				// This can happen if the game locks up the dll.
 				// Assume it's the extender for now.
-				Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
+				_settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 				DivinityApp.Log($"WARNING: {extenderUpdaterPath} is locked by a process.");
 			}
 			catch (Exception ex)
@@ -374,7 +377,7 @@ Directory the zip will be extracted to:
 		}
 		else
 		{
-			Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = false;
+			_settings.ExtenderUpdaterSettings.UpdaterIsAvailable = false;
 			DivinityApp.Log($"Extender updater {DivinityApp.EXTENDER_UPDATER_FILE} not found.");
 		}
 	}
@@ -390,7 +393,7 @@ Directory the zip will be extracted to:
 			var isInstalled = false;
 			var fullExtenderVersion = "";
 			var majorVersion = -1;
-			var targetVersion = Settings.ExtenderUpdaterSettings.TargetVersion;
+			var targetVersion = _settings.ExtenderUpdaterSettings.TargetVersion;
 
 			foreach (var f in files)
 			{
@@ -422,9 +425,9 @@ Directory the zip will be extracted to:
 			if (majorVersion > -1)
 			{
 				DivinityApp.Log($"Script Extender version found ({majorVersion})");
-				Settings.ExtenderSettings.ExtenderIsAvailable = isInstalled;
-				Settings.ExtenderSettings.ExtenderVersion = fullExtenderVersion;
-				Settings.ExtenderSettings.ExtenderMajorVersion = majorVersion;
+				_settings.ExtenderSettings.ExtenderIsAvailable = isInstalled;
+				_settings.ExtenderSettings.ExtenderVersion = fullExtenderVersion;
+				_settings.ExtenderSettings.ExtenderMajorVersion = majorVersion;
 				return true;
 			}
 		}
@@ -506,7 +509,7 @@ Directory the zip will be extracted to:
 					if (JsonUtils.TrySafeDeserializeFromPath<ScriptExtenderSettings>(settingsFilePath, out var data))
 					{
 						DivinityApp.Log($"Loaded {settingsFilePath}");
-						Settings.ExtenderSettings.SetFrom(data);
+						_settings.ExtenderSettings.SetFrom(data);
 					}
 				}
 			}
@@ -522,7 +525,7 @@ Directory the zip will be extracted to:
 				{
 					if (JsonUtils.TrySafeDeserializeFromPath<ScriptExtenderUpdateConfig>(updaterSettingsFilePath, out var data))
 					{
-						Settings.ExtenderUpdaterSettings.SetFrom(data);
+						_settings.ExtenderUpdaterSettings.SetFrom(data);
 						DivinityApp.Log($"Loaded {updaterSettingsFilePath}");
 					}
 				}
@@ -613,7 +616,7 @@ Directory the zip will be extracted to:
 		var exeArgs = new List<string>();
 		var userLaunchParams = Settings.GameLaunchParams.IsValid() ? Settings.GameLaunchParams : "";
 
-		if (Settings.GameStoryLogEnabled && !Settings.ExtenderSettings.EnableLogging)
+		if (Settings.GameStoryLogEnabled && !_settings.ExtenderSettings.EnableLogging)
 		{
 			exeArgs.Add("-storylog 1");
 		}
@@ -743,7 +746,7 @@ Directory the zip will be extracted to:
 		});
 
 		// Updating extender requirement display
-		Settings.WhenAnyValue(x => x.ExtenderSettings.EnableExtensions).ObserveOn(RxApp.MainThreadScheduler).Subscribe((b) =>
+		ExtenderSettings.WhenAnyValue(x => x.EnableExtensions).ObserveOn(RxApp.MainThreadScheduler).Subscribe((b) =>
 		{
 			if (Settings.SettingsWindowIsOpen)
 			{
@@ -813,10 +816,10 @@ Directory the zip will be extracted to:
 
 		Settings.WhenAnyValue(x => x.DeleteModCrashSanityCheck, x => x.GameExecutablePath).ObserveOn(RxApp.MainThreadScheduler).Subscribe(x =>
 		{
-			if (x.Item1 && x.Item2.IsValid() && Settings.ExtenderSettings.InsanityCheck != true && !Settings.SettingsWindowIsOpen)
+			if (x.Item1 && x.Item2.IsValid() && ExtenderSettings.InsanityCheck != true && !Settings.SettingsWindowIsOpen)
 			{
-				Settings.ExtenderSettings.InsanityCheck = true;
-				_settings.SaveExtenderSettings();
+				ExtenderSettings.InsanityCheck = true;
+				_settings.TrySave(ExtenderSettings, out _);
 			}
 		});
 	}
@@ -902,7 +905,7 @@ Directory the zip will be extracted to:
 
 		if (success)
 		{
-			Settings.CanSaveSettings = false;
+			ViewModelLocator.Settings.CanSaveSettings = false;
 		}
 
 		return success;
@@ -917,7 +920,7 @@ Directory the zip will be extracted to:
 		}
 		else
 		{
-			Settings.CanSaveSettings = false;
+			ViewModelLocator.Settings.CanSaveSettings = false;
 			/*if (!Keys.SaveKeybindings(out var errorMsg))
 			{
 				_globalCommands.ShowAlert(errorMsg, AlertType.Danger);
@@ -1640,9 +1643,6 @@ Directory the zip will be extracted to:
 
 		DownloadBar = new DownloadActivityBarViewModel();
 
-		_settings.WhenAnyValue(x => x.AppSettings).BindTo(this, x => x.AppSettings);
-		_settings.WhenAnyValue(x => x.ManagerSettings).BindTo(this, x => x.Settings);
-
 		exceptionHandler = new MainWindowExceptionHandler(this);
 		RxApp.DefaultExceptionHandler = exceptionHandler;
 
@@ -1749,7 +1749,7 @@ Directory the zip will be extracted to:
 		whenRefreshing.ToUIProperty(this, x => x.UpdatingBusyIndicatorVisibility);
 		whenRefreshing.Select(b => !b).ToUIProperty(this, x => x.UpdateCountVisibility);
 
-		this.WhenAnyValue(x => x.Settings.DebugModeEnabled, x => x.Settings.ExtenderSettings.DeveloperMode)
+		this.WhenAnyValue(x => x.Settings.DebugModeEnabled, x => x._settings.ExtenderSettings.DeveloperMode)
 		.Select(x => x.Item1 || x.Item2).ToUIProperty(this, x => x.DeveloperModeVisibility);
 
 		#region Keys Setup

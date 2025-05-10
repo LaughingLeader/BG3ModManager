@@ -7,8 +7,12 @@ using System.Runtime.Serialization;
 namespace ModManager.Models.Settings;
 
 [DataContract]
-public class ScriptExtenderUpdateConfig : ReactiveObject
+public class ScriptExtenderUpdateConfig : ReactiveObject, ISerializableSettings
 {
+	public string FileName => "ScriptExtenderUpdaterConfig.json";
+	public string? GetDirectory() => Locator.Current.GetService<ISettingsService>()?.GetGameExecutableDirectory();
+	public bool SkipEmpty => true;
+
 	[Reactive] public bool DevOptionsEnabled { get; set; }
 	[Reactive] public bool UpdaterIsAvailable { get; set; }
 	[Reactive] public int UpdaterVersion { get; set; }

@@ -33,14 +33,18 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	private readonly IGlobalCommandsService _globalCommands;
 	private readonly IDialogService _dialogs;
 	private readonly IFileSystemService _fs;
+	private readonly ISettingsService _settings;
 
 	private readonly IFileWatcherWrapper _modSettingsWatcher;
 
 	private bool HasExported { get; set; }
 
 	public static PathwayData PathwayData => AppServices.Pathways.Data;
-	public static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
-	public static AppSettings AppSettings => AppServices.Settings.AppSettings;
+	public AppSettings AppSettings => _settings.AppSettings;
+	public ModManagerSettings Settings => _settings.ManagerSettings;
+	public UserModConfig UserModConfig => _settings.ModConfig;
+	public ScriptExtenderSettings ExtenderSettings => _settings.ExtenderSettings;
+	public ScriptExtenderUpdateConfig ExtenderUpdaterSettings => _settings.ExtenderUpdaterSettings;
 
 	//public IModViewLayout Layout { get; set; }
 
@@ -91,7 +95,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public string? SelectedProfileSavesPath { get; }
 
 	[ObservableAsProperty] public bool AdventureModBoxVisibility { get; }
-	[ObservableAsProperty] public bool LogFolderShortcutButtonVisibility { get; }
 	[ObservableAsProperty] public bool OverrideModsVisibility { get; }
 
 	[ObservableAsProperty] public bool GitHubModSupportEnabled { get; }
@@ -591,7 +594,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	#region Load Orders
 
-	private static async Task<List<ModLoadOrder>> LoadExternalLoadOrdersAsync()
+	private async Task<List<ModLoadOrder>> LoadExternalLoadOrdersAsync()
 	{
 		try
 		{
@@ -657,7 +660,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return result;
 	}
 
-	private static string GetOrdersDirectory()
+	private string GetOrdersDirectory()
 	{
 		var loadOrderDirectory = Settings.LoadOrderPath;
 		if (!loadOrderDirectory.IsExistingDirectory())
@@ -963,22 +966,22 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private void UpdateModExtenderStatus(ModData mod)
 	{
-		mod.CurrentExtenderVersion = Settings.ExtenderSettings.ExtenderMajorVersion;
+		mod.CurrentExtenderVersion = ExtenderSettings.ExtenderMajorVersion;
 		mod.ExtenderModStatus = ModExtenderStatus.None;
 
 		if (mod.ScriptExtenderData != null && mod.ScriptExtenderData.HasAnySettings)
 		{
 			if (mod.ScriptExtenderData.Lua)
 			{
-				if (!Settings.ExtenderSettings.EnableExtensions)
+				if (!ExtenderSettings.EnableExtensions)
 				{
 					mod.ExtenderModStatus |= ModExtenderStatus.DisabledFromConfig;
 				}
 				else
 				{
-					if (Settings.ExtenderSettings.ExtenderMajorVersion > -1)
+					if (ExtenderSettings.ExtenderMajorVersion > -1)
 					{
-						if (mod.ScriptExtenderData.RequiredVersion > -1 && Settings.ExtenderSettings.ExtenderMajorVersion < mod.ScriptExtenderData.RequiredVersion)
+						if (mod.ScriptExtenderData.RequiredVersion > -1 && ExtenderSettings.ExtenderMajorVersion < mod.ScriptExtenderData.RequiredVersion)
 						{
 							mod.ExtenderModStatus |= ModExtenderStatus.MissingRequiredVersion;
 						}
@@ -997,7 +1000,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			{
 				mod.ExtenderModStatus |= ModExtenderStatus.Supports;
 			}
-			if (!Settings.ExtenderUpdaterSettings.UpdaterIsAvailable)
+			if (!ExtenderUpdaterSettings.UpdaterIsAvailable)
 			{
 				mod.ExtenderModStatus |= ModExtenderStatus.MissingUpdater;
 			}
@@ -1606,7 +1609,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IDialogService dialogService,
 		IFileSystemService fileSystemService,
 		ModImportService modImportService,
-		IModUpdaterService _updater
+		IModUpdaterService _updater,
+		ISettingsService settings
 		)
 	{
 		ModManager = modManagerService;
@@ -1615,6 +1619,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		_globalCommands = globalCommands;
 		_dialogs = dialogService;
 		_fs = fileSystemService;
+		_settings = settings;
 
 		HostScreen = host;
 		SelectedAdventureModIndex = 0;
@@ -1721,14 +1726,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		ActiveMods.ToObservableChangeSet().CountChanged().Select(x => ActiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalActiveMods);
 		InactiveMods.ToObservableChangeSet().CountChanged().Select(x => InactiveMods.Count).ToUIPropertyImmediate(this, x => x.TotalInactiveMods);
 		OverrideMods.ToObservableChangeSet().CountChanged().Select(_ => OverrideMods.Count > 0).ToUIPropertyImmediate(this, x => x.OverrideModsVisibility);
-
-		host.Settings.WhenAnyValue(
-			x => x.ExtenderSettings.LogCompile,
-			x => x.ExtenderSettings.LogRuntime,
-			x => x.ExtenderSettings.EnableLogging,
-			x => x.ExtenderSettings.DeveloperMode,
-			x => x.DebugModeEnabled)
-		.Select(PropertyConverters.BoolTupleToVisibility).ToUIProperty(this, x => x.LogFolderShortcutButtonVisibility);
 
 		host.Settings.WhenAnyValue(x => x.DebugModeEnabled).Select(b => !b ? "Main" : null).Subscribe(nameOverride =>
 		{

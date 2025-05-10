@@ -9,16 +9,19 @@ using ModManager.Util;
 using ReactiveUI;
 
 using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Reactive.Linq;
 
 namespace ModManager.Services;
 
 public class SettingsService : ReactiveObject, ISettingsService
 {
+	private readonly IFileSystemService _fs;
+
 	public AppSettings AppSettings { get; private set; }
 	public ModManagerSettings ManagerSettings { get; private set; }
 	public UserModConfig ModConfig { get; private set; }
+	public ScriptExtenderSettings ExtenderSettings { get; private set; }
+	public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; private set; }
 
 	private readonly List<ISerializableSettings> _loadSettings;
 	private readonly List<ISerializableSettings> _saveSettings;
@@ -137,18 +140,28 @@ public class SettingsService : ReactiveObject, ISettingsService
 		return errors.Count == 0;
 	}
 
-	public bool TryLoadAll(out List<Exception> errors)
+	public bool TryLoadAll(out List<Exception> errors, bool saveIfNotFound = true)
 	{
 		var capturedErrors = new List<Exception>();
 		_loadSettings.ForEach(entry =>
 		{
-			if (!entry.Load(out var ex) && ex != null)
+			if (!entry.Load(out var ex, saveIfNotFound) && ex != null)
 			{
 				capturedErrors.Add(ex);
 			}
 		});
 		errors = capturedErrors;
 		return errors.Count == 0;
+	}
+
+	public bool TrySave(ISerializableSettings settings, out Exception? ex)
+	{
+		return settings.Save(out ex);
+	}
+
+	public bool TryLoad(ISerializableSettings settings, out Exception? ex, bool saveIfNotFound = true)
+	{
+		return settings.Load(out ex, saveIfNotFound);
 	}
 
 	public void UpdateLastUpdated(IList<string> updatedModIds)
@@ -177,51 +190,45 @@ public class SettingsService : ReactiveObject, ISettingsService
 		}
 	}
 
-	public bool SaveExtenderSettings()
+	public string? GetGameExecutableDirectory()
 	{
-		var outputFile = Path.Join(Path.GetDirectoryName(ManagerSettings.GameExecutablePath), DivinityApp.EXTENDER_CONFIG_FILE);
-		try
+		var directory = _fs.Path.GetDirectoryName(ManagerSettings.GameExecutablePath);
+		if (directory.IsValid())
 		{
-			var opts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
-			if (ManagerSettings.ExtenderSettings.ExportDefaultExtenderSettings) opts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
-			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, opts);
-			File.WriteAllText(outputFile, contents);
-			return true;
+			return directory;
 		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log($"Failed to save '{outputFile}':\n{ex}");
-		}
-		return false;
+		return null;
 	}
 
-	public bool SaveExtenderUpdaterSettings()
+	private static string? GetExtenderLogsDirectory(string? defaultDirectory, string? logDirectory)
 	{
-		var outputFile = Path.Join(Path.GetDirectoryName(ManagerSettings.GameExecutablePath), DivinityApp.EXTENDER_UPDATER_CONFIG_FILE);
-		try
+		if (!logDirectory.IsValid())
 		{
-			var opts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
-			if (ManagerSettings.ExtenderSettings.ExportDefaultExtenderSettings) opts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
-			var contents = JsonSerializer.Serialize(ManagerSettings.ExtenderSettings, opts);
-			File.WriteAllText(outputFile, contents);
-			return true;
+			return defaultDirectory;
 		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log($"Failed to save '{outputFile}':\n{ex}");
-		}
-		return false;
+		return logDirectory;
 	}
 
-	public SettingsService()
+	public SettingsService(IFileSystemService fs)
 	{
+		_fs = fs;
+
 		AppSettings = new AppSettings();
 		ManagerSettings = new ModManagerSettings();
 		ModConfig = new UserModConfig();
+		ExtenderSettings = new ScriptExtenderSettings();
+		ExtenderUpdaterSettings = new ScriptExtenderUpdateConfig();
 
 		ManagerSettings.InitSubscriptions();
 
-		_loadSettings = [ManagerSettings, ModConfig];
-		_saveSettings = [ManagerSettings, ModConfig];
+		_loadSettings = [ManagerSettings, ModConfig, ExtenderSettings, ExtenderUpdaterSettings];
+		_saveSettings = [ManagerSettings, ModConfig, ExtenderSettings, ExtenderUpdaterSettings];
+
+		ManagerSettings.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderSettings, x => x.DevOptionsEnabled);
+		ManagerSettings.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderUpdaterSettings, x => x.DevOptionsEnabled);
+
+		this.WhenAnyValue(x => x.ManagerSettings.DefaultExtenderLogDirectory, x => x.ExtenderSettings.LogDirectory)
+		.Select(x => GetExtenderLogsDirectory(x.Item1, x.Item2))
+		.BindTo(ManagerSettings, x => x.ExtenderLogDirectory);
 	}
 }

@@ -112,92 +112,26 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public string? LastLoadedOrderFilePath { get; set; }
 	[DataMember, Reactive] public string? LastExtractOutputPath { get; set; }
 
-	[DataMember, Reactive] public ScriptExtenderSettings ExtenderSettings { get; set; }
-	[DataMember, Reactive] public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; set; }
 	[DataMember, Reactive] public ModManagerUpdateSettings UpdateSettings { get; set; }
 	[DataMember, Reactive] public WindowSettings Window { get; set; }
 
 	[Reactive] public bool Loaded { get; set; }
-	[Reactive] public bool CanSaveSettings { get; set; }
 	[Reactive] public bool SettingsWindowIsOpen { get; set; }
 
 	[Reactive] public string? DefaultExtenderLogDirectory { get; set; }
 	[Reactive] public string? ExtenderLogDirectory { get; set; }
 
-	private static string? GetExtenderLogsDirectory(string? defaultDirectory, string? logDirectory)
-	{
-		if (!logDirectory.IsValid())
-		{
-			return defaultDirectory;
-		}
-		return logDirectory;
-	}
-
 	public void InitSubscriptions()
 	{
-		var properties = typeof(ModManagerSettings)
-		.GetRuntimeProperties()
-		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
-		.Select(prop => prop.Name)
-		.ToArray();
-
-		this.WhenAnyPropertyChanged(properties).Subscribe((c) =>
-		{
-			if (SettingsWindowIsOpen) CanSaveSettings = true;
-		});
-
-		var updateProperties = typeof(ModManagerUpdateSettings)
-		.GetRuntimeProperties()
-		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
-		.Select(prop => prop.Name)
-		.ToArray();
-
-		UpdateSettings.WhenAnyPropertyChanged(updateProperties).Subscribe((c) =>
-		{
-			if (SettingsWindowIsOpen) CanSaveSettings = true;
-		});
-
-		var extenderProperties = typeof(ScriptExtenderSettings)
-		.GetRuntimeProperties()
-		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
-		.Select(prop => prop.Name)
-		.ToArray();
-
-		ExtenderSettings.WhenAnyPropertyChanged(extenderProperties).Subscribe((c) =>
-		{
-			if (SettingsWindowIsOpen) CanSaveSettings = true;
-			this.RaisePropertyChanged(nameof(ExtenderLogDirectory));
-		});
-
-		var extenderUpdaterProperties = typeof(ScriptExtenderUpdateConfig)
-		.GetRuntimeProperties()
-		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
-		.Select(prop => prop.Name)
-		.ToArray();
-
-		ExtenderUpdaterSettings.WhenAnyPropertyChanged(extenderUpdaterProperties).Subscribe((c) =>
-		{
-			if (SettingsWindowIsOpen) CanSaveSettings = true;
-		});
-
 		this.WhenAnyValue(x => x.DebugModeEnabled).Subscribe(b => DivinityApp.DeveloperModeEnabled = b);
 
 		this.WhenAnyValue(x => x.ActionOnGameLaunchIndex).Select(x => (GameLaunchWindowAction)x).BindTo(this, x => x.ActionOnGameLaunch);
 		this.WhenAnyValue(x => x.ActionOnGameLaunch).Select(x => (int)x).BindTo(this, x => x.ActionOnGameLaunchIndex);
-
-		this.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderSettings, x => x.DevOptionsEnabled);
-		this.WhenAnyValue(x => x.DebugModeEnabled).BindTo(ExtenderUpdaterSettings, x => x.DevOptionsEnabled);
-
-		this.WhenAnyValue(x => x.DefaultExtenderLogDirectory, x => x.ExtenderSettings.LogDirectory)
-		.Select(x => GetExtenderLogsDirectory(x.Item1, x.Item2))
-		.BindTo(this, x => x.ExtenderLogDirectory);
 	}
 
 	public ModManagerSettings() : base("settings.json")
 	{
 		UpdateSettings = new ModManagerUpdateSettings();
-		ExtenderSettings = new ScriptExtenderSettings();
-		ExtenderUpdaterSettings = new ScriptExtenderUpdateConfig();
 		Window = new WindowSettings();
 
 		this.SetToDefault();

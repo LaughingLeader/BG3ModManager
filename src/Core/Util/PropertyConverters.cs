@@ -12,6 +12,7 @@ public static class PropertyConverters
 
 	[Obsolete]
 	public static bool BoolToVisibilityReversed(bool b) => !b;
+	public static bool BoolTupleToVisibility(ValueTuple<bool, bool, bool, bool> b) => b.Item1 || b.Item2 || b.Item3 || b.Item4;
 	public static bool BoolTupleToVisibility(ValueTuple<bool, bool, bool, bool, bool> b) => b.Item1 || b.Item2 || b.Item3 || b.Item4 || b.Item5;
 
 	/// <summary>

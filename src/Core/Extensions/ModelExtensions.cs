@@ -1,9 +1,11 @@
-﻿using ModManager.Json;
+﻿using ModManager.Extensions;
+using ModManager.Json;
 using ModManager.Models.Mod;
 using ModManager.Models.Settings;
 using ModManager.Util;
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Serialization.Json;
 
@@ -52,18 +54,40 @@ public static class ModelExtensions
 			}
 		}
 	}
-
+	
 	public static bool Save<T>(this T data, out Exception? error) where T : ISerializableSettings
 	{
 		error = null;
 		try
 		{
 			var directory = data.GetDirectory();
-			var filePath = Path.Join(directory, data.FileName);
-			Directory.CreateDirectory(directory);
-			var contents = JsonSerializer.Serialize(data, data.GetType(), JsonUtils.DefaultSerializerSettings);
-			File.WriteAllText(filePath, contents);
-			return true;
+			if(directory.IsValid())
+			{
+				Directory.CreateDirectory(directory);
+				if(directory.IsExistingDirectory())
+				{
+					var filePath = Path.Join(directory, data.FileName);
+					var contents = JsonSerializer.Serialize(data, data.GetType(), JsonUtils.DefaultSerializerSettings);
+					if(!data.SkipEmpty)
+					{
+						File.WriteAllText(filePath, contents);
+					}
+					else
+					{
+						if (!string.IsNullOrWhiteSpace(contents) && !contents.Trim().Equals("{}"))
+						{
+							File.WriteAllText(filePath, contents);
+						}
+						else
+						{
+							DivinityApp.Log("Output file would be empty, so we're skipping writing it.");
+							File.Delete(filePath);
+						}
+					}
+					return true;
+				}
+			}
+			throw new DirectoryNotFoundException($"Failed to find settings ({data.FileName}) output directory at '{directory}'");
 		}
 		catch (Exception ex)
 		{
@@ -79,35 +103,42 @@ public static class ModelExtensions
 		try
 		{
 			var directory = data.GetDirectory();
-			var filePath = Path.Join(directory, data.FileName);
-			if (File.Exists(filePath))
+			if (directory.IsExistingDirectory())
 			{
-				var outputType = data.GetType();
-				var text = File.ReadAllText(filePath);
-				var settings = JsonSerializer.Deserialize(text, outputType, JsonUtils.DefaultSerializerSettings);
-				if (settings != null)
+				var filePath = Path.Join(directory, data.FileName);
+				if (filePath.IsExistingFile())
 				{
-					var props = TypeDescriptor.GetProperties(outputType);
-					foreach (PropertyDescriptor pr in props)
+					var outputType = data.GetType();
+					var text = File.ReadAllText(filePath);
+					var settings = JsonSerializer.Deserialize(text, outputType, JsonUtils.DefaultSerializerSettings);
+					if (settings != null)
 					{
-						var value = pr.GetValue(settings);
-						if (value != null)
+						var props = TypeDescriptor.GetProperties(outputType);
+						foreach (PropertyDescriptor pr in props)
 						{
-							pr.SetValue(data, value);
-							data.RaisePropertyChanged(pr.Name);
+							var value = pr.GetValue(settings);
+							if (value != null)
+							{
+								pr.SetValue(data, value);
+								data.RaisePropertyChanged(pr.Name);
+							}
 						}
+						return true;
+					}
+				}
+				else if (saveIfNotFound)
+				{
+					if (!Save(data, out var saveError))
+					{
+						error = saveError;
+						return false;
 					}
 					return true;
 				}
 			}
-			else if (saveIfNotFound)
+			else
 			{
-				if (!Save(data, out var saveError))
-				{
-					error = saveError;
-					return false;
-				}
-				return true;
+				throw new DirectoryNotFoundException($"Failed to find settings ({data.FileName}) output directory at '{directory}'");
 			}
 		}
 		catch (Exception ex)

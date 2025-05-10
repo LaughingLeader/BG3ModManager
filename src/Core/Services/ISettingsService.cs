@@ -8,12 +8,16 @@ public interface ISettingsService
 	AppSettings AppSettings { get; }
 	ModManagerSettings ManagerSettings { get; }
 	UserModConfig ModConfig { get; }
+	ScriptExtenderSettings ExtenderSettings { get; }
+	ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; }
 
+	bool TrySave(ISerializableSettings settings, out Exception? ex);
+	bool TryLoad(ISerializableSettings settings, out Exception? ex, bool saveIfNotFound = true);
 	bool TrySaveAll(out List<Exception> errors);
-	bool TryLoadAll(out List<Exception> errors);
+	bool TryLoadAll(out List<Exception> errors, bool saveIfNotFound = true);
 	bool TryLoadAppSettings(out Exception? error);
 	void UpdateLastUpdated(IList<string> updatedModIds);
 	void UpdateLastUpdated(IList<ModData> updatedMods);
-	bool SaveExtenderSettings();
-	bool SaveExtenderUpdaterSettings();
+
+	string? GetGameExecutableDirectory();
 }

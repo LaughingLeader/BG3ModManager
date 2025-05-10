@@ -10,6 +10,8 @@ using ModManager.ViewModels.Main;
 using ModManager.ViewModels.Settings;
 
 using System.ComponentModel;
+using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace ModManager.ViewModels;
 
@@ -67,6 +69,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 	[Reactive] public SettingsWindowTab SelectedTabIndex { get; set; }
 	[Reactive] public Hotkey SelectedHotkey { get; set; }
 	[Reactive] public bool HasFetchedManifest { get; set; }
+	[Reactive] public bool CanSaveSettings { get; set; }
 
 	[ObservableAsProperty] public bool ExtenderTabIsVisible { get; }
 	[ObservableAsProperty] public bool KeybindingsTabIsVisible { get; }
@@ -166,10 +169,10 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 		}
 	}
 
-	[GenerateView] public ModManagerSettings? Settings { get; private set; }
-	[GenerateView] public ModManagerUpdateSettings? UpdateSettings { get; private set; }
-	[GenerateView] public ScriptExtenderSettings? ExtenderSettings { get; private set; }
-	[GenerateView] public ScriptExtenderUpdateConfig? ExtenderUpdaterSettings { get; private set; }
+	[GenerateView] public ModManagerSettings Settings { get; private set; }
+	[GenerateView] public ModManagerUpdateSettings UpdateSettings { get; private set; }
+	[GenerateView] public ScriptExtenderSettings ExtenderSettings { get; private set; }
+	[GenerateView] public ScriptExtenderUpdateConfig ExtenderUpdaterSettings { get; private set; }
 
 	public void OnTargetVersionSelected(ScriptExtenderUpdateVersion entry)
 	{
@@ -195,31 +198,25 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 
 	public bool ExportExtenderSettings()
 	{
-		if (_settings.SaveExtenderSettings())
-		{
-			AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Success, 20);
-			return true;
-		}
-		else
+		if (!_settings.TrySave(_settings.ExtenderSettings, out var ex))
 		{
 			AppServices.Commands.ShowAlert($"Failed to save bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Danger, 60);
+			return false;
 		}
-		return false;
+		AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Success, 20);
+		return true;
 	}
 
 	public bool ExportExtenderUpdaterSettings()
 	{
-		if (_settings.SaveExtenderUpdaterSettings())
-		{
-			AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Success, 20);
-			ViewModelLocator.Main.UpdateExtender(true);
-			return true;
-		}
-		else
+		if (!_settings.TrySave(_settings.ExtenderUpdaterSettings, out var ex))
 		{
 			AppServices.Commands.ShowAlert($"Failed to save bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Danger, 60);
+			return false;
 		}
-		return false;
+		AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Success, 20);
+		ViewModelLocator.Main.UpdateExtender(true);
+		return true;
 	}
 
 	public void SaveSettings()
@@ -317,13 +314,10 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		TargetVersion = _emptyVersion;
 		SelectedTabIndex = SettingsWindowTab.Default;
 
-		if (HostScreen is MainWindowViewModel main)
-		{
-			main.WhenAnyValue(x => x.Settings).BindTo(this, x => x.Settings);
-			main.WhenAnyValue(x => x.Settings.UpdateSettings).BindTo(this, x => x.UpdateSettings);
-			main.WhenAnyValue(x => x.Settings.ExtenderSettings).BindTo(this, x => x.ExtenderSettings);
-			main.WhenAnyValue(x => x.Settings.ExtenderUpdaterSettings).BindTo(this, x => x.ExtenderUpdaterSettings);
-		}
+		Settings = _settings.ManagerSettings;
+		UpdateSettings = _settings.ManagerSettings.UpdateSettings;
+		ExtenderSettings = _settings.ExtenderSettings;
+		ExtenderUpdaterSettings = _settings.ExtenderUpdaterSettings;
 
 		ScriptExtenderUpdates = [_emptyVersion];
 		LaunchParams =
@@ -414,10 +408,10 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 							Settings.SetToDefault();
 							break;
 						case SettingsWindowTab.Extender:
-							Settings.ExtenderSettings.SetToDefault();
+							ExtenderSettings.SetToDefault();
 							break;
 						case SettingsWindowTab.ExtenderUpdater:
-							Settings.ExtenderUpdaterSettings.SetToDefault();
+							ExtenderUpdaterSettings.SetToDefault();
 							break;
 						case SettingsWindowTab.Keybindings:
 							//ViewModelLocator.Main.Keys.SetToDefault();
@@ -485,5 +479,50 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		this.WhenAnyValue(x => x.IsVisible).Subscribe(OnVisibilityChanged);
 
 		AssociateWithNXMCommand = ReactiveCommand.Create(AssociateWithNXM);
+
+		var properties = typeof(ModManagerSettings)
+		.GetRuntimeProperties()
+		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
+		.Select(prop => prop.Name)
+		.ToArray();
+
+		this.WhenAnyPropertyChanged(properties).Subscribe((c) =>
+		{
+			CanSaveSettings = true;
+		});
+
+		var updateProperties = typeof(ModManagerUpdateSettings)
+		.GetRuntimeProperties()
+		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
+		.Select(prop => prop.Name)
+		.ToArray();
+
+		UpdateSettings.WhenAnyPropertyChanged(updateProperties).Subscribe((c) =>
+		{
+			CanSaveSettings = true;
+		});
+
+		var extenderProperties = typeof(ScriptExtenderSettings)
+		.GetRuntimeProperties()
+		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
+		.Select(prop => prop.Name)
+		.ToArray();
+
+		ExtenderSettings.WhenAnyPropertyChanged(extenderProperties).Subscribe((c) =>
+		{
+			CanSaveSettings = true;
+			Settings.RaisePropertyChanged(nameof(ModManagerSettings.ExtenderLogDirectory));
+		});
+
+		var extenderUpdaterProperties = typeof(ScriptExtenderUpdateConfig)
+		.GetRuntimeProperties()
+		.Where(prop => Attribute.IsDefined(prop, typeof(DataMemberAttribute)))
+		.Select(prop => prop.Name)
+		.ToArray();
+
+		ExtenderUpdaterSettings.WhenAnyPropertyChanged(extenderUpdaterProperties).Subscribe((c) =>
+		{
+			CanSaveSettings = true;
+		});
 	}
 }
