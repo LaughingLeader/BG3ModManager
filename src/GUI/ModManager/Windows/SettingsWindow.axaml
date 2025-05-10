@@ -19,79 +19,124 @@
     Icon="avares://ModManager/Assets/BG3ModManager.ico"
     Topmost="False"
     mc:Ignorable="d">
+	<Window.Resources>
+		<ControlTheme x:Key="{x:Type TabControl}" TargetType="TabControl">
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Padding" Value="{DynamicResource TabItemMargin}" />
+			<Setter Property="Background" Value="{DynamicResource TabControlBackground}" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+					    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+					    Background="{TemplateBinding Background}"
+					    BorderBrush="{TemplateBinding BorderBrush}"
+					    BorderThickness="{TemplateBinding BorderThickness}"
+					    CornerRadius="{TemplateBinding CornerRadius}">
+						<DockPanel>
+							<ItemsPresenter Name="PART_ItemsPresenter" DockPanel.Dock="{TemplateBinding TabStripPlacement}" ItemsPanel="{TemplateBinding ItemsPanel}" />
+							<ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+								<ContentPresenter Name="PART_SelectedContentHost"
+								    Margin="{TemplateBinding Padding}"
+								    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+								    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+								    Content="{TemplateBinding SelectedContent}"
+								    ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+							</ScrollViewer>
+						</DockPanel>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+
+			<Style Selector="^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
+				<Setter Property="Orientation" Value="Vertical" />
+			</Style>
+			<Style Selector="^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
+				<Setter Property="Orientation" Value="Vertical" />
+			</Style>
+			<Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+				<Setter Property="Margin" Value="{DynamicResource TabControlTopPlacementItemMargin}" />
+			</Style>
+		</ControlTheme>
+	</Window.Resources>
 	<Panel>
 		<suki:SukiBackground IsHitTestVisible="False" />
-		<TabControl x:Name="SettingsTabControl" Margin="48" SelectedIndex="{Binding SelectedTabIndex}">
-			<TabItem Header="General" ToolTip.Tip="Mod Manager Settings (Data/settings.json)">
-				<genview:ModManagerSettingsView x:Name="GeneralSettingsView" DataContext="{Binding Settings}" />
-			</TabItem>
-			<TabItem Header="Mod Updating" ToolTip.Tip="Update Settings (Data/settings.json)">
-				<genview:ModManagerUpdateSettingsView x:Name="UpdateSettingsView" DataContext="{Binding UpdateSettings}" />
-			</TabItem>
-			<TabItem Header="Script Extender" ToolTip.Tip="Script Extender Settings (ScriptExtenderSettings.json)">
-				<genview:ScriptExtenderSettingsView x:Name="ExtenderSettingsView" DataContext="{Binding ExtenderSettings}" />
-			</TabItem>
-			<TabItem Header="Script Extender Updater" ToolTip.Tip="Script Extender Updater Settings (ScriptExtenderUpdaterConfig.json)">
-				<genview:ScriptExtenderUpdateConfigView x:Name="ExtenderUpdateSettingsView" DataContext="{Binding ExtenderUpdaterSettings}" />
-			</TabItem>
-			<TabItem Header="Keybindings" ToolTip.Tip="Keybinding Settings (Data/keybindings.json)">
-				<view:KeybindingsView x:Name="KeybindingsView" DataContext="{Binding Source={x:Static manager:ViewModelLocator.Keybindings}}" />
-			</TabItem>
-			<TabItem Header="Advanced" ToolTip.Tip="Advanced Mod Manager Settings (Data/settings.json)">
-				<controls:AutoGrid RowCount="4" RowHeight="auto">
-					<controls:AutoGrid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="*" />
-					</controls:AutoGrid.ColumnDefinitions>
-
-					<TextBlock x:Name="ModDeveloperModeTextBlock" Classes="left" Text="Mod Developer Mode" />
-					<CheckBox x:Name="ModDeveloperModeCheckBox" Classes="right" IsChecked="{Binding Settings.DebugModeEnabled}" />
-
-					<TextBlock x:Name="LoggingTextBlock" Classes="left" Text="Enable Mod Manager Logs" />
-					<CheckBox x:Name="LoggingCheckBox" Classes="right" IsChecked="{Binding Settings.LogEnabled}" />
-
-					<Button x:Name="GameLaunchParamsMainButton"
-					    VerticalAlignment="Center"
-					    Content="Launch Params"
-					    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager">
-						<Button.Flyout>
-							<MenuFlyout ItemsSource="{Binding LaunchParams}" Placement="Pointer" ShowMode="Transient">
-								<MenuFlyout.ItemContainerTheme>
-									<ControlTheme x:DataType="vm:GameLaunchParamEntry" BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
-										<Setter Property="Header" Value="{Binding Name}" />
-										<Setter Property="ToolTip.Tip" Value="{Binding Description}" />
-										<Setter Property="ToolTip.ServiceEnabled" Value="{Binding HasToolTip}" />
-										<Setter Property="Command" Value="{Binding $parent[local:SettingsWindow].((vm:SettingsWindowViewModel)DataContext).AddLaunchParamCommand}" />
-										<Setter Property="CommandParameter" Value="{Binding Name}" />
-									</ControlTheme>
-								</MenuFlyout.ItemContainerTheme>
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Grid>
-						<Grid.ColumnDefinitions>
+		<suki:GlassCard CornerRadius="0" IsOpaque="True">
+			<TabControl x:Name="SettingsTabControl"
+			    Margin="0"
+			    Padding="8"
+			    ScrollViewer.VerticalScrollBarVisibility="Auto"
+			    SelectedIndex="{Binding SelectedTabIndex}">
+				<TabItem Header="General" ToolTip.Tip="Mod Manager Settings (Data/settings.json)">
+					<genview:ModManagerSettingsView x:Name="GeneralSettingsView" DataContext="{Binding Settings}" />
+				</TabItem>
+				<TabItem Header="Mod Updating" ToolTip.Tip="Update Settings (Data/settings.json)">
+					<genview:ModManagerUpdateSettingsView x:Name="UpdateSettingsView" DataContext="{Binding UpdateSettings}" />
+				</TabItem>
+				<TabItem Header="Script Extender" ToolTip.Tip="Script Extender Settings (ScriptExtenderSettings.json)">
+					<genview:ScriptExtenderSettingsView x:Name="ExtenderSettingsView" DataContext="{Binding ExtenderSettings}" />
+				</TabItem>
+				<TabItem Header="Script Extender Updater" ToolTip.Tip="Script Extender Updater Settings (ScriptExtenderUpdaterConfig.json)">
+					<genview:ScriptExtenderUpdateConfigView x:Name="ExtenderUpdateSettingsView" DataContext="{Binding ExtenderUpdaterSettings}" />
+				</TabItem>
+				<TabItem Header="Keybindings" ToolTip.Tip="Keybinding Settings (Data/keybindings.json)">
+					<view:KeybindingsView x:Name="KeybindingsView" DataContext="{Binding Source={x:Static manager:ViewModelLocator.Keybindings}}" />
+				</TabItem>
+				<TabItem Header="Advanced" ToolTip.Tip="Advanced Mod Manager Settings (Data/settings.json)">
+					<controls:AutoGrid RowCount="4" RowHeight="auto">
+						<controls:AutoGrid.ColumnDefinitions>
 							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<TextBox VerticalAlignment="Center"
-						    Text="{Binding Settings.GameLaunchParams}"
-						    TextWrapping="Wrap"
-						    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager" />
-						<Button Grid.Column="1"
-						    Command="{Binding ClearLaunchParamsCommand}"
-						    Content="{materialIcons:MaterialIconExt Kind=Close}"
-						    ToolTip.Tip="Clear current params" />
-					</Grid>
+							<ColumnDefinition Width="*" />
+						</controls:AutoGrid.ColumnDefinitions>
 
-					<TextBlock Text="Experimental" />
-					<Button x:Name="ClearCacheButton"
-					    HorizontalAlignment="Center"
-					    VerticalAlignment="Center"
-					    Command="{Binding ClearCacheCommand}"
-					    Content="Delete Cache"
-					    ToolTip.Tip="Delete the local mod cache, located in the mod manager's Data folder" />
-				</controls:AutoGrid>
-			</TabItem>
-		</TabControl>
+						<TextBlock x:Name="ModDeveloperModeTextBlock" Classes="left" Text="Mod Developer Mode" />
+						<CheckBox x:Name="ModDeveloperModeCheckBox" Classes="right" IsChecked="{Binding Settings.DebugModeEnabled}" />
+
+						<TextBlock x:Name="LoggingTextBlock" Classes="left" Text="Enable Mod Manager Logs" />
+						<CheckBox x:Name="LoggingCheckBox" Classes="right" IsChecked="{Binding Settings.LogEnabled}" />
+
+						<Button x:Name="GameLaunchParamsMainButton"
+						    VerticalAlignment="Center"
+						    Content="Launch Params"
+						    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager">
+							<Button.Flyout>
+								<MenuFlyout ItemsSource="{Binding LaunchParams}" Placement="Pointer" ShowMode="Transient">
+									<MenuFlyout.ItemContainerTheme>
+										<ControlTheme x:DataType="vm:GameLaunchParamEntry" BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
+											<Setter Property="Header" Value="{Binding Name}" />
+											<Setter Property="ToolTip.Tip" Value="{Binding Description}" />
+											<Setter Property="ToolTip.ServiceEnabled" Value="{Binding HasToolTip}" />
+											<Setter Property="Command" Value="{Binding $parent[local:SettingsWindow].((vm:SettingsWindowViewModel)DataContext).AddLaunchParamCommand}" />
+											<Setter Property="CommandParameter" Value="{Binding Name}" />
+										</ControlTheme>
+									</MenuFlyout.ItemContainerTheme>
+								</MenuFlyout>
+							</Button.Flyout>
+						</Button>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<TextBox VerticalAlignment="Center"
+							    Text="{Binding Settings.GameLaunchParams}"
+							    TextWrapping="Wrap"
+							    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager" />
+							<Button Grid.Column="1"
+							    Command="{Binding ClearLaunchParamsCommand}"
+							    Content="{materialIcons:MaterialIconExt Kind=Close}"
+							    ToolTip.Tip="Clear current params" />
+						</Grid>
+
+						<TextBlock Text="Experimental" />
+						<Button x:Name="ClearCacheButton"
+						    HorizontalAlignment="Center"
+						    VerticalAlignment="Center"
+						    Command="{Binding ClearCacheCommand}"
+						    Content="Delete Cache"
+						    ToolTip.Tip="Delete the local mod cache, located in the mod manager's Data folder" />
+					</controls:AutoGrid>
+				</TabItem>
+			</TabControl>
+		</suki:GlassCard>
 	</Panel>
 </Window>
