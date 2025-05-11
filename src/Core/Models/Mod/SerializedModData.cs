@@ -7,9 +7,9 @@ namespace ModManager.Models.Mod;
 [DataContract]
 public class SerializedModData : IModData
 {
+	[DataMember] public string UUID { get; set; }
 	[DataMember] public int Index { get; set; }
 	[DataMember] public string? FileName { get; set; }
-	[DataMember] public string? UUID { get; set; }
 	[DataMember] public string? Folder { get; set; }
 	[DataMember] public string? Name { get; set; }
 	[DataMember] public string? Description { get; set; }
@@ -20,19 +20,31 @@ public class SerializedModData : IModData
 
 	[DataMember] public string? Type { get; set; }
 
-	[DataMember] public ModScriptExtenderConfig ScriptExtenderData { get; set; }
+	[DataMember] public ModScriptExtenderConfig? ScriptExtenderData { get; set; }
 	[DataMember] public List<ModuleShortDesc> Dependencies { get; set; }
 
 	[DataMember] public string? MD5 { get; set; }
 
 	public DateTimeOffset? LastModified { get; set; }
 
+	public SerializedModData(string uuid)
+	{
+		UUID = uuid;
+		Dependencies = [];
+		Version = new LarianVersion();
+	}
+
+	[JsonConstructor]
+	public SerializedModData() : this(string.Empty)
+	{
+		
+	}
+
 	public static SerializedModData FromMod(ModData mod)
 	{
-		return new SerializedModData
+		var result = new SerializedModData(mod.UUID)
 		{
 			Author = mod.AuthorDisplayName,
-			Dependencies = mod.Dependencies.Items.ToList(),
 			Description = mod.Description,
 			FileName = mod.FileName,
 			Folder = mod.Folder,
@@ -45,5 +57,7 @@ public class SerializedModData : IModData
 			MD5 = mod.MD5,
 			LastModified = mod.LastModified
 		};
+		result.Dependencies.AddRange(mod.Dependencies.Items);
+		return result;
 	}
 }

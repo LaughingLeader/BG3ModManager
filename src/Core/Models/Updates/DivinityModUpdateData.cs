@@ -48,10 +48,8 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 		return "";
 	}
 
-	private string GetUpdateTooltip(ValueTuple<string, Uri> data)
+	private string GetUpdateTooltip(string? description, Uri? url)
 	{
-		var description = data.Item1;
-		var url = data.Item2;
 		var result = "";
 		if (description.IsValid())
 		{
@@ -90,6 +88,6 @@ public class DivinityModUpdateData : ReactiveObject, ISelectable
 		this.WhenAnyValue(x => x.Mod, x => x.Source).Select(SourceToLink).ToPropertyEx(this, x => x.UpdateLink);
 
 
-		this.WhenAnyValue(x => x.DownloadData.Description, x => x.UpdateLink).Select(GetUpdateTooltip).ToPropertyEx(this, x => x.UpdateToolTip);
+		this.WhenAnyValue(x => x.DownloadData.Description, x => x.UpdateLink, GetUpdateTooltip).ToPropertyEx(this, x => x.UpdateToolTip);
 	}
 }

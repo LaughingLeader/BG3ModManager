@@ -7,6 +7,7 @@ public class ModEntry : ReactiveObject, IModEntry
 {
 	public ModEntryType EntryType => ModEntryType.Mod;
 
+	[Reactive] public string UUID { get; }
 	[Reactive] public int Index { get; set; }
 
 	[Reactive] public bool IsActive { get; set; }
@@ -16,7 +17,6 @@ public class ModEntry : ReactiveObject, IModEntry
 	[Reactive] public bool IsDraggable { get; set; }
 	[Reactive] public bool PreserveSelection { get; set; }
 
-	[ObservableAsProperty] public string? UUID { get; }
 	[ObservableAsProperty] public string? DisplayName { get; }
 	[ObservableAsProperty] public string? Version { get; }
 	[ObservableAsProperty] public string? Author { get; }
@@ -32,13 +32,14 @@ public class ModEntry : ReactiveObject, IModEntry
 
 	[Reactive] public ModData? Data { get; set; }
 
-	public ModEntry()
+	public ModEntry(string uuid)
 	{
+		UUID = uuid;
+
 		var whenMod = this.WhenAnyValue(x => x.Data).WhereNotNull();
 
 		whenMod.Select(x => x.Index).BindTo(this, x => x.Index);
 
-		whenMod.Select(x => x.UUID).ToUIProperty(this, x => x.UUID);
 		whenMod.Select(x => x.DisplayName).ToUIProperty(this, x => x.DisplayName);
 		whenMod.Select(x => x.Version.Version).ToUIProperty(this, x => x.Version);
 		whenMod.Select(x => x.Author).ToUIProperty(this, x => x.Author);
@@ -55,7 +56,7 @@ public class ModEntry : ReactiveObject, IModEntry
 		});
 	}
 
-	public ModEntry(ModData modData) : this()
+	public ModEntry(ModData modData) : this(modData.UUID)
 	{
 		Data = modData;
 	}

@@ -43,6 +43,10 @@ public class ModDownloadData : ReactiveObject
 		var result = new ModDownloadResult();
 		try
 		{
+			if(!DownloadPath.IsValid())
+			{
+				throw new InvalidOperationException($"DownloadPath({DownloadPath}) is not valid.");
+			}
 			Directory.CreateDirectory(outputDirectory);
 			DivinityApp.Log($"Downloading {DownloadPath} - DownloadPathType({DownloadPathType}) DownloadSourceType({DownloadSourceType})");
 			if (DownloadPathType == ModDownloadPathType.FILE)

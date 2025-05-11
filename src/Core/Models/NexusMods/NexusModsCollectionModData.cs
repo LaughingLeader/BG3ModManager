@@ -6,7 +6,7 @@ namespace ModManager.Models.NexusMods;
 
 public class NexusModsCollectionModData : ReactiveObject
 {
-	public NexusGraphModFile ModFileData { get; }
+	public NexusGraphModFile? ModFileData { get; }
 
 	[Reactive] public int Index { get; set; }
 	[Reactive] public string? Name { get; set; }
@@ -16,8 +16,8 @@ public class NexusModsCollectionModData : ReactiveObject
 	[Reactive] public string? Version { get; set; }
 	[Reactive] public string? Category { get; set; }
 	[Reactive] public long SizeInBytes { get; set; }
-	[Reactive] public Uri AuthorAvatarUrl { get; set; }
-	[Reactive] public Uri ImageUrl { get; set; }
+	[Reactive] public Uri? AuthorAvatarUrl { get; set; }
+	[Reactive] public Uri? ImageUrl { get; set; }
 	[Reactive] public DateTimeOffset CreatedAt { get; set; }
 	[Reactive] public DateTimeOffset UpdatedAt { get; set; }
 	[Reactive] public bool IsOptional { get; set; }
@@ -42,21 +42,25 @@ public class NexusModsCollectionModData : ReactiveObject
 		var modFile = mod.File;
 		ModFileData = modFile;
 
-		Name = ModFileData.Name;
-		Summary = ModFileData.Mod.Summary;
-		Description = ModFileData.Description;
-		Author = ModFileData.Owner?.Name;
-		AuthorAvatarUrl = new Uri(ModFileData.Owner?.Avatar);
-		ImageUrl = StringUtils.StringToUri(ModFileData.Mod.PictureUrl);
-		CreatedAt = ModFileData.Mod.CreatedAt;
-		UpdatedAt = ModFileData.Mod.UpdatedAt;
-		Version = ModFileData.Mod.Version;
-		SizeInBytes = ModFileData.SizeInBytes;
-		Category = ModFileData.Mod.Category;
+		if(ModFileData != null)
+		{
+			Name = ModFileData.Name;
+			Summary = ModFileData.Mod.Summary;
+			Description = ModFileData.Description;
+			Author = ModFileData.Owner?.Name;
+			if (ModFileData.Owner?.Avatar != null) AuthorAvatarUrl = new Uri(ModFileData.Owner.Avatar);
+			ImageUrl = StringUtils.StringToUri(ModFileData.Mod.PictureUrl);
+			CreatedAt = ModFileData.Mod.CreatedAt;
+			UpdatedAt = ModFileData.Mod.UpdatedAt;
+			Version = ModFileData.Mod.Version;
+			SizeInBytes = ModFileData.SizeInBytes;
+			Category = ModFileData.Mod.Category;
+		}
+
 		IsOptional = mod.Optional;
 
-		NexusModsURL = $"https://www.nexusmods.com/{DivinityApp.NEXUSMODS_GAME_DOMAIN}/mods/{modFile.ModId}";
-		NexusModsURLDisplayText = $"/{DivinityApp.NEXUSMODS_GAME_DOMAIN}/mods/{modFile.ModId}";
+		NexusModsURL = $"https://www.nexusmods.com/{DivinityApp.NEXUSMODS_GAME_DOMAIN}/mods/{modFile?.ModId}";
+		NexusModsURLDisplayText = $"/{DivinityApp.NEXUSMODS_GAME_DOMAIN}/mods/{modFile?.ModId}";
 
 		this.WhenAnyValue(x => x.SizeInBytes).Select(StringUtils.BytesToString).ToUIProperty(this, x => x.SizeText);
 		this.WhenAnyValue(x => x.Author).Select(x => $"Created by {x}").ToUIProperty(this, x => x.AuthorDisplayText);

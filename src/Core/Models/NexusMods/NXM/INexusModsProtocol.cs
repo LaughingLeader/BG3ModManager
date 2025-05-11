@@ -2,7 +2,7 @@
 
 public interface INexusModsProtocol
 {
-	string GameDomain { get; set; }
+	string? GameDomain { get; set; }
 
 	bool IsValid { get; }
 	string AsUrl { get; }

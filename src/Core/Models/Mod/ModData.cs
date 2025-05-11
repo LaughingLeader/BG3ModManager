@@ -416,7 +416,7 @@ public class ModData : ReactiveObject, IModData
 			Folder = Folder,
 			MD5 = MD5,
 			Name = Name,
-			Version = new LarianVersion(Version.VersionInt)
+			Version = new LarianVersion(Version?.VersionInt ?? 0)
 		};
 	}
 
@@ -463,8 +463,7 @@ public class ModData : ReactiveObject, IModData
 		return string.Join("\n", lines);
 	}
 
-
-	private CompositeDisposable _modConfigDisposables;
+	private CompositeDisposable? _modConfigDisposables;
 	private ModConfig? _modManagerConfig;
 
 	public ModConfig? ModManagerConfig
@@ -756,9 +755,9 @@ public class ModData : ReactiveObject, IModData
 			(isEditorMod, isHidden, path) => !isEditorMod && !isHidden && path.IsValid())
 			.ToUIPropertyImmediate(this, x => x.CanDelete);
 
-		var whenExtenderProp = this.WhenAnyValue(x => x.ExtenderModStatus, x => x.ScriptExtenderData.RequiredVersion, x => x.CurrentExtenderVersion);
-		
-		whenExtenderProp.Select(x => ExtenderStatusToToolTipText(x.Item1, x.Item2, x.Item3))
+		var whenExtenderProp = this.WhenAnyValue(x => x.ExtenderModStatus, x => x.CurrentExtenderVersion, 
+			x => x.ScriptExtenderData, x => x.ScriptExtenderData!.RequiredVersion, 
+			(status, curVersion, seData, _) => ExtenderStatusToToolTipText(status, seData?.RequiredVersion ?? 0, curVersion))
 			.ToUIProperty(this, x => x.ScriptExtenderSupportToolTipText);
 
 		this.WhenAnyValue(x => x.ExtenderModStatus).Select(x => x != ModExtenderStatus.None)
@@ -773,7 +772,7 @@ public class ModData : ReactiveObject, IModData
 		this.WhenAnyValue(x => x.Notes).Select(Validators.IsValid).ToUIProperty(this, x => x.HasNotes);
 
 		this.WhenAnyValue(x => x.LastModified).SkipWhile(x => !x.HasValue)
-			.Select(x => x.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture))
+			.Select(x => x!.Value.ToString(DivinityApp.DateTimeColumnFormat, CultureInfo.InstalledUICulture))
 			.ToUIProperty(this, x => x.LastModifiedDateText, "");
 
 		this.WhenAnyValue(x => x.FilePath).Select(Validators.IsValid).ToUIProperty(this, x => x.HasFilePath);
@@ -835,14 +834,14 @@ public class ModData : ReactiveObject, IModData
 			Description = mod.Description,
 			MD5 = mod.MD5,
 			ModType = mod.ModType,
-			Tags = mod.Tags.ToList()
+			Tags = [.. mod.Tags]
 		};
 		cloneMod.Conflicts.AddOrUpdate(mod.Conflicts.Items);
 		cloneMod.Dependencies.AddOrUpdate(mod.Dependencies.Items);
 		cloneMod.NexusModsData.Update(mod.NexusModsData);
 		cloneMod.ModioData.Update(mod.ModioData.Data);
 		cloneMod.GitHubData.Update(mod.GitHubData);
-		cloneMod.ApplyModConfig(mod.ModManagerConfig);
+		if (mod.ModManagerConfig != null) cloneMod.ApplyModConfig(mod.ModManagerConfig);
 		return cloneMod;
 	}
 }

@@ -10,11 +10,9 @@ public class StatsValidatorLineText : TreeViewEntry
 
 	[ObservableAsProperty] public string? HighlightedText { get; }
 
-	private static string GetHighlightedText(ValueTuple<string, int, int> x)
+	private static string GetHighlightedText(string? text, int start, int end)
 	{
-		var text = x.Item1;
-		var start = x.Item2;
-		var end = x.Item3;
+		if (!text.IsValid()) return string.Empty;
 
 		var length = Math.Min(text.Length, end - start);
 
@@ -38,6 +36,6 @@ public class StatsValidatorLineText : TreeViewEntry
 	{
 		IsExpanded = true;
 
-		this.WhenAnyValue(x => x.Text, x => x.Start, x => x.End).Select(GetHighlightedText).ToUIProperty(this, x => x.HighlightedText);
+		this.WhenAnyValue(x => x.Text, x => x.Start, x => x.End, GetHighlightedText).ToUIProperty(this, x => x.HighlightedText);
 	}
 }

@@ -3,11 +3,14 @@ using System.Web;
 
 namespace ModManager.Models.NexusMods.NXM;
 
-public class NexusDownloadModProtocolData : INexusModsProtocol
+public partial class NexusDownloadModProtocolData : INexusModsProtocol
 {
 	public NexusModsProtocolType ProtocolType => NexusModsProtocolType.ModFile;
 
-	private static readonly Regex _pattern = new("nxm://(?<game>[^/]+)/mods/(?<mod>[^/]+)/files/(?<file>[^?]+)", RegexOptions.IgnoreCase);
+	private static readonly Regex _pattern = nxmPattern();
+
+	[GeneratedRegex("nxm://(?<game>[^/]+)/mods/(?<mod>[^/]+)/files/(?<file>[^?]+)", RegexOptions.IgnoreCase, "en-US")]
+	private static partial Regex nxmPattern();
 
 	public string? GameDomain { get; set; }
 	public int ModId { get; set; }

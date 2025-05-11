@@ -12,9 +12,9 @@ public class NexusModsCollectionData : ReactiveObject
 	[Reactive] public string? Name { get; set; }
 	[Reactive] public string? Author { get; set; }
 	[Reactive] public string? Description { get; set; }
-	[Reactive] public Uri AuthorAvatarUrl { get; set; }
-	[Reactive] public Uri TileImageUrl { get; set; }
-	[Reactive] public Uri TileImageThumbnailUrl { get; set; }
+	[Reactive] public Uri? AuthorAvatarUrl { get; set; }
+	[Reactive] public Uri? TileImageUrl { get; set; }
+	[Reactive] public Uri? TileImageThumbnailUrl { get; set; }
 	[Reactive] public DateTimeOffset CreatedAt { get; set; }
 	[Reactive] public DateTimeOffset UpdatedAt { get; set; }
 
@@ -42,12 +42,15 @@ public class NexusModsCollectionData : ReactiveObject
 			Name = collection.Name,
 			Description = collection.Summary,
 			Author = collection.User.Name,
-			AuthorAvatarUrl = new Uri(collection.User?.Avatar),
 			TileImageUrl = StringUtils.StringToUri(collection.TileImage?.Url),
 			TileImageThumbnailUrl = StringUtils.StringToUri(collection.TileImage?.ThumbnailUrl),
 			CreatedAt = collectionRevision.CreatedAt,
 			UpdatedAt = collectionRevision.UpdatedAt
 		};
+		if(collection.User?.Avatar != null)
+		{
+			data.AuthorAvatarUrl = new Uri(collection.User.Avatar);
+		}
 		var mods = Enumerable.Range(0, collectionRevision.ModFiles.Length).Select(i => ModFileToReactiveData(i, collectionRevision.ModFiles[i]));
 		data.Mods.AddRange(mods);
 

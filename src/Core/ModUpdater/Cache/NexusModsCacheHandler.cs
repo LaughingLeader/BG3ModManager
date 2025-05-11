@@ -39,7 +39,7 @@ public class NexusModsCacheHandler : ReactiveObject, IExternalModCacheHandler<Ne
 	public async Task<bool> Update(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var nexusModsService = Locator.Current.GetService<INexusModsService>();
-		if (nexusModsService.CanFetchData)
+		if (nexusModsService?.CanFetchData == true)
 		{
 			DivinityApp.Log("Checking for Nexus Mods updates.");
 			var result = await nexusModsService.FetchModInfoAsync(mods, token);
@@ -48,9 +48,9 @@ public class NexusModsCacheHandler : ReactiveObject, IExternalModCacheHandler<Ne
 			{
 				DivinityApp.Log($"Fetched NexusMods mod info for {result.UpdatedMods.Count} mod(s).");
 
-				foreach (var mod in mods.Where(x => x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START).Select(x => x.NexusModsData))
+				foreach (var mod in mods.Where(x => x.NexusModsData != null && x.NexusModsData.ModId >= DivinityApp.NEXUSMODS_MOD_ID_START))
 				{
-					CacheData.Mods[mod.UUID] = mod;
+					CacheData.Mods[mod.UUID] = mod.NexusModsData;
 				}
 
 				return true;
