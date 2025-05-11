@@ -330,7 +330,7 @@ Directory the zip will be extracted to:
 		else
 		{
 			DivinityApp.Log($"Getting a release download link failed for some reason. Opening repo url: {DivinityApp.EXTENDER_LATEST_URL}");
-			FileUtils.TryOpenPath(DivinityApp.EXTENDER_LATEST_URL);
+			ProcessHelper.TryOpenUrl(DivinityApp.EXTENDER_LATEST_URL);
 		}
 	}
 
@@ -526,32 +526,20 @@ Directory the zip will be extracted to:
 		});
 	}
 
-	private void TryStartGameExe(string exePath, string launchParams = "")
+	private void TryStartGameExe(string exePath, string workingDirectory, string launchParams = "")
 	{
-		//var isLoggingEnabled = Window.DebugLogListener != null;
-		//if (!isLoggingEnabled) Window.ToggleLogging(true);
-
-		try
+		if (!ProcessHelper.TryOpenPath(exePath, File.Exists, launchParams, workingDirectory))
 		{
-			Process proc = new();
-			proc.StartInfo.FileName = exePath;
-			proc.StartInfo.Arguments = launchParams;
-			proc.StartInfo.WorkingDirectory = Directory.GetParent(exePath).FullName;
-			proc.Start();
-
+			_globalCommands.ShowAlert($"Failed to start game exe '{exePath}' - Check the 'Game Executable Path' in the preferences", AlertType.Danger);
+		}
+		else
+		{
 			//Update whether the game is running or not
 			RxApp.TaskpoolScheduler.Schedule(TimeSpan.FromSeconds(5), () =>
 			{
 				AppServices.Get<IGameUtilitiesService>().CheckForGameProcess();
 			});
 		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log($"Error starting game exe:\n{ex}");
-			_globalCommands.ShowAlert("Error occurred when trying to start the game - Check the log", AlertType.Danger);
-		}
-
-		//if (!isLoggingEnabled) Window.ToggleLogging(false);
 	}
 
 	public void LaunchGame()
@@ -566,43 +554,12 @@ Directory the zip will be extracted to:
 			});
 		}
 
-		if (!Settings.LaunchThroughSteam)
-		{
-			if (!File.Exists(Settings.GameExecutablePath))
-			{
-				if (string.IsNullOrWhiteSpace(Settings.GameExecutablePath))
-				{
-					_globalCommands.ShowAlert("No game executable path set", AlertType.Danger, 30);
-				}
-				else
-				{
-					_globalCommands.ShowAlert($"Failed to find game exe at, \"{Settings.GameExecutablePath}\"", AlertType.Danger, 90);
-				}
-				return;
-			}
-		}
-
 		var exeArgs = new List<string>();
 		var userLaunchParams = Settings.GameLaunchParams.IsValid() ? Settings.GameLaunchParams : "";
 
 		if (Settings.GameStoryLogEnabled && !_settings.ExtenderSettings.EnableLogging)
 		{
 			exeArgs.Add("-storylog 1");
-		}
-
-		if (Settings.SkipLauncher)
-		{
-			exeArgs.Add("--skip-launcher");
-		}
-
-		if (!Settings.LaunchThroughSteam)
-		{
-			//Args always set by the launcher
-			exeArgs.Add("-externalcrashhandler");
-			var sendStats = !Settings.DisableLauncherTelemetry ? 1 : 0;
-			exeArgs.Add($"-stats {sendStats}");
-			var isModded = ViewModelLocator.ModOrder.ActiveMods.Count > 0 ? 1 : 0;
-			exeArgs.Add($"-modded {isModded}");
 		}
 
 		if (userLaunchParams.IsValid())
@@ -617,29 +574,78 @@ Directory the zip will be extracted to:
 
 		var launchParams = string.Join(" ", exeArgs);
 
-		if (!Settings.LaunchThroughSteam)
+		if (Settings.LaunchType == LaunchGameType.Exe)
 		{
-			var exePath = Settings.GameExecutablePath;
-			var exeDir = Path.GetDirectoryName(exePath);
-
-			if (Settings.LaunchDX11)
+			if(Settings.GameExecutablePath.IsValid())
 			{
-				var nextExe = Path.Join(exeDir, "bg3_dx11.exe");
-				if (File.Exists(nextExe))
-				{
-					exePath = nextExe;
-				}
-			}
+				//Args always set by the launcher
+				exeArgs.Add("-externalcrashhandler");
+				var sendStats = !Settings.DisableLauncherTelemetry ? 1 : 0;
+				exeArgs.Add($"-stats {sendStats}");
+				var isModded = ViewModelLocator.ModOrder.ActiveMods.Count > 0 ? 1 : 0;
+				exeArgs.Add($"-modded {isModded}");
 
-			DivinityApp.Log($"Opening game exe at: {exePath} with args {launchParams}");
-			TryStartGameExe(exePath, launchParams);
+				var exePath = Environment.ExpandEnvironmentVariables(Settings.GameExecutablePath);
+				var exeDir = Path.GetDirectoryName(exePath)!;
+
+				if (Settings.LaunchDX11)
+				{
+					var nextExe = Path.Combine(exeDir, "bg3_dx11.exe");
+					if (File.Exists(nextExe))
+					{
+						exePath = nextExe;
+					}
+				}
+
+				if (!exePath.IsExistingFile())
+				{
+					if (string.IsNullOrWhiteSpace(exePath))
+					{
+						_globalCommands.ShowAlert("No game executable path set", AlertType.Danger, 30);
+					}
+					else
+					{
+						_globalCommands.ShowAlert($"Failed to find game exe at, \"{exePath}\"", AlertType.Danger, 90);
+					}
+					return;
+				}
+
+				DivinityApp.Log($"Opening game exe at: {exePath} with args {launchParams}");
+				TryStartGameExe(exePath, exeDir, launchParams);
+			}
+			else
+			{
+				_globalCommands.ShowAlert($"Game Exe Path is not set", AlertType.Danger, 30);
+			}
 		}
-		else
+		else if (Settings.LaunchType == LaunchGameType.Steam)
 		{
 			var appid = AppSettings.DefaultPathways.Steam.AppID ?? "1086940";
 			var steamUrl = $"steam://run/{appid}//{launchParams}";
 			DivinityApp.Log($"Opening game through steam via '{steamUrl}'");
-			FileUtils.TryOpenPath(steamUrl);
+			ProcessHelper.TryOpenUrl(steamUrl);
+		}
+		else
+		{
+			if (!string.IsNullOrWhiteSpace(Settings.CustomLaunchAction))
+			{
+				var args = Settings.CustomLaunchArgs;
+				DivinityApp.Log($"Running custom launch action '{Settings.CustomLaunchAction}' with args ({args})");
+				try
+				{
+					ProcessHelper.TryRunCommand(Settings.CustomLaunchAction, Settings.CustomLaunchArgs ?? string.Empty);
+				}
+				catch (Exception ex)
+				{
+					var msg = $"Error running custom launch '{Settings.CustomLaunchAction}' with args '{Settings.CustomLaunchArgs}':\n{ex}";
+					DivinityApp.Log(msg);
+					_interactions.ShowMessageBox.Handle(new("Custom Launch Error", msg, InteractionMessageBoxType.Error)).Subscribe();
+				}
+			}
+			else
+			{
+				_globalCommands.ShowAlert("The 'Launch - Custom Action' is empty. Set it in the preferences.", AlertType.Warning, 30);
+			}
 		}
 
 		if (Settings.ActionOnGameLaunch != GameLaunchWindowAction.None)
@@ -656,7 +662,10 @@ Directory the zip will be extracted to:
 		}
 	}
 
-	private bool CanLaunchGameCheck(ValueTuple<string, bool, bool, bool> x) => x.Item1.IsExistingFile() && (!x.Item2 || !x.Item3 || x.Item4);
+	private static bool CanLaunchGameCheck(string? gameExe, bool singleInstance, bool gameIsRunning, bool canForceLaunch)
+	{
+		return gameExe.IsExistingFile() && (!singleInstance || !gameIsRunning || canForceLaunch);
+	}
 
 	private void InitSettingsBindings()
 	{
@@ -668,9 +677,8 @@ Directory the zip will be extracted to:
 			if (path.IsValid()) gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
 		});
 
-		var whenGameExeProperties = this.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame);
-		var canOpenGameExe = whenGameExeProperties.Select(CanLaunchGameCheck);
-		canOpenGameExe.ToUIProperty(this, x => x.CanLaunchGame);
+		this.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame, CanLaunchGameCheck)
+			.ToUIProperty(this, x => x.CanLaunchGame);
 
 		/*Keys.LaunchGame.AddAction(LaunchGame, canOpenGameExe);
 
@@ -761,24 +769,25 @@ Directory the zip will be extracted to:
 			}
 		});
 
-		Settings.WhenAnyValue(x => x.SkipLauncher, x => x.GameExecutablePath)
+		Settings.WhenAnyValue(x => x.LaunchType, x => x.GameExecutablePath)
 		.Throttle(TimeSpan.FromMilliseconds(250))
 		.ObserveOn(RxApp.MainThreadScheduler)
 		.Subscribe(x =>
 		{
-			if (!x.Item2.IsValid()) return;
-
-			var exePath = _fs.GetRealPath(x.Item2);
-
-			if (_fs.File.Exists(exePath))
+			if(x.Item2.IsValid())
 			{
-				if (x.Item1)
+				var exePath = x.Item2.ToRealPath();
+
+				if (_fs.File.Exists(exePath))
 				{
-					CreateSteamApiTextFile(exePath);
-				}
-				else if (Settings.SettingsWindowIsOpen)
-				{
-					RemoveSteamApiTextFile(exePath);
+					if (x.Item1 == LaunchGameType.Exe)
+					{
+						CreateSteamApiTextFile(exePath);
+					}
+					else if (Settings.SettingsWindowIsOpen)
+					{
+						//RemoveSteamApiTextFile(exePath);
+					}
 				}
 			}
 		});
@@ -1352,7 +1361,7 @@ Directory the zip will be extracted to:
 			"Select folder to extract mod(s) to...",
 			GetInitialStartingDirectory(Settings.LastExtractOutputPath)));
 
-		if (result.Success)
+		if (result.Success && result.File.IsValid())
 		{
 			Settings.LastExtractOutputPath = result.File;
 			SaveSettings();
@@ -1410,7 +1419,7 @@ Directory the zip will be extracted to:
 					if (successes >= totalWork)
 					{
 						_globalCommands.ShowAlert($"Successfully extracted all selected mods to '{result.File}'", AlertType.Success, 20);
-						FileUtils.TryOpenPath(openOutputPath);
+						ProcessHelper.TryOpenPath(openOutputPath, _fs.Directory.Exists);
 					}
 					else
 					{
@@ -1454,7 +1463,7 @@ Directory the zip will be extracted to:
 		var result = await _dialogs.OpenFolderAsync(new("Select folder to extract mod to...",
 			GetInitialStartingDirectory(Settings.LastExtractOutputPath)));
 
-		if (result.Success)
+		if (result.Success && result.File.IsValid())
 		{
 			Settings.LastExtractOutputPath = result.File;
 			SaveSettings();
@@ -1493,7 +1502,7 @@ Directory the zip will be extracted to:
 					if (success)
 					{
 						_globalCommands.ShowAlert($"Successfully extracted adventure mod to '{result.File}'", AlertType.Success, 20);
-						FileUtils.TryOpenPath(openOutputPath);
+						ProcessHelper.TryOpenPath(openOutputPath, _fs.Directory.Exists);
 					}
 					else
 					{

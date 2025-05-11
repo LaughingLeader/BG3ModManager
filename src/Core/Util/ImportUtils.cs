@@ -56,12 +56,9 @@ public static class ImportUtils
 
 	private static readonly ArchiveEncoding _archiveEncoding = new(Encoding.UTF8, Encoding.UTF8);
 	private static readonly ReaderOptions _importReaderOptions = new() { ArchiveEncoding = _archiveEncoding };
-	private static readonly WriterOptions _exportWriterOptions = new(CompressionType.Deflate) { ArchiveEncoding = _archiveEncoding };
 
 	private static readonly List<string> _archiveFormats = [".7z", ".7zip", ".gzip", ".rar", ".tar", ".tar.gz", ".zip"];
 	private static readonly List<string> _compressedFormats = [".bz2", ".xz", ".zst"];
-	private static readonly string _archiveFormatsStr = string.Join(";", _archiveFormats.Select(x => "*" + x));
-	private static readonly string _compressedFormatsStr = string.Join(";", _compressedFormats.Select(x => "*" + x));
 
 	public static async Task<bool> ImportArchiveAsync(ImportParameters options)
 	{
@@ -83,7 +80,7 @@ public static class ImportUtils
 				foreach (var file in archive.Entries)
 				{
 					if (options.Token.IsCancellationRequested) return false;
-					if (!file.IsDirectory)
+					if (!file.IsDirectory && file.Key.IsValid())
 					{
 						if (file.Key.EndsWith(".pak", StringComparison.OrdinalIgnoreCase))
 						{
@@ -156,12 +153,15 @@ public static class ImportUtils
 		{
 			foreach (var entry in options.ImportedJsonFiles)
 			{
-				var order = JsonUtils.SafeDeserialize<ModLoadOrder>(entry.Text);
-				if (order != null)
+				if(entry.Text.IsValid())
 				{
-					options.Result.Orders.Add(order);
-					order.Name = entry.FileName;
-					DivinityApp.Log($"Imported mod order from archive: {string.Join(@"\n\t", order.Order.Select(x => x.Name))}");
+					var order = JsonUtils.SafeDeserialize<ModLoadOrder>(entry.Text);
+					if (order != null)
+					{
+						options.Result.Orders.Add(order);
+						order.Name = entry.FileName;
+						DivinityApp.Log($"Imported mod order from archive: {string.Join(@"\n\t", order.Order.Select(x => x.Name))}");
+					}
 				}
 			}
 		}

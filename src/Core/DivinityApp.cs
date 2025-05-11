@@ -120,14 +120,14 @@ public static class DivinityApp
 	public static HashSet<string> IgnoredDependencyMods { get; }
 
 	private static readonly Assembly? _exeAssembly;
-	private static readonly string? _exePath;
-	private static readonly string? _appDirectory;
+	private static readonly string _exePath;
+	private static readonly string _appDirectory;
 
 	static DivinityApp()
 	{
-		_exeAssembly = Assembly.GetEntryAssembly();
-		_exePath = _exeAssembly?.Location;
-		_appDirectory = Path.GetDirectoryName(_exeAssembly?.Location);
+		_exeAssembly = Assembly.GetEntryAssembly()!;
+		_exePath = _exeAssembly.Location;
+		_appDirectory = Path.GetDirectoryName(_exeAssembly.Location)!;
 
 		IgnoredMods = new(x => x.UUID ?? "");
 		IgnoredDependencyMods = [];
@@ -201,7 +201,7 @@ public static class DivinityApp
 		return Path.Join(paths);
 	}
 
-	public static string? GetExePath() => _exePath;
+	public static string GetExePath() => _exePath;
 	public static string GetToolboxPath() => GetAppDirectory("Tools", "Toolbox.exe");
 
 	[Obsolete("Use a direct service reference instead")]

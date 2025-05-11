@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 namespace ModManager.SourceGenerator.Data;
 public readonly record struct SettingsViewToGenerate
 {
+	private static readonly Regex _replaceLineBreaksPattern = new(@"\r\n?|\n");
 	public readonly string DisplayName;
 	public readonly string TypeName;
 	public readonly string Namespace;
@@ -51,6 +52,79 @@ public readonly record struct SettingsViewToGenerate
 	}
 
 	private const string DescriptionAttributeName = "System.ComponentModel.DescriptionAttribute";
+	private const string DisplayAttributeName = "System.ComponentModel.DataAnnotations.DisplayAttribute";
+
+	private static AttributeData? GetNameAttribute(ISymbol member)
+	{
+		foreach(var attribute in member.GetAttributes())
+		{
+			var attributeClassName = attribute.AttributeClass?.ToDisplayString();
+			if (attributeClassName == DescriptionAttributeName || attributeClassName == DisplayAttributeName)
+			{
+				return attribute;
+			}
+		}
+		return null;
+	}
+
+	private static Tuple<string?, string?, string> GetAttributeNameAndToolTip(ISymbol member)
+	{
+		string? name = null;
+		string? tooltip = null;
+		string comments = "";
+
+		foreach (var attribute in member.GetAttributes())
+		{
+			var attributeClassName = attribute.AttributeClass?.ToDisplayString();
+			if (attributeClassName == DescriptionAttributeName)
+			{
+				if (attribute.ConstructorArguments.FirstOrDefault() is var arg && !arg.IsNull)
+				{
+					tooltip = arg.ToCSharpString().Replace("\"", string.Empty);
+				}
+				if (string.IsNullOrEmpty(tooltip) && attribute.NamedArguments.FirstOrDefault(x => x.Key == "Name") is var namedArg)
+				{
+					tooltip = namedArg.Value.ToCSharpString().Replace("\"", string.Empty);
+				}
+				return Tuple.Create(name, tooltip, comments);
+			}
+			else if (attributeClassName == DisplayAttributeName)
+			{
+				for (int i = 0; i < attribute.ConstructorArguments.Length; i++)
+				{
+					var arg = attribute.ConstructorArguments[i];
+					//comments += $"[{i}] = {arg};";
+					if (!arg.IsNull)
+					{
+						if (i == 0)
+						{
+							name = arg.ToCSharpString().Replace("\"", string.Empty);
+						}
+						else if (i == 1)
+						{
+							tooltip = arg.ToCSharpString().Replace("\"", string.Empty);
+						}
+					}
+				}
+
+				//comments += string.Join(";", attribute.NamedArguments.Select(x => $"[{x.Key}] = {x.Value.ToCSharpString()}"));
+
+				foreach(var namedArg in attribute.NamedArguments)
+				{
+					if(namedArg.Key == "Name")
+					{
+						name = namedArg.Value.ToCSharpString().Replace("\"", string.Empty);
+					}
+					else if(namedArg.Key == "Description")
+					{
+						tooltip = namedArg.Value.ToCSharpString().Replace("\"", string.Empty);
+					}
+				}
+				return Tuple.Create(name, tooltip, comments);
+			}
+		}
+		return Tuple.Create(name, tooltip, comments);
+	}
 
 	public readonly string ToXaml()
 	{
@@ -69,7 +143,7 @@ public readonly record struct SettingsViewToGenerate
 			var tooltip = entry.ToolTip;
 			if (tooltip != null)
 			{
-				tooltip = Regex.Replace(tooltip, @"\r\n?|\n", "&#x0a;");
+				tooltip = _replaceLineBreaksPattern.Replace(tooltip, "&#x0a;");
 			}
 			var tooltipBinding = tooltip;
 			//var tooltipBinding = $"{{Binding ElementName={textBlockName}, Path=(ToolTip.Tip)}}";
@@ -104,7 +178,7 @@ public readonly record struct SettingsViewToGenerate
 						comboCode.StartScope("");
 
 						isSingleLine = false;
-						var comboText = $"<ComboBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" SelectedIndex=\"{{Binding {bindTo}, FallbackValue=0}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+						var comboText = $"<ComboBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" SelectedValue=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 						if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
 						{
 							comboText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";
@@ -118,23 +192,21 @@ public readonly record struct SettingsViewToGenerate
 							//Avoid adding .ctor etc
 							if (member.Kind == SymbolKind.Field)
 							{
-								string? entryToolTip = "";
-								var attributes = member.GetAttributes();
-								var descriptionAttribute = member.GetAttributes().FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == DescriptionAttributeName);
-								if (descriptionAttribute != null)
+								var (entryName, entryToolTip, comment) = GetAttributeNameAndToolTip(member);
+								if (string.IsNullOrWhiteSpace(entryName))
 								{
-									if (descriptionAttribute.ConstructorArguments.FirstOrDefault() is var arg && !arg.IsNull)
-									{
-										tooltip = arg.ToCSharpString().Replace("\"", string.Empty);
-									}
-									if (string.IsNullOrEmpty(tooltip) && descriptionAttribute.NamedArguments.FirstOrDefault(x => x.Key == "Name") is var namedArg)
-									{
-										tooltip = namedArg.Value.ToCSharpString().Replace("\"", string.Empty);
-									}
+									entryName = member.Name;
 								}
-
-								entryToolTip ??= string.Empty;
-								comboCode.AppendLine($"<ComboBoxItem Content=\"{member.Name}\" ToolTip.Tip=\"{entryToolTip}\" />");
+								if (string.IsNullOrWhiteSpace(entryToolTip))
+								{
+									entryToolTip = string.Empty;
+								}
+								else
+								{
+									entryToolTip = _replaceLineBreaksPattern.Replace(entryToolTip, "&#x0a;");
+								}
+								if (!string.IsNullOrWhiteSpace(comment)) comboCode.AppendLine($"<!-- {comment} -->");
+								comboCode.AppendLine($"<ComboBoxItem Content=\"{entryName}\" ToolTip.Tip=\"{entryToolTip}\" />");
 							}
 						}
 

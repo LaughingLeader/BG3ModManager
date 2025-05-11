@@ -133,7 +133,7 @@ public static class FileUtils
 		return false;
 	}
 	#region Package Creation Async
-	public static async Task<bool> CreatePackageAsync(string rootPath, List<string> inputPaths, string outputPath, CancellationToken token, List<string> ignoredFiles = null)
+	public static async Task<bool> CreatePackageAsync(string rootPath, List<string> inputPaths, string outputPath, CancellationToken token, List<string>? ignoredFiles = null)
 	{
 		try
 		{
@@ -374,23 +374,6 @@ public static class FileUtils
 			DivinityApp.Log($"Error copying file: {ex}");
 		}
 		return false;
-	}
-
-	public static void TryOpenPath(string? path, Func<string, bool>? existsCheck = null, string args = "")
-	{
-		try
-		{
-			if (path.IsValid() && Locator.Current.GetService<IFileSystemService>() is IFileSystemService fs)
-			{
-				path = fs.GetRealPath(path);
-				if (existsCheck?.Invoke(path) == false) return;
-				Process.Start(new ProcessStartInfo(path) { UseShellExecute = true, Arguments = args });
-			}
-		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log($"Error opening path:\n{ex}");
-		}
 	}
 
 	public static bool TryGetDirectoryOrParent(string path, out string parentDir)
