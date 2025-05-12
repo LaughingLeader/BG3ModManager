@@ -111,4 +111,29 @@ public static class ReactiveExtensions
 	public static IObservable<bool> AllTrue(this IObservable<(bool First, bool Second)> obs) => obs.Select(x => x.First && x.Second);
 	public static IObservable<bool> AllTrue(this IObservable<(bool First, bool Second, bool Third)> obs) => obs.Select(x => x.First && x.Second && x.Third);
 	public static IObservable<bool> AnyTrue(this IObservable<(bool First, bool Second)> obs) => obs.Select(x => x.First || x.Second);
+
+	/// <summary>
+	/// Binds an enum to an index, and an index back to an enum.
+	/// </summary>
+	/// <typeparam name="T">The enum type.</typeparam>
+	/// <typeparam name="TObj">The model type (ReactiveObject)</typeparam>
+	/// <param name="target">The target model</param>
+	/// <param name="whenEnum">A WhenAnyValue observable for the enum property</param>
+	/// <param name="whenIndex">A WhenAnyValue observable for the index property</param>
+	/// <param name="bindIndex">The expression to use to bind the observable back to the index property</param>
+	/// <param name="bindEnum">The expression to use to bind the observable back to the enum property</param>
+	public static void BindEnumToIndex<T, TObj>(this TObj target, 
+		IObservable<T> whenEnum, 
+		IObservable<int> whenIndex, 
+		Expression<Func<TObj, int?>> bindIndex, 
+		Expression<Func<TObj, T?>> bindEnum)
+		where T : Enum
+		where TObj : ReactiveObject
+	{
+		var enumToIndex = EnumExtensions.EnumToIndexDict<T>();
+		var indexToEnum = EnumExtensions.IndexToEnumArray<T>();
+
+		whenEnum.Select(x => enumToIndex[x]).ObserveOn(RxApp.MainThreadScheduler).BindTo(target, bindIndex);
+		whenIndex.Select(x => indexToEnum[x]).BindTo(target, bindEnum);
+	}
 }

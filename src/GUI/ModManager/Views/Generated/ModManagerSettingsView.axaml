@@ -40,7 +40,7 @@
 		<CheckBox Grid.Row="8" Grid.Column="1" Classes="right" IsChecked ="{Binding LaunchDX11}" ToolTip.Tip="If enabled, when launching the game, bg3_dx11.exe is used instead"/>
 		
 		<TextBlock Grid.Row="9" Grid.Column="0" Classes="left" Text="Launch Game - Action" ToolTip.Tip="Change how to launch the game" />
-		<ComboBox Grid.Row="9" Grid.Column="1" Classes="right" SelectedValue="{Binding LaunchType}" ToolTip.Tip="Change how to launch the game">
+		<ComboBox Grid.Row="9" Grid.Column="1" Classes="right" SelectedIndex="{Binding LaunchTypeIndex, FallbackValue=0}" ToolTip.Tip="Change how to launch the game">
 			<ComboBoxItem Content="Default (Exe)" ToolTip.Tip="Open the game exe directly,\nand create a steam_appid.txt in the bin folder if it doesn't exist,\nallowing you to bypassing the launcher" />
 			<ComboBoxItem Content="Steam" ToolTip.Tip="Open the game by running the Steam launch protocol ('steam://run/1086940')" />
 			<ComboBoxItem Content="Custom" ToolTip.Tip="Open the game by opening a different file or protocol (ex. a batch file or protocol handler like playnite://playnite/start/id)" />
@@ -62,7 +62,7 @@
 		<CheckBox Grid.Row="14" Grid.Column="1" Classes="right" IsChecked ="{Binding LimitToSingleInstance}" ToolTip.Tip="Prevent the mod manager from launching multiple instances of the game&#x0a;This can be bypassed by holding Shift when clicking on the launch button"/>
 		
 		<TextBlock Grid.Row="15" Grid.Column="0" Classes="left" Text="On Game Launch" ToolTip.Tip="When the game launches through the mod manager, this action will be performed" />
-		<ComboBox Grid.Row="15" Grid.Column="1" Classes="right" SelectedValue="{Binding ActionOnGameLaunch}" ToolTip.Tip="When the game launches through the mod manager, this action will be performed">
+		<ComboBox Grid.Row="15" Grid.Column="1" Classes="right" SelectedIndex="{Binding ActionOnGameLaunchIndex, FallbackValue=0}" ToolTip.Tip="When the game launches through the mod manager, this action will be performed">
 			<ComboBoxItem Content="None" ToolTip.Tip="Do nothing" />
 			<ComboBoxItem Content="Minimize" ToolTip.Tip="Minimize the window" />
 			<ComboBoxItem Content="Close" ToolTip.Tip="Close the window" />

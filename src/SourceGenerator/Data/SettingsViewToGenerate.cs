@@ -178,7 +178,7 @@ public readonly record struct SettingsViewToGenerate
 						comboCode.StartScope("");
 
 						isSingleLine = false;
-						var comboText = $"<ComboBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" SelectedValue=\"{{Binding {bindTo}}}\" ToolTip.Tip=\"{tooltipBinding}\"";
+						var comboText = $"<ComboBox Grid.Row=\"{totalRows}\" Grid.Column=\"1\" Classes=\"right\" SelectedIndex=\"{{Binding {bindTo}, FallbackValue=0}}\" ToolTip.Tip=\"{tooltipBinding}\"";
 						if (!string.IsNullOrEmpty(entry.BindVisibilityTo))
 						{
 							comboText += $" IsVisible=\"{{Binding {entry.BindVisibilityTo}}}\"";

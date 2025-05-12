@@ -36,7 +36,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public bool DisableLauncherModWarnings { get; set; }
 
 	[DefaultValue(LaunchGameType.Exe)]
-	[SettingsEntry("Launch Game - Action", "Change how to launch the game")]
+	[SettingsEntry("Launch Game - Action", "Change how to launch the game", bindTo: nameof(LaunchTypeIndex))]
 	[DataMember, Reactive] public LaunchGameType LaunchType { get; set; }
 
 	[DefaultValue("")]
@@ -83,7 +83,7 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[DataMember, Reactive] public bool ShiftListFocusOnSwap { get; set; }
 
 	[DefaultValue(GameLaunchWindowAction.None)]
-	[SettingsEntry("On Game Launch", "When the game launches through the mod manager, this action will be performed")]
+	[SettingsEntry("On Game Launch", "When the game launches through the mod manager, this action will be performed", bindTo: nameof(ActionOnGameLaunchIndex))]
 	[DataMember, Reactive]
 	public GameLaunchWindowAction ActionOnGameLaunch { get; set; }
 
@@ -125,6 +125,9 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 	[Reactive] public string? DefaultExtenderLogDirectory { get; set; }
 	[Reactive] public string? ExtenderLogDirectory { get; set; }
 
+	[Reactive] public int LaunchTypeIndex { get; set; }
+	[Reactive] public int ActionOnGameLaunchIndex { get; set; }
+
 	[ObservableAsProperty] public bool IsCustomLaunchEnabled { get; }
 
 	[JsonExtensionData]
@@ -148,12 +151,6 @@ public class ModManagerSettings : BaseSettings<ModManagerSettings>, ISerializabl
 		{
 			LaunchType = LaunchGameType.Steam;
 		}
-	}
-
-	public void InitSubscriptions()
-	{
-		this.WhenAnyValue(x => x.DebugModeEnabled).Subscribe(b => DivinityApp.DeveloperModeEnabled = b);
-		this.WhenAnyValue(x => x.LaunchType, launchType => launchType == LaunchGameType.Custom).ToUIProperty(this, x => x.IsCustomLaunchEnabled);
 	}
 
 	public ModManagerSettings() : base("settings.json")

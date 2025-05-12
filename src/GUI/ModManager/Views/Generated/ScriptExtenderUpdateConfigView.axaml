@@ -13,7 +13,7 @@
 	mc:Ignorable="d">
 	<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" Text="Update Channel" ToolTip.Tip="Use a specific update channel" />
-		<ComboBox Grid.Row="0" Grid.Column="1" Classes="right" SelectedValue="{Binding UpdateChannel}" ToolTip.Tip="Use a specific update channel">
+		<ComboBox Grid.Row="0" Grid.Column="1" Classes="right" SelectedIndex="{Binding UpdateChannelIndex, FallbackValue=0}" ToolTip.Tip="Use a specific update channel">
 			<ComboBoxItem Content="Release" ToolTip.Tip="Release" />
 			<ComboBoxItem Content="Devel" ToolTip.Tip="Devel" />
 			<ComboBoxItem Content="Nightly" ToolTip.Tip="Nightly" />

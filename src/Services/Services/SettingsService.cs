@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 
+using ModManager.Enums.Extender;
 using ModManager.Models;
 using ModManager.Models.App;
 using ModManager.Models.Mod;
@@ -219,8 +220,6 @@ public class SettingsService : ReactiveObject, ISettingsService
 		ExtenderSettings = new ScriptExtenderSettings();
 		ExtenderUpdaterSettings = new ScriptExtenderUpdateConfig();
 
-		ManagerSettings.InitSubscriptions();
-
 		_loadSettings = [ManagerSettings, ModConfig, ExtenderSettings, ExtenderUpdaterSettings];
 		_saveSettings = [ManagerSettings, ModConfig, ExtenderSettings, ExtenderUpdaterSettings];
 
@@ -233,5 +232,30 @@ public class SettingsService : ReactiveObject, ISettingsService
 		this.WhenAnyValue(x => x.ManagerSettings.DefaultExtenderLogDirectory, x => x.ExtenderSettings.LogDirectory)
 		.Select(x => GetExtenderLogsDirectory(x.Item1, x.Item2))
 		.BindTo(ManagerSettings, x => x.ExtenderLogDirectory);
+
+		ManagerSettings.WhenAnyValue(x => x.DebugModeEnabled).Subscribe(b => DivinityApp.DeveloperModeEnabled = b);
+		ManagerSettings.WhenAnyValue(x => x.LaunchType, launchType => launchType == LaunchGameType.Custom).ToUIProperty(ManagerSettings, x => x.IsCustomLaunchEnabled);
+
+		var settingsWindowIsOpen = ManagerSettings.WhenAnyValue(x => x.SettingsWindowIsOpen);
+
+		//Binding ComboBox selections back to enums
+
+		ManagerSettings.BindEnumToIndex(
+			ManagerSettings.WhenAnyValue(x => x.LaunchType),
+			ManagerSettings.WhenAnyValue(x => x.LaunchTypeIndex).SkipUntil(settingsWindowIsOpen),
+			x => x.LaunchTypeIndex,
+			x => x.LaunchType);
+
+		ManagerSettings.BindEnumToIndex(
+			ManagerSettings.WhenAnyValue(x => x.ActionOnGameLaunch),
+			ManagerSettings.WhenAnyValue(x => x.ActionOnGameLaunchIndex).SkipUntil(settingsWindowIsOpen),
+			x => x.ActionOnGameLaunchIndex,
+			x => x.ActionOnGameLaunch);
+
+		ExtenderUpdaterSettings.BindEnumToIndex(
+			ExtenderUpdaterSettings.WhenAnyValue(x => x.UpdateChannel),
+			ExtenderUpdaterSettings.WhenAnyValue(x => x.UpdateChannelIndex).SkipUntil(settingsWindowIsOpen),
+			x => x.UpdateChannelIndex,
+			x => x.UpdateChannel);
 	}
 }

@@ -55,8 +55,8 @@ public class SettingsViewGenerator : IIncrementalGenerator
 			"LoadOrderPath",
 			"NexusModsAPIKey",
 			"ModioAPIKey",
-			"CustomProfile",
 			"LogDirectory",
+			"CustomProfile",
 			"UpdateChannel",
 			"LuaBuiltinResourceDirectory",
 		];

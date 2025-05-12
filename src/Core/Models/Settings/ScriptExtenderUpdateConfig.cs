@@ -17,7 +17,7 @@ public class ScriptExtenderUpdateConfig : ReactiveObject, ISerializableSettings
 	[Reactive] public bool UpdaterIsAvailable { get; set; }
 	[Reactive] public int UpdaterVersion { get; set; }
 
-	[SettingsEntry("Update Channel", "Use a specific update channel")]
+	[SettingsEntry("Update Channel", "Use a specific update channel", bindTo: nameof(UpdateChannelIndex))]
 	[DataMember, Reactive]
 	[DefaultValue(ExtenderUpdateChannel.Release)]
 	public ExtenderUpdateChannel UpdateChannel { get; set; }
@@ -66,6 +66,8 @@ public class ScriptExtenderUpdateConfig : ReactiveObject, ISerializableSettings
 	[DataMember, Reactive]
 	[DefaultValue(false)]
 	public bool ValidateSignature { get; set; }
+
+	[Reactive] public int UpdateChannelIndex { get; set; }
 
 	public ScriptExtenderUpdateConfig()
 	{
