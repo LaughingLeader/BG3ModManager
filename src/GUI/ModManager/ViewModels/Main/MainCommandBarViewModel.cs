@@ -44,7 +44,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? ExportModsToZipCommand { get; set; }
 
 	[Keybinding("Export Order to Game", Key.E, KeyModifiers.Control, "Export order to modsettings.lsx", "File")]
-	public ReactiveCommand<Unit,bool>? ExportOrderCommand { get; set; }
+	public RxBoolCommandUnit? ExportOrderCommand { get; set; }
 
 	[Keybinding("Launch Game", Key.G, KeyModifiers.Control, "", "Go")]
 	public RxCommandUnit? LaunchGameCommand { get; set; }
@@ -56,16 +56,16 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? OpenGitHubRepoCommand { get; set; }
 
 	[Keybinding("Open Mods Folder", Key.D1, KeyModifiers.Control, "", "Go")]
-	public RxCommandUnit? OpenModsFolderCommand { get; set; }
+	public RxBoolCommandUnit? OpenModsFolderCommand { get; set; }
 
 	[Keybinding("Open Logs Folder", Key.D2, KeyModifiers.Control, "", "Go")]
-	public RxCommandUnit? OpenLogsFolderCommand { get; set; }
+	public RxBoolCommandUnit? OpenLogsFolderCommand { get; set; }
 
 	[Keybinding("Open Nexus Mods Website", Key.D3, KeyModifiers.Control, "", "Go")]
-	public RxCommandUnit? OpenNexusModsCommand { get; set; }
+	public RxBoolCommandUnit? OpenNexusModsCommand { get; set; }
 
 	[Keybinding("Open Steam Store Page", Key.D4, KeyModifiers.Control, "", "Go")]
-	public RxCommandUnit? OpenSteamPageCommand { get; set; }
+	public RxBoolCommandUnit? OpenSteamPageCommand { get; set; }
 
 	[Keybinding("Refresh Mods", Key.F5, KeyModifiers.None, "", "File")]
 	public RxCommandUnit? RefreshCommand { get; set; }
@@ -80,10 +80,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? RenameSaveCommand { get; set; }
 
 	[Keybinding("Save Order", Key.S, KeyModifiers.Control, "", "File")]
-	public ReactiveCommand<Unit, bool>? SaveOrderCommand { get; set; }
+	public RxBoolCommandUnit? SaveOrderCommand { get; set; }
 
 	[Keybinding("Save Order As...", Key.S, KeyModifiers.Control | KeyModifiers.Alt, "", "File")]
-	public ReactiveCommand<Unit, bool>? SaveOrderAsCommand { get; set; }
+	public RxBoolCommandUnit? SaveOrderAsCommand { get; set; }
 
 	[Keybinding("Save Settings", Key.S, KeyModifiers.Control | KeyModifiers.Shift, "", "File")]
 	public RxCommandUnit? SaveSettingsSilentlyCommand { get; set; }
@@ -92,19 +92,19 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? ToggleUpdatesViewCommand { get; set; }
 
 	[Keybinding("Toggle Pak File Explorer Window", Key.P, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
-	public ReactiveCommand<Unit, bool>? TogglePakFileExplorerWindowCommand { get; set; }
+	public RxBoolCommandUnit? TogglePakFileExplorerWindowCommand { get; set; }
 
 	[Keybinding("Toggle Stats Validator Window", Key.OemBackslash, KeyModifiers.Control | KeyModifiers.Alt, "", "View")]
-	public ReactiveCommand<Unit, bool>? ToggleStatsValidatorWindowCommand { get; set; }
+	public RxBoolCommandUnit? ToggleStatsValidatorWindowCommand { get; set; }
 
 	[Keybinding("Toggle Settings Window", Key.OemComma, KeyModifiers.Control)]
-	public ReactiveCommand<Unit,bool>? ToggleSettingsWindowCommand { get; set; }
+	public RxBoolCommandUnit? ToggleSettingsWindowCommand { get; set; }
 
 	[Keybinding("Toggle Keybindings Window", Key.OemComma, KeyModifiers.Control | KeyModifiers.Alt)]
-	public ReactiveCommand<Unit, bool>? ToggleKeybindingsCommand { get; set; }
+	public RxBoolCommandUnit? ToggleKeybindingsCommand { get; set; }
 
 	[Keybinding("Toggle Version Generator Window", Key.G, KeyModifiers.Control, "A tool for mod authors to generate version numbers for a mod's meta.lsx", "Tools")]
-	public ReactiveCommand<Unit, bool>? ToggleVersionGeneratorWindowCommand { get; set; }
+	public RxBoolCommandUnit? ToggleVersionGeneratorWindowCommand { get; set; }
 
 	[Keybinding("About", Key.F1, KeyModifiers.None, "", "Help")]
 	public RxCommandUnit? ToggleAboutWindowCommand { get; set; }
@@ -189,10 +189,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? ToggleViewThemeCommand { get; set; } //Key.L, ModifierKeys.Control);
 
 	[Keybinding("Open Game Folder", Key.D2, KeyModifiers.Control, "", "Go")]
-	public RxCommandUnit? OpenGameFolderCommand { get; set; }
+	public RxBoolCommandUnit? OpenGameFolderCommand { get; set; }
 
 	[Keybinding("Open Saves Folder", Key.D3, KeyModifiers.Control, "", "Go")]
-	public RxCommandUnit? OpenSavesFolderCommand { get; set; }
+	public RxBoolCommandUnit? OpenSavesFolderCommand { get; set; }
 
 	[Keybinding("Open Script Extender Data Folder", Key.D4, KeyModifiers.Control, "", "Go")]
 	public RxCommandUnit? OpenExtenderDataFolderCommand { get; set; }
@@ -314,7 +314,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 		OpenGitHubRepoCommand = ReactiveCommand.Create(() => AppServices.Commands.OpenURL(DivinityApp.URL_REPO), canExecuteCommands);
 		OpenDonationPageCommand = ReactiveCommand.Create(() => AppServices.Commands.OpenURL(DivinityApp.URL_DONATION), canExecuteCommands);
-		OpenModsFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(main.PathwayData.AppDataModsPath, fs.Directory.Exists), canExecuteCommands);
+		OpenModsFolderCommand = ReactiveCommand.Create(() => ProcessHelper.TryOpenPath(main.PathwayData.AppDataModsPath, fs.Directory.Exists), canExecuteCommands);
 
 		var gameExecutableExists = main.Settings.WhenAnyValue(x => x.GameExecutablePath, fs.File.Exists);
 		var logFolderExists = main.Settings.WhenAnyValue(x => x.ExtenderLogDirectory).Select(fs.Directory.Exists);
@@ -324,31 +324,33 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		{
 			if(fs.File.Exists(main.Settings.GameExecutablePath))
 			{
-				FileUtils.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath), fs.Directory.Exists);
+				return ProcessHelper.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath), fs.Directory.Exists);
 			}
+			return false;
 		}, canOpenLogsFolder);
 
 		OpenGameFolderCommand = ReactiveCommand.Create(() =>
 		{
 			if(fs.File.Exists(main.Settings.GameExecutablePath))
 			{
-				FileUtils.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath));
+				return ProcessHelper.TryOpenPath(fs.Path.GetDirectoryName(main.Settings.GameExecutablePath));
 			}
+			return false;
 		}, canExecuteCommands.CombineLatest(gameExecutableExists).AllTrue());
 
 		//Savegames\Story
 		var canOpenProfileSaves = modOrder.WhenAnyValue(x => x.SelectedProfileSavesPath, fs.Directory.Exists).CombineLatest(canExecuteCommands).AllTrue();
-		OpenSavesFolderCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(modOrder.SelectedProfileSavesPath), canOpenProfileSaves);
+		OpenSavesFolderCommand = ReactiveCommand.Create(() => ProcessHelper.TryOpenPath(modOrder.SelectedProfileSavesPath), canOpenProfileSaves);
 
 		var canOpenExtenderDirectory = main.PathwayData.WhenAnyValue(x => x.AppDataGameFolder).Select(x => fs.Directory.Exists(fs.Path.Join(x, "Script Extender")));
 		OpenExtenderDataFolderCommand = ReactiveCommand.Create(() =>
 		{
 			var extenderDirectory = fs.Path.Join(main.PathwayData.AppDataGameFolder, "Script Extender");
-			FileUtils.TryOpenPath(extenderDirectory);
+			ProcessHelper.TryOpenPath(extenderDirectory);
 		}, canOpenExtenderDirectory);
 
-		OpenNexusModsCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_NEXUSMODS), canExecuteCommands);
-		OpenSteamPageCommand = ReactiveCommand.Create(() => FileUtils.TryOpenPath(DivinityApp.URL_STEAM), canExecuteCommands);
+		OpenNexusModsCommand = ReactiveCommand.Create(() => ProcessHelper.TryOpenPath(DivinityApp.URL_NEXUSMODS), canExecuteCommands);
+		OpenSteamPageCommand = ReactiveCommand.Create(() => ProcessHelper.TryOpenPath(DivinityApp.URL_STEAM), canExecuteCommands);
 
 		var canRefreshModUpdates = canExecuteCommands.CombineLatest(main.WhenAnyValue(x => x.IsRefreshingModUpdates, x => x.AppSettingsLoaded))
 			.Select(x => x.First && !x.Second.Item1 && x.Second.Item2);
@@ -525,11 +527,11 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			DivinityApp.IsKeyboardNavigating = true;
 			if (modOrder.ActiveModsView.HasAnyFocus)
 			{
-				modOrder.ActiveModsView.Mods.RowSelection.Select(0);
+				modOrder.ActiveModsView.Mods.RowSelection?.Select(0);
 			}
 			else if (modOrder.InactiveModsView.HasAnyFocus)
 			{
-				modOrder.InactiveModsView.Mods.RowSelection.Select(0);
+				modOrder.InactiveModsView.Mods.RowSelection?.Select(0);
 			}
 		}, canExecuteModOrderCommands);
 
@@ -538,11 +540,11 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			DivinityApp.IsKeyboardNavigating = true;
 			if (modOrder.ActiveModsView.HasAnyFocus)
 			{
-				modOrder.ActiveModsView.Mods.RowSelection.Select(modOrder.ActiveModsView.Mods.Rows.Count-1);
+				modOrder.ActiveModsView.Mods.RowSelection?.Select(modOrder.ActiveModsView.Mods.Rows.Count-1);
 			}
 			else if (modOrder.InactiveModsView.HasAnyFocus)
 			{
-				modOrder.InactiveModsView.Mods.RowSelection.Select(modOrder.InactiveModsView.Mods.Rows.Count - 1);
+				modOrder.InactiveModsView.Mods.RowSelection?.Select(modOrder.InactiveModsView.Mods.Rows.Count - 1);
 			}
 		}, canExecuteModOrderCommands);
 
@@ -596,7 +598,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 
 		var keybindings = this.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetCustomAttribute<KeybindingAttribute>());
 
-		DownloadScriptExtenderCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		DownloadScriptExtenderCommand = ReactiveCommand.Create(main.AskToDownloadScriptExtender, canExecuteCommands);
 		DownloadNXMLinkCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		OpenCollectionDownloaderWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractAllSelectedModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);

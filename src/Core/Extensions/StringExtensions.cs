@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ModManager.Extensions;
+namespace ModManager;
 
 public static class StringExtensions
 {

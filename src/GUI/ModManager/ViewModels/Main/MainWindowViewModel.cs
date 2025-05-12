@@ -297,7 +297,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 
 	private bool OpenRepoLinkToDownload { get; set; }
 
-	private void AskToDownloadScriptExtender()
+	public void AskToDownloadScriptExtender()
 	{
 		if (!OpenRepoLinkToDownload)
 		{

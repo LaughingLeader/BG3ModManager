@@ -1,13 +1,10 @@
 ﻿using DynamicData.Binding;
 
 using ModManager.Enums.Extender;
-using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.Extender;
 using ModManager.Models.Settings;
 using ModManager.Util;
-using ModManager.ViewModels.Main;
-using ModManager.ViewModels.Settings;
 
 using System.ComponentModel;
 using System.Reflection;
@@ -346,7 +343,6 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		whenTab.Select(x => x == SettingsWindowTab.Extender).ToUIProperty(this, x => x.ExtenderTabIsVisible);
 		whenTab.Select(x => x == SettingsWindowTab.Keybindings).ToUIProperty(this, x => x.KeybindingsTabIsVisible);
 
-		this.WhenAnyValue(x => x.Settings.SkipLauncher, x => x.KeybindingsTabIsVisible);
 		this.WhenAnyValue(x => x.TargetVersion).WhereNotNull().ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnTargetVersionSelected);
 
 		this.WhenAnyValue(x => x.SelectedTabIndex).Select(SelectedTabToResetTooltip).ToUIProperty(this, x => x.ResetSettingsCommandToolTip);
@@ -393,7 +389,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 
 		OpenSettingsFolderCommand = ReactiveCommand.Create(() =>
 		{
-			FileUtils.TryOpenPath(DivinityApp.GetAppDirectory(DivinityApp.DIR_DATA));
+			ProcessHelper.TryOpenPath(DivinityApp.GetAppDirectory(DivinityApp.DIR_DATA));
 		});
 
 		ResetSettingsCommand = ReactiveCommand.Create(() =>

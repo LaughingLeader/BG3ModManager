@@ -26,8 +26,11 @@ using ZstdSharp;
 
 namespace ModManager.Services;
 
-public class ModImportService(IDialogService _dialogService)
+public class ModImportService(IDialogService dialogService, IFileSystemService fileSystemService)
 {
+	private readonly IDialogService _dialogService = dialogService;
+	private readonly IFileSystemService _fs = fileSystemService;
+
 	private static ModManagerSettings Settings => AppServices.Settings.ManagerSettings;
 	private static PathwayData Pathways => AppServices.Pathways.Data;
 	private static MainWindowViewModel ViewModel => AppServices.Get<MainWindowViewModel>()!;
@@ -58,48 +61,19 @@ public class ModImportService(IDialogService _dialogService)
 		return ext == ".pak" || _archiveFormats.Contains(ext) || _compressedFormats.Contains(ext);
 	}
 
-	public static string GetInitialStartingDirectory(string? prioritizePath = null)
-	{
-		var directory = prioritizePath;
-
-		if (prioritizePath.IsValid() && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
-		{
-			directory = actualDir;
-		}
-		else
-		{
-			if (Settings.LastImportDirectoryPath.IsValid())
-			{
-				directory = Settings.LastImportDirectoryPath;
-			}
-
-			if (!Directory.Exists(directory) && !string.IsNullOrEmpty(Pathways.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(Pathways.LastSaveFilePath, out var lastDir))
-			{
-				directory = lastDir;
-			}
-		}
-
-		if (!directory.IsExistingDirectory())
-		{
-			directory = DivinityApp.GetAppDirectory();
-		}
-
-		return directory;
-	}
-
 	public async Task<ImportOperationResults> ImportModFromFile(Dictionary<string, ModData> builtinMods, ImportOperationResults taskResult, string filePath, CancellationToken token, bool toActiveList = false)
 	{
-		var ext = Path.GetExtension(filePath).ToLower();
+		var ext = _fs.Path.GetExtension(filePath).ToLower();
 		if (ext.Equals(".pak", StringComparison.OrdinalIgnoreCase))
 		{
-			var outputFilePath = Path.Join(Pathways.AppDataModsPath, Path.GetFileName(filePath));
+			var outputFilePath = _fs.Path.Join(Pathways.AppDataModsPath, _fs.Path.GetFileName(filePath));
 			try
 			{
 				taskResult.TotalPaks++;
 
 				await FileUtils.CopyFileAsync(filePath, outputFilePath, token);
 
-				if (File.Exists(outputFilePath))
+				if (outputFilePath.IsExistingFile())
 				{
 					var parsed = await ModDataLoader.LoadModDataFromPakAsync(outputFilePath, builtinMods, token);
 					if (parsed != null)
@@ -118,7 +92,7 @@ public class ModImportService(IDialogService _dialogService)
 			catch (IOException ex)
 			{
 				DivinityApp.Log($"File may be in use by another process:\n{ex}");
-				AppServices.Commands.ShowAlert($"Failed to copy file '{Path.GetFileName(filePath)} - It may be locked by another process'", AlertType.Danger);
+				AppServices.Commands.ShowAlert($"Failed to copy file '{_fs.Path.GetFileName(filePath)} - It may be locked by another process'", AlertType.Danger);
 			}
 			catch (Exception ex)
 			{
@@ -164,20 +138,20 @@ public class ModImportService(IDialogService _dialogService)
 	{
 		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 			"Import Order & Mods from Archive...",
-			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
+			_dialogService.GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
 			_archiveFileTypes
 		));
 		if (dialogResult.Success)
 		{
 			var filePath = dialogResult.File!;
-			var savedDirectory = Path.GetDirectoryName(filePath)!;
+			var savedDirectory = _fs.Path.GetDirectoryName(filePath)!;
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
 				Pathways.LastSaveFilePath = savedDirectory;
 				Settings.Save(out _);
 			}
-			//if(!Path.GetExtension(dialog.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+			//if(!_fs.Path.GetExtension(dialog.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
 			//{
 			//	view.AlertBar.SetDangerAlert($"Currently only .zip format archives are supported.", -1);
 			//	return;
@@ -223,12 +197,12 @@ public class ModImportService(IDialogService _dialogService)
 					{
 						var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 						var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportOrderFromArchive_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
-						var logsDir = Path.GetDirectoryName(errorOutputPath);
-						if (logsDir.IsValid() && !Directory.Exists(logsDir))
+						var logsDir = _fs.Path.GetDirectoryName(errorOutputPath);
+						if (logsDir.IsValid() && !_fs.Directory.Exists(logsDir))
 						{
-							Directory.CreateDirectory(logsDir);
+							_fs.EnsureDirectoryExists(logsDir);
 						}
-						File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+						_fs.File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
 					}
 
 					var messages = new List<string>();
@@ -280,13 +254,13 @@ public class ModImportService(IDialogService _dialogService)
 		}
 	}
 
-	private async Task<ModuleInfo> TryGetMetaFromZipAsync(string filePath, CancellationToken token)
+	private async Task<ModuleInfo?> TryGetMetaFromZipAsync(string filePath, CancellationToken token)
 	{
-		TempFile tempFile = null;
+		TempFile? tempFile = null;
 		try
 		{
-			using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-			await fileStream.ReadAsync(new byte[fileStream.Length], 0, (int)fileStream.Length);
+			using var fileStream = _fs.FileStream.New(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+			await fileStream.ReadAsync((new byte[fileStream.Length]).AsMemory(0, (int)fileStream.Length), token);
 			fileStream.Position = 0;
 
 			var modManager = AppServices.Mods;
@@ -297,14 +271,14 @@ public class ModImportService(IDialogService _dialogService)
 				if (token.IsCancellationRequested) return null;
 				if (!file.IsDirectory)
 				{
-					if (file.Key.EndsWith(".pak", StringComparison.OrdinalIgnoreCase))
+					if (file?.Key?.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) == true)
 					{
 						using var entryStream = file.OpenEntryStream();
 						tempFile = await TempFile.CreateAsync(string.Join("\\", filePath, file.Key), entryStream, token);
 						var meta = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 						if (meta == null)
 						{
-							var pakName = Path.GetFileNameWithoutExtension(file.Key);
+							var pakName = _fs.Path.GetFileNameWithoutExtension(file.Key);
 							if (modManager.ModExists(pakName))
 							{
 								return new ModuleInfo
@@ -333,16 +307,16 @@ public class ModImportService(IDialogService _dialogService)
 		return null;
 	}
 
-	private async Task<ModuleInfo> TryGetMetaFromCompressedFileAsync(string filePath, string extension, CancellationToken token)
+	private async Task<ModuleInfo?> TryGetMetaFromCompressedFileAsync(string filePath, string extension, CancellationToken token)
 	{
-		ModuleInfo result = null;
-		using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
+		ModuleInfo? result = null;
+		using (var fileStream = _fs.FileStream.New(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
 		{
-			await fileStream.ReadAsync(new byte[fileStream.Length], 0, (int)fileStream.Length);
+			await fileStream.ReadAsync((new byte[fileStream.Length]).AsMemory(0, (int)fileStream.Length), token);
 			fileStream.Position = 0;
 
-			System.IO.Stream decompressionStream = null;
-			TempFile tempFile = null;
+			Stream? decompressionStream = null;
+			TempFile? tempFile = null;
 
 			try
 			{
@@ -365,7 +339,7 @@ public class ModImportService(IDialogService _dialogService)
 					result = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 					if (result == null)
 					{
-						var pakName = Path.GetFileNameWithoutExtension(filePath);
+						var pakName = _fs.Path.GetFileNameWithoutExtension(filePath);
 						if (AppServices.Mods.ModExists(pakName))
 						{
 							result = new ModuleInfo
@@ -394,7 +368,7 @@ public class ModImportService(IDialogService _dialogService)
 				if (token.IsCancellationRequested) break;
 				if (!filePath.IsValid()) continue;
 
-				var ext = Path.GetExtension(filePath).ToLower();
+				var ext = _fs.Path.GetExtension(filePath).ToLower();
 
 				var isArchive = _archiveFormats.Contains(ext, StringComparer.OrdinalIgnoreCase);
 				var isCompressedFile = !isArchive && _compressedFormats.Contains(ext, StringComparer.OrdinalIgnoreCase);
@@ -425,7 +399,7 @@ public class ModImportService(IDialogService _dialogService)
 			catch (Exception ex)
 			{
 				DivinityApp.Log($"Error fetching info:\n{ex}");
-				results.AddError(filePath, ex);
+				results.AddError(filePath ?? string.Empty, ex);
 			}
 		}
 
@@ -466,12 +440,9 @@ public class ModImportService(IDialogService _dialogService)
 				{
 					var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 					var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportMods_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
-					var logsDir = Path.GetDirectoryName(errorOutputPath);
-					if (!Directory.Exists(logsDir))
-					{
-						Directory.CreateDirectory(logsDir);
-					}
-					File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+					var logsDir = _fs.Path.GetDirectoryName(errorOutputPath);
+					_fs.EnsureDirectoryExists(logsDir);
+					_fs.File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
 				}
 
 				var total = result.Mods.Count;
@@ -484,7 +455,7 @@ public class ModImportService(IDialogService _dialogService)
 					else if (total == 1)
 					{
 						var modFileName = result.Mods.First().FileName;
-						var fileNames = string.Join(", ", files.Select(x => Path.GetFileName(x)));
+						var fileNames = string.Join(", ", files.Select(x => _fs.Path.GetFileName(x)));
 						AppServices.Commands.ShowAlert($"Successfully imported '{modFileName}' from '{fileNames}'", AlertType.Success, 20);
 					}
 					else
@@ -511,7 +482,7 @@ public class ModImportService(IDialogService _dialogService)
 	{
 		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 			"Import Mods from Archive...",
-			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
+			_dialogService.GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
 			_importModFileTypes,
 			null,
 			true
@@ -519,7 +490,7 @@ public class ModImportService(IDialogService _dialogService)
 
 		if (dialogResult.Success)
 		{
-			var savedDirectory = Path.GetDirectoryName(dialogResult.File)!;
+			var savedDirectory = _fs.Path.GetDirectoryName(dialogResult.File)!;
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
@@ -535,7 +506,7 @@ public class ModImportService(IDialogService _dialogService)
 	{
 		var dialogResult = await _dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 			"Import NexusMods ModId(s) from Archive(s)",
-			GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
+			_dialogService.GetInitialStartingDirectory(Settings.LastImportDirectoryPath),
 			_importModFileTypes,
 			null,
 			true
@@ -543,7 +514,7 @@ public class ModImportService(IDialogService _dialogService)
 
 		if (dialogResult.Success)
 		{
-			var savedDirectory = Path.GetDirectoryName(dialogResult.File)!;
+			var savedDirectory = _fs.Path.GetDirectoryName(dialogResult.File)!;
 			if (Settings.LastImportDirectoryPath != savedDirectory)
 			{
 				Settings.LastImportDirectoryPath = savedDirectory;
@@ -567,12 +538,9 @@ public class ModImportService(IDialogService _dialogService)
 					{
 						var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
 						var errorOutputPath = DivinityApp.GetAppDirectory("_Logs", $"ImportNexusModsModIds_{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}_Errors.log");
-						var logsDir = Path.GetDirectoryName(errorOutputPath);
-						if (!Directory.Exists(logsDir))
-						{
-							Directory.CreateDirectory(logsDir);
-						}
-						File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
+						var logsDir = _fs.Path.GetDirectoryName(errorOutputPath);
+						_fs.EnsureDirectoryExists(logsDir);
+						_fs.File.WriteAllText(errorOutputPath, string.Join("\n", result.Errors.Select(x => $"File: {x.File}\nError:\n{x.Exception}")));
 					}
 
 					var total = result.Mods.Count;
@@ -648,9 +616,9 @@ public class ModImportService(IDialogService _dialogService)
 		if (selectedProfile != null && selectedModOrder != null)
 		{
 			var sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.Replace("/", "-");
-			var gameDataFolder = Path.GetFullPath(Settings.GameDataPath);
+			var gameDataFolder = _fs.Path.GetFullPath(Settings.GameDataPath);
 			var tempDir = DivinityApp.GetAppDirectory("Temp");
-			Directory.CreateDirectory(tempDir);
+			_fs.EnsureDirectoryExists(tempDir);
 
 			if (!outputPath.IsValid())
 			{
@@ -660,8 +628,8 @@ public class ModImportService(IDialogService _dialogService)
 					baseOrderName = $"{selectedProfile.Name}_{selectedModOrder.Name}";
 				}
 				var outputDir = DivinityApp.GetAppDirectory("Export");
-				Directory.CreateDirectory(outputDir);
-				outputPath = Path.Join(outputDir, $"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.zip");
+				_fs.EnsureDirectoryExists(outputDir);
+				outputPath = _fs.Path.Join(outputDir, $"{baseOrderName}-{DateTime.Now.ToString(sysFormat + "_HH-mm-ss")}.zip");
 			}
 
 			var modManager = AppServices.Mods;
@@ -673,13 +641,15 @@ public class ModImportService(IDialogService _dialogService)
 
 			try
 			{
-				using var stream = File.OpenWrite(outputPath);
+				using var stream = _fs.File.OpenWrite(outputPath);
 				using var zipWriter = WriterFactory.Open(stream, ArchiveType.Zip, _exportWriterOptions);
 
-				var serializeOpts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
-				serializeOpts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+				var serializeOpts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings)
+				{
+					DefaultIgnoreCondition = JsonIgnoreCondition.Never
+				};
 
-				var orderFileName = ModDataLoader.MakeSafeFilename(Path.Join(selectedModOrder.Name + ".json"), '_');
+				var orderFileName = ModDataLoader.MakeSafeFilename(_fs.Path.Join(selectedModOrder.Name + ".json"), '_');
 				var contents = JsonSerializer.Serialize(selectedModOrder, serializeOpts);
 
 				using var ms = new MemoryStream();
@@ -695,33 +665,33 @@ public class ModImportService(IDialogService _dialogService)
 					if (token.IsCancellationRequested) return false;
 					if (!mod.IsLooseMod)
 					{
-						var fileName = Path.GetFileName(mod.FilePath);
+						var fileName = _fs.Path.GetFileName(mod.FilePath);
 						await WriteZipAsync(zipWriter, fileName, mod.FilePath, token);
 					}
 					else
 					{
-						var outputPackage = Path.ChangeExtension(Path.Join(tempDir, mod.Folder), "pak");
+						var outputPackage = _fs.Path.ChangeExtension(_fs.Path.Join(tempDir, mod.Folder), "pak");
 						//Imported Classic Projects
 						if (!mod.Folder.Contains(mod.UUID))
 						{
-							outputPackage = Path.ChangeExtension(Path.Join(tempDir, mod.Folder + "_" + mod.UUID), "pak");
+							outputPackage = _fs.Path.ChangeExtension(_fs.Path.Join(tempDir, mod.Folder + "_" + mod.UUID), "pak");
 						}
 
 						var sourceFolders = new List<string>();
 
-						var modsFolder = Path.Join(gameDataFolder, $"Mods/{mod.Folder}");
-						var publicFolder = Path.Join(gameDataFolder, $"Public/{mod.Folder}");
+						var modsFolder = _fs.Path.Join(gameDataFolder, $"Mods/{mod.Folder}");
+						var publicFolder = _fs.Path.Join(gameDataFolder, $"Public/{mod.Folder}");
 
-						if (Directory.Exists(modsFolder)) sourceFolders.Add(modsFolder);
-						if (Directory.Exists(publicFolder)) sourceFolders.Add(publicFolder);
+						if (_fs.Directory.Exists(modsFolder)) sourceFolders.Add(modsFolder);
+						if (_fs.Directory.Exists(publicFolder)) sourceFolders.Add(publicFolder);
 
 						DivinityApp.Log($"Creating package for editor mod '{mod.Name}' - '{outputPackage}'.");
 
 						if (await FileUtils.CreatePackageAsync(gameDataFolder, sourceFolders, outputPackage, token, FileUtils.IgnoredPackageFiles))
 						{
-							var fileName = Path.GetFileName(outputPackage);
+							var fileName = _fs.Path.GetFileName(outputPackage);
 							await WriteZipAsync(zipWriter, fileName, outputPackage, token);
-							File.Delete(outputPackage);
+							_fs.File.Delete(outputPackage);
 						}
 					}
 
@@ -731,11 +701,8 @@ public class ModImportService(IDialogService _dialogService)
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					AppServices.Commands.ShowAlert($"Exported load order to '{outputPath}'", AlertType.Success, 15);
-					var dir = Path.GetFullPath(Path.GetDirectoryName(outputPath));
-					if (Directory.Exists(dir))
-					{
-						FileUtils.TryOpenPath(dir);
-					}
+					var dir = _fs.Path.GetFullPath(_fs.Path.GetDirectoryName(outputPath));
+					ProcessHelper.TryOpenPath(dir, _fs.Directory.Exists);
 				});
 
 				success = true;
@@ -750,7 +717,7 @@ public class ModImportService(IDialogService _dialogService)
 				});
 			}
 
-			Directory.Delete(tempDir);
+			_fs.Directory.Delete(tempDir);
 		}
 		else
 		{
@@ -765,12 +732,14 @@ public class ModImportService(IDialogService _dialogService)
 
 	public async Task<bool> ExportLoadOrderToTextFileAsync(string filePath, List<IModEntry> exportMods, CancellationToken token)
 	{
-		var fileType = Path.GetExtension(filePath)!;
+		var fileType = _fs.Path.GetExtension(filePath)!;
 		var outputText = "";
 		if (fileType.Equals(".json", StringComparison.OrdinalIgnoreCase))
 		{
-			var serializeOpts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings);
-			serializeOpts.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+			var serializeOpts = new JsonSerializerOptions(JsonUtils.DefaultSerializerSettings)
+			{
+				DefaultIgnoreCondition = JsonIgnoreCondition.Never
+			};
 			var serializedMods = exportMods.Where(x => x.EntryType == ModEntryType.Mod).Select(x => SerializedModData.FromMod((ModData)x)).ToList();
 			outputText = JsonSerializer.Serialize(serializedMods, serializeOpts);
 		}

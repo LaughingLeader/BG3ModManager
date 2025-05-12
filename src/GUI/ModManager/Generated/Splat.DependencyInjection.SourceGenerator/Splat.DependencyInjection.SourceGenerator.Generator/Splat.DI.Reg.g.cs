@@ -7,12 +7,12 @@ namespace Splat
         static partial void SetupIOCInternal(Splat.IDependencyResolver resolver) 
         {
             {
-                global::System.Lazy<ModManager.Services.ModImportService> lazy = new global::System.Lazy<ModManager.Services.ModImportService>(() => new global::ModManager.Services.ModImportService((global::ModManager.IDialogService)resolver.GetService(typeof(global::ModManager.IDialogService))));
+                global::System.Lazy<ModManager.Services.ModImportService> lazy = new global::System.Lazy<ModManager.Services.ModImportService>(() => new global::ModManager.Services.ModImportService((global::ModManager.IDialogService)resolver.GetService(typeof(global::ModManager.IDialogService)), (global::ModManager.Services.IFileSystemService)resolver.GetService(typeof(global::ModManager.Services.IFileSystemService))));
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Services.ModImportService>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Services.ModImportService));
             }
             {
-                global::System.Lazy<ModManager.IDialogService> lazy = new global::System.Lazy<ModManager.IDialogService>(() => new global::ModManager.Services.DialogService((global::ModManager.IInteractionsService)resolver.GetService(typeof(global::ModManager.IInteractionsService))));
+                global::System.Lazy<ModManager.IDialogService> lazy = new global::System.Lazy<ModManager.IDialogService>(() => new global::ModManager.Services.DialogService((global::ModManager.IInteractionsService)resolver.GetService(typeof(global::ModManager.IInteractionsService)), (global::ModManager.Services.IFileSystemService)resolver.GetService(typeof(global::ModManager.Services.IFileSystemService)), (global::ModManager.ISettingsService)resolver.GetService(typeof(global::ModManager.ISettingsService)), (global::ModManager.IPathwaysService)resolver.GetService(typeof(global::ModManager.IPathwaysService))));
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.IDialogService>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.IDialogService));
             }

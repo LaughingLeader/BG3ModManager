@@ -45,7 +45,7 @@ public static class ProcessHelper
 		return false;
 	}
 
-	public static bool TryOpenPath(string path, Func<string, bool>? existsCheck = null, string args = "", string? workingDirectory = null)
+	public static bool TryOpenPath(string? path, Func<string, bool>? existsCheck = null, string args = "", string? workingDirectory = null)
 	{
 		args ??= string.Empty;
 

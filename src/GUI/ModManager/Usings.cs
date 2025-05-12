@@ -21,3 +21,4 @@ global using System.Threading.Tasks;
 
 global using ModifierKeys = Avalonia.Input.KeyModifiers;
 global using RxCommandUnit = ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>;
+global using RxBoolCommandUnit = ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool>;

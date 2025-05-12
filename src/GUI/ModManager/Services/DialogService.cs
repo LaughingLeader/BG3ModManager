@@ -1,9 +1,7 @@
-﻿using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 
+using ModManager.Util;
 using ModManager.Windows;
-
-using SukiUI.Controls;
 
 using System.Collections.Immutable;
 
@@ -12,6 +10,38 @@ public class DialogService : IDialogService
 {
 	private static Window _window => Locator.Current.GetService<MainWindow>()!;
 	private readonly IInteractionsService _interactions;
+	private readonly IFileSystemService _fs;
+	private readonly ISettingsService _settings;
+	private readonly IPathwaysService _pathways;
+
+	public string GetInitialStartingDirectory(string? prioritizePath = null)
+	{
+		var directory = prioritizePath;
+
+		if (prioritizePath.IsValid() && FileUtils.TryGetDirectoryOrParent(prioritizePath, out var actualDir))
+		{
+			directory = actualDir;
+		}
+		else
+		{
+			if (_settings.ManagerSettings.LastImportDirectoryPath.IsValid())
+			{
+				directory = _settings.ManagerSettings.LastImportDirectoryPath;
+			}
+
+			if (!_fs.Directory.Exists(directory) && !string.IsNullOrEmpty(_pathways.Data.LastSaveFilePath) && FileUtils.TryGetDirectoryOrParent(_pathways.Data.LastSaveFilePath, out var lastDir))
+			{
+				directory = lastDir;
+			}
+		}
+
+		if (!directory.IsExistingDirectory())
+		{
+			directory = DivinityApp.GetAppDirectory();
+		}
+
+		return directory;
+	}
 
 	public async Task<OpenFileBrowserDialogResults> OpenFolderAsync(OpenFolderBrowserDialogRequest context)
 	{
@@ -123,9 +153,12 @@ public class DialogService : IDialogService
 		return new OpenFileBrowserDialogResults();
 	}
 
-	public DialogService(IInteractionsService interactionsService)
+	public DialogService(IInteractionsService interactionsService, IFileSystemService fileSystemService, ISettingsService settings, IPathwaysService pathways)
 	{
 		_interactions = interactionsService;
+		_fs = fileSystemService;
+		_settings = settings;
+		_pathways = pathways;
 
 		_interactions.OpenFileBrowserDialog.RegisterHandler(context =>
 		{
@@ -142,6 +175,7 @@ public class DialogService : IDialogService
 				return await OpenFolderAsync(context.Input);
 			}, RxApp.MainThreadScheduler);
 		});
+		_pathways = pathways;
 	}
 }
 /* // Fluent Avalonia

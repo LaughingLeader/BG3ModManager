@@ -7,7 +7,7 @@ public class ModEntry : ReactiveObject, IModEntry
 {
 	public ModEntryType EntryType => ModEntryType.Mod;
 
-	[Reactive] public string UUID { get; }
+	public string UUID { get; }
 	[Reactive] public int Index { get; set; }
 
 	[Reactive] public bool IsActive { get; set; }

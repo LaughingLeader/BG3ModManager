@@ -5,7 +5,6 @@ using DynamicData;
 using DynamicData.Binding;
 
 using ModManager.Controls.TreeDataGrid;
-using ModManager.Extensions;
 using ModManager.Models;
 using ModManager.Models.Mod;
 using ModManager.Models.Mod.Game;
@@ -15,7 +14,6 @@ using ModManager.Util;
 using ModManager.ViewModels.Mods;
 
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Globalization;
 
 using TextCopy;
@@ -688,7 +686,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		UpdateOrderFromActiveMods();
 
-		var ordersDir = ModImportService.GetInitialStartingDirectory(GetOrdersDirectory());
+		var ordersDir = _dialogs.GetInitialStartingDirectory(GetOrdersDirectory());
 		var outputName = SelectedModOrder.Name + ".json";
 
 		if (!Directory.Exists(ordersDir)) Directory.CreateDirectory(ordersDir);
@@ -1444,7 +1442,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			var result = await _dialogs.SaveFileAsync(new(
 				"Export Load Order As Text File...",
-				ModImportService.GetInitialStartingDirectory(),
+				_dialogs.GetInitialStartingDirectory(),
 				CommonFileTypes.ModOrderFileTypes,
 				ModDataLoader.MakeSafeFilename(outputName, '_')
 			));
@@ -1484,7 +1482,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		var result = await _dialogs.OpenFileAsync(new(
 			"Load Mod Order From Save...",
-			ModImportService.GetInitialStartingDirectory(startPath),
+			_dialogs.GetInitialStartingDirectory(startPath),
 			[CommonFileTypes.LarianSaveFile, CommonFileTypes.All]
 		));
 
@@ -1546,7 +1544,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	{
 		var result = await _dialogs.OpenFileAsync(new(
 			"Load Mod Order From File...",
-			ModImportService.GetInitialStartingDirectory(Settings.LastLoadedOrderFilePath),
+			_dialogs.GetInitialStartingDirectory(Settings.LastLoadedOrderFilePath),
 			CommonFileTypes.ModOrderFileTypes
 		));
 

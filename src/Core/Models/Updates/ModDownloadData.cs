@@ -64,7 +64,7 @@ public class ModDownloadData : ReactiveObject
 				if (IsIndirectDownload)
 				{
 					//Nexus non-premium users need to go to the website and get a nxm:// link to have download authorization.
-					FileUtils.TryOpenPath(DownloadPath);
+					ProcessHelper.TryOpenPath(DownloadPath);
 					result.Success = true;
 					result.OutputFilePath = DownloadPath;
 					return result;

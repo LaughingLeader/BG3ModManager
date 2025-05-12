@@ -1,29 +1,22 @@
 ﻿using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Selection;
 
 using DynamicData;
 using DynamicData.Binding;
 
 using LSLib.LS;
 
-using ModManager.Extensions;
 using ModManager.Helpers;
 using ModManager.Models.View;
 using ModManager.Services;
 using ModManager.Windows;
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModManager.ViewModels.Window;
 public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableViewModel
 {
 	private readonly IDialogService _dialogService;
+	private readonly ModImportService ModImporter;
 
 	[Reactive] public string Title { get; set; }
 	[Reactive] public string? PakFilePath { get; set; }
@@ -185,7 +178,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 		var dialogResult = await _dialogService.OpenFolderAsync(new OpenFolderBrowserDialogRequest(
 			"Extract File(s) To...",
-			ModImportService.GetInitialStartingDirectory(settings.ManagerSettings.LastExtractOutputPath),
+			_dialogService.GetInitialStartingDirectory(settings.ManagerSettings.LastExtractOutputPath),
 			null,
 			null,
 			AppServices.Get<PakFileExplorerWindow>()
@@ -306,7 +299,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 				var dialogResult = await dialogService.OpenFileAsync(new OpenFileBrowserDialogRequest(
 					"Open Pak File...",
-					ModImportService.GetInitialStartingDirectory(settings.ManagerSettings.LastImportDirectoryPath),
+					_dialogService.GetInitialStartingDirectory(settings.ManagerSettings.LastImportDirectoryPath),
 					[CommonFileTypes.ModPak],
 					window: AppServices.Get<PakFileExplorerWindow>()
 				));
