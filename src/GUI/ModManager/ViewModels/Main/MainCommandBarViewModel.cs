@@ -107,7 +107,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxBoolCommandUnit? ToggleVersionGeneratorWindowCommand { get; set; }
 
 	[Keybinding("About", Key.F1, KeyModifiers.None, "", "Help")]
-	public RxCommandUnit? ToggleAboutWindowCommand { get; set; }
+	public RxBoolCommandUnit? ToggleAboutWindowCommand { get; set; }
 
 	[Keybinding("Toggle Dark/Light Mode", Key.OemComma, KeyModifiers.Control | KeyModifiers.Alt)]
 	public RxCommandUnit? ToggleThemeModeCommand { get; set; }
@@ -201,7 +201,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? DownloadScriptExtenderCommand { get; set; }
 
 	[Keybinding(@"Download nxm:\\ Link...", Key.None, KeyModifiers.None, "Download a NexusMods link for a mod file or a collection", "Download")]
-	public RxCommandUnit? DownloadNXMLinkCommand { get; set; }
+	public RxBoolCommandUnit? DownloadNXMLinkCommand { get; set; }
 
 	[Keybinding("Open Collection Downloader Window", Key.None, KeyModifiers.None, "", "Download")]
 	public RxCommandUnit? OpenCollectionDownloaderWindowCommand { get; set; }
@@ -266,6 +266,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		return false;
 	}
 
+	[Obsolete]
 	private static void NotImplemented()
 	{
 		throw new NotImplementedException();
@@ -382,7 +383,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		ToggleVersionGeneratorWindowCommand = ReactiveCommand.Create(ToggleWindow<VersionGeneratorWindow>, canExecuteCommands);
 		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(ToggleWindow<StatsValidatorWindow>, canExecuteCommands);
 		ToggleSettingsWindowCommand = ReactiveCommand.Create(ToggleWindow<SettingsWindow>, canExecuteCommands);
-		ToggleAboutWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		ToggleAboutWindowCommand = ReactiveCommand.Create(ToggleWindow<AboutWindow>, canExecuteCommands);
 
 		ToggleKeybindingsCommand = ReactiveCommand.Create(() =>
 		{
@@ -599,7 +600,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		var keybindings = this.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetCustomAttribute<KeybindingAttribute>());
 
 		DownloadScriptExtenderCommand = ReactiveCommand.Create(main.AskToDownloadScriptExtender, canExecuteCommands);
-		DownloadNXMLinkCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+		DownloadNXMLinkCommand = ReactiveCommand.Create(ToggleWindow<NxmDownloadWindow>, canExecuteCommands);
 		OpenCollectionDownloaderWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractAllSelectedModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractSelectedActiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);

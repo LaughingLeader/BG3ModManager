@@ -11,14 +11,7 @@ public partial class PakFileExplorerWindow : HideWindowBase<PakFileExplorerWindo
 	{
 		InitializeComponent();
 
-		if (Design.IsDesignMode)
-		{
-			Background = Brushes.Black;
-		}
-		else
-		{
-			ViewModel = AppServices.Get<PakFileExplorerWindowViewModel>();
-		}
+		ViewModel = AppServices.Get<PakFileExplorerWindowViewModel>();
 
 		this.WhenActivated(d =>
 		{

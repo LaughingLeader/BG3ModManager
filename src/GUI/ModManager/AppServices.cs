@@ -79,11 +79,12 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<PakFileExplorerWindow>();
 		SplatRegistrations.RegisterLazySingleton<StatsValidatorWindow>();
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
-		/*SplatRegistrations.RegisterLazySingleton<AboutWindow>();
+		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindow>();
+		SplatRegistrations.RegisterLazySingleton<AboutWindow>();
+		/*
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
 		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindow>();
-		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindow>();
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesConfirmationView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesLayout>();*/

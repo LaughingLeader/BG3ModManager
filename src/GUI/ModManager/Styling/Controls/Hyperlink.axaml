@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:manager="using:ModManager">
+	<ControlTheme x:Key="{x:Type controls:Hyperlink}" TargetType="controls:Hyperlink">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Panel>
+					<Panel.ContextFlyout>
+						<MenuFlyout>
+							<MenuItem Command="{Binding Path=OpenURLCommand, Source={x:Static manager:AppServices.Commands}}"
+							    CommandParameter="{TemplateBinding Url}"
+							    Header="Open URL in Browser..."
+							    Icon="{icons:MaterialIconExt Kind=OpenInBrowser}" />
+							<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}"
+							    CommandParameter="{TemplateBinding Url}"
+							    Header="Copy URL to Clipboard"
+							    Icon="{icons:MaterialIconExt Kind=Clipboard}" />
+						</MenuFlyout>
+					</Panel.ContextFlyout>
+					<TextBlock Name="PART_HyperlinkTextBlock" />
+				</Panel>
+			</ControlTemplate>
+		</Setter>
+		<Style Selector="^:pointerover /template/ TextBlock#PART_HyperlinkTextBlock">
+			<Setter Property="TextDecorations" Value="Underline" />
+		</Style>
+	</ControlTheme>
+</ResourceDictionary>

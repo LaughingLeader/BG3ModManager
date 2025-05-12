@@ -166,6 +166,16 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.VersionGeneratorWindow>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.VersionGeneratorWindow));
             }
+            {
+                global::System.Lazy<ModManager.NxmDownloadWindow> lazy = new global::System.Lazy<ModManager.NxmDownloadWindow>(() => new global::ModManager.NxmDownloadWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.NxmDownloadWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.NxmDownloadWindow));
+            }
+            {
+                global::System.Lazy<ModManager.AboutWindow> lazy = new global::System.Lazy<ModManager.AboutWindow>(() => new global::ModManager.AboutWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.AboutWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.AboutWindow));
+            }
         }
     }
 }

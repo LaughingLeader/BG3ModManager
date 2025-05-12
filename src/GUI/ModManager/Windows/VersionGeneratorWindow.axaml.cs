@@ -24,7 +24,7 @@ public partial class VersionGeneratorWindow : HideWindowBase<VersionGeneratorVie
 
 		this.WhenActivated(d =>
 		{
-			ViewModel = AppServices.Get<VersionGeneratorViewModel>();
+			ViewModel ??= AppServices.Get<VersionGeneratorViewModel>();
 
 			if (ViewModel != null)
 			{

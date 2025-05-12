@@ -9,7 +9,7 @@ public interface IGlobalCommandsService
 	ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
 	ReactiveCommand<ModData?, Unit> ToggleNameDisplayCommand { get; }
-	ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
+	ReactiveCommand<object?, Unit> CopyToClipboardCommand { get; }
 	ReactiveCommand<IModEntry?, Unit> DeleteModCommand { get; }
 	RxCommandUnit DeleteSelectedModsCommand { get; }
 	ReactiveCommand<ModData?, Unit> OpenGitHubPageCommand { get; }

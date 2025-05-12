@@ -29,7 +29,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 	public PakFileEntry? SelectedItem { get; set; }
 
 	public RxCommandUnit OpenFileBrowserCommand { get; }
-	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
+	public ReactiveCommand<object?, Unit> CopyToClipboardCommand { get; }
 	public ReactiveCommand<PakFileEntry, Unit> ExtractPakFilesCommand { get; }
 
 	private static void AddFileToTree(PackagedFileInfo pakFile, ConcurrentDictionary<string, PakFileEntry> directories)
@@ -287,7 +287,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 		}
 		else
 		{
-			CopyToClipboardCommand = ReactiveCommand.Create<string?>(str => { });
+			CopyToClipboardCommand = ReactiveCommand.Create<object?>(str => { });
 		}
 
 		OpenFileBrowserCommand = ReactiveCommand.CreateFromTask(async () =>

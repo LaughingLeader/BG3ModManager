@@ -1,0 +1,94 @@
+<Window x:Class="ModManager.AboutWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:ModManager"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:vm="using:ModManager.ViewModels"
+    Title="About"
+    Width="600"
+    Height="300"
+    x:DataType="vm:AboutWindowViewModel"
+    Focusable="True"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    Topmost="True"
+    WindowStartupLocation="CenterOwner">
+	<Panel>
+		<suki:SukiBackground IsHitTestVisible="False" />
+		<suki:GlassCard CornerRadius="0" IsOpaque="True">
+			<Grid RowDefinitions="Auto,Auto,*,Auto,Auto,*">
+				<StackPanel Grid.Row="0" Orientation="Vertical">
+					<Separator Margin="0,4" />
+					<TextBlock HorizontalAlignment="Center"
+					    FontSize="18"
+					    Text="{Binding Title}"
+					    TextAlignment="Center" />
+					<Separator Margin="0,4" />
+				</StackPanel>
+				<Grid Grid.Row="1"
+				    HorizontalAlignment="Center"
+				    ColumnDefinitions="1*,3*"
+				    RowDefinitions="Auto,Auto,Auto">
+					<TextBlock HorizontalAlignment="Right" Text="Home Page:" />
+					<controls:Hyperlink Grid.Column="1"
+					    Margin="10,0,0,4"
+					    HorizontalAlignment="Left"
+					    Url="{Binding RepoUrl}" />
+
+					<TextBlock Grid.Row="1"
+					    Margin="0,0,0,4"
+					    HorizontalAlignment="Right"
+					    Text="Author:"
+					    TextAlignment="Left" />
+					<controls:Hyperlink Grid.Row="1"
+					    Grid.Column="1"
+					    Margin="10,0,0,0"
+					    HorizontalAlignment="Left"
+					    DisplayText="LaughingLeader"
+					    Url="{Binding AuthorUrl}" />
+
+					<TextBlock Grid.Row="2" HorizontalAlignment="Right" Text="License" />
+					<controls:Hyperlink Grid.Row="2"
+					    Grid.Column="1"
+					    Margin="10,0,0,4"
+					    HorizontalAlignment="Left"
+					    DisplayText="MIT 2019"
+					    Url="{Binding LicenseUrl}" />
+				</Grid>
+				<StackPanel Grid.Row="3" Orientation="Vertical">
+					<Separator Margin="0,4" />
+					<TextBlock HorizontalAlignment="Center"
+					    FontSize="16"
+					    Text="Support Links"
+					    TextAlignment="Center" />
+					<Separator Margin="0,4" />
+				</StackPanel>
+				<StackPanel Grid.Row="4" Orientation="Vertical">
+					<Grid HorizontalAlignment="Center" ColumnDefinitions="1*,3*" RowDefinitions="Auto,Auto,Auto">
+						<TextBlock HorizontalAlignment="Right" Text="Donate a Coffee:" />
+						<controls:Hyperlink Grid.Column="1"
+						    Margin="10,0,0,4"
+						    HorizontalAlignment="Left"
+						    Url="{Binding DonationUrl}" />
+
+						<TextBlock Grid.Row="1" HorizontalAlignment="Right" Text="Report an Issue:" />
+						<controls:Hyperlink Grid.Row="1"
+						    Grid.Column="1"
+						    Margin="10,0,0,4"
+						    HorizontalAlignment="Left"
+						    Url="{Binding IssuesUrl}" />
+
+						<TextBlock Grid.Row="2" HorizontalAlignment="Right" Text="Changelog:" />
+						<controls:Hyperlink Grid.Row="2"
+						    Grid.Column="1"
+						    Margin="10,0,0,4"
+						    HorizontalAlignment="Left"
+						    Url="{Binding ChangelogUrl}" />
+					</Grid>
+				</StackPanel>
+			</Grid>
+		</suki:GlassCard>
+	</Panel>
+</Window>

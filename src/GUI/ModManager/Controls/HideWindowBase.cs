@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Avalonia.Media;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +11,12 @@ public abstract class HideWindowBase<TViewModel> : ReactiveWindow<TViewModel> wh
 {
 	public HideWindowBase()
 	{
+#if DEBUG
+		if (Design.IsDesignMode)
+		{
+			Background = Brushes.Black;
+		}
+#endif
 		this.Closing += HideWindowBase_Closing;
 	}
 

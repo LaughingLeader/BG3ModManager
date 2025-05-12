@@ -23,7 +23,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	public ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	public ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
 	public ReactiveCommand<ModData?, Unit> ToggleNameDisplayCommand { get; }
-	public ReactiveCommand<string?, Unit> CopyToClipboardCommand { get; }
+	public ReactiveCommand<object?, Unit> CopyToClipboardCommand { get; }
 	public ReactiveCommand<IModEntry?, Unit> DeleteModCommand { get; }
 	public RxCommandUnit DeleteSelectedModsCommand { get; }
 	public ReactiveCommand<ModData?, Unit> OpenGitHubPageCommand { get; }
@@ -80,13 +80,21 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private void CopyToClipboard(string? text)
+	private void CopyToClipboard(object? obj)
 	{
-		if (text == null) throw new ArgumentNullException(nameof(text), "text to copy is null");
+		if (obj == null) throw new ArgumentNullException(nameof(obj), "data to copy is null");
 		try
 		{
-			ClipboardService.SetText(text);
-			ShowAlert($"Copied to clipboard: {text}", 0, 10);
+			if(obj is string text)
+			{
+				ClipboardService.SetText(text);
+				ShowAlert($"Copied to clipboard: {text}", 0, 10);
+			}
+			else if(obj is Uri url)
+			{
+				ClipboardService.SetText(url.ToString());
+				ShowAlert($"Copied url to clipboard: {url}", 0, 10);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -221,7 +229,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 		ToggleNameDisplayCommand = ReactiveCommand.Create<ModData?>(ToggleNameDisplay, canExecuteCommands);
 
-		CopyToClipboardCommand = ReactiveCommand.Create<string?>(CopyToClipboard, canExecuteCommands);
+		CopyToClipboardCommand = ReactiveCommand.Create<object?>(CopyToClipboard, canExecuteCommands);
 
 		DeleteModCommand = ReactiveCommand.Create<IModEntry?>(DeleteMod, canExecuteCommands);
 

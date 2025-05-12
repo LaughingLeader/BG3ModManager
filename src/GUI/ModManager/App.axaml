@@ -18,6 +18,7 @@
 				<ResourceInclude Source="avares://ModManager/Styling/Controls/FilterButtonExpander.axaml" />
 				<!--<ResourceInclude Source="avares://ModManager/Styling/Controls/TimePickerFix.axaml" />-->
 				<ResourceInclude Source="avares://ModManager/Styling/Controls/TimeSpanUpDown.axaml" />
+				<ResourceInclude Source="avares://ModManager/Styling/Controls/Hyperlink.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<!--  TreeDataGrid Resources  -->
