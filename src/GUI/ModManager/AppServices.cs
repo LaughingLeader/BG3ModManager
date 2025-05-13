@@ -53,7 +53,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<SettingsWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<AboutWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindowViewModel>();
-		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindowViewModel>();
+		SplatRegistrations.RegisterLazySingleton<NexusModsCollectionDownloadWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModPropertiesWindowViewModel>();
 		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindowViewModel>();
@@ -81,9 +81,9 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<VersionGeneratorWindow>();
 		SplatRegistrations.RegisterLazySingleton<NxmDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<AboutWindow>();
+		SplatRegistrations.RegisterLazySingleton<NexusModsCollectionDownloadWindow>();
 		/*
 		SplatRegistrations.RegisterLazySingleton<AppUpdateWindow>();
-		SplatRegistrations.RegisterLazySingleton<CollectionDownloadWindow>();
 		SplatRegistrations.RegisterLazySingleton<HelpWindow>();
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesConfirmationView>();

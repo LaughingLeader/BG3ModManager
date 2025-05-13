@@ -201,10 +201,10 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	public RxCommandUnit? DownloadScriptExtenderCommand { get; set; }
 
 	[Keybinding(@"Download nxm:\\ Link...", Key.None, KeyModifiers.None, "Download a NexusMods link for a mod file or a collection", "Download")]
-	public RxBoolCommandUnit? DownloadNXMLinkCommand { get; set; }
+	public RxBoolCommandUnit? ToggleNXMLinkDownloaderCommand { get; set; }
 
 	[Keybinding("Open Collection Downloader Window", Key.None, KeyModifiers.None, "", "Download")]
-	public RxCommandUnit? OpenCollectionDownloaderWindowCommand { get; set; }
+	public RxBoolCommandUnit? ToggleCollectionDownloaderWindowCommand { get; set; }
 
 	[Keybinding("Extract All Selected Mods To...", Key.None, KeyModifiers.None, "", "Tools")]
 	public RxCommandUnit? ExtractAllSelectedModsCommand { get; set; }
@@ -399,6 +399,9 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			});
 			return result;
 		}, canExecuteCommands);
+
+		ToggleNXMLinkDownloaderCommand = ReactiveCommand.Create(ToggleWindow<NxmDownloadWindow>, canExecuteCommands);
+		ToggleCollectionDownloaderWindowCommand = ReactiveCommand.Create(ToggleWindow<NexusModsCollectionDownloadWindow>, canExecuteCommands);
 
 		ToggleThemeModeCommand = ReactiveCommand.Create(() =>
 		{
@@ -600,8 +603,6 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		var keybindings = this.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetCustomAttribute<KeybindingAttribute>());
 
 		DownloadScriptExtenderCommand = ReactiveCommand.Create(main.AskToDownloadScriptExtender, canExecuteCommands);
-		DownloadNXMLinkCommand = ReactiveCommand.Create(ToggleWindow<NxmDownloadWindow>, canExecuteCommands);
-		OpenCollectionDownloaderWindowCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractAllSelectedModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractSelectedActiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		ExtractSelectedInactiveModsCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
@@ -698,8 +699,8 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			new MenuEntry("_Download"){
 				Children = [
 					MenuEntry.FromKeybinding(DownloadScriptExtenderCommand, nameof(DownloadScriptExtenderCommand), keybindings),
-					MenuEntry.FromKeybinding(DownloadNXMLinkCommand, nameof(DownloadNXMLinkCommand), keybindings),
-					MenuEntry.FromKeybinding(OpenCollectionDownloaderWindowCommand, nameof(OpenCollectionDownloaderWindowCommand), keybindings),
+					MenuEntry.FromKeybinding(ToggleNXMLinkDownloaderCommand, nameof(ToggleNXMLinkDownloaderCommand), keybindings),
+					MenuEntry.FromKeybinding(ToggleCollectionDownloaderWindowCommand, nameof(ToggleCollectionDownloaderWindowCommand), keybindings),
 					new MenuSeparator(),
 					new MenuEntry("Check for Mod Updates..."){
 					Children = [

@@ -69,8 +69,8 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_OpenSavesFolderCommand", "Open Saves Folder", OpenSavesFolderCommand, Avalonia.Input.Key.D3, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenExtenderDataFolderCommand", "Open Script Extender Data Folder", OpenExtenderDataFolderCommand, Avalonia.Input.Key.D4, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_DownloadScriptExtenderCommand", "Download & Extract the Script Extender...", DownloadScriptExtenderCommand);
-		keys.RegisterCommand("MainCommandBarViewModel_DownloadNXMLinkCommand", "Download nxm:\\\\ Link...", DownloadNXMLinkCommand);
-		keys.RegisterCommand("MainCommandBarViewModel_OpenCollectionDownloaderWindowCommand", "Open Collection Downloader Window", OpenCollectionDownloaderWindowCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleNXMLinkDownloaderCommand", "Download nxm:\\\\ Link...", ToggleNXMLinkDownloaderCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_ToggleCollectionDownloaderWindowCommand", "Open Collection Downloader Window", ToggleCollectionDownloaderWindowCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExtractAllSelectedModsCommand", "Extract All Selected Mods To...", ExtractAllSelectedModsCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExtractSelectedActiveModsCommand", "Extract Selected Active Mods To...", ExtractSelectedActiveModsCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExtractSelectedInactiveModsCommand", "Extract Selected Inactive Mods To...", ExtractSelectedInactiveModsCommand);

@@ -17,7 +17,7 @@ public static class ViewModelLocator
 
 	public static AboutWindowViewModel About => AppServices.Get<AboutWindowViewModel>()!;
 	public static AppUpdateWindowViewModel AppUpdate => AppServices.Get<AppUpdateWindowViewModel>()!;
-	public static CollectionDownloadWindowViewModel CollectionDownload => AppServices.Get<CollectionDownloadWindowViewModel>()!;
+	public static NexusModsCollectionDownloadWindowViewModel CollectionDownload => AppServices.Get<NexusModsCollectionDownloadWindowViewModel>()!;
 	public static HelpWindowViewModel Help => AppServices.Get<HelpWindowViewModel>()!;
 	public static ModPropertiesWindowViewModel ModProperties => AppServices.Get<ModPropertiesWindowViewModel>()!;
 	public static NxmDownloadWindowViewModel NxmDownload => AppServices.Get<NxmDownloadWindowViewModel>()!;

@@ -10,6 +10,7 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://ModManager/Styling/Icons.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/Resources.axaml" />
 				<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/General.axaml" />
 				<!--<ResourceInclude Source="avares://ModManager/Styling/ColorThemes/Dracula.axaml" />-->

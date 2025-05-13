@@ -62,9 +62,9 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.AppUpdateWindowViewModel));
             }
             {
-                global::System.Lazy<ModManager.ViewModels.CollectionDownloadWindowViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.CollectionDownloadWindowViewModel>(() => new global::ModManager.ViewModels.CollectionDownloadWindowViewModel((global::ReactiveUI.IScreen)resolver.GetService(typeof(global::ReactiveUI.IScreen))));
-                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.CollectionDownloadWindowViewModel>));
-                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.CollectionDownloadWindowViewModel));
+                global::System.Lazy<ModManager.ViewModels.NexusModsCollectionDownloadWindowViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.NexusModsCollectionDownloadWindowViewModel>(() => new global::ModManager.ViewModels.NexusModsCollectionDownloadWindowViewModel((global::ReactiveUI.IScreen)resolver.GetService(typeof(global::ReactiveUI.IScreen))));
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.NexusModsCollectionDownloadWindowViewModel>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.NexusModsCollectionDownloadWindowViewModel));
             }
             {
                 global::System.Lazy<ModManager.ViewModels.HelpWindowViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.HelpWindowViewModel>(() => new global::ModManager.ViewModels.HelpWindowViewModel((global::ReactiveUI.IScreen)resolver.GetService(typeof(global::ReactiveUI.IScreen))));
@@ -175,6 +175,11 @@ namespace Splat
                 global::System.Lazy<ModManager.AboutWindow> lazy = new global::System.Lazy<ModManager.AboutWindow>(() => new global::ModManager.AboutWindow());
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.AboutWindow>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.AboutWindow));
+            }
+            {
+                global::System.Lazy<ModManager.NexusModsCollectionDownloadWindow> lazy = new global::System.Lazy<ModManager.NexusModsCollectionDownloadWindow>(() => new global::ModManager.NexusModsCollectionDownloadWindow());
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.NexusModsCollectionDownloadWindow>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.NexusModsCollectionDownloadWindow));
             }
         }
     }

@@ -1,0 +1,146 @@
+<Window x:Class="ModManager.NexusModsCollectionDownloadWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:ModManager"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:labs="clr-namespace:Avalonia.Labs.Controls;assembly=Avalonia.Labs.Controls"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+    xmlns:vm="using:ModManager.ViewModels"
+    Title="NexusMods Collection Downloader"
+    Width="1563"
+    Height="759"
+    d:DesignHeight="300"
+    d:DesignWidth="800"
+    x:DataType="vm:NexusModsCollectionDownloadWindowViewModel"
+    Focusable="True"
+    Icon="avares://ModManager/Assets/BG3ModManager.ico"
+    Topmost="False">
+	<Design.DataContext>
+		<vm:CollectionDownloadWindowDesignViewModel />
+	</Design.DataContext>
+	<Window.Styles>
+		<Style Selector="ToggleButton Svg.grid-on">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="ToggleButton:checked Svg.grid-on">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="ToggleButton Svg.grid-off">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="ToggleButton:checked Svg.grid-off">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+
+		<Style Selector="ToggleButton Svg.card-on">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="ToggleButton:checked Svg.card-on">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="ToggleButton Svg.card-off">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="ToggleButton:checked Svg.card-off">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+
+		<Style Selector="Button.toolbar">
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+		<Style Selector="ToggleButton.toolbar">
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+	</Window.Styles>
+	<Panel>
+		<suki:SukiBackground IsHitTestVisible="False" />
+		<suki:GlassCard CornerRadius="0" IsOpaque="True">
+			<Grid RowDefinitions="Auto,*,Auto">
+				<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock FontSize="24"
+					    Text="{Binding Title}"
+					    TextAlignment="Center"
+					    TextWrapping="Wrap" />
+					<labs:AsyncImage Width="16"
+					    Height="16"
+					    IsVisible="{Binding HasAuthorAvatar}"
+					    RenderOptions.BitmapInterpolationMode="HighQuality"
+					    Source="{Binding AuthorAvatarUri}"
+					    Stretch="UniformToFill" />
+					<Rectangle Height="2" Fill="LightGray" />
+				</StackPanel>
+				<Grid Grid.Row="1" RowDefinitions="Auto,*">
+					<Grid Grid.ColumnDefinitions="240,*,240">
+						<StackPanel Margin="12,0,0,0" Orientation="Horizontal">
+							<ToggleButton Classes="toolbar"
+							    Command="{Binding SetGridViewCommand}"
+							    IsChecked="{Binding IsGridView, Mode=OneWay}"
+							    ToolTip.ShowDelay="0"
+							    ToolTip.Tip="View as List">
+								<Panel>
+									<Svg Classes="grid-on" Path="/Assets/Icons/ListView_16x.svg" Stretch="Uniform" />
+									<Svg Classes="grid-off" Path="/Assets/Icons/ListViewDisabled_16x.svg" Stretch="Uniform" />
+								</Panel>
+							</ToggleButton>
+							<ToggleButton Classes="toolbar"
+							    Command="{Binding SetCardViewCommand}"
+							    IsChecked="{Binding IsCardView, Mode=OneWay}"
+							    ToolTip.ShowDelay="0"
+							    ToolTip.Tip="View as Cards">
+								<Panel>
+									<Svg Classes="card-on" Path="/Assets/Icons/ViewPortrait_16x.svg" />
+									<Svg Classes="card-off" Path="/Assets/Icons/ViewPortraitDisabled_16x.svg" />
+								</Panel>
+							</ToggleButton>
+							<Separator />
+							<Button Classes="toolbar"
+							    Command="{Binding EnableAllCommand}"
+							    Content="{SvgImage /Assets/Icons/CheckboxCheckAll_16x.svg}"
+							    ToolTip.ShowDelay="0"
+							    ToolTip.Tip="Enable All" />
+							<Button Classes="toolbar"
+							    Command="{Binding DisableAllCommand}"
+							    Content="{SvgImage /Assets/Icons/CheckboxClearAll_16x.svg}"
+							    ToolTip.ShowDelay="0"
+							    ToolTip.Tip="Disable All" />
+						</StackPanel>
+						<TextBlock Grid.Column="1"
+						    FontSize="20"
+						    Text="Mods"
+						    TextAlignment="Center" />
+					</Grid>
+				</Grid>
+				<UniformGrid Grid.Row="2"
+				    Margin="4"
+				    HorizontalAlignment="Center"
+				    VerticalAlignment="Center"
+				    Rows="1">
+					<Button Margin="4,0"
+					    Padding="12,2"
+					    Background="Lime"
+					    Command="{Binding ConfirmCommand}"
+					    Content="Download" />
+					<Button Margin="4,0"
+					    Padding="12,2"
+					    Background="Red"
+					    Command="{Binding CancelCommand}"
+					    Content="Cancel" />
+				</UniformGrid>
+			</Grid>
+		</suki:GlassCard>
+	</Panel>
+</Window>

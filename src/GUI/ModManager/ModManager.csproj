@@ -66,14 +66,7 @@
 
 	<ItemGroup>
 		<!-- Exclude the output of source generators from the compilation -->
-		<AvaloniaXaml Remove="Models\Mod\**" />
 		<Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
-		<Compile Remove="Models\Mod\**" />
 		<None Include="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Remove="Models\Mod\**" />
-	  <None Remove="Models\Mod\**" />
 	</ItemGroup>
 </Project>

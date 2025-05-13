@@ -1,4 +1,5 @@
-﻿using DynamicData.Binding;
+﻿using DynamicData;
+using DynamicData.Binding;
 
 using ModManager.Models.NexusMods;
 
@@ -6,7 +7,7 @@ using NexusModsNET.DataModels.GraphQL.Types;
 
 namespace ModManager.ViewModels;
 
-public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
+public class NexusModsCollectionDownloadWindowViewModel : ReactiveObject, IClosableViewModel, IRoutableViewModel
 {
 	#region IClosableViewModel/IRoutableViewModel
 	public string UrlPathSegment => "collectiondownload";
@@ -22,17 +23,18 @@ public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewMo
 
 	[ObservableAsProperty] public string Title { get; }
 	[ObservableAsProperty] public Uri? AuthorAvatarUri { get; }
-	[ObservableAsProperty] public bool AuthorAvatarVisibility { get; }
-	[ObservableAsProperty] public bool GridViewVisibility { get; }
-	[ObservableAsProperty] public bool CardViewVisibility { get; }
+	[ObservableAsProperty] public bool HasAuthorAvatar { get; }
+	[ObservableAsProperty] public bool IsGridView { get; }
+	[ObservableAsProperty] public bool AnyEnabled { get; }
+	[ObservableAsProperty] public bool AnyDisabled { get; }
 
 	public ReactiveCommand<bool, Unit> SelectAllCommand { get; }
 	public RxCommandUnit SetGridViewCommand { get; }
 	public RxCommandUnit SetCardViewCommand { get; }
 	public RxCommandUnit EnableAllCommand { get; }
 	public RxCommandUnit DisableAllCommand { get; }
-	public RxCommandUnit ConfirmCommand { get; set; }
-	public RxCommandUnit CancelCommand { get; set; }
+	public RxCommandUnit? ConfirmCommand { get; set; }
+	public RxCommandUnit? CancelCommand { get; set; }
 
 	public void Load(NexusGraphCollectionRevision collectionRevision)
 	{
@@ -66,7 +68,7 @@ public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewMo
 		}
 	}
 
-	public CollectionDownloadWindowViewModel(IScreen? host = null)
+	public NexusModsCollectionDownloadWindowViewModel(IScreen? host = null)
 	{
 		HostScreen = host ?? Locator.Current.GetService<IScreen>()!;
 		CloseCommand = this.CreateCloseCommand();
@@ -77,10 +79,9 @@ public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewMo
 		var whenData = this.WhenAnyValue(x => x.Data).WhereNotNull();
 		whenData.Select(x => ToTitleText(x.Name, x.Author)).ToUIProperty(this, x => x.Title);
 		whenData.Select(x => x.AuthorAvatarUrl).ToUIProperty(this, x => x.AuthorAvatarUri);
-		this.WhenAnyValue(x => x.AuthorAvatarUri).Select(x => x.IsValid()).ToUIProperty(this, x => x.AuthorAvatarVisibility);
+		this.WhenAnyValue(x => x.AuthorAvatarUri).Select(x => x.IsValid()).ToUIProperty(this, x => x.HasAuthorAvatar);
 
-		this.WhenAnyValue(x => x.IsCardView).Select(b => !b).ToUIProperty(this, x => x.GridViewVisibility, true);
-		this.WhenAnyValue(x => x.IsCardView).ToUIProperty(this, x => x.CardViewVisibility);
+		this.WhenAnyValue(x => x.IsCardView).Select(b => !b).ToUIProperty(this, x => x.IsGridView, true);
 
 		SelectAllCommand = ReactiveCommand.Create<bool>(b =>
 		{
@@ -97,10 +98,14 @@ public class CollectionDownloadWindowViewModel : ReactiveObject, IClosableViewMo
 		SetCardViewCommand = ReactiveCommand.Create(() => { IsCardView = true; });
 		EnableAllCommand = ReactiveCommand.Create(() => SelectAll(true));
 		DisableAllCommand = ReactiveCommand.Create(() => SelectAll(false));
+
+		var modsConn = Mods.ToObservableChangeSet().AutoRefresh(x => x.IsSelected).ToCollection().Throttle(TimeSpan.FromMilliseconds(50)).ObserveOn(RxApp.MainThreadScheduler);
+		modsConn.Select(x => x.Any(x => x.IsSelected)).ToUIProperty(this, x => x.AnyEnabled, initialValue: false);
+		modsConn.Select(x => x.Any(x => !x.IsSelected)).ToUIProperty(this, x => x.AnyDisabled, initialValue: true);
 	}
 }
 
-public class CollectionDownloadWindowDesignViewModel : CollectionDownloadWindowViewModel
+public class CollectionDownloadWindowDesignViewModel : NexusModsCollectionDownloadWindowViewModel
 {
 	public CollectionDownloadWindowDesignViewModel() : base()
 	{
