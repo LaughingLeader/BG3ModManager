@@ -752,7 +752,7 @@ public static partial class ModDataLoader
 		return null;
 	}
 
-	public static async Task<ModSettingsParseResults> LoadModSettingsFileAsync(string path)
+	public static async Task<ModSettingsParseResults> LoadModSettingsFileAsync(string path, CancellationToken token)
 	{
 		var modOrderUUIDs = new List<string>();
 		var activeMods = new List<ModuleShortDesc>();
@@ -762,7 +762,7 @@ public static partial class ModDataLoader
 			Resource? modSettingsRes = null;
 			try
 			{
-				modSettingsRes = await LoadResourceAsync(path, ResourceFormat.LSX, _modSettingsParams);
+				modSettingsRes = await LoadResourceAsync(path, ResourceFormat.LSX, token, _modSettingsParams);
 			}
 			catch (Exception ex)
 			{
@@ -806,7 +806,7 @@ public static partial class ModDataLoader
 		};
 	}
 
-	public static async Task<List<ProfileData>> LoadProfileDataAsync(string profilePath)
+	public static async Task<List<ProfileData>> LoadProfileDataAsync(string profilePath, CancellationToken token)
 	{
 		List<ProfileData> profiles = [];
 		if (Directory.Exists(profilePath))
@@ -822,7 +822,7 @@ public static partial class ModDataLoader
 				var profileFile = GetProfileFile(folder);
 				if (profileFile != null)
 				{
-					var profileRes = await LoadResourceAsync(profileFile.FullName);
+					var profileRes = await LoadResourceAsync(profileFile.FullName, ResourceFormat.LSF, token);
 					if (profileRes != null && profileRes.Regions.TryGetValue("PlayerProfile", out var region))
 					{
 						if (region.Attributes.TryGetValue("PlayerProfileName", out var profileNameAtt))
@@ -860,7 +860,7 @@ public static partial class ModDataLoader
 				};
 
 				var modSettingsFile = Path.Join(folder, "modsettings.lsx");
-				var modSettings = await LoadModSettingsFileAsync(modSettingsFile);
+				var modSettings = await LoadModSettingsFileAsync(modSettingsFile, token);
 				profileData.ActiveMods.AddRange(modSettings.ActiveMods);
 				profiles.Add(profileData);
 			}
@@ -868,29 +868,13 @@ public static partial class ModDataLoader
 		return profiles;
 	}
 
-	public static async Task<Resource?> LoadResourceAsync(string path, ResourceLoadParameters? resourceParams = null)
-	{
-		return await Task.Run(() =>
-		{
-			try
-			{
-				var resource = ResourceUtils.LoadResource(path, resourceParams ?? _loadParams);
-				return resource;
-			}
-			catch (Exception ex)
-			{
-				DivinityApp.Log($"Error loading '{path}': {ex}");
-				return null;
-			}
-		});
-	}
-
-	public static async Task<Resource?> LoadResourceAsync(string path, ResourceFormat resourceFormat, ResourceLoadParameters? resourceParams = null)
+	public static async Task<Resource?> LoadResourceAsync(string path, ResourceFormat resourceFormat, CancellationToken token, ResourceLoadParameters? resourceParams = null)
 	{
 		try
 		{
-			using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-			await fs.ReadAsync(new byte[fs.Length], 0, (int)fs.Length);
+			using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true);
+			var buffer = new byte[fs.Length];
+			await fs.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
 			fs.Position = 0;
 			var resource = ResourceUtils.LoadResource(fs, resourceFormat, resourceParams ?? _loadParams);
 			return resource;
@@ -902,7 +886,7 @@ public static partial class ModDataLoader
 		}
 	}
 
-	public static async Task<Resource?> LoadResourceAsync(System.IO.Stream stream, ResourceFormat resourceFormat, ResourceLoadParameters? resourceParams = null)
+	public static async Task<Resource?> LoadResourceAsync(Stream stream, ResourceFormat resourceFormat, CancellationToken token, ResourceLoadParameters? resourceParams = null)
 	{
 		return await Task.Run(() =>
 		{
@@ -916,7 +900,7 @@ public static partial class ModDataLoader
 				DivinityApp.Log($"Error loading resource: {ex}");
 				return null;
 			}
-		});
+		}, token);
 	}
 
 	private static FileInfo? GetProfileFile(string path)
@@ -933,7 +917,7 @@ public static partial class ModDataLoader
 		return files.FirstOrDefault();
 	}
 
-	private static FileInfo GetPlayerProfilesFile(string path)
+	private static FileInfo? GetPlayerProfilesFile(string path)
 	{
 		var files = FileUtils.EnumerateFiles(path, null, (f) =>
 		{
@@ -978,14 +962,14 @@ public static partial class ModDataLoader
 		return false;
 	}
 
-	public static async Task<string> GetSelectedProfileUUIDAsync(string profilePath)
+	public static async Task<string> GetSelectedProfileUUIDAsync(string profilePath, CancellationToken token)
 	{
 		var playerprofilesFile = GetPlayerProfilesFile(profilePath);
 		var activeProfileUUID = "";
 		if (playerprofilesFile != null)
 		{
 			DivinityApp.Log($"Loading playerprofiles at '{playerprofilesFile}'");
-			var res = await LoadResourceAsync(playerprofilesFile.FullName);
+			var res = await LoadResourceAsync(playerprofilesFile.FullName, ResourceFormat.LSF, token);
 			if (res != null && res.Regions.TryGetValue("UserProfiles", out var region))
 			{
 				//DivinityApp.LogMessage($"ActiveProfile | Getting root node '{string.Join(";", region.Attributes.Keys)}'");

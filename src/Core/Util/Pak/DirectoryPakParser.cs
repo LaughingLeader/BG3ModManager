@@ -90,9 +90,9 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 	}
 	#endregion
 
-	private static async Task LoadToolkitResourcesAsync(string metaPath, ConcurrentDictionary<string, ToolkitProjectMetaData> output)
+	private static async Task LoadToolkitResourcesAsync(string metaPath, ConcurrentDictionary<string, ToolkitProjectMetaData> output, CancellationToken token)
 	{
-		var resource = await ModDataLoader.LoadResourceAsync(metaPath, LSLib.LS.Enums.ResourceFormat.LSX);
+		var resource = await ModDataLoader.LoadResourceAsync(metaPath, LSLib.LS.Enums.ResourceFormat.LSX, token);
 		if(resource != null)
 		{
 			var toolkitMeta = ToolkitProjectMetaData.FromResource(resource);
@@ -190,7 +190,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 				foreach (var toolkitMetaPath in toolkitMetaFiles)
 				{
 					if (token.IsCancellationRequested) break;
-					toolkitProjectTasks.Add(LoadToolkitResourcesAsync(toolkitMetaPath, toolkitProjects));
+					toolkitProjectTasks.Add(LoadToolkitResourcesAsync(toolkitMetaPath, toolkitProjects, token));
 				}
 				await Task.WhenAll(toolkitProjectTasks);
 			}

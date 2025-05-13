@@ -73,7 +73,8 @@ public static class ImportUtils
 			{
 				var info = NexusModFileVersionData.FromFilePath(options.FilePath);
 
-				await fileStream.ReadAsync(new byte[fileStream.Length], 0, (int)fileStream.Length);
+				var buffer = new byte[fileStream.Length];
+				await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), options.Token);
 				fileStream.Position = 0;
 				options.ReportProgress?.Invoke(taskStepAmount);
 				using var archive = ArchiveFactory.Open(fileStream, _importReaderOptions);
@@ -120,10 +121,9 @@ public static class ImportUtils
 							using var entryStream = file.OpenEntryStream();
 							try
 							{
-								var length = (int)file.Size;
-								var result = new byte[length];
-								await entryStream.ReadAsync(result, 0, length);
-								var text = Encoding.UTF8.GetString(result);
+								var entryBuffer = new byte[entryStream.Length];
+								await entryStream.ReadAsync(entryBuffer.AsMemory(0, buffer.Length), options.Token);
+								var text = Encoding.UTF8.GetString(entryBuffer);
 								if (text.IsValid())
 								{
 									options.ImportedJsonFiles.Add(new ImportedJsonFile { FileName = Path.GetFileNameWithoutExtension(file.Key), Text = text });
@@ -172,7 +172,7 @@ public static class ImportUtils
 
 	public static async Task<bool> ImportCompressedFileAsync(ImportParameters options)
 	{
-		FileStream fileStream = null;
+		FileStream? fileStream = null;
 		var taskStepAmount = 1.0 / 4;
 		var success = false;
 		try
@@ -182,11 +182,12 @@ public static class ImportUtils
 			{
 				var info = NexusModFileVersionData.FromFilePath(options.FilePath);
 
-				await fileStream.ReadAsync(new byte[fileStream.Length], 0, (int)fileStream.Length);
+				var buffer = new byte[fileStream.Length];
+				await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), options.Token);
 				fileStream.Position = 0;
 				options.ReportProgress?.Invoke(taskStepAmount);
-				System.IO.Stream decompressionStream = null;
-				TempFile tempFile = null;
+				Stream? decompressionStream = null;
+				TempFile? tempFile = null;
 
 				try
 				{
@@ -278,7 +279,7 @@ public static class ImportUtils
 		catch (Exception ex)
 		{
 			DivinityApp.Log($"Error extracting package: {ex}");
-			options.Result.AddError(options.FilePath, ex);
+			options.Result.AddError(options?.FilePath ?? string.Empty, ex);
 			options.ShowAlert?.Invoke($"Error extracting archive (check the log): {ex.Message}", AlertType.Danger, 0);
 		}
 		finally

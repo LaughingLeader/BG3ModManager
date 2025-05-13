@@ -348,10 +348,10 @@ public static class FileUtils
 	{
 		try
 		{
-			using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-			var result = new byte[file.Length];
-			var totalBytesRead = await file.ReadAsync(result.AsMemory(0, (int)file.Length), token);
-			return result;
+			using var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+			var buffer = new byte[fileStream.Length];
+			await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
+			return buffer;
 		}
 		catch (Exception ex)
 		{

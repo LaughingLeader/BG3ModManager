@@ -307,14 +307,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			DivinityApp.Log("Loading profiles...");
 			main.Progress.WorkText = "Loading profiles...";
-			var loadedProfiles = await LoadProfilesAsync();
+			var loadedProfiles = await LoadProfilesAsync(token);
 			main.Progress.IncreaseValue(taskStepAmount);
 
 			if (!selectedProfileUUID.IsValid() && (loadedProfiles != null && loadedProfiles.Count > 0))
 			{
 				DivinityApp.Log("Loading current profile...");
 				main.Progress.WorkText = "Loading current profile...";
-				selectedProfileUUID = await ModDataLoader.GetSelectedProfileUUIDAsync(PathwayData.AppDataProfilesPath);
+				selectedProfileUUID = await ModDataLoader.GetSelectedProfileUUIDAsync(PathwayData.AppDataProfilesPath, token);
 				main.Progress.IncreaseValue(taskStepAmount);
 			}
 			else
@@ -943,13 +943,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	public async Task<List<ProfileData>?> LoadProfilesAsync()
+	public async Task<List<ProfileData>?> LoadProfilesAsync(CancellationToken token)
 	{
 		if (Directory.Exists(PathwayData.AppDataProfilesPath))
 		{
 			DivinityApp.Log($"Loading profiles from '{PathwayData.AppDataProfilesPath}'.");
 
-			var profiles = await ModDataLoader.LoadProfileDataAsync(PathwayData.AppDataProfilesPath);
+			var profiles = await ModDataLoader.LoadProfileDataAsync(PathwayData.AppDataProfilesPath, token);
 			DivinityApp.Log($"Loaded '{profiles.Count}' profiles.\n{string.Join(';', profiles.Select(x => x.FolderName))}");
 			return profiles;
 		}
@@ -1925,10 +1925,10 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				//var exeName = !Settings.LaunchDX11 ? "bg3" : "bg3_dx11";
 				//var isGameRunning = Process.GetProcessesByName(exeName).Length > 0;
 				checkModSettingsTask?.Dispose();
-				checkModSettingsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromSeconds(2), async (sch, cts) =>
+				checkModSettingsTask = RxApp.TaskpoolScheduler.ScheduleAsync(TimeSpan.FromSeconds(2), async (sch, token) =>
 				{
 					var activeCount = ActiveMods.Count;
-					var modSettingsData = await ModDataLoader.LoadModSettingsFileAsync(e.FullPath);
+					var modSettingsData = await ModDataLoader.LoadModSettingsFileAsync(e.FullPath, token);
 					if (activeCount > 0 && modSettingsData.CountActive() < activeCount)
 					{
 						AppServices.Commands.ShowAlert("The active load order (modsettings.lsx) has been reset externally", AlertType.Danger, 270);
