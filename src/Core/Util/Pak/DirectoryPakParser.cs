@@ -16,14 +16,14 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 	IDictionary<string, ModData>? baseMods = null, HashSet<string>? packageBlackList = null) : IDisposable
 {
 	private bool _isDisposed;
-	private readonly List<Package> _packages = [];
+	private readonly ConcurrentBag<Package> _packages = [];
 	private readonly IFileSystemService _fs = Locator.Current.GetService<IFileSystemService>()!;
 	private readonly IEnvironmentService _environment = Locator.Current.GetService<IEnvironmentService>()!;
 	private readonly EnumerationOptions _opts = opts ?? FileUtils.FlatSearchOptions;
 	private readonly IDictionary<string, ModData> _baseMods = baseMods ?? new Dictionary<string, ModData>();
 	private readonly HashSet<string> _packageBlackList = packageBlackList ?? PackageBlacklistBG3;
 
-	public string? DirectoryPath { get; } = directoryPath;
+	public string DirectoryPath => directoryPath;
 	public List<ModData> Mods { get; } = [];
 
 	#region Static Properties
@@ -77,9 +77,9 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		"Voice.pak"
 	];
 
-	private static bool CanProcessPak(string path, HashSet<string> packageBlacklist)
+	private bool CanProcessPak(string path, HashSet<string> packageBlacklist)
 	{
-		var baseName = Path.GetFileName(path);
+		var baseName = _fs.Path.GetFileName(path);
 		if (!packageBlacklist.Contains(baseName)
 			// Don't load 2nd, 3rd, ... parts of a multi-part archive
 			&& !ModPathVisitor.archivePartRe.IsMatch(baseName))
@@ -90,105 +90,71 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 	}
 	#endregion
 
+	private static async Task LoadToolkitResourcesAsync(string metaPath, ConcurrentDictionary<string, ToolkitProjectMetaData> output)
+	{
+		var resource = await ModDataLoader.LoadResourceAsync(metaPath, LSLib.LS.Enums.ResourceFormat.LSX);
+		if(resource != null)
+		{
+			var toolkitMeta = ToolkitProjectMetaData.FromResource(resource);
+			if (toolkitMeta.Module.IsValid())
+			{
+				toolkitMeta.FilePath = metaPath;
+				output.TryAdd(toolkitMeta.Module, toolkitMeta);
+			}
+		}
+	}
+
+	private async Task<ModData?> LoadModsMetaResourcesAsync(string metaFilePath, ConcurrentDictionary<string, ToolkitProjectMetaData> toolkitProjects, CancellationToken token)
+	{
+		var mod = await ModDataLoader.GetModDataFromMeta(metaFilePath, token);
+		if (mod != null)
+		{
+			mod.IsLooseMod = true;
+			mod.FilePath = metaFilePath;
+			if (toolkitProjects.TryGetValue(mod.UUID, out var toolkitData))
+			{
+				mod.IsToolkitProject = true;
+				mod.ToolkitProjectMeta = toolkitData;
+			}
+
+			var parentFolder = _fs.Path.GetDirectoryName(metaFilePath)!;
+			await ModDataLoader.TryLoadConfigFilesFromPath(_fs, parentFolder, mod, token);
+
+			try
+			{
+				mod.LastModified = _fs.File.GetLastWriteTime(metaFilePath);
+			}
+			catch (Exception ex)
+			{
+				DivinityApp.Log($"Error getting last modified date for '{mod.FilePath}': {ex}");
+			}
+
+			return mod;
+		}
+		return null;
+	}
+
 	private async Task<ModDirectoryLoadingResults> LoadPackagesAsync(bool detectDuplicates, bool parseLooseMetaFiles, CancellationToken token)
 	{
-		var opts = new ParallelOptions()
-		{
-			CancellationToken = token,
-			MaxDegreeOfParallelism = _environment.ProcessorCount
-		};
-
 		ConcurrentDictionary<string, ModData> loadedMods = [];
 		ConcurrentBag<ModData> dupes = [];
 
-		await Parallel.ForEachAsync(_packages, opts, async (package, t) =>
+		var packageLoadTasks = new List<Task<List<ModData>?>>();
+		foreach (var package in _packages)
 		{
-			var parsed = await ModDataLoader.LoadModDataFromPakAsync(package, _baseMods, t, !detectDuplicates);
-			if (parsed?.Count > 0)
-			{
-				foreach (var mod in parsed)
-				{
-					if (detectDuplicates)
-					{
-						if (loadedMods.ContainsKey(mod.UUID))
-						{
-							dupes.Add(mod);
-						}
-						else
-						{
-							loadedMods[mod.UUID] = mod;
-						}
-					}
-					else
-					{
-						loadedMods[mod.UUID] = mod;
-					}
-				}
-			}
-		});
+			if (token.IsCancellationRequested) break;
+			packageLoadTasks.Add(ModDataLoader.LoadModDataFromPakAsync(package, _baseMods, token, !detectDuplicates));
+		}
+		var parsedResults = await Task.WhenAll(packageLoadTasks);
 
-
-		if (parseLooseMetaFiles)
+		if (parsedResults.Length > 0)
 		{
-			var modsMetaDirectory = Path.Join(directoryPath, "Mods");
-			var projectsMetaDirectory = Path.Join(directoryPath, "Projects");
-
-			var toolkitProjects = new ConcurrentDictionary<string, ToolkitProjectMetaData>();
-
-			if (projectsMetaDirectory.IsExistingDirectory())
+			foreach(var modList in parsedResults)
 			{
-				var toolkitMetaFiles = Directory.EnumerateFiles(projectsMetaDirectory, "meta.lsx", FileUtils.RecursiveOptions);
-
-				await Parallel.ForEachAsync(toolkitMetaFiles, opts, async (toolkitMetaPath, t) =>
+				if(modList != null)
 				{
-					try
+					foreach (var mod in modList)
 					{
-						var lsxResource = await ModDataLoader.LoadResourceAsync(toolkitMetaPath, LSLib.LS.Enums.ResourceFormat.LSX);
-						if(lsxResource != null)
-						{
-							var toolkitMeta = ToolkitProjectMetaData.FromResource(lsxResource);
-							if(toolkitMeta.Module.IsValid())
-							{
-								toolkitMeta.FilePath = toolkitMetaPath;
-								toolkitProjects.TryAdd(toolkitMeta.Module, toolkitMeta);
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						DivinityApp.Log($"Error parsing '{toolkitMetaPath}':\n{ex}");
-					}
-				});
-			}
-
-			if(modsMetaDirectory.IsExistingDirectory())
-			{
-				var metaFiles = Directory.EnumerateFiles(modsMetaDirectory, "meta.lsx", FileUtils.RecursiveOptions);
-				await Parallel.ForEachAsync(metaFiles, opts, async (metaFilePath, t) =>
-				{
-					var mod = await ModDataLoader.GetModDataFromMeta(metaFilePath, t);
-					if (mod != null)
-					{
-						mod.IsLooseMod = true;
-						mod.FilePath = metaFilePath;
-						if (toolkitProjects.TryGetValue(mod.UUID, out var toolkitData))
-						{
-							mod.IsToolkitProject = true;
-							mod.ToolkitProjectMeta = toolkitData;
-						}
-
-						var parentFolder = _fs.Path.GetDirectoryName(metaFilePath)!;
-						await ModDataLoader.TryLoadConfigFilesFromPath(_fs, parentFolder, mod, token);
-
-						try
-						{
-							mod.LastModified = _fs.File.GetLastWriteTime(metaFilePath);
-						}
-						catch (Exception ex)
-						{
-							DivinityApp.Log($"Error getting last modified date for '{mod.FilePath}': {ex}");
-						}
-
 						if (detectDuplicates)
 						{
 							if (loadedMods.ContainsKey(mod.UUID))
@@ -205,31 +171,71 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 							loadedMods[mod.UUID] = mod;
 						}
 					}
-				});
+				}
+			}
+		}
+
+		if (parseLooseMetaFiles)
+		{
+			var modsMetaDirectory = _fs.Path.Join(directoryPath, "Mods");
+			var projectsMetaDirectory = _fs.Path.Join(directoryPath, "Projects");
+
+			var toolkitProjects = new ConcurrentDictionary<string, ToolkitProjectMetaData>();
+
+			if (projectsMetaDirectory.IsExistingDirectory())
+			{
+				var toolkitMetaFiles = _fs.Directory.EnumerateFiles(projectsMetaDirectory, "meta.lsx", FileUtils.RecursiveOptions);
+
+				var toolkitProjectTasks = new List<Task>();
+				foreach (var toolkitMetaPath in toolkitMetaFiles)
+				{
+					if (token.IsCancellationRequested) break;
+					toolkitProjectTasks.Add(LoadToolkitResourcesAsync(toolkitMetaPath, toolkitProjects));
+				}
+				await Task.WhenAll(toolkitProjectTasks);
+			}
+
+			if(modsMetaDirectory.IsExistingDirectory())
+			{
+				var metaFiles = _fs.Directory.EnumerateFiles(modsMetaDirectory, "meta.lsx", FileUtils.RecursiveOptions);
+
+				var metaTasks = new List<Task<ModData?>>();
+				foreach (var metaPath in metaFiles)
+				{
+					if (token.IsCancellationRequested) break;
+					metaTasks.Add(LoadModsMetaResourcesAsync(metaPath, toolkitProjects, token));
+				}
+				var looseMods = await Task.WhenAll(metaTasks);
+
+				foreach(var looseMod in looseMods)
+				{
+					if(looseMod != null)
+					{
+						if (detectDuplicates)
+						{
+							if (loadedMods.ContainsKey(looseMod.UUID))
+							{
+								dupes.Add(looseMod);
+							}
+							else
+							{
+								loadedMods.TryAdd(looseMod.UUID, looseMod);
+							}
+						}
+						else
+						{
+							loadedMods.TryAdd(looseMod.UUID, looseMod);
+						}
+					}
+				}
 			}
 		}
 
 		return new ModDirectoryLoadingResults(DirectoryPath)
 		{
 			Mods = new(loadedMods),
-			Duplicates = new(dupes)
+			Duplicates = [.. dupes]
 		};
-	}
-
-	private void ProcessPartitionPakPath(IEnumerator<string> partition)
-	{
-		using (partition)
-		{
-			while (partition.MoveNext())
-			{
-				var reader = new PackageReader();
-				var package = reader.Read(partition.Current);
-				if (package != null)
-				{
-					_packages.Add(package);
-				}
-			}
-		}
 	}
 
 	public async Task<ModDirectoryLoadingResults> ProcessAsync(bool detectDuplicates, bool parseLooseMetaFiles, CancellationToken token)
@@ -237,16 +243,22 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 #if DEBUG
 		if (!_fs.Directory.Exists(directoryPath)) throw new DirectoryNotFoundException(directoryPath);
 #endif
-		if (Directory.Exists(directoryPath))
+		if (_fs.Directory.Exists(directoryPath))
 		{
 			var time = DateTimeOffset.Now;
 
-			var files = Directory.EnumerateFiles(directoryPath, "*.pak", _opts).Where(x => CanProcessPak(x, _packageBlackList));
+			var files = _fs.Directory.EnumerateFiles(directoryPath, "*.pak", _opts).Where(x => CanProcessPak(x, _packageBlackList));
 
-			Partitioner.Create(files)
-				.GetPartitions(_environment.ProcessorCount)
-				.AsParallel()
-				.ForAll(ProcessPartitionPakPath);
+			foreach (var pak in files)
+			{
+				if (token.IsCancellationRequested) break;
+				var reader = new PackageReader();
+				var package = reader.Read(pak);
+				if (package != null)
+				{
+					_packages.Add(package);
+				}
+			}
 
 			var timeTaken = $"{DateTimeOffset.Now - time:s\\.ff}";
 			System.Diagnostics.Trace.WriteLine($"Took {timeTaken} second(s) to enumerate files");
@@ -264,7 +276,13 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		{
 			if (disposing)
 			{
-				_packages?.ForEach(x => x.Dispose());
+				if(_packages != null )
+				{
+					foreach(var package in _packages)
+					{
+						package?.Dispose();
+					}
+				}
 			}
 
 			// TODO: free unmanaged resources (unmanaged objects) and override finalizer
