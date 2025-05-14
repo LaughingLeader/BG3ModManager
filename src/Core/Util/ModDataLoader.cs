@@ -931,6 +931,30 @@ public static partial class ModDataLoader
 		return files.FirstOrDefault();
 	}
 
+	private class LsfExtComparer : IComparer<string>
+	{
+		public int Compare(string? a, string? b)
+		{
+			var isALsf = a?.Equals(".lsf", StringComparison.OrdinalIgnoreCase) == true;
+			var isBLsf = b?.Equals(".lsf", StringComparison.OrdinalIgnoreCase) == true;
+			if (isALsf == isBLsf)
+			{
+				return 0;
+			}
+			else if (isALsf)
+			{
+				return 1;
+			}
+			else if (isBLsf)
+			{
+				return -1;
+			}
+			return 0;
+		}
+	}
+
+	private static readonly LsfExtComparer LsfCompare = new();
+
 	private static FileInfo? GetPlayerProfilesFile(string path)
 	{
 		var files = FileUtils.EnumerateFiles(path, null, (f) =>
@@ -941,7 +965,7 @@ public static partial class ModDataLoader
 				return true;
 			}
 			return false;
-		}).Select(x => new FileInfo(x)).OrderBy(x => x.LastWriteTime).ToList();
+		}).Select(x => new FileInfo(x)).OrderByDescending(x => x.Extension, LsfCompare).ThenByDescending(x => x.LastWriteTime).ToList();
 		return files.FirstOrDefault();
 	}
 
