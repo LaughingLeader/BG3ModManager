@@ -607,9 +607,9 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	public async Task<bool> SaveLoadOrderAsync() => await SaveLoadOrderAsync(false);
+	public async Task<bool> SaveLoadOrderAsync(CancellationToken token) => await SaveLoadOrderAsync(token, false);
 
-	public async Task<bool> SaveLoadOrderAsync(bool skipSaveConfirmation = false)
+	public async Task<bool> SaveLoadOrderAsync(CancellationToken token, bool skipSaveConfirmation = false)
 	{
 		var result = false;
 		if (SelectedProfile != null && SelectedModOrder != null)
@@ -634,13 +634,13 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				if (SelectedModOrder.IsModSettings)
 				{
 					//When saving the "Current" order, write this to modsettings.lsx instead of a json file.
-					result = await ExportLoadOrderAsync();
+					result = await ExportLoadOrderAsync(token);
 					outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
 					_modSettingsWatcher.PauseWatcher(true, 1000);
 				}
 				else
 				{
-					result = await ModDataLoader.ExportLoadOrderToFileAsync(outputPath, SelectedModOrder);
+					result = await ModDataLoader.ExportLoadOrderToFileAsync(outputPath, SelectedModOrder, token);
 				}
 			}
 			catch (Exception ex)
@@ -773,7 +773,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		return false;
 	}
 
-	public async Task<bool> ExportLoadOrderAsync()
+	public async Task<bool> ExportLoadOrderAsync(CancellationToken token)
 	{
 		var settings = Settings;
 		if (SelectedProfile != null && SelectedModOrder != null)
@@ -783,18 +783,18 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			var outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
 			var finalOrder = ModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
-			var result = await ModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder);
+			var result = await ModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder, token);
 
 			var dir = AppServices.Pathways.GetLarianStudiosAppDataFolder();
 			if (SelectedModOrder.Order.Count > 0)
 			{
-				await ModDataLoader.UpdateLauncherPreferencesAsync(dir, false, false, true);
+				await ModDataLoader.UpdateLauncherPreferencesAsync(dir, false, false, token, true);
 			}
 			else
 			{
 				if (settings.DisableLauncherTelemetry || settings.DisableLauncherModWarnings)
 				{
-					await ModDataLoader.UpdateLauncherPreferencesAsync(dir, !settings.DisableLauncherTelemetry, !settings.DisableLauncherModWarnings);
+					await ModDataLoader.UpdateLauncherPreferencesAsync(dir, !settings.DisableLauncherTelemetry, !settings.DisableLauncherModWarnings, token);
 				}
 			}
 

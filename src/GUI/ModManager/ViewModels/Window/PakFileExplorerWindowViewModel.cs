@@ -234,7 +234,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 						Directory.CreateDirectory(parentFolder);
 					}
 					using var inStream = f.CreateContentReader();
-					using var outStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read, 32000, true);
+					await using var outStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read, 32000, FileOptions.Asynchronous);
 					await inStream.CopyToAsync(outStream, 32000, token);
 				});
 			}

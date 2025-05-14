@@ -256,11 +256,11 @@ public class ModImportService(IDialogService dialogService, IFileSystemService f
 
 	private async Task<ModuleInfo?> TryGetMetaFromZipAsync(string filePath, CancellationToken token)
 	{
-		TempFile? tempFile = null;
 		try
 		{
 			using var fileStream = _fs.FileStream.New(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-			await fileStream.ReadAsync((new byte[fileStream.Length]).AsMemory(0, (int)fileStream.Length), token);
+			var buffer = new byte[fileStream.Length];
+			await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
 			fileStream.Position = 0;
 
 			var modManager = AppServices.Mods;
@@ -274,7 +274,7 @@ public class ModImportService(IDialogService dialogService, IFileSystemService f
 					if (file?.Key?.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) == true)
 					{
 						using var entryStream = file.OpenEntryStream();
-						tempFile = await TempFile.CreateAsync(string.Join("\\", filePath, file.Key), entryStream, token);
+						await using var tempFile = await TempFile.CreateAsync(string.Join("\\", filePath, file.Key), entryStream, token);
 						var meta = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 						if (meta == null)
 						{
@@ -299,10 +299,6 @@ public class ModImportService(IDialogService dialogService, IFileSystemService f
 		{
 			DivinityApp.Log($"Error reading zip:\n{ex}");
 		}
-		finally
-		{
-			tempFile?.Dispose();
-		}
 
 		return null;
 	}
@@ -312,11 +308,11 @@ public class ModImportService(IDialogService dialogService, IFileSystemService f
 		ModuleInfo? result = null;
 		using (var fileStream = _fs.FileStream.New(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
 		{
-			await fileStream.ReadAsync((new byte[fileStream.Length]).AsMemory(0, (int)fileStream.Length), token);
+			var buffer = new byte[fileStream.Length];
+			await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
 			fileStream.Position = 0;
 
 			Stream? decompressionStream = null;
-			TempFile? tempFile = null;
 
 			try
 			{
@@ -335,7 +331,7 @@ public class ModImportService(IDialogService dialogService, IFileSystemService f
 
 				if (decompressionStream != null)
 				{
-					tempFile = await TempFile.CreateAsync(filePath, decompressionStream, token);
+					await using var tempFile = await TempFile.CreateAsync(filePath, decompressionStream, token);
 					result = ModDataLoader.TryGetMetaFromPakFileStream(tempFile.Stream, filePath, token);
 					if (result == null)
 					{
@@ -353,7 +349,6 @@ public class ModImportService(IDialogService dialogService, IFileSystemService f
 			finally
 			{
 				decompressionStream?.Dispose();
-				tempFile?.Dispose();
 			}
 		}
 		return result;

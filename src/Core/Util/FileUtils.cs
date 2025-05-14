@@ -40,12 +40,12 @@ public static class FileUtils
 	/// </summary>
 	/// <param name="path">The path.</param>
 	/// <returns>DriveType of path</returns>
-	public static System.IO.DriveType GetPathDriveType(string path)
+	public static DriveType GetPathDriveType(string path)
 	{
 		//OK, so UNC paths aren't 'drives', but this is still handy
-		if (path.StartsWith(@"\\")) return System.IO.DriveType.Network;
+		if (path.StartsWith(@"\\")) return DriveType.Network;
 		var info = DriveInfo.GetDrives().Where(i => path.StartsWith(i.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-		if (info == null) return System.IO.DriveType.Unknown;
+		if (info == null) return DriveType.Unknown;
 		return info.DriveType;
 	}
 
@@ -87,7 +87,7 @@ public static class FileUtils
 		if (File.Exists(fullPath))
 		{
 			var filename = Path.GetFileName(fullPath);
-			var path = fullPath.Substring(0, fullPath.Length - filename.Length);
+			var path = fullPath[..^filename.Length];
 			var filenameWOExt = Path.GetFileNameWithoutExtension(fullPath);
 			var ext = Path.GetExtension(fullPath);
 			var n = 1;
@@ -316,9 +316,7 @@ public static class FileUtils
 	{
 		try
 		{
-			var buffer = Encoding.UTF8.GetBytes(contents);
-			using var fs = new System.IO.FileStream(path, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, buffer.Length, false);
-			fs.Write(buffer, 0, buffer.Length);
+			File.WriteAllText(path, contents);
 			return true;
 		}
 		catch (Exception ex)
@@ -328,13 +326,11 @@ public static class FileUtils
 		}
 	}
 
-	public static async Task<bool> WriteTextFileAsync(string path, string contents)
+	public static async Task<bool> WriteTextFileAsync(string path, string contents, CancellationToken token)
 	{
 		try
 		{
-			var buffer = Encoding.UTF8.GetBytes(contents);
-			using var fs = new System.IO.FileStream(path, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None, buffer.Length, true);
-			await fs.WriteAsync(buffer, 0, buffer.Length);
+			await File.WriteAllTextAsync(path, contents, token);
 			return true;
 		}
 		catch (Exception ex)
@@ -348,10 +344,8 @@ public static class FileUtils
 	{
 		try
 		{
-			using var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-			var buffer = new byte[fileStream.Length];
-			await fileStream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
-			return buffer;
+			var result = await File.ReadAllBytesAsync(path, token);
+			return result;
 		}
 		catch (Exception ex)
 		{
@@ -364,8 +358,8 @@ public static class FileUtils
 	{
 		try
 		{
-			using var sourceFile = new FileStream(copyFromPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-			using var outputFile = File.Create(copyToPath, 128000, FileOptions.Asynchronous);
+			await using var sourceFile = new FileStream(copyFromPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous);
+			await using var outputFile = new FileStream(copyToPath, FileMode.Create, FileAccess.Read, FileShare.Read, 128000, FileOptions.Asynchronous);
 			await sourceFile.CopyToAsync(outputFile, 128000, token); // 81920 default
 			return true;
 		}

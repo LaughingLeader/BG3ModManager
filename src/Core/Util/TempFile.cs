@@ -1,6 +1,6 @@
 ﻿namespace ModManager.Util;
 
-public class TempFile : IDisposable
+public class TempFile : IAsyncDisposable
 {
 	private readonly FileStream _stream;
 	private readonly string _path;
@@ -20,7 +20,8 @@ public class TempFile : IDisposable
 		Directory.CreateDirectory(tempDir);
 		_path = Path.Join(tempDir, Path.GetFileName(sourcePath));
 		_sourcePath = sourcePath;
-		_stream = File.Create(_path, _bufferSize, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+		//_stream = File.Create(_path, _bufferSize, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+		_stream = new FileStream(_path, FileMode.Create, FileAccess.Write, FileShare.Read, _bufferSize, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
 	}
 
 	public static async Task<TempFile> CreateAsync(string sourcePath, CancellationToken token)
@@ -39,7 +40,7 @@ public class TempFile : IDisposable
 
 	private async Task CopyAsync(CancellationToken token)
 	{
-		using var sourceStream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+		await using var sourceStream = new FileStream(_path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous);
 		await sourceStream.CopyToAsync(_stream, _bufferSize, token);
 	}
 
@@ -48,8 +49,13 @@ public class TempFile : IDisposable
 		await sourceStream.CopyToAsync(_stream, _bufferSize, token);
 	}
 
-	public void Dispose()
+	public async ValueTask DisposeAsync()
 	{
-		_stream?.Dispose();
+		if(_stream is not null)
+		{
+			await _stream.DisposeAsync().ConfigureAwait(false);
+		}
+
+		GC.SuppressFinalize(this);
 	}
 }

@@ -68,7 +68,7 @@ public static class ImportUtils
 		{
 			if (!options.FilePath.IsValid()) throw new FileNotFoundException($"FilePath is not valid: {options.FilePath}");
 
-			using var fileStream = new FileStream(options.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+			await using var fileStream = new FileStream(options.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous);
 			if (fileStream != null)
 			{
 				var info = NexusModFileVersionData.FromFilePath(options.FilePath);
@@ -177,7 +177,7 @@ public static class ImportUtils
 		var success = false;
 		try
 		{
-			fileStream = new FileStream(options.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+			fileStream = new FileStream(options.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous);
 			if (fileStream != null)
 			{
 				var info = NexusModFileVersionData.FromFilePath(options.FilePath);
@@ -187,7 +187,6 @@ public static class ImportUtils
 				fileStream.Position = 0;
 				options.ReportProgress?.Invoke(taskStepAmount);
 				Stream? decompressionStream = null;
-				TempFile? tempFile = null;
 
 				try
 				{
@@ -210,7 +209,7 @@ public static class ImportUtils
 						if (!outputName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase)) outputName += ".pak";
 						var outputFilePath = Path.Join(options.OutputDirectory, outputName);
 
-						tempFile = await TempFile.CreateAsync(options.FilePath, decompressionStream, options.Token);
+						await using var tempFile = await TempFile.CreateAsync(options.FilePath, decompressionStream, options.Token);
 
 						try
 						{
@@ -270,7 +269,6 @@ public static class ImportUtils
 				finally
 				{
 					decompressionStream?.Dispose();
-					tempFile?.Dispose();
 				}
 
 				options.ReportProgress?.Invoke(taskStepAmount);

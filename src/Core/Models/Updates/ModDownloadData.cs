@@ -36,8 +36,6 @@ public class ModDownloadData : ReactiveObject
 		}
 	}
 
-	private static System.IO.Stream MakeFileStream(string path) => new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 4096, true);
-
 	public async Task<ModDownloadResult> DownloadAsync(string previousFilePath, string outputDirectory, CancellationToken token)
 	{
 		var result = new ModDownloadResult();
@@ -78,7 +76,7 @@ public class ModDownloadData : ReactiveObject
 					{
 						var outputFilePath = Path.Join(outputDirectory, Path.GetFileName(DownloadPath));
 						MoveOldPakToRecycleBin(previousFilePath, outputFilePath);
-						using var outputFile = MakeFileStream(outputFilePath);
+						await using var outputFile = new FileStream(outputFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.Read, 4096, FileOptions.Asynchronous);
 						await webStream.CopyToAsync(outputFile, 128000, token);
 						result.Success = true;
 						result.OutputFilePath = outputFilePath;
@@ -93,7 +91,7 @@ public class ModDownloadData : ReactiveObject
 								using var entryStream = entry.Open();
 								var outputFilePath = Path.Join(outputDirectory, Path.GetFileName(entry.Name));
 								MoveOldPakToRecycleBin(previousFilePath, outputFilePath);
-								using var outputFile = MakeFileStream(outputFilePath);
+								await using var outputFile = new FileStream(outputFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.Read, 4096, FileOptions.Asynchronous);
 								await entryStream.CopyToAsync(outputFile, 128000, token);
 								result.Success = true;
 								result.OutputFilePath = outputFilePath;

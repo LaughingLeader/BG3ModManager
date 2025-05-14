@@ -279,7 +279,9 @@ public static class JsonUtils
 	{
 		try
 		{
-			var fileBytes = await FileUtils.LoadFileAsBytesAsync(path, token);
+			await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.Asynchronous);
+			var result = await JsonSerializer.DeserializeAsync<T?>(stream, opts ?? _defaultSerializerSettings, token);
+			/*var fileBytes = await FileUtils.LoadFileAsBytesAsync(path, token);
 			if (fileBytes != null)
 			{
 				var contents = Encoding.UTF8.GetString(fileBytes);
@@ -287,7 +289,7 @@ public static class JsonUtils
 				{
 					return JsonSerializer.Deserialize<T?>(contents, opts ?? _defaultSerializerSettings);
 				}
-			}
+			}*/
 		}
 		catch (Exception ex)
 		{

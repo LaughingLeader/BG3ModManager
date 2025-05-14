@@ -92,7 +92,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 
 	private static async Task LoadToolkitResourcesAsync(string metaPath, ConcurrentDictionary<string, ToolkitProjectMetaData> output, CancellationToken token)
 	{
-		var resource = await ModDataLoader.LoadResourceAsync(metaPath, LSLib.LS.Enums.ResourceFormat.LSX, token);
+		var resource = await ModDataLoader.LoadResourceAsync(metaPath, token);
 		if(resource != null)
 		{
 			var toolkitMeta = ToolkitProjectMetaData.FromResource(resource);

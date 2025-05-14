@@ -822,7 +822,7 @@ public static partial class ModDataLoader
 				var profileFile = GetProfileFile(folder);
 				if (profileFile != null)
 				{
-					var profileRes = await LoadResourceAsync(profileFile.FullName, ResourceFormat.LSF, token);
+					var profileRes = await LoadResourceAsync(profileFile.FullName, token);
 					if (profileRes != null && profileRes.Regions.TryGetValue("PlayerProfile", out var region))
 					{
 						if (region.Attributes.TryGetValue("PlayerProfileName", out var profileNameAtt))
@@ -872,7 +872,7 @@ public static partial class ModDataLoader
 	{
 		try
 		{
-			using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true);
+			await using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.Asynchronous);
 			var buffer = new byte[fs.Length];
 			await fs.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
 			fs.Position = 0;
@@ -901,6 +901,20 @@ public static partial class ModDataLoader
 				return null;
 			}
 		}, token);
+	}
+
+	public static async Task<Resource?> LoadResourceAsync(string path, CancellationToken token, ResourceLoadParameters? resourceParams = null)
+	{
+		try
+		{
+			var resourceFormat = ResourceUtils.ExtensionToResourceFormat(path);
+			return await LoadResourceAsync(path, resourceFormat, token, resourceParams);
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error loading '{path}': {ex}");
+			return null;
+		}
 	}
 
 	private static FileInfo? GetProfileFile(string path)
@@ -969,7 +983,7 @@ public static partial class ModDataLoader
 		if (playerprofilesFile != null)
 		{
 			DivinityApp.Log($"Loading playerprofiles at '{playerprofilesFile}'");
-			var res = await LoadResourceAsync(playerprofilesFile.FullName, ResourceFormat.LSF, token);
+			var res = await LoadResourceAsync(playerprofilesFile.FullName, token);
 			if (res != null && res.Regions.TryGetValue("UserProfiles", out var region))
 			{
 				//DivinityApp.LogMessage($"ActiveProfile | Getting root node '{string.Join(";", region.Attributes.Keys)}'");
@@ -1001,14 +1015,14 @@ public static partial class ModDataLoader
 		return true;
 	}
 
-	public static async Task<bool> ExportLoadOrderToFileAsync(string outputFilePath, ModLoadOrder order)
+	public static async Task<bool> ExportLoadOrderToFileAsync(string outputFilePath, ModLoadOrder order, CancellationToken token)
 	{
 		var parentDir = Path.GetDirectoryName(outputFilePath);
 		if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
 
 		var contents = JsonSerializer.Serialize(order, JsonUtils.DefaultSerializerSettings);
 
-		await FileUtils.WriteTextFileAsync(outputFilePath, contents);
+		await FileUtils.WriteTextFileAsync(outputFilePath, contents, token);
 
 		order.FilePath = outputFilePath;
 
@@ -1230,7 +1244,7 @@ public static partial class ModDataLoader
 		return order;
 	}
 
-	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<ModData> order)
+	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<ModData> order, CancellationToken token)
 	{
 		if (Directory.Exists(folder))
 		{
@@ -1241,13 +1255,13 @@ public static partial class ModDataLoader
 				//Lazy indentation!
 				var xml = new XmlDocument();
 				xml.LoadXml(contents);
-				using var sw = new System.IO.StringWriter();
+				using var sw = new StringWriter();
 				using var xw = new XmlTextWriter(sw);
-				xw.Formatting = System.Xml.Formatting.Indented;
+				xw.Formatting = Formatting.Indented;
 				xw.Indentation = 2;
 				xml.WriteTo(xw);
 
-				await FileUtils.WriteTextFileAsync(outputFilePath, sw.ToString());
+				await FileUtils.WriteTextFileAsync(outputFilePath, sw.ToString(), token);
 
 				return true;
 			}
@@ -1263,9 +1277,9 @@ public static partial class ModDataLoader
 		return false;
 	}
 
-	public static async Task<bool> UpdateLauncherPreferencesAsync(string appDataLarianFolder, bool enableTelemetry, bool enableModWarnings, bool force = false)
+	public static async Task<bool> UpdateLauncherPreferencesAsync(string appDataLarianFolder, bool enableTelemetry, bool enableModWarnings, CancellationToken token, bool force = false)
 	{
-		Dictionary<string, object> settings = null;
+		Dictionary<string, object>? settings = null;
 		//Patch 7 changes this to "Larian Studios" instead of "LarianStudios"
 		var folderDir = Path.Join(appDataLarianFolder, @"Launcher\Settings");
 		var settingsFilePath = Path.Join(folderDir, "preferences.json");
@@ -1289,7 +1303,7 @@ public static partial class ModDataLoader
 
 		var contents = JsonSerializer.Serialize(settings, JsonUtils.DefaultSerializerSettings);
 
-		await FileUtils.WriteTextFileAsync(settingsFilePath, contents);
+		await FileUtils.WriteTextFileAsync(settingsFilePath, contents, token);
 
 		DivinityApp.Log($"Updated {settingsFilePath}");
 		return true;
@@ -1740,8 +1754,8 @@ public static partial class ModDataLoader
 			var osiFile = pak.Files.FirstOrDefault(x => x.Name.EndsWith("story.div.osi")); //Or GustavDev/Story/story.div.osi
 			if (osiFile != null)
 			{
-				using var fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read, 32000, true);
-				using var osiStream = osiFile.CreateContentReader();
+				await using var fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read, 32000, FileOptions.Asynchronous);
+				await using var osiStream = osiFile.CreateContentReader();
 				await osiStream.CopyToAsync(fs, 32000, token);
 			}
 		}

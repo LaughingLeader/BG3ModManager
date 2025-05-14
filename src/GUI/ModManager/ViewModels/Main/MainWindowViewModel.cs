@@ -550,7 +550,7 @@ Directory the zip will be extracted to:
 		{
 			RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, t) =>
 			{
-				await ModDataLoader.UpdateLauncherPreferencesAsync(_pathways.GetLarianStudiosAppDataFolder(), !Settings.DisableLauncherTelemetry, !Settings.DisableLauncherModWarnings);
+				await ModDataLoader.UpdateLauncherPreferencesAsync(_pathways.GetLarianStudiosAppDataFolder(), !Settings.DisableLauncherTelemetry, !Settings.DisableLauncherModWarnings, t);
 			});
 		}
 

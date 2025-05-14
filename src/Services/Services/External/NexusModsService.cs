@@ -271,7 +271,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 								DownloadProgressText = $"Downloading {fileName}...";
 								DownloadProgressValue = 0;
 								using var stream = await DownloadUrlAsStreamAsync(ApiKey, file.Uri, token);
-								using var outputStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 128000, true);
+								await using var outputStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 128000, FileOptions.Asynchronous);
 								await stream.CopyToAsync(outputStream, 128000, token);
 								DownloadResults.Add(filePath);
 								DivinityApp.Log("Download done.");
