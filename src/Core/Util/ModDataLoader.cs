@@ -1244,39 +1244,6 @@ public static partial class ModDataLoader
 		return order;
 	}
 
-	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<ModData> order, CancellationToken token)
-	{
-		if (Directory.Exists(folder))
-		{
-			var outputFilePath = Path.Join(folder, "modsettings.lsx");
-			var contents = GenerateModSettingsFile(order);
-			try
-			{
-				//Lazy indentation!
-				var xml = new XmlDocument();
-				xml.LoadXml(contents);
-				using var sw = new StringWriter();
-				using var xw = new XmlTextWriter(sw);
-				xw.Formatting = Formatting.Indented;
-				xw.Indentation = 2;
-				xml.WriteTo(xw);
-
-				await FileUtils.WriteTextFileAsync(outputFilePath, sw.ToString(), token);
-
-				return true;
-			}
-			catch (AccessViolationException ex)
-			{
-				DivinityApp.Log($"Failed to write file '{outputFilePath}': {ex}");
-			}
-			catch (Exception ex)
-			{
-				DivinityApp.Log($"Error exporting file '{outputFilePath}': {ex}");
-			}
-		}
-		return false;
-	}
-
 	public static async Task<bool> UpdateLauncherPreferencesAsync(string appDataLarianFolder, bool enableTelemetry, bool enableModWarnings, CancellationToken token, bool force = false)
 	{
 		Dictionary<string, object>? settings = null;
@@ -1340,7 +1307,7 @@ public static partial class ModDataLoader
 		return mods;
 	}
 
-	public static List<ModData> BuildOutputList(IEnumerable<ModuleShortDesc> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData selectedAdventure = null)
+	public static List<ModData> BuildOutputList(IEnumerable<ModuleShortDesc> order, IEnumerable<ModData> allMods, bool addDependencies = true, ModData? selectedAdventure = null)
 	{
 		List<ModData> orderList = [];
 		var addedMods = new HashSet<string>();
@@ -1378,27 +1345,6 @@ public static partial class ModDataLoader
 		}
 
 		return orderList;
-	}
-
-	public static string GenerateModSettingsFile(IEnumerable<ModData> orderList)
-	{
-		/* The "Mods" node is used for the in-game menu it seems. The selected adventure mod is always at the top. */
-		var modShortDescText = "";
-
-		foreach (var mod in orderList)
-		{
-			if (mod.UUID.IsValid())
-			{
-				//Use Export to support lists with categories/things that don't need exporting
-				var modText = mod.Export(ModExportType.XML);
-				if (modText.IsValid())
-				{
-					modShortDescText += modText + Environment.NewLine;
-				}
-			}
-		}
-
-		return string.Format(DivinityApp.XML_MOD_SETTINGS_TEMPLATE, modShortDescText);
 	}
 
 	public static string CreateHandle() => Guid.NewGuid().ToString().Replace('-', 'g').Insert(0, "h");

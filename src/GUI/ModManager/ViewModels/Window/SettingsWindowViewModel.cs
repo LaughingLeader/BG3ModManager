@@ -365,8 +365,10 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 			}
 		});
 
-		Settings.WhenAnyValue(x => x.GameExecutablePath).Select(x => Path.Join(Path.GetDirectoryName(x), DivinityApp.EXTENDER_CONFIG_FILE)).ToUIProperty(this, x => x.ExtenderSettingsFilePath);
-		Settings.WhenAnyValue(x => x.GameExecutablePath).Select(x => Path.Join(Path.GetDirectoryName(x), DivinityApp.EXTENDER_UPDATER_CONFIG_FILE)).ToUIProperty(this, x => x.ExtenderUpdaterSettingsFilePath);
+		var whenExePath = Settings.WhenAnyValue(x => x.GameExecutablePath);
+
+		whenExePath.Select(x => Path.Join(Path.GetDirectoryName(x), DivinityApp.EXTENDER_CONFIG_FILE)).ToUIProperty(this, x => x.ExtenderSettingsFilePath);
+		whenExePath.Select(x => Path.Join(Path.GetDirectoryName(x), DivinityApp.EXTENDER_UPDATER_CONFIG_FILE)).ToUIProperty(this, x => x.ExtenderUpdaterSettingsFilePath);
 
 		var settingsProperties = new HashSet<string>();
 		settingsProperties.UnionWith(Settings.GetSettingsAttributes().Select(x => x.Property.Name));

@@ -674,7 +674,11 @@ Directory the zip will be extracted to:
 
 		Settings.WhenAnyValue(x => x.GameExecutablePath).Subscribe(path =>
 		{
-			if (path.IsValid()) gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
+			if (path.IsValid())
+			{
+				gameUtils.AddGameProcessName(Path.GetFileNameWithoutExtension(path));
+				AppServices.Get<IModSettingsExportService>()?.SetGameVersion(path);
+			}
 		});
 
 		this.WhenAnyValue(x => x.Settings.GameExecutablePath, x => x.Settings.LimitToSingleInstance, x => x.GameIsRunning, x => x.CanForceLaunchGame, CanLaunchGameCheck)

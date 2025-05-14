@@ -590,11 +590,24 @@ public class ModData : ReactiveObject, IModData
 		return $"Missing Dependencies:\n{string.Join(Environment.NewLine, MissingDependencies.Items.Select(x => x.Name).Order())}";
 	}
 
-	public string? Export(ModExportType exportType)
+	private static string ModToXml(string? pattern, ModData mod, bool isFixedString = false)
+	{
+		pattern ??= DivinityApp.XML_MODULE_SHORT_DESC;
+		if (!isFixedString)
+		{
+			return string.Format(pattern ?? DivinityApp.XML_MODULE_SHORT_DESC, mod.Folder, mod.MD5, System.Security.SecurityElement.Escape(mod.Name), mod.UUID, mod.Version.VersionInt, mod.PublishHandle);
+		}
+		else
+		{
+			return string.Format(pattern ?? DivinityApp.XML_MODULE_SHORT_DESC, mod.Folder, mod.MD5, System.Security.SecurityElement.Escape(mod.Name), mod.UUID, mod.Version.VersionInt);
+		}
+	}
+
+	public string? Export(ModExportType exportType, string? pattern = null, bool isFixedString = false)
 	{
 		var result = exportType switch
 		{
-			ModExportType.XML => string.Format(DivinityApp.XML_MODULE_SHORT_DESC, Folder, MD5, System.Security.SecurityElement.Escape(Name), UUID, Version.VersionInt, PublishHandle),
+			ModExportType.XML => ModToXml(pattern, this, isFixedString),
 			ModExportType.JSON => JsonSerializer.Serialize(this, JsonUtils.DefaultSerializerSettings),
 			ModExportType.TXT => StringUtils.ModToTextLine(this),
 			ModExportType.TSV => StringUtils.ModToTSVLine(this),

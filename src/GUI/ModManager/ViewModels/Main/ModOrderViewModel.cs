@@ -27,6 +27,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private readonly ModImportService ModImporter;
 	private readonly IModManagerService ModManager;
+	private readonly IModSettingsExportService _modsettingsExport;
 	private readonly IInteractionsService _interactions;
 	private readonly IGlobalCommandsService _globalCommands;
 	private readonly IDialogService _dialogs;
@@ -783,7 +784,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 			var outputPath = Path.Join(SelectedProfile.FilePath, "modsettings.lsx");
 			var finalOrder = ModDataLoader.BuildOutputList(SelectedModOrder.Order, ModManager.AllMods, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
-			var result = await ModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder, token);
+			var result = await _modsettingsExport.ExportModSettingsToFileAsync(SelectedProfile.FilePath, finalOrder, token);
 
 			var dir = AppServices.Pathways.GetLarianStudiosAppDataFolder();
 			if (SelectedModOrder.Order.Count > 0)
@@ -1607,12 +1608,14 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		IDialogService dialogService,
 		IFileSystemService fileSystemService,
 		ModImportService modImportService,
+		IModSettingsExportService modSettingsExportService,
 		IModUpdaterService _updater,
 		ISettingsService settings
 		)
 	{
 		ModManager = modManagerService;
 		ModImporter = modImportService;
+		_modsettingsExport = modSettingsExportService;
 		_interactions = interactionsService;
 		_globalCommands = globalCommands;
 		_dialogs = dialogService;

@@ -49,6 +49,7 @@ public static class SplatContainerExtensions
 
 		SplatRegistrations.RegisterLazySingleton<IAppUpdaterService, AppUpdaterService>();
 
+		SplatRegistrations.RegisterLazySingleton<IModSettingsExportService, ModSettingsExportService>();
 		SplatRegistrations.RegisterLazySingleton<IModManagerService, ModManagerService>();
 		SplatRegistrations.RegisterLazySingleton<IModUpdaterService, ModUpdaterService>();
 

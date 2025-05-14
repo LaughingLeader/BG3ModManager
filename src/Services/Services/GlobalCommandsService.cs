@@ -107,8 +107,9 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		if (mod == null) throw new ArgumentNullException(nameof(mod));
 		try
 		{
+			var modExportService = Locator.Current.GetService<IModSettingsExportService>()!;
 			var safeName = System.Security.SecurityElement.Escape(mod.Name);
-			var text = string.Format(DivinityApp.XML_MODULE_SHORT_DESC_FORMATTED, mod.Folder, mod.MD5, safeName, mod.UUID, mod.Version.VersionInt, mod.PublishHandle);
+			var text = modExportService.ToFormattedModuleShortDesc(mod);
 			ClipboardService.SetText(text);
 			ShowAlert($"Copied ModuleShortDesc for mod '{mod.Name}' to clipboard", 0, 10);
 		}
