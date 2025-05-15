@@ -14,6 +14,7 @@ using ModManager.Util;
 using ModManager.ViewModels.Mods;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 using TextCopy;
@@ -84,7 +85,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[Reactive] public ModLoadOrder? SelectedModOrder { get; set; }
 	[Reactive] public ModData? SelectedAdventureMod { get; set; }
 
-	[ObservableAsProperty] public string SelectedModOrderName { get; }
+	[ObservableAsProperty] public string? SelectedModOrderName { get; }
 	[ObservableAsProperty] public string? SelectedProfilePath { get; }
 	[ObservableAsProperty] public string? SelectedProfileSavesPath { get; }
 
@@ -99,25 +100,21 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public bool IsBaseLoadOrder { get; }
 	[ObservableAsProperty] public bool HasSelectedMods { get; }
 
-	[ObservableAsProperty] public string ActiveSelectedText { get; }
-	[ObservableAsProperty] public string InactiveSelectedText { get; }
-	[ObservableAsProperty] public string OverrideModsSelectedText { get; }
-	[ObservableAsProperty] public string ActiveModsFilterResultText { get; }
-	[ObservableAsProperty] public string InactiveModsFilterResultText { get; }
-	[ObservableAsProperty] public string OverrideModsFilterResultText { get; }
-
-	[ObservableAsProperty] public string OpenGameButtonToolTip { get; }
+	[ObservableAsProperty] public string? ActiveSelectedText { get; }
+	[ObservableAsProperty] public string? InactiveSelectedText { get; }
+	[ObservableAsProperty] public string? OverrideModsSelectedText { get; }
+	[ObservableAsProperty] public string? ActiveModsFilterResultText { get; }
+	[ObservableAsProperty] public string? InactiveModsFilterResultText { get; }
+	[ObservableAsProperty] public string? OverrideModsFilterResultText { get; }
+	[ObservableAsProperty] public string? OpenGameButtonToolTip { get; }
 
 	[ObservableAsProperty] public int TotalActiveMods { get; }
 	[ObservableAsProperty] public int TotalInactiveMods { get; }
 
 	public ReactiveCommand<ModLoadOrder, Unit> DeleteOrderCommand { get; }
 	public ReactiveCommand<object, Unit> ToggleOrderRenamingCommand { get; set; }
-	public RxCommandUnit FocusFilterCommand { get; set; }
 	public RxCommandUnit CopyOrderToClipboardCommand { get; }
 	public ReactiveCommand<ModLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
-	public RxCommandUnit OpenGameMasterCampaignInFileExplorerCommand { get; private set; }
-	public RxCommandUnit CopyGameMasterCampaignPathToClipboardCommand { get; private set; }
 
 	private static IObservable<bool> AllTrue(IObservable<bool> first, IObservable<bool> second) => first.CombineLatest(second).Select(x => x.First && x.Second);
 
@@ -215,27 +212,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	private readonly SortExpressionComparer<ProfileData> _profileSort = SortExpressionComparer<ProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
 
-	private async static Task<TResult> RunTask<TResult>(Task<TResult> task, TResult defaultValue)
-	{
-		try
-		{
-			return await task;
-		}
-		catch (OperationCanceledException)
-		{
-			DivinityApp.Log("Operation timed out/canceled.");
-		}
-		catch (TimeoutException)
-		{
-			DivinityApp.Log("Operation timed out.");
-		}
-		catch (Exception ex)
-		{
-			DivinityApp.Log($"Error awaiting task:\n{ex}");
-		}
-		return defaultValue;
-	}
-
 	public void Clear()
 	{
 		_lastProfile = null;
@@ -321,10 +297,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 				}
 				main.Progress.IncreaseValue(taskStepAmount);
 			}
-
-			//await SetMainProgressTextAsync("Loading GM Campaigns...");
-			//var loadedGMCampaigns = await LoadGameMasterCampaignsAsync(taskStepAmount);
-			//await IncreaseMainProgressValueAsync(taskStepAmount);
 
 			DivinityApp.Log("Loading external load orders...");
 			main.Progress.WorkText = "Loading external load orders...";
@@ -1598,7 +1570,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	public ModOrderViewModel(MainWindowViewModel host,
 		IModManagerService modManagerService,
 		IFileWatcherService fileWatcherService,
-		IGlobalCommandsService globalCommands,
 		IDialogService dialogService,
 		IModUpdaterService updateService,
 		ISettingsService settings
@@ -1840,7 +1811,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 		var whenModOrder = this.WhenAnyValue(x => x.SelectedModOrder);
 
-		whenModOrder.Select(x => x != null ? x.Name : "None").ToUIProperty(this, x => x.SelectedModOrderName);
+		whenModOrder.ValueOrFallback(x => x.Name, "None").ToUIProperty(this, x => x.SelectedModOrderName, "None");
 		whenModOrder.Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
 
 		whenModOrder.Buffer(2, 1).Subscribe(changes =>
@@ -1852,8 +1823,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		});
 
 		var whenNotRefreshing = this.WhenAnyValue(x => x.IsRefreshing, b => !b);
-
-		IDisposable? _buildListTask = null;
 
 		this.WhenAnyValue(x => x.SelectedProfile, x => x.SelectedModOrder)
 			.ThrottleFirst(TimeSpan.FromMilliseconds(50))

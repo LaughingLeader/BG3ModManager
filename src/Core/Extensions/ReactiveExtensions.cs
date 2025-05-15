@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace ModManager;
 
@@ -135,5 +136,16 @@ public static class ReactiveExtensions
 
 		whenEnum.Select(x => enumToIndex[x]).ObserveOn(RxApp.MainThreadScheduler).BindTo(target, bindIndex);
 		whenIndex.Select(x => indexToEnum[x]).BindTo(target, bindEnum);
+	}
+
+	private static TResult InvokeOrFallback<TSource, TResult>(TSource? obj, Func<TSource, TResult> selector, TResult fallback)
+	{
+		if (obj == null) return fallback;
+		return selector.Invoke(obj) ?? fallback;
+	}
+
+	public static IObservable<TResult> ValueOrFallback<TSource, TResult>(this IObservable<TSource?> obs, [NotNull] Func<TSource, TResult> selector, TResult fallback)
+	{
+		return obs.Select(x => InvokeOrFallback(x, selector, fallback));
 	}
 }

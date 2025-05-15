@@ -28,4 +28,6 @@ public static class StringExtensions
 		}
 		return finalPath;
 	}
+
+	public static string ThisOrFallback(this string? str, string fallback) => str ?? fallback;
 }
