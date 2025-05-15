@@ -25,6 +25,8 @@ public static class AppServices
 	public static IScreenReaderService ScreenReader => Get<IScreenReaderService>()!;
 	public static AppKeysService Keybindings => Get<AppKeysService>()!;
 
+	public static IFileSystemService FS => Get<IFileSystemService>()!;
+
 	static AppServices()
 	{
 		var resolver = Locator.CurrentMutable;
