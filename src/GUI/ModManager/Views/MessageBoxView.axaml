@@ -1,10 +1,11 @@
 <UserControl x:Class="ModManager.Views.MessageBoxView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:SukiUI.Controls"
+    xmlns:controls="using:ModManager.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="using:Avalonia.ReactiveUI"
+    xmlns:sukiControls="using:SukiUI.Controls"
     xmlns:vm="using:ModManager.ViewModels"
     d:DesignHeight="200"
     d:DesignWidth="600"
@@ -15,7 +16,7 @@
 	<Design.DataContext>
 		<vm:DesignMessageBoxViewModel />
 	</Design.DataContext>
-	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="auto,auto,*,auto">
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="auto,auto,*,*,auto">
 
 		<TextBlock Text="{Binding Title}" TextAlignment="Center" />
 
@@ -38,7 +39,12 @@
 			    TextWrapping="Wrap" />
 		</ScrollViewer>
 
-		<UniformGrid Grid.Row="3"
+		<controls:EnhancedTextBox Name="InputTextBox"
+		    Grid.Row="3"
+		    IsVisible="{Binding IsInput}"
+		    Text="{Binding InputText, Mode=TwoWay}" />
+
+		<UniformGrid Grid.Row="4"
 		    HorizontalAlignment="Center"
 		    VerticalAlignment="Bottom"
 		    Rows="1">

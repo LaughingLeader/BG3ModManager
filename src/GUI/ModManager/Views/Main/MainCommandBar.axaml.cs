@@ -1,5 +1,6 @@
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 
 using DynamicData.Binding;
@@ -41,6 +42,11 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 		{
 			target.Add(new Separator());
 		}
+	}
+
+	private void FinishRenamingOrder()
+	{
+
 	}
 
 	public MainCommandBar()

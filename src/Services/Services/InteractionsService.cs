@@ -30,7 +30,7 @@ public class InteractionsService : IInteractionsService
 	/// <inheritdoc/>
 	public Interaction<ShowAlertRequest, bool> ShowAlert { get; }
 	/// <inheritdoc/>
-	public Interaction<ShowMessageBoxRequest, bool> ShowMessageBox { get; }
+	public Interaction<ShowMessageBoxRequest, MessageBoxResult> ShowMessageBox { get; }
 	/// <inheritdoc/>
 	public Interaction<ValidateModStatsRequest, bool> ValidateModStats { get; }
 	/// <inheritdoc/>

@@ -15,9 +15,11 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForGitHubModUpdatesCommand", "Check for Github Mod Updates", CheckForGitHubModUpdatesCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForNexusModsUpdatesCommand", "Check for Nexus Mod Updates", CheckForNexusModsUpdatesCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForModioUpdatesCommand", "Check for Mod.io Updates", CheckForModioUpdatesCommand);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportModsToZipAsCommand", "Export Order to Archive As...", ExportModsToZipAsCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportModsToZipCommand", "Export Order to Archive (.zip)", ExportModsToZipCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderCommand", "Export Order to Game", ExportOrderCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.Control);
+		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToTextFileCommand", "Export Order to Text File...", ExportOrderToTextFileCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
+		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToZipCommand", "Export Order to Archive (.zip)", ExportOrderToZipCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToArchiveAsCommand", "Export Order to Archive As...", ExportOrderToArchiveAsCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_RenameOrderCommand", "Rename Order", RenameOrderCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_LaunchGameCommand", "Launch Game", LaunchGameCommand, Avalonia.Input.Key.G, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenDonationPageCommand", "Donate a Coffee...", OpenDonationPageCommand, Avalonia.Input.Key.F10);
 		keys.RegisterCommand("MainCommandBarViewModel_OpenGitHubRepoCommand", "Open Repository Page...", OpenGitHubRepoCommand, Avalonia.Input.Key.F11);
@@ -49,10 +51,6 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_ImportOrderFromSaveAsNewCommand", "Import Order from Save As New Order...", ImportOrderFromSaveAsNewCommand, Avalonia.Input.Key.I, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ImportOrderFromFileCommand", "Import Order from File...", ImportOrderFromFileCommand, Avalonia.Input.Key.O, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ImportOrderFromZipFileCommand", "Import Order & Mods from Archive...", ImportOrderFromZipFileCommand);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToGameCommand", "Export Order to Game", ExportOrderToGameCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.Control);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToTextFileCommand", "Export Order to Text File...", ExportOrderToTextFileCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToZipCommand", "Export Order to Archive (.zip)", ExportOrderToZipCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.Control);
-		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToArchiveAsCommand", "Export Order to Archive As...", ExportOrderToArchiveAsCommand, Avalonia.Input.Key.R, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_MoveSelectedModsCommand", "Moved Selected Mods to Opposite List", MoveSelectedModsCommand, Avalonia.Input.Key.Return);
 		keys.RegisterCommand("MainCommandBarViewModel_FocusActiveModsCommand", "Focus Active Mods List", FocusActiveModsCommand, Avalonia.Input.Key.Left);
 		keys.RegisterCommand("MainCommandBarViewModel_FocusInactiveModsCommand", "Focus Inactive Mods List", FocusInactiveModsCommand, Avalonia.Input.Key.Right);

@@ -12,6 +12,18 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
 		this.WhenActivated(d =>
 		{
 			if (!Design.IsDesignMode) ViewModel ??= ViewModelLocator.MessageBox;
+
+			if(ViewModel != null)
+			{
+				ViewModel.WhenAnyValue(x => x.IsInput).Subscribe(b =>
+				{
+					if(ViewModel.IsVisible)
+					{
+						InputTextBox.Focus(NavigationMethod.Pointer);
+						InputTextBox.SelectAll();
+					}
+				});
+			}
 		});
 	}
 }

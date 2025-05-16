@@ -1788,7 +1788,7 @@ Directory the zip will be extracted to:
 			var msg = $"{sentenceStart} {interaction.Input.Total} mod file(s)?";
 
 			var result = await _interactions.ShowMessageBox.Handle(new("Confirm Mod Deletion", msg, InteractionMessageBoxType.YesNo));
-			interaction.SetOutput(result);
+			interaction.SetOutput(result.Result);
 		});
 
 		_interactions.OpenModProperties.RegisterHandler(interaction =>

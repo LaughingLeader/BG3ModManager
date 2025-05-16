@@ -284,7 +284,7 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 	{
 		_interactions.ShowMessageBox.Handle(new("Associate BG3MM with nxm:// links?", _associateNXMMessage, InteractionMessageBoxType.YesNo)).Subscribe(result =>
 		{
-			if (result && DivinityApp.GetExePath() is string exePath)
+			if (result.Result && DivinityApp.GetExePath() is string exePath)
 			{
 				if (RegistryHelper.AssociateWithNXMProtocol(exePath))
 				{

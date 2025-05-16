@@ -4,6 +4,7 @@
     xmlns:controls="using:ModManager.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:m="using:ModManager.Models"
+    xmlns:manager="using:ModManager"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:menuModel="using:ModManager.Models.Menu"
@@ -144,13 +145,21 @@
 					    SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
 					    SelectedItem="{Binding ModOrder.SelectedModOrder}">
 						<FlyoutBase.AttachedFlyout>
-							<Flyout Placement="Pointer" ShowMode="Transient">
-								<MenuItem Header="Rename" ToolTip.Tip="Toggle Renaming">
+							<MenuFlyout Placement="Pointer" ShowMode="Transient">
+								<MenuItem Command="{Binding RenameOrderCommand}" Header="Rename">
 									<MenuItem.Icon>
 										<materialIcons:MaterialIcon Kind="Rename" />
 									</MenuItem.Icon>
 								</MenuItem>
-							</Flyout>
+								<MenuItem Command="{Binding Path=OpenInFileExplorerCommand, Source={x:Static manager:AppServices.Commands}}"
+								    CommandParameter="{Binding ModOrder.SelectedModOrder.FilePath}"
+								    Header="Open in File Explorer..."
+								    Icon="{materialIcons:MaterialIconExt Kind=OpenInApp}" />
+								<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}"
+								    CommandParameter="{Binding ModOrder.SelectedModOrder.FilePath}"
+								    Header="Copy Path to Clipboard"
+								    Icon="{materialIcons:MaterialIconExt Kind=Clipboard}" />
+							</MenuFlyout>
 						</FlyoutBase.AttachedFlyout>
 						<ComboBox.ItemTemplate>
 							<DataTemplate DataType="mod:ModLoadOrder">
@@ -182,9 +191,9 @@
 					    Foreground="RoyalBlue"
 					    ToolTip.Tip="Export Order to Game" />
 
-					<Button Command="{Binding ExportModsToZipCommand}" Content="{materialIcons:MaterialIconExt Kind=FolderZip}" ToolTip.Tip="Export Active Mods to Zip" />
+					<Button Command="{Binding ExportOrderToZipCommand}" Content="{materialIcons:MaterialIconExt Kind=FolderZip}" ToolTip.Tip="Export Active Mods to Zip" />
 
-					<Button Command="{Binding ExportModsToZipAsCommand}" Content="{materialIcons:MaterialIconExt Kind=ArchiveEdit}" ToolTip.Tip="Export Active Mods to Zip As..." />
+					<Button Command="{Binding ExportOrderToArchiveAsCommand}" Content="{materialIcons:MaterialIconExt Kind=ArchiveEdit}" ToolTip.Tip="Export Active Mods to Zip As..." />
 				</StackPanel>
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Refresh" />

@@ -10,8 +10,10 @@ public class MessageBoxViewModel : ReactiveObject
 	[Reactive] public string? Message { get; set; }
 	[Reactive] public bool IsVisible { get; set; }
 	[Reactive] public ISukiDialog? Dialog { get; set; }
+	[Reactive] public bool IsInput { get; set; }
+	[Reactive] public string? InputText { get; set; }
 
-	private readonly Subject<bool> Result = new();
+	private readonly Subject<MessageBoxResult> Result = new();
 
 	[Reactive] public InteractionMessageBoxType MessageBoxType { get; set; }
 
@@ -22,26 +24,33 @@ public class MessageBoxViewModel : ReactiveObject
 	public RxCommandUnit ConfirmCommand { get; }
 	public RxCommandUnit CancelCommand { get; }
 
-	public void Open(string title, string message, InteractionMessageBoxType messageBoxType)
+	public void Open(string title, string message, InteractionMessageBoxType messageBoxType, string? inputText = null)
 	{
 		Title = title;
 		Message = message;
 		MessageBoxType = messageBoxType;
+
+		IsInput = MessageBoxType == InteractionMessageBoxType.Input;
+		InputText = inputText;
 	}
 
-	public void Open(ShowMessageBoxRequest request) => Open(request.Title, request.Message, request.MessageBoxType);
+	public void Open(ShowMessageBoxRequest request) => Open(request.Title, request.Message, request.MessageBoxType, request.StartingInputText);
 
-	public IObservable<bool> WaitForResult() => Result.Take(1);
+	public IObservable<MessageBoxResult> WaitForResult() => Result.Take(1);
 
 	private void Close(bool result)
 	{
-		Result.OnNext(result);
+		Result.OnNext(new(result, InputText));
 		Dialog?.Dismiss();
 	}
 
 	private static string MessageBoxTypeToConfirmationText(InteractionMessageBoxType type)
 	{
-		if (type.HasFlag(InteractionMessageBoxType.YesNo))
+		if (type.HasFlag(InteractionMessageBoxType.Input))
+		{
+			return "Confirm";
+		}
+		else if (type.HasFlag(InteractionMessageBoxType.YesNo))
 		{
 			return "Yes";
 		}
@@ -50,7 +59,11 @@ public class MessageBoxViewModel : ReactiveObject
 
 	private static string MessageBoxTypeToCancelText(InteractionMessageBoxType type)
 	{
-		if (type.HasFlag(InteractionMessageBoxType.YesNo))
+		if (type.HasFlag(InteractionMessageBoxType.Input))
+		{
+			return "Cancel";
+		}
+		else if (type.HasFlag(InteractionMessageBoxType.YesNo))
 		{
 			return "No";
 		}
@@ -68,14 +81,14 @@ public class MessageBoxViewModel : ReactiveObject
 		{
 			if(!b)
 			{
-				Result.OnNext(false);
+				Result.OnNext(new(false, InputText));
 			}
 		});
 
 		var whenTypeChanges = this.WhenAnyValue(x => x.MessageBoxType);
 		whenTypeChanges.Select(MessageBoxTypeToConfirmationText).ToUIProperty(this, x => x.ConfirmButtonText, "OK");
 		whenTypeChanges.Select(MessageBoxTypeToCancelText).ToUIProperty(this, x => x.CancelButtonText, "Close");
-		whenTypeChanges.Select(x => x.HasFlag(InteractionMessageBoxType.YesNo)).ToUIProperty(this, x => x.CancelVisibility);
+		whenTypeChanges.Select(x => x.IsConfirmation()).ToUIProperty(this, x => x.CancelVisibility);
 	}
 }
 

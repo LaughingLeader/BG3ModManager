@@ -69,7 +69,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 
 	[ObservableAsProperty] public ObservableCollectionExtended<IModEntry>? FocusedList { get; }
 
-	[Reactive] public bool IsRenamingOrder { get; set; }
 	[Reactive] public bool IsRefreshing { get; private set; }
 	[Reactive] public bool IsLoadingOrder { get; set; }
 	[Reactive] public bool IsLocked { get; private set; }
@@ -97,7 +96,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public bool ModioSupportEnabled { get; }
 
 	[ObservableAsProperty] public bool HasProfile { get; }
-	[ObservableAsProperty] public bool IsBaseLoadOrder { get; }
+	[ObservableAsProperty] public bool IsModSettingsOrder { get; }
 	[ObservableAsProperty] public bool HasSelectedMods { get; }
 
 	[ObservableAsProperty] public string? ActiveSelectedText { get; }
@@ -112,11 +111,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public int TotalInactiveMods { get; }
 
 	public ReactiveCommand<ModLoadOrder, Unit> DeleteOrderCommand { get; }
-	public ReactiveCommand<object, Unit> ToggleOrderRenamingCommand { get; set; }
 	public RxCommandUnit CopyOrderToClipboardCommand { get; }
 	public ReactiveCommand<ModLoadOrder, Unit> OrderJustLoadedCommand { get; set; }
-
-	private static IObservable<bool> AllTrue(IObservable<bool> first, IObservable<bool> second) => first.CombineLatest(second).Select(x => x.First && x.Second);
 
 	private static string GetLaunchGameTooltip(ValueTuple<string?, bool, bool, bool> x)
 	{
@@ -1149,68 +1145,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}
 	}
 
-	private string LastRenamingOrderName { get; set; } = "";
-
-	public void StopRenaming(bool cancel = false)
-	{
-		if (IsRenamingOrder)
-		{
-			if (!cancel)
-			{
-				LastRenamingOrderName = "";
-			}
-			else if (LastRenamingOrderName.IsValid() && SelectedModOrder != null)
-			{
-				SelectedModOrder.Name = LastRenamingOrderName;
-				LastRenamingOrderName = "";
-			}
-			IsRenamingOrder = false;
-		}
-	}
-
-	private async Task ToggleRenamingLoadOrder(object control)
-	{
-		IsRenamingOrder = !IsRenamingOrder;
-
-		if (IsRenamingOrder)
-		{
-			LastRenamingOrderName = SelectedModOrder.Name;
-		}
-
-		await Task.Delay(50);
-		RxApp.MainThreadScheduler.Schedule(() =>
-		{
-			if (control is ComboBox comboBox)
-			{
-				var tb = comboBox.GetVisualChildren().OfType<TextBox>().FirstOrDefault();
-				if (tb != null)
-				{
-					tb.Focus();
-					if (IsRenamingOrder)
-					{
-						tb.SelectAll();
-					}
-					else
-					{
-						tb.ClearSelection();
-					}
-				}
-			}
-			else if (control is TextBox tb)
-			{
-				if (IsRenamingOrder)
-				{
-					tb.SelectAll();
-
-				}
-				else
-				{
-					tb.ClearSelection();
-				}
-			}
-		});
-	}
-
 	private int SortModOrder(ModuleShortDesc a, ModuleShortDesc b)
 	{
 		var modManager = _manager;
@@ -1724,10 +1658,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 			}
 		});
 
-		var canRenameOrder = this.WhenAnyValue(x => x.SelectedModOrderIndex, (i) => i > 0);
-		ToggleOrderRenamingCommand = ReactiveCommand.CreateFromTask<object>(ToggleRenamingLoadOrder, canRenameOrder, RxApp.MainThreadScheduler);
-
-		var canDeleteOrder = AllTrue(canExecuteCommands, this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => x > 0));
+		var canDeleteOrder = canExecuteCommands.CombineLatest(this.WhenAnyValue(x => x.SelectedModOrderIndex).Select(x => x > 0)).AllTrue();
 		DeleteOrderCommand = ReactiveCommand.CreateFromTask<ModLoadOrder>(DeleteOrder, canDeleteOrder);
 
 		CopyOrderToClipboardCommand = ReactiveCommand.CreateFromObservable(() => Observable.Start(() =>
@@ -1812,7 +1743,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var whenModOrder = this.WhenAnyValue(x => x.SelectedModOrder);
 
 		whenModOrder.ValueOrFallback(x => x.Name, "None").ToUIProperty(this, x => x.SelectedModOrderName, "None");
-		whenModOrder.Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsBaseLoadOrder);
+		whenModOrder.Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsModSettingsOrder);
 
 		whenModOrder.Buffer(2, 1).Subscribe(changes =>
 		{

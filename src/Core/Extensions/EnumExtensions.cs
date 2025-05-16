@@ -20,7 +20,7 @@ public static class EnumExtensions
 
 	public static bool IsConfirmation(this InteractionMessageBoxType messageBoxType)
 	{
-		return messageBoxType.HasFlag(InteractionMessageBoxType.YesNo);
+		return messageBoxType.HasFlag(InteractionMessageBoxType.YesNo) || messageBoxType.HasFlag(InteractionMessageBoxType.Input);
 	}
 
 	public static T[] IndexToEnumArray<T>() where T : Enum

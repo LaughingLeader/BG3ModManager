@@ -18,12 +18,26 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 	private readonly ISukiToastManager _toastManager = new SukiToastManager();
 	private readonly ISukiDialogManager _dialogManager = new SukiDialogManager();
 
+	private ISukiDialog? _lastDialog = null;
+
+	private void DismissLastDialog()
+	{
+		if (_lastDialog is not null)
+		{
+			_dialogManager.TryDismissDialog(_lastDialog);
+			_lastDialog = null;
+		}
+	}
+
 	public void ShowSukiDialog(object? content, bool showCardBehind = true, bool allowBackgroundClose = false)
 	{
+		DismissLastDialog();
+
 		if (content is string message)
 		{
 			var dialogContent = new TextBlock { Text = message };
 			var dialog = _dialogManager.CreateDialog().WithContent(dialogContent);
+			_lastDialog = dialog.Dialog;
 			dialog.SetCanDismissWithBackgroundClick(allowBackgroundClose);
 			dialog.TryShow();
 		}
@@ -39,6 +53,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 				}
 				return content;
 			});
+			_lastDialog = dialog.Dialog;
 			dialog.TryShow();
 		}
 
@@ -69,6 +84,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 			{
 				return Observable.StartAsync(async () =>
 				{
+					DismissLastDialog();
 					var data = context.Input;
 					var dialogVM = ViewModelLocator.MessageBox;
 					dialogVM.Open(data);
@@ -78,7 +94,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 					ShowSukiDialog(dialogVM, true, !isConfirmation);
 					if (!isConfirmation)
 					{
-						context.SetOutput(true);
+						context.SetOutput(new(true, null));
 					}
 					else
 					{
@@ -86,7 +102,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 						context.SetOutput(result);
 					}
 					//SukiHost.ShowDialog(dialogVM, true, !data.MessageBoxType.HasFlag(InteractionMessageBoxType.YesNo));
-				}, RxApp.TaskpoolScheduler);
+				}, RxApp.MainThreadScheduler);
 			});
 
 			interactions.ShowAlert.RegisterHandler(async context =>
@@ -105,14 +121,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 						_ => "Info",
 					};
 				}
-				RxApp.MainThreadScheduler.Schedule(() =>
+				await Observable.Start(() =>
 				{
 					var toastBuilder = _toastManager.CreateToast().WithTitle(title).WithContent(data.Message);
 					toastBuilder.SetCanDismissByClicking(true);
 					toastBuilder.Delay(duration, _toastManager.Dismiss);
 					toastBuilder.SetType(data.AlertType.ToNotificationType());
 					toastBuilder.Queue();
-				});
+				}, RxApp.MainThreadScheduler);
 				context.SetOutput(true);
 			});
 		});

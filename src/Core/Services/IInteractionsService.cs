@@ -54,7 +54,7 @@ public interface IInteractionsService
 	/// <summary>
 	/// Show a message box.
 	/// </summary>
-	Interaction<ShowMessageBoxRequest, bool> ShowMessageBox { get; }
+	Interaction<ShowMessageBoxRequest, MessageBoxResult> ShowMessageBox { get; }
 
 	/// <summary>
 	/// Validate stats for given mods using LSLib.

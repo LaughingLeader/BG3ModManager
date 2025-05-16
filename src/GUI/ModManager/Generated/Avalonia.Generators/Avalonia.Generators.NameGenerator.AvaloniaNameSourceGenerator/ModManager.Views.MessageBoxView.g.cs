@@ -8,7 +8,8 @@ namespace ModManager.Views
 {
     partial class MessageBoxView
     {
-
+        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.2.8.0")]
+        internal global::ModManager.Controls.EnhancedTextBox InputTextBox;
 
         /// <summary>
         /// Wires up the controls and optionally loads XAML markup and attaches dev tools (if Avalonia.Diagnostics package is referenced).
@@ -24,7 +25,8 @@ namespace ModManager.Views
                 AvaloniaXamlLoader.Load(this);
             }
 
-
+            var __thisNameScope__ = this.FindNameScope();
+            InputTextBox = __thisNameScope__?.Find<global::ModManager.Controls.EnhancedTextBox>("InputTextBox");
         }
     }
 }
