@@ -127,4 +127,8 @@
 			</Setter>
 		</Style>
 	</Style>
+
+	<!--<Style Selector="MenuItem /template/ TextBlock#PART_InputGestureText">
+		<Setter Property="FontSize" Value="8" />
+	</Style>-->
 </Styles>

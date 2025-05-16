@@ -55,18 +55,22 @@
 	<MenuFlyout x:Key="EnhancedTextBoxContextFlyout" FlyoutPresenterClasses="TextBox" Placement="Bottom">
 		<MenuItem Command="{Binding $parent[TextBox].Cut}"
 		    Header="Cut"
+		    Icon="{icons:MaterialIconExt Kind=ContentCut}"
 		    InputGesture="{x:Static TextBox.CutGesture}"
 		    IsEnabled="{Binding $parent[TextBox].CanCut}" />
 		<MenuItem Command="{Binding $parent[TextBox].Copy}"
 		    Header="Copy"
+		    Icon="{icons:MaterialIconExt Kind=ContentCopy}"
 		    InputGesture="{x:Static TextBox.CopyGesture}"
 		    IsEnabled="{Binding $parent[TextBox].CanCopy}" />
 		<MenuItem Command="{Binding $parent[TextBox].Paste}"
 		    Header="Paste"
+		    Icon="{icons:MaterialIconExt Kind=ContentPaste}"
 		    InputGesture="{x:Static TextBox.PasteGesture}"
 		    IsEnabled="{Binding $parent[TextBox].CanPaste}" />
 		<MenuItem Command="{Binding $parent[controls:EnhancedTextBox].Clear}"
 		    Header="Clear"
+		    Icon="{icons:MaterialIconExt Kind=Clear}"
 		    InputGesture="{x:Static controls:EnhancedTextBox.ClearGesture}"
 		    IsEnabled="{Binding $parent[controls:EnhancedTextBox].CanClear}" />
 	</MenuFlyout>
