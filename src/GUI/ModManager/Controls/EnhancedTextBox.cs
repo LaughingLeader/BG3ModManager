@@ -23,31 +23,41 @@ public class EnhancedTextBox : TextBox
 		private set { SetAndRaise(CanPasteProperty, ref _canClear, value); }
 	}
 
-	public EnhancedTextBox() : base()
+	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
 	{
-		PropertyChanged += EnhancedTextBox_PropertyChanged;
+		base.OnPropertyChanged(change);
 
-		KeyDown += EnhancedTextBox_KeyDown;
+		if (change.Property == TextProperty && change.NewValue is string text)
+		{
+			CanClear = text.IsValid();
+		}
 	}
 
-	private void EnhancedTextBox_KeyDown(object? sender, KeyEventArgs e)
+	protected override void OnKeyDown(KeyEventArgs e)
 	{
+		base.OnKeyDown(e);
+
 		if (!IsFocused) return;
 
-		if(e.Key == Key.Escape || ((e.Key == Key.Enter || e.Key == Key.Return) && !AcceptsReturn))
+		if (e.Key == Key.Escape || ((e.Key == Key.Enter || e.Key == Key.Return) && !AcceptsReturn))
 		{
-			if(this.GetLogicalParent<Window>() is Window window)
+			if (this.GetLogicalParent<Window>() is Window window)
 			{
 				window.Focus(NavigationMethod.Tab);
 			}
 		}
 	}
 
-	private void EnhancedTextBox_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+	private static void OnContextRequested(object? sender, ContextRequestedEventArgs e)
 	{
-		if(e.Property == TextProperty && e.NewValue is string text)
+		if(sender is EnhancedTextBox tb && !tb.IsFocused && tb.ContextFlyout is not null)
 		{
-			CanClear = text.IsValid();
+			tb.Focus();
 		}
+	}
+
+	public EnhancedTextBox() : base()
+	{
+		ContextRequested += OnContextRequested;
 	}
 }

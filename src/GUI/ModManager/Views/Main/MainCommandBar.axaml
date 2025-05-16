@@ -140,7 +140,6 @@
 					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
 					<controls:ComboBoxWithRightClick x:Name="OrdersComboBox"
 					    MaxWidth="500"
-					    Classes="highlight"
 					    ItemsSource="{Binding ModOrder.ModOrderList}"
 					    SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
 					    SelectedItem="{Binding ModOrder.SelectedModOrder}">
