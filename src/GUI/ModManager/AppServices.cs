@@ -73,7 +73,6 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();
 
-		//SplatRegistrations.RegisterLazySingleton<MessageBoxView>();
 		SplatRegistrations.RegisterLazySingleton<ProgressBarView>();
 
 		SplatRegistrations.RegisterLazySingleton<SettingsWindow>();

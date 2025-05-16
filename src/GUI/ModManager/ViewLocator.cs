@@ -59,7 +59,6 @@ public class ViewLocator : IViewLocator, IDataTemplate
 		RegisterConstant<DeleteFilesViewModel, DeleteFilesView>(resolver);
 		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
 		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);
-		RegisterConstant<MessageBoxViewModel, MessageBoxView>(resolver);
 		RegisterConstant<KeybindingsViewModel, KeybindingsView>(resolver);
 		resolver.RegisterLazySingleton(() => (IViewFor<IProgressBarViewModel>)AppServices.Get<ProgressBarView>());
 
@@ -74,6 +73,8 @@ public class ViewLocator : IViewLocator, IDataTemplate
 		resolver.Register(() => new StatsValidatorFileEntryView(), typeof(IViewFor<StatsValidatorFileResults>));
 		resolver.Register(() => new StatsValidatorEntryView(), typeof(IViewFor<StatsValidatorErrorEntry>));
 		resolver.Register(() => new StatsValidatorLineText(), typeof(IViewFor<StatsValidatorLineView>));
+
+		resolver.Register(() => new MessageBoxView(), typeof(IViewFor<MessageBoxViewModel>));
 	}
 
 	//IDataTemplate
