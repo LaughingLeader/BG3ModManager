@@ -52,7 +52,7 @@ public partial class VersionGeneratorWindow : HideWindowBase<VersionGeneratorVie
 					{
 						var toastBuilder = _toastManager.CreateToast().WithTitle(title).WithContent(data.Message);
 						toastBuilder.SetCanDismissByClicking(true);
-						toastBuilder.Delay(duration, _toastManager.Dismiss);
+						toastBuilder.SetDismissAfter(duration);
 						toastBuilder.SetType(data.AlertType.ToNotificationType());
 						toastBuilder.Queue();
 					});

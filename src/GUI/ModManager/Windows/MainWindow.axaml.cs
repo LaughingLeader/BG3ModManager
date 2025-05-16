@@ -125,7 +125,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 				{
 					var toastBuilder = _toastManager.CreateToast().WithTitle(title).WithContent(data.Message);
 					toastBuilder.SetCanDismissByClicking(true);
-					toastBuilder.Delay(duration, _toastManager.Dismiss);
+					toastBuilder.SetDismissAfter(duration);
 					toastBuilder.SetType(data.AlertType.ToNotificationType());
 					toastBuilder.Queue();
 				}, RxApp.MainThreadScheduler);

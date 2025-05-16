@@ -29,7 +29,6 @@
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="Avalonia.Fonts.Inter" />
 		<PackageReference Include="Avalonia.ReactiveUI" />
-		<PackageReference Include="Avalonia.ReactiveUI.Events" />
 		<PackageReference Include="Avalonia.Svg.Skia" />
 		<PackageReference Include="Avalonia.Themes.Fluent" />
 		<PackageReference Include="Avalonia.Xaml.Behaviors" />
