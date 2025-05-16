@@ -85,6 +85,13 @@
 		<Setter Property="ContextFlyout" Value="{StaticResource EnhancedTextBoxContextFlyout}" />
 	</Style>
 
+	<Style Selector="suki|GlassCard.Discrete /template/ Border#PART_BorderCard">
+		<!--<Setter Property="Background" Value="{DynamicResource ControlSukiGlassCardBackground}" />
+		<Setter Property="Opacity" Value="{DynamicResource ControlGlassOpacity}" />-->
+		<Setter Property="Background" Value="{DynamicResource SukiGlassCardOpaqueBackground}" />
+		<Setter Property="Opacity" Value="1" />
+	</Style>
+
 	<Style Selector="CheckBox.right">
 		<Setter Property="Padding" Value="0" />
 		<Setter Property="Margin" Value="0,0,0,8" />
