@@ -1,3 +1,10 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<!--    -->
+	<Image x:Key="ModioIcon"
+	    Width="16"
+	    Height="16"
+	    Source="{SvgImage /Assets/Icons/modio_Blue.svg}" />
+	<Image x:Key="NexusModsIcon"
+	    Width="16"
+	    Height="16"
+	    Source="{SvgImage /Assets/Icons/nexuslogo.svg}" />
 </ResourceDictionary>
