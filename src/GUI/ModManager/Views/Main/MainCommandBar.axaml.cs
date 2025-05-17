@@ -68,17 +68,6 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 			}
 		});
 
-		/*Observable.FromEventPattern<ContextRequestedEventArgs>(OrdersComboBox, nameof(OrdersComboBox.ContextRequested))
-		.Subscribe(x =>
-		{
-			if (x.Sender is Control target && Resources.TryGetValue("RenamingCommandBarFlyout", out var obj) && obj is CommandBarFlyout flyout)
-			{
-				flyout.ShowAt(target, false);
-				x.EventArgs.Handled = true;
-				OrdersComboBox.IsDropDownOpen = false;
-			}
-		});*/
-
 		this.WhenActivated(d =>
 		{
 			if (ViewModel != null)
@@ -93,32 +82,33 @@ public partial class MainCommandBar : ReactiveUserControl<MainCommandBarViewMode
 
 				//Temp fix for ComboBox selected items not updating from bindings
 
-				var whenModOrder = ViewModel.WhenAnyValue(x => x.ModOrder).WhereNotNull();
-
-				whenModOrder.Select(x => x.SelectedProfile).Subscribe(x =>
+				ViewModel.WhenAnyValue(x => x.ModOrder, x => x.ModOrder.SelectedProfile, x => x.ModOrder.SelectedModOrder, x => x.ModOrder.SelectedAdventureMod)
+				.ObserveOn(RxApp.MainThreadScheduler)
+				.Subscribe(_ =>
 				{
-					if (x != null && ProfileComboBox.SelectedItem == null)
+					if(ViewModel.ModOrder != null)
 					{
-						ProfileComboBox.SelectedItem = x;
-						ProfileComboBox.SelectedIndex = ViewModel.ModOrder.SelectedProfileIndex;
-					}
-				});
+						var selectedProfile = ViewModel.ModOrder.SelectedProfile;
+						var selectedModOrder = ViewModel.ModOrder.SelectedModOrder;
+						var selectedAdventure = ViewModel.ModOrder.SelectedAdventureMod;
 
-				whenModOrder.Select(x => x.SelectedModOrder).Subscribe(x =>
-				{
-					if (x != null && OrdersComboBox.SelectedItem == null)
-					{
-						OrdersComboBox.SelectedItem = x;
-						OrdersComboBox.SelectedIndex = ViewModel.ModOrder.SelectedModOrderIndex;
-					}
-				});
+						if (selectedProfile != null && ProfileComboBox.SelectedItem == null)
+						{
+							ProfileComboBox.SelectedItem = selectedProfile;
+							ProfileComboBox.SelectedIndex = ViewModel.ModOrder.SelectedProfileIndex;
+						}
 
-				whenModOrder.Select(x => x.SelectedAdventureMod).Subscribe(x =>
-				{
-					if (x != null && CampaignComboBox.SelectedItem == null)
-					{
-						CampaignComboBox.SelectedItem = x;
-						CampaignComboBox.SelectedIndex = ViewModel.ModOrder.SelectedAdventureModIndex;
+						if (selectedModOrder != null && OrdersComboBox.SelectedItem == null)
+						{
+							OrdersComboBox.SelectedItem = selectedModOrder;
+							OrdersComboBox.SelectedIndex = ViewModel.ModOrder.SelectedModOrderIndex;
+						}
+
+						if (selectedAdventure != null && CampaignComboBox.SelectedItem == null)
+						{
+							CampaignComboBox.SelectedItem = selectedAdventure;
+							CampaignComboBox.SelectedIndex = ViewModel.ModOrder.SelectedAdventureModIndex;
+						}
 					}
 				});
 			}
