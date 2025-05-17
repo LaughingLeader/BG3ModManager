@@ -2,15 +2,13 @@
 
 using ModManager.Json;
 
-using System.Runtime.Serialization;
-
 namespace ModManager.Models.Mod;
 
 [DataContract]
 public class ModScriptExtenderConfig : ReactiveObject
 {
-	[DataMember][Reactive] public int RequiredVersion { get; set; }
-	[DataMember][Reactive] public string? ModTable { get; set; }
+	[DataMember, Reactive] public int RequiredVersion { get; set; }
+	[DataMember, Reactive] public string? ModTable { get; set; }
 
 	[JsonConverter(typeof(JsonArrayToSourceListConverter<string>))]
 	[DataMember] public SourceList<string> FeatureFlags { get; set; }

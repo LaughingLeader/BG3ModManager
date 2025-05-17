@@ -34,7 +34,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Check for Nexus Mod Updates", Key.None, KeyModifiers.None, "", "Download")]
 	public RxCommandUnit? CheckForNexusModsUpdatesCommand { get; private set; }
 
-	[Keybinding("Check for Mod.io Updates", Key.None, KeyModifiers.None, "", "Download")]
+	[Keybinding("Check for mod.io Updates", Key.None, KeyModifiers.None, "", "Download")]
 	public RxCommandUnit? CheckForModioUpdatesCommand { get; private set; }
 
 	[Keybinding("Export Order to Game", Key.E, KeyModifiers.Control, "Export order to modsettings.lsx", "File")]

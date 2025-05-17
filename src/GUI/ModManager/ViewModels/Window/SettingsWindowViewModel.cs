@@ -3,6 +3,7 @@
 using ModManager.Enums.Extender;
 using ModManager.Models;
 using ModManager.Models.Extender;
+using ModManager.Models.Mod;
 using ModManager.Models.Settings;
 using ModManager.Util;
 
@@ -527,7 +528,5 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 		{
 			CanSaveSettings = true;
 		});
-
-		
 	}
 }

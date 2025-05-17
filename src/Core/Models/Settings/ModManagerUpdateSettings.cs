@@ -23,7 +23,7 @@ public class ModManagerUpdateSettings : ReactiveObject
 
 	//TODO: Remove if Larian doesn't add workshop support
 	[DefaultValue(true)]
-	[SettingsEntry("Update Mod.io Mods", "Automatically check for updates for mods configured with Mod.io releases")]
+	[SettingsEntry("Update mod.io Mods", "Automatically check for updates for mods configured with mod.io releases")]
 	[DataMember, Reactive] public bool UpdateModioMods { get; set; }
 
 	[DefaultValue("")]
@@ -31,7 +31,7 @@ public class ModManagerUpdateSettings : ReactiveObject
 	[DataMember, Reactive] public string? NexusModsAPIKey { get; set; }
 
 	[DefaultValue("")]
-	[SettingsEntry("Mod.io API Key", "Your Mod.io Web API key, which will allow the mod manager to fetch mod updates/information from Mod.io")]
+	[SettingsEntry("mod.io API Key", "Your mod.io Web API key, which will allow the mod manager to fetch mod updates/information from mod.io")]
 	[DataMember, Reactive] public string? ModioAPIKey { get; set; }
 
 	[DefaultValue(typeof(TimeSpan), "00:30:00")] // 30 minutes

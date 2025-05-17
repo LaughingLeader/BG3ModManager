@@ -12,8 +12,8 @@
     d:DesignWidth="1600"
 	mc:Ignorable="d">
 	<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" Text="Mod.io API Key" ToolTip.Tip="Your Mod.io Web API key, which will allow the mod manager to fetch mod updates/information from Mod.io" />
-		<TextBox Grid.Row="0" Grid.Column="1" Classes="compact" Text="{Binding ModioAPIKey}" ToolTip.Tip="Your Mod.io Web API key, which will allow the mod manager to fetch mod updates/information from Mod.io"/>
+		<TextBlock Grid.Row="0" Grid.Column="0" Classes="left" Text="mod.io API Key" ToolTip.Tip="Your mod.io Web API key, which will allow the mod manager to fetch mod updates/information from mod.io" />
+		<TextBox Grid.Row="0" Grid.Column="1" Classes="compact" Text="{Binding ModioAPIKey}" ToolTip.Tip="Your mod.io Web API key, which will allow the mod manager to fetch mod updates/information from mod.io"/>
 		
 		<TextBlock Grid.Row="1" Grid.Column="0" Classes="left" Text="NexusMods API Key" ToolTip.Tip="Your NexusMods API key, which will allow the mod manager to fetch mod updates/information" />
 		<TextBox Grid.Row="1" Grid.Column="1" Classes="compact" Text="{Binding NexusModsAPIKey}" ToolTip.Tip="Your NexusMods API key, which will allow the mod manager to fetch mod updates/information"/>
@@ -27,8 +27,8 @@
 		<TextBlock Grid.Row="4" Grid.Column="0" Classes="left" Text="Update GitHub Mods" ToolTip.Tip="Automatically check for updates for mods configured with GitHub repository releases" />
 		<CheckBox Grid.Row="4" Grid.Column="1" Classes="right" IsChecked ="{Binding UpdateGitHubMods}" ToolTip.Tip="Automatically check for updates for mods configured with GitHub repository releases"/>
 		
-		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" Text="Update Mod.io Mods" ToolTip.Tip="Automatically check for updates for mods configured with Mod.io releases" />
-		<CheckBox Grid.Row="5" Grid.Column="1" Classes="right" IsChecked ="{Binding UpdateModioMods}" ToolTip.Tip="Automatically check for updates for mods configured with Mod.io releases"/>
+		<TextBlock Grid.Row="5" Grid.Column="0" Classes="left" Text="Update mod.io Mods" ToolTip.Tip="Automatically check for updates for mods configured with mod.io releases" />
+		<CheckBox Grid.Row="5" Grid.Column="1" Classes="right" IsChecked ="{Binding UpdateModioMods}" ToolTip.Tip="Automatically check for updates for mods configured with mod.io releases"/>
 		
 		<TextBlock Grid.Row="6" Grid.Column="0" Classes="left" Text="Update NexusMods Mods" ToolTip.Tip="Automatically check for updates for mods configured with NexusMods releases" />
 		<CheckBox Grid.Row="6" Grid.Column="1" Classes="right" IsChecked ="{Binding UpdateNexusMods}" ToolTip.Tip="Automatically check for updates for mods configured with NexusMods releases"/>

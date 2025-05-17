@@ -14,7 +14,7 @@ public partial class MainCommandBarViewModel
 		keys.RegisterCommand("MainCommandBarViewModel_CheckAllModUpdatesCommand", "Check for All Mod Updates", CheckAllModUpdatesCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForGitHubModUpdatesCommand", "Check for Github Mod Updates", CheckForGitHubModUpdatesCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_CheckForNexusModsUpdatesCommand", "Check for Nexus Mod Updates", CheckForNexusModsUpdatesCommand);
-		keys.RegisterCommand("MainCommandBarViewModel_CheckForModioUpdatesCommand", "Check for Mod.io Updates", CheckForModioUpdatesCommand);
+		keys.RegisterCommand("MainCommandBarViewModel_CheckForModioUpdatesCommand", "Check for mod.io Updates", CheckForModioUpdatesCommand);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderCommand", "Export Order to Game", ExportOrderCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.Control);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToTextFileCommand", "Export Order to Text File...", ExportOrderToTextFileCommand, Avalonia.Input.Key.E, Avalonia.Input.KeyModifiers.None | Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift);
 		keys.RegisterCommand("MainCommandBarViewModel_ExportOrderToZipCommand", "Export Order to Archive (.zip)", ExportOrderToZipCommand);
