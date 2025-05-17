@@ -22,6 +22,10 @@ public interface IGlobalCommandsService
 	ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
 
 	void OpenURL(string? url);
+	void OpenInFileExplorer(string? path);
+	void OpenFile(string? path);
+	void CopyToClipboard(object? obj);
+
 	void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
 	Task ShowAlertAsync(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "");
 }

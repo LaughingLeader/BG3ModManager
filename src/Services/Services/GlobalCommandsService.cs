@@ -35,7 +35,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	public ReactiveCommand<ModData?, Unit> OpenModPropertiesCommand { get; }
 	public ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
 
-	private void OpenFile(string? path)
+	public void OpenFile(string? path)
 	{
 		if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path), "path is null or empty");
 
@@ -43,13 +43,9 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 		if (_fs.File.Exists(path))
 		{
-			try
+			if(!ProcessHelper.TryOpenPath(path))
 			{
-				Process.Start(path);
-			}
-			catch (System.ComponentModel.Win32Exception) // No File Association
-			{
-				Process.Start("explorer.exe", $"\"{path}\"");
+				OpenInFileExplorer(path);
 			}
 		}
 		else if (_fs.Directory.Exists(path))
@@ -62,17 +58,17 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private void OpenInFileExplorer(string? path)
+	public void OpenInFileExplorer(string? path)
 	{
 		if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path), "path is null or empty");
 
 		if (_fs.File.Exists(path))
 		{
-			Process.Start("explorer.exe", $"/select, \"{_fs.Path.GetFullPath(path)}\"");
+			ProcessHelper.TryRunCommand("explorer.exe", $"/select, \"{_fs.Path.GetFullPath(path)}\"");
 		}
 		else if (_fs.Directory.Exists(path))
 		{
-			Process.Start("explorer.exe", $"\"{_fs.Path.GetFullPath(path)}\"");
+			ProcessHelper.TryRunCommand("explorer.exe", $"\"{_fs.Path.GetFullPath(path)}\"");
 		}
 		else
 		{
@@ -80,7 +76,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private void CopyToClipboard(object? obj)
+	public void CopyToClipboard(object? obj)
 	{
 		if (obj == null) throw new ArgumentNullException(nameof(obj), "data to copy is null");
 		try
@@ -121,33 +117,9 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 	public void OpenURL(string? url)
 	{
+		
 		if (!url.IsValid()) throw new ArgumentNullException(nameof(url));
-		//Source: https://stackoverflow.com/a/43232486
-		try
-		{
-			Process.Start(url);
-		}
-		catch
-		{
-			// hack because of this: https://github.com/dotnet/corefx/issues/10361
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				url = url.Replace("&", "^&");
-				Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-			}
-			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-			{
-				Process.Start("xdg-open", url);
-			}
-			else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-			{
-				Process.Start("open", url);
-			}
-			else
-			{
-				throw;
-			}
-		}
+		ProcessHelper.TryOpenUrl(url);
 	}
 
 	private void OpenGitHubPage(ModData? mod)
