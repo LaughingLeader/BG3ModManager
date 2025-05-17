@@ -102,6 +102,11 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 	{
 		base.Close();
 		Files.Clear();
+
+		if(HostScreen is MainWindowViewModel main)
+		{
+			main.Views.SwitchToModOrderView();
+		}
 	}
 
 	public void ToggleSelectAll()
@@ -131,5 +136,16 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 		SelectAllCommand = ReactiveCommand.Create(ToggleSelectAll, RunCommand.IsExecuting.Select(b => !b), RxApp.MainThreadScheduler);
 
 		this.WhenAnyValue(x => x.AnySelected).BindTo(this, x => x.CanRun);
+	}
+}
+
+public class DesignDeleteFilesViewModel : DeleteFilesViewModel
+{
+	public DesignDeleteFilesViewModel() : base()
+	{
+		for (var i = 0; i < 30; i++)
+		{
+			Files.Add(new() { UUID = $"{i}", DisplayName = $"Mod{i}", FilePath = $"%LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/Mods/Mod{i}.pak" });
+		}
 	}
 }

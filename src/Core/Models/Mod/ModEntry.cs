@@ -18,6 +18,8 @@ public class ModEntry : ReactiveObject, IModEntry
 	[Reactive] public bool PreserveSelection { get; set; }
 
 	[ObservableAsProperty] public string? DisplayName { get; }
+	[ObservableAsProperty] public string? FilePath { get; }
+	[ObservableAsProperty] public string? Folder { get; }
 	[ObservableAsProperty] public string? Version { get; }
 	[ObservableAsProperty] public string? Author { get; }
 	[ObservableAsProperty] public string? LastUpdated { get; }
@@ -41,6 +43,8 @@ public class ModEntry : ReactiveObject, IModEntry
 		whenMod.Select(x => x.Index).BindTo(this, x => x.Index);
 
 		whenMod.Select(x => x.DisplayName).ToUIProperty(this, x => x.DisplayName);
+		whenMod.Select(x => x.FilePath).ToUIProperty(this, x => x.FilePath);
+		whenMod.Select(x => x.Folder).ToUIProperty(this, x => x.Folder);
 		whenMod.Select(x => x.Version.Version).ToUIProperty(this, x => x.Version);
 		whenMod.Select(x => x.Author).ToUIProperty(this, x => x.Author);
 		whenMod.Select(x => x.ListColor).ToUIProperty(this, x => x.ListColor);

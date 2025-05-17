@@ -1339,23 +1339,24 @@ Directory the zip will be extracted to:
 
 	private void DeleteMods(IEnumerable<IModEntry> targetMods, bool isDeletingDuplicates = false)
 	{
-		if (!IsDeletingFiles)
+		var deleteFilesView = ViewModelLocator.DeleteFiles;
+		if (!deleteFilesView.IsVisible)
 		{
 			var targetUUIDs = targetMods.Select(x => x.UUID).ToHashSet();
 
 			List<ModFileDeletionData> deleteFilesData = [];
 			foreach (var entry in targetMods)
 			{
-				var data = ModFileDeletionData.FromModEntry(entry, false, isDeletingDuplicates, AppServices.Mods.AllMods);
+				var data = ModFileDeletionData.FromModEntry(entry, isDeletingDuplicates, AppServices.Mods.AllMods);
 				if (data != null)
 				{
 					deleteFilesData.Add(data);
 				}
 			}
-			ViewModelLocator.DeleteFiles.IsDeletingDuplicates = isDeletingDuplicates;
-			ViewModelLocator.DeleteFiles.Files.AddRange(deleteFilesData);
+			deleteFilesView.IsDeletingDuplicates = isDeletingDuplicates;
+			deleteFilesView.Files.AddRange(deleteFilesData);
 
-			ViewModelLocator.DeleteFiles.IsVisible = true;
+			Views.SwitchToDeleteView();
 		}
 	}
 
@@ -1619,6 +1620,39 @@ Directory the zip will be extracted to:
 			{
 				var data = input.Input;
 				DeleteMods(data.TargetMods, data.IsDeletingDuplicates);
+				input.SetOutput(true);
+			}, RxApp.MainThreadScheduler);
+		});
+
+		interactionsService.DeleteSelectedMods.RegisterHandler(input =>
+		{
+			return Observable.Start(() =>
+			{
+				var data = input.Input;
+				var selectedMods = new List<IModEntry>();
+				var modOrder = ViewModelLocator.ModOrder;
+				foreach (var mod in modOrder.InactiveMods)
+				{
+					if(mod.IsSelected)
+					{
+						selectedMods.Add(mod);
+					}
+				}
+				foreach (var mod in modOrder.ActiveMods)
+				{
+					if(mod.IsSelected)
+					{
+						selectedMods.Add(mod);
+					}
+				}
+				foreach (var mod in modOrder.OverrideMods)
+				{
+					if(mod.IsSelected)
+					{
+						selectedMods.Add(mod);
+					}
+				}
+				DeleteMods(selectedMods, false);
 				input.SetOutput(true);
 			}, RxApp.MainThreadScheduler);
 		});

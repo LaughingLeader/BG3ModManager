@@ -2,14 +2,185 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mod="using:ModManager.Models.Mod"
+    xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
     xmlns:vm="using:ModManager.ViewModels.Main"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="1080"
+    d:DesignWidth="1920"
     x:DataType="vm:DeleteFilesViewModel"
+    Background="Transparent"
+    Focusable="True"
     mc:Ignorable="d">
-	<StackPanel>
-		<TextBlock Name="TestText" Text="Text Goes Here" ToolTip.Tip="Test" />
-		<CheckBox ToolTip.Tip="{Binding ElementName=TestText, Path=(ToolTip.Tip)}" />
-	</StackPanel>
+	<Design.DataContext>
+		<vm:DesignDeleteFilesViewModel />
+	</Design.DataContext>
+	<Grid HorizontalAlignment="Stretch"
+	    VerticalAlignment="Stretch"
+	    Grid.IsSharedSizeScope="True"
+	    RowDefinitions="Auto,1*,Auto,Auto">
+
+		<StackPanel Grid.Row="0"
+		    Margin="8"
+		    HorizontalAlignment="Center"
+		    Orientation="Vertical">
+			<TextBlock FontSize="24" Text="{Binding Title}" TextAlignment="Center" />
+			<Rectangle Height="2" Fill="LightGray" />
+		</StackPanel>
+
+		<suki:GlassCard Grid.Row="1" IsOpaque="True">
+			<Grid RowDefinitions="Auto,*">
+				<Grid Grid.Row="0" RowDefinitions="Auto,Auto" ShowGridLines="True">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="1*" SharedSizeGroup="name" />
+						<ColumnDefinition Width="5*" />
+						<ColumnDefinition SharedSizeGroup="duplicates" />
+					</Grid.ColumnDefinitions>
+
+					<CheckBox Grid.Column="0"
+					    Margin="6,0"
+					    HorizontalAlignment="Left"
+					    VerticalAlignment="Center"
+					    Command="{Binding SelectAllCommand}"
+					    IsChecked="{Binding AllSelected, Mode=OneWay}"
+					    ToolTip.Tip="{Binding SelectAllTooltip}" />
+					<TextBlock Grid.Column="1"
+					    Margin="6,0"
+					    HorizontalAlignment="Stretch"
+					    Text="Name" />
+					<TextBlock Grid.Column="2"
+					    Margin="6,0"
+					    HorizontalAlignment="Stretch"
+					    Text="File" />
+					<TextBlock Grid.Column="3"
+					    Margin="6,0"
+					    HorizontalAlignment="Stretch"
+					    Text="Duplicate Of" />
+					<Rectangle Grid.Row="1"
+					    Grid.ColumnSpan="4"
+					    Height="1"
+					    Fill="LightGray" />
+				</Grid>
+				<ListBox Grid.Row="1"
+				    Padding="0"
+				    Classes="Stack"
+				    ItemsSource="{Binding Files}">
+					<ListBox.Styles>
+						<Style Selector="ListBoxItem">
+							<Setter Property="Background" Value="Transparent" />
+							<Setter Property="Padding" Value="0" />
+							<Setter Property="Template">
+								<ControlTemplate>
+									<Border Name="BorderBasicStyle"
+									    Margin="0,0,0,0"
+									    Padding="0"
+									    CornerRadius="10">
+										<DockPanel>
+											<ContentPresenter Name="PART_ContentPresenter"
+											    Margin="0,0,0,0"
+											    Padding="{TemplateBinding Padding}"
+											    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+											    Background="Transparent"
+											    BorderBrush="Transparent"
+											    BorderThickness="{TemplateBinding BorderThickness}"
+											    Content="{TemplateBinding Content}"
+											    ContentTemplate="{TemplateBinding ContentTemplate}"
+											    CornerRadius="{TemplateBinding CornerRadius}" />
+
+										</DockPanel>
+									</Border>
+								</ControlTemplate>
+							</Setter>
+						</Style>
+					</ListBox.Styles>
+					<ListBox.ItemTemplate>
+						<DataTemplate DataType="mod:ModFileDeletionData">
+							<Grid Margin="0" ShowGridLines="True">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="1*" SharedSizeGroup="name" />
+									<ColumnDefinition Width="5*" />
+									<ColumnDefinition SharedSizeGroup="duplicates" />
+								</Grid.ColumnDefinitions>
+
+								<CheckBox Grid.Column="0"
+								    Margin="6,0"
+								    HorizontalAlignment="Left"
+								    VerticalAlignment="Center"
+								    IsChecked="{Binding IsSelected}" />
+								<TextBlock Grid.Column="1"
+								    Margin="6,0"
+								    Text="{Binding DisplayName}"
+								    TextAlignment="Left"
+								    ToolTip.Tip="{Binding FilePath}" />
+								<TextBlock Grid.Column="2"
+								    Margin="6,0"
+								    Text="{Binding FilePath}"
+								    TextAlignment="Left" />
+								<TextBlock Grid.Column="3"
+								    Margin="6,0"
+								    Text="{Binding Duplicates}"
+								    TextAlignment="Left" />
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Grid>
+		</suki:GlassCard>
+
+		<StackPanel Grid.Row="2"
+		    Margin="2"
+		    HorizontalAlignment="Center"
+		    VerticalAlignment="Center"
+		    Orientation="Horizontal">
+			<CheckBox Margin="8"
+			    HorizontalAlignment="Center"
+			    IsChecked="{Binding PermanentlyDelete}"
+			    ToolTip.Tip="Delete files permanently, instead of moving them to the Reycling Bin.">
+				<CheckBox.Content>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Permanent" />
+						<icons:MaterialIcon Padding="4,0,0,0" Foreground="OrangeRed" Kind="Fire" />
+					</StackPanel>
+				</CheckBox.Content>
+			</CheckBox>
+			<CheckBox Margin="8"
+			    HorizontalAlignment="Center"
+			    IsChecked="{Binding RemoveFromLoadOrder}"
+			    ToolTip.Tip="Remove deleted mods from the active load order.">
+				<CheckBox.Content>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Remove from Load Order" />
+						<icons:MaterialIcon Padding="4,0,0,0" Foreground="MediumSeaGreen" Kind="Clip" />
+					</StackPanel>
+				</CheckBox.Content>
+			</CheckBox>
+		</StackPanel>
+		<StackPanel Grid.Row="3"
+		    Margin="0,12"
+		    HorizontalAlignment="Center"
+		    VerticalAlignment="Center"
+		    Orientation="Horizontal">
+			<Button Margin="4,0"
+			    Padding="12,2"
+			    Background="Red"
+			    Command="{Binding RunCommand}">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Padding="0,0,4,0" Kind="Delete" />
+					<TextBlock FontSize="16" FontWeight="Bold" Text="Delete" />
+				</StackPanel>
+			</Button>
+			<Button Margin="4,0"
+			    Padding="12,2"
+			    Background="CadetBlue"
+			    Command="{Binding CloseCommand}">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Padding="0,0,4,0" Kind="Cancel" />
+					<TextBlock FontSize="16" Text="Cancel" />
+				</StackPanel>
+			</Button>
+		</StackPanel>
+	</Grid>
 </UserControl>
