@@ -200,7 +200,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 			AppServices.Commands.ShowAlert($"Failed to save bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Danger, 60);
 			return false;
 		}
-		AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Success, 20);
+		AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_CONFIG_FILE}", AlertType.Success, 3);
 		return true;
 	}
 
@@ -211,7 +211,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 			AppServices.Commands.ShowAlert($"Failed to save bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Danger, 60);
 			return false;
 		}
-		AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Success, 20);
+		AppServices.Commands.ShowAlert($"Saved bin/{DivinityApp.EXTENDER_UPDATER_CONFIG_FILE}", AlertType.Success, 3);
 		ViewModelLocator.Main.UpdateExtender(true);
 		return true;
 	}
@@ -250,7 +250,7 @@ public class SettingsWindowViewModel : ReactiveObject, IClosableViewModel, IRout
 				case SettingsWindowTab.Update:
 				case SettingsWindowTab.Advanced:
 					//Handled in _main.SaveSettings
-					AppServices.Commands.ShowAlert("Saved settings.", AlertType.Success, 1);
+					AppServices.Commands.ShowAlert("Saved settings.", AlertType.Success, 3);
 					break;
 				case SettingsWindowTab.Extender:
 					ExportExtenderSettings();
