@@ -123,18 +123,40 @@
 			<WrapPanel Margin="12,0">
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
-					<ComboBox x:Name="ProfileComboBox"
+					<controls:ComboBoxWithRightClick x:Name="ProfileComboBox"
 					    MaxWidth="150"
 					    AutoScrollToSelectedItem="False"
 					    ItemsSource="{Binding ModOrder.Profiles}"
 					    SelectedIndex="{Binding ModOrder.SelectedProfileIndex, FallbackValue=0}"
 					    SelectedItem="{Binding ModOrder.SelectedProfile}">
-						<ComboBox.ItemTemplate>
+						<controls:ComboBoxWithRightClick.ItemTemplate>
 							<DataTemplate DataType="m:ProfileData">
 								<TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FilePath}" />
 							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>
+						</controls:ComboBoxWithRightClick.ItemTemplate>
+						<FlyoutBase.AttachedFlyout>
+							<MenuFlyout Placement="Pointer" ShowMode="Transient">
+								<MenuItem Header="Profile..." Icon="{materialIcons:MaterialIconExt Kind=AccountBox}">
+									<MenuItem Command="{Binding OpenSelectedProfileFolderCommand}" Header="Open in File Explorer..." Icon="{materialIcons:MaterialIconExt Kind=OpenInApp}" />
+									<MenuItem Command="{Binding OpenSelectedProfileFolderCommand}"
+									    CommandParameter="dopus"
+									    Header="Open Profile Folder in Directory Opus..."
+									    Icon="{materialIcons:MaterialIconExt Kind=WhiteBalanceSunny, Classes=Yellow}"
+									    IsVisible="{Binding HasDopus}" />
+									<MenuItem Command="{Binding CopySelectedProfileFilePathToClipboardCommand}" Header="Copy Path to Clipboard" Icon="{materialIcons:MaterialIconExt Kind=Clipboard}" />
+								</MenuItem>
+								<MenuItem Header="Saves..." Icon="{materialIcons:MaterialIconExt Kind=ContentSave}">
+									<MenuItem Command="{Binding OpenSelectedProfileSavesFolderCommand}" Header="Open in File Explorer..." Icon="{materialIcons:MaterialIconExt Kind=OpenInApp}" />
+									<MenuItem Command="{Binding OpenSelectedProfileSavesFolderCommand}"
+									    CommandParameter="dopus"
+									    Header="Open in Directory Opus..."
+									    Icon="{materialIcons:MaterialIconExt Kind=WhiteBalanceSunny, Classes=Yellow}"
+									    IsVisible="{Binding HasDopus}" />
+									<MenuItem Command="{Binding CopySelectedProfileSavesPathToClipboardCommand}" Header="Copy Path to Clipboard" Icon="{materialIcons:MaterialIconExt Kind=Clipboard}" />
+								</MenuItem>
+							</MenuFlyout>
+						</FlyoutBase.AttachedFlyout>
+					</controls:ComboBoxWithRightClick>
 				</StackPanel>
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
@@ -150,11 +172,13 @@
 										<materialIcons:MaterialIcon Kind="Rename" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Command="{Binding Path=OpenInFileExplorerCommand, Source={x:Static manager:AppServices.Commands}}"
-								    CommandParameter="{Binding ModOrder.SelectedModOrder.FilePath}"
-								    Header="Open in File Explorer..."
-								    Icon="{materialIcons:MaterialIconExt Kind=OpenInApp}" />
-								<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}"
+								<MenuItem Command="{Binding OpenSelectedModOrderFilePathCommand}" Header="Open in File Explorer..." Icon="{materialIcons:MaterialIconExt Kind=OpenInApp}" />
+								<MenuItem Command="{Binding OpenSelectedModOrderFilePathCommand}"
+								    CommandParameter="dopus"
+								    Header="Open in Directory Opus..."
+								    Icon="{materialIcons:MaterialIconExt Kind=WhiteBalanceSunny, Classes=Yellow}"
+								    IsVisible="{Binding HasDopus}" />
+								<MenuItem Command="{Binding CopySelectedModOrderFilePathToClipboardCommand}"
 								    CommandParameter="{Binding ModOrder.SelectedModOrder.FilePath}"
 								    Header="Copy Path to Clipboard"
 								    Icon="{materialIcons:MaterialIconExt Kind=Clipboard}" />

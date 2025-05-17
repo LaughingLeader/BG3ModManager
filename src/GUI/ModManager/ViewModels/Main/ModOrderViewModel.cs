@@ -85,6 +85,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[Reactive] public ModData? SelectedAdventureMod { get; set; }
 
 	[ObservableAsProperty] public string? SelectedModOrderName { get; }
+	[ObservableAsProperty] public string? SelectedModOrderFilePath { get; }
 	[ObservableAsProperty] public string? SelectedProfilePath { get; }
 	[ObservableAsProperty] public string? SelectedProfileSavesPath { get; }
 
@@ -96,8 +97,8 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 	[ObservableAsProperty] public bool ModioSupportEnabled { get; }
 
 	[ObservableAsProperty] public bool HasProfile { get; }
-	[ObservableAsProperty] public bool IsModSettingsOrder { get; }
 	[ObservableAsProperty] public bool HasSelectedMods { get; }
+	[ObservableAsProperty] public bool IsModSettingsOrder { get; }
 
 	[ObservableAsProperty] public string? ActiveSelectedText { get; }
 	[ObservableAsProperty] public string? InactiveSelectedText { get; }
@@ -1743,6 +1744,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var whenModOrder = this.WhenAnyValue(x => x.SelectedModOrder);
 
 		whenModOrder.ValueOrFallback(x => x.Name, "None").ToUIProperty(this, x => x.SelectedModOrderName, "None");
+		whenModOrder.ValueOrFallback(x => x.FilePath, string.Empty).ToUIProperty(this, x => x.SelectedModOrderFilePath, string.Empty);
 		whenModOrder.Select(x => x != null && x.IsModSettings).ToUIProperty(this, x => x.IsModSettingsOrder);
 
 		whenModOrder.Buffer(2, 1).Subscribe(changes =>

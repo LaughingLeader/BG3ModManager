@@ -11,7 +11,7 @@ namespace ModManager.Views.Main
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
         internal global::Avalonia.Controls.Menu TopMenu;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
-        internal global::Avalonia.Controls.ComboBox ProfileComboBox;
+        internal global::ModManager.Controls.ComboBoxWithRightClick ProfileComboBox;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
         internal global::ModManager.Controls.ComboBoxWithRightClick OrdersComboBox;
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
@@ -33,7 +33,7 @@ namespace ModManager.Views.Main
 
             var __thisNameScope__ = this.FindNameScope();
             TopMenu = __thisNameScope__?.Find<global::Avalonia.Controls.Menu>("TopMenu");
-            ProfileComboBox = __thisNameScope__?.Find<global::Avalonia.Controls.ComboBox>("ProfileComboBox");
+            ProfileComboBox = __thisNameScope__?.Find<global::ModManager.Controls.ComboBoxWithRightClick>("ProfileComboBox");
             OrdersComboBox = __thisNameScope__?.Find<global::ModManager.Controls.ComboBoxWithRightClick>("OrdersComboBox");
             CampaignComboBox = __thisNameScope__?.Find<global::Avalonia.Controls.ComboBox>("CampaignComboBox");
         }

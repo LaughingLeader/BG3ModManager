@@ -337,7 +337,7 @@ public class PakFileExplorerWindowViewModel : BaseProgressViewModel, IClosableVi
 
 		this.WhenAnyValue(x => x.PakFilePath)
 			.WhereNotNull()
-			.Where(StringExtensions.IsExistingFile)
+			.Where(Validators.IsExistingFile)
 			.ObserveOn(RxApp.MainThreadScheduler)
 			.Subscribe(OnPakPathChanged);
 	}

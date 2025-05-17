@@ -227,14 +227,24 @@ public partial class MainCommandBarViewModel : ReactiveObject
 	[Keybinding("Open Repository Page...", Key.F11, KeyModifiers.None, "", "Help")]
 	public RxCommandUnit? OpenRepositoryPageCommand { get; private set; }
 
+
+	public ReactiveCommand<string?, Unit>? OpenSelectedProfileFolderCommand { get; private set; }
+	public RxCommandUnit? CopySelectedProfileFilePathToClipboardCommand { get; private set; }
+
+	public ReactiveCommand<string?, Unit>? OpenSelectedProfileSavesFolderCommand { get; private set; }
+	public RxCommandUnit? CopySelectedProfileSavesPathToClipboardCommand { get; private set; }
+
+	public ReactiveCommand<string?, Unit>? OpenSelectedModOrderFilePathCommand { get; private set; }
+	public RxCommandUnit? CopySelectedModOrderFilePathToClipboardCommand { get; private set; }
+
 	private readonly ObservableCollectionExtended<IMenuEntry> _menuEntries = [];
 
 	private readonly ReadOnlyObservableCollection<IMenuEntry> _uiMenuEntries;
 	public ReadOnlyObservableCollection<IMenuEntry> MenuEntries => _uiMenuEntries;
 
 	[Reactive] public IModOrderViewModel? ModOrder { get; protected set; }
-
 	[Reactive] public bool HighlightExtenderDownload { get; private set; }
+	[Reactive] public bool HasDopus { get; private set; }
 
 	public MainCommandBarViewModel()
 	{
@@ -274,7 +284,19 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		});
 	}
 
-	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs) : this()
+	private static void OpenInExplorerOrOther(string? mode, string? path)
+	{
+		if(mode == "dopus")
+		{
+			AppServices.Dopus.OpenInDirectoryOpus(path);
+		}
+		else
+		{
+			AppServices.Commands.OpenInFileExplorer(path);
+		}
+	}
+
+	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs, IDirectoryOpusService dopus) : this()
 	{
 		ModOrder = modOrder;
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
@@ -650,6 +672,21 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		}, canExecuteCommands);
 		CheckForUpdatesCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
 		OpenDonationLinkCommand = ReactiveCommand.Create(NotImplemented, canExecuteCommands);
+
+		var whenProfilePath = canExecuteModOrderCommands.CombineLatest(modOrder.WhenAnyValue(x => x.SelectedProfilePath, Validators.IsExistingDirectory)).AllTrue();
+		var whenProfileSavesPath = canExecuteModOrderCommands.CombineLatest(modOrder.WhenAnyValue(x => x.SelectedProfileSavesPath, Validators.IsExistingDirectory)).AllTrue();
+		var whenModOrderPath = canExecuteModOrderCommands.CombineLatest(modOrder.WhenAnyValue(x => x.SelectedModOrderFilePath, Validators.IsExistingFile)).AllTrue();
+
+		dopus.WhenAnyValue(x => x.IsEnabled).BindTo(this, x => x.HasDopus);
+
+		OpenSelectedProfileFolderCommand = ReactiveCommand.Create<string?>(mode => OpenInExplorerOrOther(mode, modOrder.SelectedProfilePath), whenProfilePath);
+		CopySelectedProfileFilePathToClipboardCommand = ReactiveCommand.Create(() => AppServices.Commands.CopyToClipboard(modOrder.SelectedProfilePath), whenProfilePath);
+
+		OpenSelectedProfileSavesFolderCommand = ReactiveCommand.Create<string?>(mode => OpenInExplorerOrOther(mode, modOrder.SelectedProfileSavesPath), whenProfileSavesPath);
+		CopySelectedProfileSavesPathToClipboardCommand = ReactiveCommand.Create(() => AppServices.Commands.CopyToClipboard(modOrder.SelectedProfileSavesPath), whenProfileSavesPath);
+
+		OpenSelectedModOrderFilePathCommand = ReactiveCommand.Create<string?>(mode => OpenInExplorerOrOther(mode, modOrder.SelectedModOrderFilePath), whenModOrderPath);
+		CopySelectedModOrderFilePathToClipboardCommand = ReactiveCommand.Create(() => AppServices.Commands.CopyToClipboard(modOrder.SelectedModOrderFilePath), whenModOrderPath);
 
 		//MenuEntry.FromKeybinding(ImportNexusModsIdsCommand, nameof(ImportNexusModsIdsCommand), keybindings),
 		_menuEntries.AddRange([

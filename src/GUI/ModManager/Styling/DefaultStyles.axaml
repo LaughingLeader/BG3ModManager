@@ -138,4 +138,8 @@
 	<!--<Style Selector="MenuItem /template/ TextBlock#PART_InputGestureText">
 		<Setter Property="FontSize" Value="8" />
 	</Style>-->
+
+	<Style Selector="materialIcons|MaterialIcon.Yellow">
+		<Setter Property="Foreground" Value="Yellow" />
+	</Style>
 </Styles>
