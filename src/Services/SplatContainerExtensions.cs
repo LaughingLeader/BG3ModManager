@@ -23,6 +23,10 @@ public static class SplatContainerExtensions
 		SplatRegistrations.RegisterConstant<IFileSystemService>(fileSystemService);
 		SplatRegistrations.RegisterLazySingleton<IFileWatcherService, FileWatcherService>();
 
+		SplatRegistrations.RegisterLazySingleton<IRegistryService, RegistryService>();
+
+		SplatRegistrations.RegisterLazySingleton<IDirectoryOpusService, DirectoryOpusService>();
+
 		var settingsService = new SettingsService(fileSystemService);
 		SplatRegistrations.RegisterConstant<ISettingsService>(settingsService);
 		SplatRegistrations.RegisterConstant<IPathwaysService>(new PathwaysService(settingsService));

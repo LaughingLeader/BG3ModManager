@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="AutoUpdateViaGitHubRelease" />
 		<PackageReference Include="ConfigureAwait.Fody" PrivateAssets="all" />
-		<PackageReference Include="System.Reactive"  />
+		<PackageReference Include="System.Reactive" />
 		<PackageReference Include="ReactiveUI" />
 		<PackageReference Include="ReactiveUI.Fody" />
 		<PackageReference Include="ReactiveUI.Validation" />

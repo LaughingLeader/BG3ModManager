@@ -26,6 +26,7 @@ public static class AppServices
 	public static AppKeysService Keybindings => Get<AppKeysService>()!;
 
 	public static IFileSystemService FS => Get<IFileSystemService>()!;
+	public static IDirectoryOpusService Dopus => Get<IDirectoryOpusService>()!;
 
 	static AppServices()
 	{
@@ -46,7 +47,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
 
-		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter, Get<IFileSystemService>()));
+		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter, Get<IFileSystemService>(), Get<IDirectoryOpusService>()));
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();
