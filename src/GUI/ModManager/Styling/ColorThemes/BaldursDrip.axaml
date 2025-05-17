@@ -13,8 +13,8 @@
 					<ComboBoxItem>Item 1</ComboBoxItem>
 					<ComboBoxItem>Item 2</ComboBoxItem>
 				</ComboBox>
-				<Border BorderThickness="4" MaxWidth="400">
-					<TextBlock TextWrapping="Wrap" xml:space="preserve">
+				<Border MaxWidth="400" BorderThickness="4">
+					<TextBlock xml:space="preserve" TextWrapping="Wrap">
 						<TextBlock.Text>Whether cursed or born with the condition Wereborn are rangers that have mastered their lycanthropy, turning their bodies into living, bestial weapons capable of overcoming any enemy, making the werewolf form something truly to behold.
 
 Progression:
@@ -71,31 +71,31 @@ Mod commissioned by Spell&amp;Shield</TextBlock.Text>
 			<Color x:Key="MediumGray">#595f65</Color>
 			<Color x:Key="BackgroundGray">#262e35</Color>
 			<Color x:Key="BorderGray">#bdc0c4</Color>
-	
+
 			<Color x:Key="ThemeAccentColor">#FF1098DF</Color>
 			<Color x:Key="ThemeAccentColor2">#FF56BDEC</Color>
 			<Color x:Key="ThemeAccentColor3">#FF2EAEEB</Color>
 			<Color x:Key="ThemeAccentColor4">#FF0B80C1</Color>
 			<Color x:Key="ThemeAccentBadgeColor">#FF0864A1</Color>
-	
+
 			<Color x:Key="ThemeCardColor">#FFFFFF</Color>
 			<Color x:Key="ThemeBackgroundColor">#4b5258</Color>
 			<Color x:Key="ThemeBorderLowColor">#2c343a</Color>
 			<Color x:Key="ThemeBorderMidColor">#6d7378</Color>
 			<Color x:Key="ThemeBorderHighColor">#9fa3a7</Color>
-	
+
 			<Color x:Key="ThemeControlLowColor">#FF868999</Color>
 			<Color x:Key="ThemeControlMidColor">#FFF5F5F5</Color>
 			<Color x:Key="ThemeControlMidHighColor">#FFC2C3C9</Color>
 			<Color x:Key="ThemeControlHighColor">#FF686868</Color>
 			<Color x:Key="ThemeControlVeryHighColor">#FF5B5B5B</Color>
-	
+
 			<Color x:Key="ThemeControlHighlightLowColor">#FFF0F0F0</Color>
 			<Color x:Key="ThemeControlHighlightMidColor">#FFD0D0D0</Color>
 			<Color x:Key="ThemeControlHighlightHighColor">#FF808080</Color>
 			<Color x:Key="ThemeForegroundColor">#FF000000</Color>
 			<Color x:Key="ThemeForegroundLowColor">#FF808080</Color>
-	
+
 			<Color x:Key="HighlightBadgeColor">#30fd7d00</Color>
 			<Color x:Key="HighlightColor">#fd7d00</Color>
 			<Color x:Key="HighlightHoverColor">#ed6d00</Color>
@@ -125,7 +125,7 @@ Mod commissioned by Spell&amp;Shield</TextBlock.Text>
 			<Color x:Key="SukiText">#e4e6e8</Color>
 			<Color x:Key="SukiLowText">#584537</Color>
 			<Color x:Key="SukiDisabledText">#9CD9D8</Color>
-			
+
 			<Color x:Key="SukiPrimaryColor">#6600FF</Color>
 
 			<BoxShadows x:Key="SukiLowShadow">0 0 3 0 #353535</BoxShadows>
@@ -135,13 +135,13 @@ Mod commissioned by Spell&amp;Shield</TextBlock.Text>
 			<BoxShadows x:Key="SukiBigPopupShadow">1 4 17 0 #111111</BoxShadows>
 
 			<LinearGradientBrush x:Key="PopupGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
-				<GradientStop Color="#00000000" Offset="1"/>
-        <GradientStop Color="#00000000" Offset="0.5"/>
-        <GradientStop Color="#90000000" Offset="0"/>
+				<GradientStop Offset="1" Color="#00000000" />
+				<GradientStop Offset="0.5" Color="#00000000" />
+				<GradientStop Offset="0" Color="#90000000" />
 			</LinearGradientBrush>
 
 			<Color x:Key="ModListHoveredTextForeground">#1ECC5B</Color>
-			<Color x:Key="ModListHoveredCellBackground">#66FFFFFF</Color>
+			<Color x:Key="ModListHoveredCellBackground">#77583b</Color>
 			<Color x:Key="ModListHoveredCellSelectedBackground">#c0b8b0</Color>
 			<Color x:Key="ModListHoveredCellBorder">#523c28</Color>
 			<Color x:Key="ModListCardBackground">#E1282A36</Color>
@@ -157,7 +157,7 @@ Mod commissioned by Spell&amp;Shield</TextBlock.Text>
 			<SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPressedBrush" Color="Transparent" />
 			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
 			<SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="{DynamicResource ModListHoveredTextForeground}" />
-			<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="#c0b8b0" />
+			<SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="#523c28" />
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

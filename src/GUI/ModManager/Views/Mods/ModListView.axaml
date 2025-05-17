@@ -39,7 +39,7 @@
 			<Setter Property="ToolTip.Tip" Value="Toggle Filter" />
 		</Style>
 
-		<Style Selector="TreeDataGridRow[IsSelected=false] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
+		<!--<Style Selector="TreeDataGridRow[IsSelected=false] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
 			<Setter Property="Background" Value="{DynamicResource ModListHoveredCellBackground}" />
 			<Setter Property="BorderBrush" Value="{DynamicResource ModListHoveredCellBorder}" />
 		</Style>
@@ -47,7 +47,7 @@
 		<Style Selector="TreeDataGridRow[IsSelected=true] /template/ TreeDataGridCellsPresenter#PART_CellsPresenter:pointerover">
 			<Setter Property="Background" Value="{DynamicResource ModListHoveredCellSelectedBackground}" />
 			<Setter Property="BorderBrush" Value="{DynamicResource ModListHoveredCellBorder}" />
-		</Style>
+		</Style>-->
 
 		<Style x:DataType="mod:IModEntry" Selector="TreeDataGridRow">
 			<Style Selector="^/template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
@@ -60,6 +60,10 @@
 
 			<Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
 				<Setter Property="Background" Value="{Binding SelectedColor, Converter={StaticResource ModBackgroundColorConverter}, ConverterParameter='TreeDataGridSelectedCellBackgroundBrush'}" />
+			</Style>
+
+			<Style Selector="^:selected:pointerover /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+				<Setter Property="Background" Value="{Binding PointerOverColor, Converter={StaticResource ModBackgroundColorConverter}, ConverterParameter='ModListHoveredCellBackground'}" />
 			</Style>
 
 			<!--<Setter Property="ContextFlyout" Value="{StaticResource ModContextFlyout}" />-->

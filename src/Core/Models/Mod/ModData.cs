@@ -541,12 +541,12 @@ public class ModData : ReactiveObject, IModData
 
 	//Green
 	private static readonly string EditorProjectBackgroundColor = "#0C00FF4D";
-	private static readonly string EditorProjectBackgroundSelectedColor = "#6400ED48";
-	private static readonly string EditorProjectBackgroundPointerOverColor = "#3200ED48";
+	private static readonly string EditorProjectBackgroundSelectedColor = "#3200ED48";
+	private static readonly string EditorProjectBackgroundPointerOverColor = "#6400ED48";
 	//Brownish
-	private static readonly string ForceLoadedBackgroundColor = "#32C17200";
-	private static readonly string ForceLoadedBackgroundSelectedColor = "#64F38F00";
-	private static readonly string ForceLoadedBackgroundPointerOverColor = "#32F38F00";
+	private static readonly string ForceLoadedBackgroundColor = "#32C1AE00";
+	private static readonly string ForceLoadedBackgroundSelectedColor = "#32F2DE00";
+	private static readonly string ForceLoadedBackgroundPointerOverColor = "#64F2DE00";
 
 	private void UpdateColors(ValueTuple<bool, bool, bool, bool, bool> x)
 	{
