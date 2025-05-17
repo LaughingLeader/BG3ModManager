@@ -40,28 +40,28 @@
 				<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
 					<StackPanel Margin="2">
 						<TextBlock Padding="2" Text="Major" TextAlignment="Center" />
-						<NumericUpDown x:Name="MajorUpDown"
+						<NumericUpDown Name="MajorUpDown"
 						    Maximum="127"
 						    Minimum="0"
 						    Value="{Binding Version.Major}" />
 					</StackPanel>
 					<StackPanel Margin="2">
 						<TextBlock Padding="2" Text="Minor" TextAlignment="Center" />
-						<NumericUpDown x:Name="MinorUpDown"
+						<NumericUpDown Name="MinorUpDown"
 						    Maximum="127"
 						    Minimum="0"
 						    Value="{Binding Version.Minor}" />
 					</StackPanel>
 					<StackPanel Margin="2">
 						<TextBlock Padding="2" Text="Revision" TextAlignment="Center" />
-						<NumericUpDown x:Name="RevisionUpDown"
+						<NumericUpDown Name="RevisionUpDown"
 						    Maximum="65536"
 						    Minimum="0"
 						    Value="{Binding Version.Revision}" />
 					</StackPanel>
 					<StackPanel Margin="2">
 						<TextBlock Padding="2" Text="Build" TextAlignment="Center" />
-						<NumericUpDown x:Name="BuildUpDown"
+						<NumericUpDown Name="BuildUpDown"
 						    Maximum="2147483647"
 						    Minimum="0"
 						    Value="{Binding Version.Build}" />
@@ -79,7 +79,7 @@
 					    VerticalAlignment="Center"
 					    Text="Version Number"
 					    TextAlignment="Center" />
-					<controls:EnhancedTextBox x:Name="VersionNumberTextBox"
+					<controls:EnhancedTextBox Name="VersionNumberTextBox"
 					    Grid.Row="1"
 					    Width="248"
 					    Margin="48,0"
@@ -90,8 +90,8 @@
 				    HorizontalAlignment="Center"
 				    VerticalAlignment="Center"
 				    Orientation="Horizontal">
-					<Button x:Name="CopyButton" Command="{Binding CopyCommand}" Content="Copy" />
-					<Button x:Name="ResetButton" Command="{Binding ResetCommand}" Content="Reset" />
+					<Button Name="CopyButton" Command="{Binding CopyCommand}" Content="Copy" />
+					<Button Name="ResetButton" Command="{Binding ResetCommand}" Content="Reset" />
 				</StackPanel>
 			</Grid>
 		</Panel>

@@ -10,7 +10,7 @@
 	x:DataType="vm:StatsValidatorFileResults"
 	mc:Ignorable="d">
 	<SelectableTextBlock
-		x:Name="TextControl"
+		Name="TextControl"
 		Text="{Binding DisplayName}"
 		ToolTip.Tip="{Binding ToolTip}" />
 </UserControl>

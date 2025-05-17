@@ -105,11 +105,7 @@
 		</Menu.ItemContainerTheme>-->
 	</UserControl.DataTemplates>
 	<Grid RowDefinitions="auto,1,*">
-		<!--<Menu x:Name="TopMenu"
-			DockPanel.Dock="Top"
-			ItemsSource="{Binding MenuEntries}"
-			Theme="{StaticResource CompactSukiMenuStyle}" />-->
-		<Menu x:Name="TopMenu" DockPanel.Dock="Top" Theme="{StaticResource CompactSukiMenuStyle}" />
+		<Menu Name="TopMenu" DockPanel.Dock="Top" Theme="{StaticResource CompactSukiMenuStyle}" />
 		<Separator Grid.Row="1"
 		    Margin="0"
 		    HorizontalAlignment="Stretch"
@@ -123,7 +119,7 @@
 			<WrapPanel Margin="12,0">
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock Margin="0,0,4,0" VerticalAlignment="Center" Text="Profile" />
-					<controls:ComboBoxWithRightClick x:Name="ProfileComboBox"
+					<controls:ComboBoxWithRightClick Name="ProfileComboBox"
 					    MaxWidth="150"
 					    AutoScrollToSelectedItem="False"
 					    ItemsSource="{Binding ModOrder.Profiles}"
@@ -160,7 +156,7 @@
 				</StackPanel>
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock Margin="4,0,4,0" VerticalAlignment="Center" Text="Order" />
-					<controls:ComboBoxWithRightClick x:Name="OrdersComboBox"
+					<controls:ComboBoxWithRightClick Name="OrdersComboBox"
 					    MaxWidth="500"
 					    ItemsSource="{Binding ModOrder.ModOrderList}"
 					    SelectedIndex="{Binding ModOrder.SelectedModOrderIndex, FallbackValue=0}"
@@ -252,7 +248,7 @@
 					    Content="{materialIcons:MaterialIconExt Kind=Launch}"
 					    Foreground="Red"
 					    ToolTip.Tip="Launch Game..." />
-					<ComboBox x:Name="CampaignComboBox"
+					<ComboBox Name="CampaignComboBox"
 					    AutoScrollToSelectedItem="False"
 					    SelectedIndex="0"
 					    ToolTip.Tip="When launching the game, performed this action on this window">

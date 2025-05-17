@@ -32,7 +32,7 @@
 		</VisualLayerManager.ChromeOverlayLayer>
 		<Panel>
 			<suki:SukiBackground IsHitTestVisible="False" />
-			<rxui:RoutedViewHost x:Name="ViewHost"
+			<rxui:RoutedViewHost Name="ViewHost"
 				HorizontalContentAlignment="Stretch"
 				VerticalContentAlignment="Stretch"
 				Router="{Binding Router}" />

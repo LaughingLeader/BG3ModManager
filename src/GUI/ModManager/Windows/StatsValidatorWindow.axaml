@@ -37,7 +37,7 @@
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
-					<Button x:Name="ValidateButton"
+					<Button Name="ValidateButton"
 					    HorizontalAlignment="Center"
 					    VerticalAlignment="Center"
 					    Classes="icon"
@@ -61,12 +61,12 @@
 
 						<Border HorizontalAlignment="Stretch">
 							<StackPanel Orientation="Vertical">
-								<TextBlock x:Name="TitleTextBlock"
+								<TextBlock Name="TitleTextBlock"
 								    FontSize="24"
 								    Text="Results"
 								    TextAlignment="Center"
 								    TextWrapping="Wrap" />
-								<TextBlock x:Name="TimeTakenTextControl"
+								<TextBlock Name="TimeTakenTextControl"
 								    FontSize="12"
 								    IsVisible="{Binding HasTimeTakenText}"
 								    TextAlignment="Center"
@@ -82,7 +82,7 @@
 						    FontSize="16"
 						    Text="{Binding OutputText}" />
 
-						<TreeView x:Name="EntriesTreeView"
+						<TreeView Name="EntriesTreeView"
 						    Grid.Row="2"
 						    Margin="8,0,8,0"
 						    ItemsSource="{Binding Entries}"
@@ -119,7 +119,7 @@
 					</Grid>
 				</Border>
 			</Grid>
-			<Border x:Name="LockScreen"
+			<Border Name="LockScreen"
 			    HorizontalAlignment="Stretch"
 			    VerticalAlignment="Stretch"
 			    Background="Black"
@@ -128,11 +128,11 @@
 				<ContentControl>
 					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
 						<TextBlock Margin="8" FontSize="32" Text="Validating..." />
-						<suki:CircleProgressBar x:Name="ProgressBarControl"
+						<suki:CircleProgressBar Name="ProgressBarControl"
 						    Width="32"
 						    Height="32"
 						    IsIndeterminate="True" />
-						<Button x:Name="CancelButton"
+						<Button Name="CancelButton"
 						    Margin="8"
 						    Command="{Binding CancelValidateCommand}"
 						    Content="Cancel" />

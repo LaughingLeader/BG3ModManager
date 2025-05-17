@@ -52,12 +52,12 @@
 
 	</UserControl.Styles>
 	<Grid RowDefinitions="auto,*,20">
-		<rxui:ViewModelViewHost x:Name="CommandBar" ViewModel="{x:Static mm:ViewModelLocator.CommandBar}" />
+		<rxui:ViewModelViewHost Name="CommandBar" ViewModel="{x:Static mm:ViewModelLocator.CommandBar}" />
 
 		<Grid Grid.Row="1" Margin="4,0" ColumnDefinitions="*,auto,*">
 			<sukiControls:GlassCard IsOpaque="True">
-				<Grid x:Name="ActiveModsGrid" RowDefinitions="2*,auto,1*">
-					<mv:ModListView x:Name="ActiveModsList"
+				<Grid Name="ActiveModsGrid" RowDefinitions="2*,auto,1*">
+					<mv:ModListView Name="ActiveModsList"
 					    Grid.Row="0"
 					    VerticalAlignment="Stretch"
 					    DataContext="{Binding ActiveModsView}" />
@@ -67,7 +67,7 @@
 					    Classes="splitter1"
 					    ResizeDirection="Rows" />
 
-					<mv:ModListView x:Name="OverrideModsList"
+					<mv:ModListView Name="OverrideModsList"
 					    Grid.Row="2"
 					    VerticalAlignment="Stretch"
 					    DataContext="{Binding OverrideModsView}" />
@@ -79,7 +79,7 @@
 			    Classes="splitter2"
 			    ResizeDirection="Columns" />
 			<sukiControls:GlassCard Grid.Column="2" IsOpaque="True">
-				<mv:ModListView x:Name="InactiveModsList" DataContext="{Binding InactiveModsView}" />
+				<mv:ModListView Name="InactiveModsList" DataContext="{Binding InactiveModsView}" />
 			</sukiControls:GlassCard>
 		</Grid>
 	</Grid>

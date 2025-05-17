@@ -9,7 +9,7 @@
     x:DataType="vm:DeleteFilesViewModel"
     mc:Ignorable="d">
 	<StackPanel>
-		<TextBlock x:Name="TestText" Text="Text Goes Here" ToolTip.Tip="Test" />
+		<TextBlock Name="TestText" Text="Text Goes Here" ToolTip.Tip="Test" />
 		<CheckBox ToolTip.Tip="{Binding ElementName=TestText, Path=(ToolTip.Tip)}" />
 	</StackPanel>
 </UserControl>

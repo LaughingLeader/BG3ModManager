@@ -22,12 +22,12 @@
 	</Design.DataContext>
 	<Window.Resources>
 		<MenuFlyout x:Key="FileContextMenu" x:DataType="mv:PakFileEntry">
-			<MenuItem x:Name="CopyToButton"
+			<MenuItem Name="CopyToButton"
 			    CommandParameter="{Binding}"
 			    Header="Extract To..."
 			    Icon="{icons:MaterialIconExt Kind=Download}" />
 
-			<MenuItem x:Name="CopyPathButton"
+			<MenuItem Name="CopyPathButton"
 			    CommandParameter="{Binding FilePath}"
 			    Header="Copy Path to Clipboard..."
 			    Icon="{icons:MaterialIconExt Kind=ClipboardAdd}" />
@@ -50,7 +50,7 @@
 				    Command="{Binding OpenFileBrowserCommand}"
 				    Content="..." />
 			</Grid>
-			<TreeDataGrid x:Name="FilesTreeView"
+			<TreeDataGrid Name="FilesTreeView"
 			    Grid.Row="1"
 			    AutoDragDropRows="False"
 			    Background="Transparent"
@@ -75,7 +75,7 @@
 					</DataTemplate>
 				</TreeDataGrid.Resources>
 			</TreeDataGrid>
-			<!--<TreeView x:Name="FilesTreeView"
+			<!--<TreeView Name="FilesTreeView"
 			    Grid.Row="1"
 			    Background="Transparent"
 			    Focusable="True"

@@ -17,17 +17,17 @@
 		<Setter Property="Template">
 			<ControlTemplate>
 				<StackPanel Orientation="Horizontal">
-					<NumericUpDown x:Name="PART_Days"
+					<NumericUpDown Name="PART_Days"
 					    FormatString="{TemplateBinding DaysFormatString}"
 					    ToolTip.Tip="Days"
 					    Value="{TemplateBinding Days}" />
-					<NumericUpDown x:Name="PART_Hours"
+					<NumericUpDown Name="PART_Hours"
 					    FormatString="{TemplateBinding HoursFormatString}"
 					    Maximum="24"
 					    Minimum="0"
 					    ToolTip.Tip="Hours"
 					    Value="{TemplateBinding Hours}" />
-					<NumericUpDown x:Name="PART_Minutes"
+					<NumericUpDown Name="PART_Minutes"
 					    FormatString="{TemplateBinding MinutesFormatString}"
 					    Maximum="60"
 					    Minimum="0"

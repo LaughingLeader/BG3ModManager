@@ -61,25 +61,25 @@
 	<Panel>
 		<suki:SukiBackground IsHitTestVisible="False" />
 		<suki:GlassCard CornerRadius="0" IsOpaque="True">
-			<TabControl x:Name="SettingsTabControl"
+			<TabControl Name="SettingsTabControl"
 			    Margin="0"
 			    Padding="8"
 			    ScrollViewer.VerticalScrollBarVisibility="Auto"
 			    SelectedIndex="{Binding SelectedTabIndex}">
 				<TabItem Header="General" ToolTip.Tip="Mod Manager Settings (Data/settings.json)">
-					<genview:ModManagerSettingsView x:Name="GeneralSettingsView" DataContext="{Binding Settings}" />
+					<genview:ModManagerSettingsView Name="GeneralSettingsView" DataContext="{Binding Settings}" />
 				</TabItem>
 				<TabItem Header="Mod Updating" ToolTip.Tip="Update Settings (Data/settings.json)">
-					<genview:ModManagerUpdateSettingsView x:Name="UpdateSettingsView" DataContext="{Binding UpdateSettings}" />
+					<genview:ModManagerUpdateSettingsView Name="UpdateSettingsView" DataContext="{Binding UpdateSettings}" />
 				</TabItem>
 				<TabItem Header="Script Extender" ToolTip.Tip="Script Extender Settings (ScriptExtenderSettings.json)">
-					<genview:ScriptExtenderSettingsView x:Name="ExtenderSettingsView" DataContext="{Binding ExtenderSettings}" />
+					<genview:ScriptExtenderSettingsView Name="ExtenderSettingsView" DataContext="{Binding ExtenderSettings}" />
 				</TabItem>
 				<TabItem Header="Script Extender Updater" ToolTip.Tip="Script Extender Updater Settings (ScriptExtenderUpdaterConfig.json)">
-					<genview:ScriptExtenderUpdateConfigView x:Name="ExtenderUpdateSettingsView" DataContext="{Binding ExtenderUpdaterSettings}" />
+					<genview:ScriptExtenderUpdateConfigView Name="ExtenderUpdateSettingsView" DataContext="{Binding ExtenderUpdaterSettings}" />
 				</TabItem>
 				<TabItem Header="Keybindings" ToolTip.Tip="Keybinding Settings (Data/keybindings.json)">
-					<view:KeybindingsView x:Name="KeybindingsView" DataContext="{Binding Source={x:Static manager:ViewModelLocator.Keybindings}}" />
+					<view:KeybindingsView Name="KeybindingsView" DataContext="{Binding Source={x:Static manager:ViewModelLocator.Keybindings}}" />
 				</TabItem>
 				<TabItem Header="Advanced" ToolTip.Tip="Advanced Mod Manager Settings (Data/settings.json)">
 					<controls:AutoGrid RowCount="4" RowHeight="auto">
@@ -88,13 +88,13 @@
 							<ColumnDefinition Width="*" />
 						</controls:AutoGrid.ColumnDefinitions>
 
-						<TextBlock x:Name="ModDeveloperModeTextBlock" Classes="left" Text="Mod Developer Mode" />
-						<CheckBox x:Name="ModDeveloperModeCheckBox" Classes="right" IsChecked="{Binding Settings.DebugModeEnabled}" />
+						<TextBlock Name="ModDeveloperModeTextBlock" Classes="left" Text="Mod Developer Mode" />
+						<CheckBox Name="ModDeveloperModeCheckBox" Classes="right" IsChecked="{Binding Settings.DebugModeEnabled}" />
 
-						<TextBlock x:Name="LoggingTextBlock" Classes="left" Text="Enable Mod Manager Logs" />
-						<CheckBox x:Name="LoggingCheckBox" Classes="right" IsChecked="{Binding Settings.LogEnabled}" />
+						<TextBlock Name="LoggingTextBlock" Classes="left" Text="Enable Mod Manager Logs" />
+						<CheckBox Name="LoggingCheckBox" Classes="right" IsChecked="{Binding Settings.LogEnabled}" />
 
-						<Button x:Name="GameLaunchParamsMainButton"
+						<Button Name="GameLaunchParamsMainButton"
 						    VerticalAlignment="Center"
 						    Content="Launch Params"
 						    ToolTip.Tip="Parameters to pass to the game executable when launching the game through the mod manager">
@@ -128,7 +128,7 @@
 						</Grid>
 
 						<TextBlock Text="Experimental" />
-						<Button x:Name="ClearCacheButton"
+						<Button Name="ClearCacheButton"
 						    HorizontalAlignment="Center"
 						    VerticalAlignment="Center"
 						    Command="{Binding ClearCacheCommand}"

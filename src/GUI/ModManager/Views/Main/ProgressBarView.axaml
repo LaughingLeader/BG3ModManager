@@ -16,7 +16,7 @@
 	    HorizontalAlignment="Stretch"
 	    VerticalAlignment="Stretch"
 	    RowDefinitions="*,auto,*,auto">
-		<TextBlock x:Name="TitleTextControl"
+		<TextBlock Name="TitleTextControl"
 		    Margin="12"
 		    VerticalAlignment="Bottom"
 		    FontSize="24"
@@ -36,22 +36,22 @@
 		    Margin="16,0"
 		    HorizontalAlignment="Stretch"
 		    VerticalAlignment="Center">
-			<!--<ProgressBar x:Name="ProgressBarControl"
+			<!--<ProgressBar Name="ProgressBarControl"
 			             Maximum="100"
 			             Minimum="0"
 			             ShowProgressText="True"
 			             Value="75" />-->
-			<suki:CircleProgressBar x:Name="ProgressBarControl"
+			<suki:CircleProgressBar Name="ProgressBarControl"
 			    Width="130"
 			    Height="130"
 			    StrokeWidth="11"
 			    Value="0">
-				<TextBlock x:Name="ProgressValueTextControl" Margin="0,1,0,0" Classes="h3" />
+				<TextBlock Name="ProgressValueTextControl" Margin="0,1,0,0" Classes="h3" />
 			</suki:CircleProgressBar>
 			<!--<suki:WaveProgress IsTextVisible="True" Value="{Binding UIValue}" />-->
 		</Panel>
 
-		<TextBlock x:Name="WorkTextControl"
+		<TextBlock Name="WorkTextControl"
 		    Grid.Row="2"
 		    Margin="12"
 		    VerticalAlignment="Top"
@@ -59,7 +59,7 @@
 		    Text="Processing mod paks..."
 		    TextAlignment="Center"
 		    TextWrapping="Wrap" />
-		<Button x:Name="CancelButton"
+		<Button Name="CancelButton"
 		    Grid.Row="3"
 		    HorizontalAlignment="Center"
 		    Classes="Flat Large"

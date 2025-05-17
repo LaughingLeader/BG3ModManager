@@ -81,7 +81,7 @@
 			<ControlTemplate>
 				<DataValidationErrors>
 					<Grid Name="LayoutRoot" Margin="{TemplateBinding Padding}">
-						<Button x:Name="PART_FlyoutButton"
+						<Button Name="PART_FlyoutButton"
 						    MinWidth="{DynamicResource TimePickerThemeMinWidth}"
 						    MaxWidth="{DynamicResource TimePickerThemeMaxWidth}"
 						    HorizontalAlignment="Stretch"
@@ -96,11 +96,11 @@
 
 							<Grid Name="PART_FlyoutButtonContentGrid">
 								<!--  Ignore col defs here, set in code  -->
-								<Border x:Name="PART_FirstPickerHost"
+								<Border Name="PART_FirstPickerHost"
 								    Grid.Column="0"
 								    HorizontalAlignment="Stretch"
 								    VerticalAlignment="Stretch">
-									<TextBlock x:Name="PART_HourTextBlock"
+									<TextBlock Name="PART_HourTextBlock"
 									    Padding="{DynamicResource TimePickerHostPadding}"
 									    HorizontalAlignment="Center"
 									    FontFamily="{TemplateBinding FontFamily}"
@@ -115,11 +115,11 @@
 								    HorizontalAlignment="Center"
 								    Fill="{DynamicResource TimePickerSpacerFill}" />
 
-								<Border x:Name="PART_SecondPickerHost"
+								<Border Name="PART_SecondPickerHost"
 								    Grid.Column="2"
 								    HorizontalAlignment="Stretch"
 								    VerticalAlignment="Stretch">
-									<TextBlock x:Name="PART_MinuteTextBlock"
+									<TextBlock Name="PART_MinuteTextBlock"
 									    Padding="{DynamicResource TimePickerHostPadding}"
 									    HorizontalAlignment="Center"
 									    FontFamily="{TemplateBinding FontFamily}"
@@ -134,11 +134,11 @@
 								    HorizontalAlignment="Center"
 								    Fill="{DynamicResource TimePickerSpacerFill}" />
 
-								<Border x:Name="PART_ThirdPickerHost"
+								<Border Name="PART_ThirdPickerHost"
 								    Grid.Column="4"
 								    HorizontalAlignment="Stretch"
 								    VerticalAlignment="Stretch">
-									<TextBlock x:Name="PART_SecondTextBlock"
+									<TextBlock Name="PART_SecondTextBlock"
 									    Padding="{DynamicResource TimePickerHostPadding}"
 									    HorizontalAlignment="Center"
 									    FontFamily="{TemplateBinding FontFamily}"
@@ -153,11 +153,11 @@
 								    HorizontalAlignment="Center"
 								    Fill="{DynamicResource TimePickerSpacerFill}" />
 
-								<Border x:Name="PART_FourthPickerHost"
+								<Border Name="PART_FourthPickerHost"
 								    Grid.Column="6"
 								    HorizontalAlignment="Stretch"
 								    VerticalAlignment="Stretch">
-									<TextBlock x:Name="PART_PeriodTextBlock"
+									<TextBlock Name="PART_PeriodTextBlock"
 									    Padding="{DynamicResource TimePickerHostPadding}"
 									    HorizontalAlignment="Center"
 									    FontFamily="{TemplateBinding FontFamily}"
@@ -253,7 +253,7 @@
 								<RepeatButton Name="PART_PeriodDownButton" Theme="{StaticResource SimpleDateTimePickerDownButton}" />
 							</Panel>
 
-							<Rectangle x:Name="HighlightRect"
+							<Rectangle Name="HighlightRect"
 							    Grid.Column="0"
 							    Grid.ColumnSpan="5"
 							    Height="{DynamicResource TimePickerFlyoutPresenterHighlightHeight}"

@@ -77,14 +77,14 @@
 			    Classes="Title"
 			    Text="{Binding Title}"
 			    TextAlignment="Left" />
-			<Expander x:Name="FilterExpander"
+			<Expander Name="FilterExpander"
 			    Grid.Column="1"
 			    Margin="0"
 			    VerticalAlignment="Center"
 			    BorderThickness="0"
 			    ExpandDirection="Right"
 			    Theme="{StaticResource FilterButtonExpander}">
-				<controls:EnhancedTextBox x:Name="FilterTextBox"
+				<controls:EnhancedTextBox Name="FilterTextBox"
 				    Width="200"
 				    Margin="0"
 				    Padding="0"
@@ -104,7 +104,7 @@
 			    VerticalAlignment="Center"
 			    Text="{Binding FilterResultText}" />
 		</Grid>
-		<TreeDataGrid x:Name="ModsTreeDataGrid"
+		<TreeDataGrid Name="ModsTreeDataGrid"
 		    Grid.Row="1"
 		    AutoDragDropRows="True"
 		    Background="Transparent"

@@ -39,7 +39,7 @@
 								<ColumnDefinition Width="*" />
 							</controls:AutoGrid.ColumnDefinitions>
 
-							<materialIcons:MaterialIcon x:Name="ModTypeIconControl"
+							<materialIcons:MaterialIcon Name="ModTypeIconControl"
 							    Width="36"
 							    Height="36"
 							    HorizontalAlignment="Left"
@@ -96,15 +96,15 @@
 						<Setter Property="Margin" Value="4,0" />
 					</Style>
 				</UniformGrid.Styles>
-				<Button x:Name="OKButton"
+				<Button Name="OKButton"
 				    Classes="Flat"
 				    Command="{Binding OKCommand}"
 				    Content="OK" />
-				<Button x:Name="CancelButton"
+				<Button Name="CancelButton"
 				    Classes="Flat"
 				    Command="{Binding CancelCommand}"
 				    Content="Cancel" />
-				<Button x:Name="ApplyButton"
+				<Button Name="ApplyButton"
 				    Margin="4,0,0,0"
 				    Classes="Flat"
 				    Command="{Binding ApplyCommand}"

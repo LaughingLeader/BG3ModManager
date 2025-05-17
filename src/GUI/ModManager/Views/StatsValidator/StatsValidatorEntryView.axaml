@@ -10,7 +10,7 @@
 	x:DataType="vm:StatsValidatorErrorEntry"
 	mc:Ignorable="d">
 	<SelectableTextBlock
-		x:Name="TextControl"
+		Name="TextControl"
 		HorizontalAlignment="Stretch"
 		VerticalAlignment="Stretch"
 		Text="{Binding Message}"
