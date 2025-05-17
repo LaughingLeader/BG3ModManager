@@ -8,7 +8,7 @@
     xmlns:mod="using:ModManager.Models.Mod"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    x:DataType="mod:ModData"
+    x:DataType="mod:ModEntry"
     ContextFlyout="{StaticResource ModContextFlyout}"
     IsHitTestVisible="True"
     ToolTip.Placement="RightEdgeAlignedTop"
@@ -21,73 +21,74 @@
 			</Style>
 		</Style>
 	</UserControl.Styles>
-	<ToolTip.Tip>
-		<StackPanel MaxWidth="700" Background="Transparent" Orientation="Vertical">
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				<TextBlock FontSize="16" FontWeight="Bold" Text="{Binding DisplayName}">
+	<Panel Name="MainPanel" Background="Transparent" DataContext="{Binding Data}">
+		<ToolTip.Tip>
+			<StackPanel MaxWidth="700" Background="Transparent" Orientation="Vertical">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<TextBlock FontSize="16" FontWeight="Bold" Text="{Binding DisplayName}">
+						<TextBlock.Effect>
+							<DropShadowDirectionEffect BlurRadius="4"
+							    Direction="330"
+							    Opacity="0.25"
+							    ShadowDepth="2"
+							    Color="Black" />
+						</TextBlock.Effect>
+					</TextBlock>
+					<TextBlock Grid.Column="1" Text="{Binding DisplayVersion}" />
+					<TextBlock Grid.Column="2"
+					    HorizontalAlignment="Right"
+					    Classes="Primary"
+					    Foreground="{Binding ModDisplayTypeForeground, Converter={StaticResource StringToBrushConverter}}"
+					    Text="{Binding ModDisplayTypeName}" />
+				</Grid>
+
+				<Separator />
+				<TextBlock IsVisible="{Binding HasAuthor}" TextWrapping="Wrap">
+					<Run Text="Created by " />
+					<Run FontWeight="Bold" Foreground="#3da2fa" Text="{Binding Author}" />
 					<TextBlock.Effect>
 						<DropShadowDirectionEffect BlurRadius="4"
 						    Direction="330"
 						    Opacity="0.25"
-						    ShadowDepth="2"
+						    ShadowDepth="3"
 						    Color="Black" />
 					</TextBlock.Effect>
 				</TextBlock>
-				<TextBlock Grid.Column="1" Text="{Binding DisplayVersion}" />
-				<TextBlock Grid.Column="2"
-				    HorizontalAlignment="Right"
-				    Classes="Primary"
-				    Foreground="{Binding ModDisplayTypeForeground, Converter={StaticResource StringToBrushConverter}}"
-				    Text="{Binding ModDisplayTypeName}" />
-			</Grid>
-
-			<Separator />
-			<TextBlock IsVisible="{Binding HasAuthor}" TextWrapping="Wrap">
-				<Run Text="Created by " />
-				<Run FontWeight="Bold" Foreground="#3da2fa" Text="{Binding Author}" />
-				<TextBlock.Effect>
-					<DropShadowDirectionEffect BlurRadius="4"
-					    Direction="330"
-					    Opacity="0.25"
-					    ShadowDepth="3"
-					    Color="Black" />
-				</TextBlock.Effect>
-			</TextBlock>
-			<ScrollViewer MaxWidth="432"
-			    MaxHeight="300"
-			    Padding="4"
-			    Background="{DynamicResource SukiPopupBackground}"
-			    IsVisible="{Binding HasDescription}"
-			    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-			    ScrollViewer.VerticalScrollBarVisibility="Auto">
-				<TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
-			</ScrollViewer>
-			<StackPanel IsVisible="{Binding NexusModsInformationVisibility}" Orientation="Vertical">
-				<Separator />
-				<TextBlock Text="{Binding NexusModsTooltipInfo}" />
-				<Separator />
-			</StackPanel>
-			<StackPanel Margin="2" IsVisible="{Binding HasDependencies}" Orientation="Vertical">
-				<TextBlock FontWeight="Bold" Text="Dependencies:" />
-				<!--<ListBox Grid.IsSharedSizeScope="True"
+				<ScrollViewer MaxWidth="432"
+				    MaxHeight="300"
+				    Padding="4"
+				    Background="{DynamicResource SukiPopupBackground}"
+				    IsVisible="{Binding HasDescription}"
+				    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+				    ScrollViewer.VerticalScrollBarVisibility="Auto">
+					<TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+				</ScrollViewer>
+				<StackPanel IsVisible="{Binding NexusModsInformationVisibility}" Orientation="Vertical">
+					<Separator />
+					<TextBlock Text="{Binding NexusModsTooltipInfo}" />
+					<Separator />
+				</StackPanel>
+				<StackPanel Margin="2" IsVisible="{Binding HasDependencies}" Orientation="Vertical">
+					<TextBlock FontWeight="Bold" Text="Dependencies:" />
+					<!--<ListBox Grid.IsSharedSizeScope="True"
 				    ItemTemplate="{StaticResource DependencyModTemplate}"
 				    ItemsSource="{Binding DisplayedDependencies}"
 				    Style="{StaticResource ModuleShortDescListBox}" />-->
-			</StackPanel>
-			<StackPanel Margin="2" IsVisible="{Binding HasConflicts}" Orientation="Vertical">
-				<TextBlock FontWeight="Bold" Text="Conflicts:" />
-				<!--<ListBox Grid.IsSharedSizeScope="True"
+				</StackPanel>
+				<StackPanel Margin="2" IsVisible="{Binding HasConflicts}" Orientation="Vertical">
+					<TextBlock FontWeight="Bold" Text="Conflicts:" />
+					<!--<ListBox Grid.IsSharedSizeScope="True"
 				    ItemTemplate="{StaticResource ConflictModTemplate}"
 				    ItemsSource="{Binding DisplayedConflicts}"
 				    Style="{StaticResource ModuleShortDescListBox}" />-->
-			</StackPanel>
-			<StackPanel Margin="2" DataContext="{Binding}" Orientation="Vertical">
-				<!--<ItemsControl ItemTemplateSelector="{StaticResource TagTemplateSelector}" ItemsSource="{Binding Tags}">
+				</StackPanel>
+				<StackPanel Margin="2" DataContext="{Binding}" Orientation="Vertical">
+					<!--<ItemsControl ItemTemplateSelector="{StaticResource TagTemplateSelector}" ItemsSource="{Binding Tags}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Horizontal" />
@@ -101,31 +102,31 @@
 						</Style>
 					</ItemsControl.Style>
 				</ItemsControl>-->
-			</StackPanel>
-			<StackPanel Orientation="Vertical">
-				<Separator />
-				<TextBlock IsVisible="{Binding HasFilePath}" Text="{Binding FileName}" />
-				<TextBlock Foreground="Goldenrod" IsVisible="{Binding HasExtenderStatus}" Text="{Binding ScriptExtenderSupportToolTipText}" />
-				<TextBlock Margin="2" Text="{Binding LastModifiedDateText}" />
-			</StackPanel>
-			<StackPanel Margin="2" IsVisible="{Binding IsForceLoaded}" Orientation="Vertical">
-				<Separator />
-				<TextBlock Foreground="OrangeRed">
-					This mod overrides base game files directly.<LineBreak />
-					As long as this mod exists in the Mods folder,<LineBreak />
-					these files will be overwritten, even if the mod is disabled.</TextBlock>
-				<TextBlock Text="If this is intended, you can ignore this warning." />
-				<TextBlock Foreground="Lime" IsVisible="{Binding IsForceLoadedMergedMod}" Text="This mod can be rearranged in the load order, due to it also having files of its own. Note that disabling it will not disable the file overrides." />
-				<TextBlock Foreground="OrangeRed" Text="Overwritten builtin folders:" />
-				<TextBlock Text="{Binding BuiltinOverrideModsText}" />
-			</StackPanel>
-			<Grid Margin="2" IsVisible="{Binding HasInvalidUUID}">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*" />
-					<ColumnDefinition Width="4*" />
-					<ColumnDefinition Width="1*" />
-				</Grid.ColumnDefinitions>
-				<!--<Image Width="16"
+				</StackPanel>
+				<StackPanel Orientation="Vertical">
+					<Separator />
+					<TextBlock IsVisible="{Binding HasFilePath}" Text="{Binding FileName}" />
+					<TextBlock Foreground="Goldenrod" IsVisible="{Binding HasExtenderStatus}" Text="{Binding ScriptExtenderSupportToolTipText}" />
+					<TextBlock Margin="2" Text="{Binding LastModifiedDateText}" />
+				</StackPanel>
+				<StackPanel Margin="2" IsVisible="{Binding IsForceLoaded}" Orientation="Vertical">
+					<Separator />
+					<TextBlock Foreground="OrangeRed">
+						This mod overrides base game files directly.<LineBreak />
+						As long as this mod exists in the Mods folder,<LineBreak />
+						these files will be overwritten, even if the mod is disabled.</TextBlock>
+					<TextBlock Text="If this is intended, you can ignore this warning." />
+					<TextBlock Foreground="Lime" IsVisible="{Binding IsForceLoadedMergedMod}" Text="This mod can be rearranged in the load order, due to it also having files of its own. Note that disabling it will not disable the file overrides." />
+					<TextBlock Foreground="OrangeRed" Text="Overwritten builtin folders:" />
+					<TextBlock Text="{Binding BuiltinOverrideModsText}" />
+				</StackPanel>
+				<Grid Margin="2" IsVisible="{Binding HasInvalidUUID}">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1*" />
+						<ColumnDefinition Width="4*" />
+						<ColumnDefinition Width="1*" />
+					</Grid.ColumnDefinitions>
+					<!--<Image Width="16"
 				    Height="16"
 				    MaxWidth="16"
 				    MaxHeight="16"
@@ -135,12 +136,12 @@
 				    RenderOptions.BitmapScalingMode="HighQuality"
 				    Source="{StaticResource StatusCriticalError}"
 				    Stretch="UniformToFill" />-->
-				<TextBlock Grid.Column="1"
-				    FontFamily="Arial"
-				    FontWeight="Bold"
-				    Foreground="Red"
-				    Text="This mod has an invalid UUID, and will likely fail to load, resetting your load order." />
-				<!--<Image Grid.Column="2"
+					<TextBlock Grid.Column="1"
+					    FontFamily="Arial"
+					    FontWeight="Bold"
+					    Foreground="Red"
+					    Text="This mod has an invalid UUID, and will likely fail to load, resetting your load order." />
+					<!--<Image Grid.Column="2"
 				    Width="16"
 				    Height="16"
 				    MaxWidth="16"
@@ -151,17 +152,15 @@
 				    RenderOptions.BitmapScalingMode="HighQuality"
 				    Source="{StaticResource StatusCriticalError}"
 				    Stretch="UniformToFill" />-->
-			</Grid>
-			<labs:AsyncImage MaxWidth="256"
-			    MaxHeight="256"
-			    IsVisible="{Binding NexusImageVisibility}"
-			    RenderOptions.BitmapInterpolationMode="HighQuality"
-			    Source="{Binding NexusModsData.PictureUrl}"
-			    Stretch="UniformToFill" />
-		</StackPanel>
-	</ToolTip.Tip>
-	<Panel Background="Transparent">
-		<!--<Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent" />-->
+				</Grid>
+				<labs:AsyncImage MaxWidth="256"
+				    MaxHeight="256"
+				    IsVisible="{Binding NexusImageVisibility}"
+				    RenderOptions.BitmapInterpolationMode="HighQuality"
+				    Source="{Binding NexusModsData.PictureUrl}"
+				    Stretch="UniformToFill" />
+			</StackPanel>
+		</ToolTip.Tip>
 		<StackPanel Orientation="Horizontal">
 			<TextBlock VerticalAlignment="Center" Text="{Binding DisplayName}" TextAlignment="Left" />
 		</StackPanel>

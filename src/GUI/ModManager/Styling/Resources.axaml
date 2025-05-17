@@ -75,7 +75,7 @@
 		    IsEnabled="{Binding $parent[controls:EnhancedTextBox].CanClear}" />
 	</MenuFlyout>
 
-	<MenuFlyout x:Key="ModContextFlyout" x:DataType="mod:ModData" Placement="Bottom">
+	<MenuFlyout x:Key="ModContextFlyout" x:DataType="mod:ModEntry" Placement="Bottom">
 		<MenuItem Command="{Binding Path=OpenInFileExplorerCommand, Source={x:Static manager:AppServices.Commands}}"
 		    CommandParameter="{Binding FilePath}"
 		    Header="Open in File Explorer..."
@@ -85,27 +85,30 @@
 		    Header="Copy Path to Clipboard"
 		    Icon="{icons:MaterialIconExt Kind=Clipboard}" />
 
-		<Separator IsVisible="{Binding HasAnyExternalLink}" />
+		<Separator IsVisible="{Binding Data.HasAnyExternalLink}" />
 		<MenuItem Command="{Binding Path=OpenGitHubPageCommand, Source={x:Static manager:AppServices.Commands}}"
-		    CommandParameter="{Binding}"
+		    CommandParameter="{Binding Data}"
 		    Header="Open GitHub Page (Browser)..."
-		    IsVisible="{Binding HasGitHubLink}" />
+		    Icon="{icons:MaterialIconExt Kind=Github}"
+		    IsVisible="{Binding Data.HasGitHubLink}" />
 		<MenuItem Command="{Binding Path=OpenNexusModsPageCommand, Source={x:Static manager:AppServices.Commands}}"
-		    CommandParameter="{Binding}"
+		    CommandParameter="{Binding Data}"
 		    Header="Open NexusMods Page (Browser)..."
-		    IsVisible="{Binding HasNexusModsLink}" />
+		    Icon="{StaticResource NexusModsIcon}"
+		    IsVisible="{Binding Data.HasNexusModsLink}" />
 		<MenuItem Command="{Binding Path=OpenModioPageCommand, Source={x:Static manager:AppServices.Commands}}"
-		    CommandParameter="{Binding}"
-		    Header="Open Mod.io Page (Browser)..."
-		    IsVisible="{Binding HasModioLink}" />
+		    CommandParameter="{Binding Data}"
+		    Header="Open mod.io Page (Browser)..."
+		    Icon="{StaticResource ModioIcon}"
+		    IsVisible="{Binding Data.HasModioLink}" />
 
-		<Separator IsVisible="{Binding CanForceAllowInLoadOrder}" />
-		<MenuItem Command="{Binding Path=ToggleForceAllowInLoadOrderCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" IsVisible="{Binding CanForceAllowInLoadOrder}">
+		<Separator IsVisible="{Binding Data.CanForceAllowInLoadOrder}" />
+		<MenuItem Command="{Binding Path=ToggleForceAllowInLoadOrderCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding Data}" IsVisible="{Binding Data.CanForceAllowInLoadOrder}">
 			<MenuItem.Header>
-				<TextBlock Text="{Binding ForceAllowInLoadOrderLabel}" />
+				<TextBlock Text="{Binding Data.ForceAllowInLoadOrderLabel}" />
 			</MenuItem.Header>
 			<MenuItem.Icon>
-				<icons:MaterialIcon Kind="{Binding ForceAllowInLoadOrder, Converter={StaticResource ForceAllowInLoadOrderIconConverter}}" />
+				<icons:MaterialIcon Kind="{Binding Data.ForceAllowInLoadOrder, Converter={StaticResource ForceAllowInLoadOrderIconConverter}}" />
 			</MenuItem.Icon>
 		</MenuItem>
 
@@ -116,16 +119,13 @@
 			    Header="Mod..."
 			    Icon="{icons:MaterialIconExt Kind=FileRemove}"
 			    IsEnabled="{Binding CanDelete}" />
-			<MenuItem Command="{Binding Path=DeleteSelectedModsCommand, Source={x:Static manager:AppServices.Commands}}"
-			    CommandParameter="{Binding}"
-			    Header="Selected Mods..."
-			    Icon="{icons:MaterialIconExt Kind=Files}" />
+			<MenuItem Command="{Binding Path=DeleteSelectedModsCommand, Source={x:Static manager:AppServices.Commands}}" Header="Selected Mods..." Icon="{icons:MaterialIconExt Kind=Files}" />
 		</MenuItem>
 
 		<Separator />
-		<MenuItem Command="{Binding Path=ToggleNameDisplayCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" Icon="{icons:MaterialIconExt Kind=Rename}">
+		<MenuItem Command="{Binding Path=ToggleNameDisplayCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding Data}" Icon="{icons:MaterialIconExt Kind=Rename}">
 			<MenuItem.Header>
-				<TextBlock Text="{Binding ToggleModNameLabel}" />
+				<TextBlock Text="{Binding Data.ToggleModNameLabel}" />
 			</MenuItem.Header>
 		</MenuItem>
 
@@ -138,12 +138,12 @@
 				<MenuItem Header="Copy to Clipboard..." Icon="{icons:MaterialIconExt Kind=Clipboard}">
 					<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding UUID}" Header="UUID" />
 					<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding Folder}" Header="Folder" />
-					<MenuItem Command="{Binding Path=CopyModAsDependencyCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding}" Header="As ModuleShortDesc" />
+					<MenuItem Command="{Binding Path=CopyModAsDependencyCommand, Source={x:Static manager:AppServices.Commands}}" CommandParameter="{Binding Data}" Header="As ModuleShortDesc" />
 				</MenuItem>
 				<Separator />
 				<!--  Fixed RelativeSource Ancestor ItemsControl binding error by setting a style  -->
 				<MenuItem Command="{Binding Path=ValidateStatsCommand, Source={x:Static manager:AppServices.Commands}}"
-				    CommandParameter="{Binding}"
+				    CommandParameter="{Binding Data}"
 				    Header="Validate Stats"
 				    Icon="{icons:MaterialIconExt Kind=FileCheck}"
 				    ToolTip.Tip="Run lslib's stats validator on this specific mod" />
@@ -152,7 +152,7 @@
 
 		<Separator />
 		<MenuItem Command="{Binding Path=OpenModPropertiesCommand, Source={x:Static manager:AppServices.Commands}}"
-		    CommandParameter="{Binding}"
+		    CommandParameter="{Binding Data}"
 		    Header="Properties"
 		    Icon="{icons:MaterialIconExt Kind=FileEdit}" />
 	</MenuFlyout>
@@ -166,6 +166,6 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="ModEntryTemplate" DataType="mod:ModEntry">
-		<modView:ModEntryView DataContext="{Binding Data}" />
+		<modView:ModEntryView />
 	</DataTemplate>
 </ResourceDictionary>
