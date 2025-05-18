@@ -1,4 +1,6 @@
-﻿namespace ModManager.Models.Mod;
+﻿using ModManager.Util;
+
+namespace ModManager.Models.Mod;
 
 public class ModFileDeletionData : ReactiveObject
 {
@@ -7,6 +9,8 @@ public class ModFileDeletionData : ReactiveObject
 	[Reactive] public string? DisplayName { get; set; }
 	[Reactive] public string? UUID { get; set; }
 	[Reactive] public string? Duplicates { get; set; }
+
+	[ObservableAsProperty] public string? DisplayFilePath { get; }
 
 	public static ModFileDeletionData? FromModEntry(IModEntry entry, bool isDeletingDuplicates = false, IEnumerable<ModData>? loadedMods = null)
 	{
@@ -25,5 +29,10 @@ public class ModFileDeletionData : ReactiveObject
 			return data;
 		}
 		return null;
+	}
+
+	public ModFileDeletionData()
+	{
+		this.WhenAnyValue(x => x.FilePath).Select(StringUtils.ReplaceSpecialPathways).ToUIProperty(this, x => x.DisplayFilePath);
 	}
 }

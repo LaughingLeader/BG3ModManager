@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:local="using:ModManager.Views.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mod="using:ModManager.Models.Mod"
     xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
@@ -16,22 +17,62 @@
 	<Design.DataContext>
 		<vm:DesignDeleteFilesViewModel />
 	</Design.DataContext>
+	<UserControl.Styles>
+		<Style Selector="ListBoxItem">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Name="BorderBasicStyle"
+					    Margin="0,2,0,2"
+					    Padding="0"
+					    CornerRadius="10">
+						<DockPanel>
+							<ContentPresenter Name="PART_ContentPresenter"
+							    Margin="0,0,0,0"
+							    Padding="{TemplateBinding Padding}"
+							    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+							    Background="Transparent"
+							    BorderBrush="Transparent"
+							    BorderThickness="{TemplateBinding BorderThickness}"
+							    Content="{TemplateBinding Content}"
+							    ContentTemplate="{TemplateBinding ContentTemplate}"
+							    CornerRadius="{TemplateBinding CornerRadius}" />
+						</DockPanel>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+
+		<!--<Style Selector="ListBoxItem:selected > TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
+		</Style>-->
+
+		<Style Selector="TextBlock:pointerover">
+			<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
+		</Style>
+	</UserControl.Styles>
 	<Grid HorizontalAlignment="Stretch"
 	    VerticalAlignment="Stretch"
 	    Grid.IsSharedSizeScope="True"
-	    RowDefinitions="Auto,1*,Auto,Auto">
+	    RowDefinitions="1*,Auto,Auto">
 
-		<StackPanel Grid.Row="0"
-		    Margin="8"
+		<suki:GlassCard Grid.Row="0"
+		    Padding="48"
 		    HorizontalAlignment="Center"
-		    Orientation="Vertical">
-			<TextBlock FontSize="24" Text="{Binding Title}" TextAlignment="Center" />
-			<Rectangle Height="2" Fill="LightGray" />
-		</StackPanel>
+		    VerticalAlignment="Center"
+		    IsOpaque="True">
+			<Grid RowDefinitions="Auto,Auto,*">
 
-		<suki:GlassCard Grid.Row="1" IsOpaque="True">
-			<Grid RowDefinitions="Auto,*">
-				<Grid Grid.Row="0" RowDefinitions="Auto,Auto" ShowGridLines="True">
+				<StackPanel Grid.Row="0"
+				    Margin="0,-24,0,24"
+				    HorizontalAlignment="Center"
+				    Orientation="Vertical">
+					<TextBlock FontSize="24" Text="{Binding Title}" TextAlignment="Center" />
+					<Rectangle Height="2" Fill="LightGray" />
+				</StackPanel>
+
+				<Grid Grid.Row="1" RowDefinitions="Auto,Auto">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="1*" SharedSizeGroup="name" />
@@ -57,47 +98,25 @@
 					<TextBlock Grid.Column="3"
 					    Margin="6,0"
 					    HorizontalAlignment="Stretch"
+					    IsVisible="{Binding IsDeletingDuplicates}"
 					    Text="Duplicate Of" />
 					<Rectangle Grid.Row="1"
 					    Grid.ColumnSpan="4"
 					    Height="1"
 					    Fill="LightGray" />
 				</Grid>
-				<ListBox Grid.Row="1"
+				<ListBox Grid.Row="2"
 				    Padding="0"
 				    Classes="Stack"
 				    ItemsSource="{Binding Files}">
-					<ListBox.Styles>
-						<Style Selector="ListBoxItem">
-							<Setter Property="Background" Value="Transparent" />
-							<Setter Property="Padding" Value="0" />
-							<Setter Property="Template">
-								<ControlTemplate>
-									<Border Name="BorderBasicStyle"
-									    Margin="0,0,0,0"
-									    Padding="0"
-									    CornerRadius="10">
-										<DockPanel>
-											<ContentPresenter Name="PART_ContentPresenter"
-											    Margin="0,0,0,0"
-											    Padding="{TemplateBinding Padding}"
-											    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-											    Background="Transparent"
-											    BorderBrush="Transparent"
-											    BorderThickness="{TemplateBinding BorderThickness}"
-											    Content="{TemplateBinding Content}"
-											    ContentTemplate="{TemplateBinding ContentTemplate}"
-											    CornerRadius="{TemplateBinding CornerRadius}" />
-
-										</DockPanel>
-									</Border>
-								</ControlTemplate>
-							</Setter>
-						</Style>
-					</ListBox.Styles>
+					<!--<ListBox.ItemContainerTheme>
+						<ControlTheme x:DataType="mod:ModFileDeletionData" BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
+							<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+						</ControlTheme>
+					</ListBox.ItemContainerTheme>-->
 					<ListBox.ItemTemplate>
 						<DataTemplate DataType="mod:ModFileDeletionData">
-							<Grid Margin="0" ShowGridLines="True">
+							<Grid Margin="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="1*" SharedSizeGroup="name" />
@@ -112,15 +131,20 @@
 								    IsChecked="{Binding IsSelected}" />
 								<TextBlock Grid.Column="1"
 								    Margin="6,0"
+								    VerticalAlignment="Center"
 								    Text="{Binding DisplayName}"
 								    TextAlignment="Left"
 								    ToolTip.Tip="{Binding FilePath}" />
 								<TextBlock Grid.Column="2"
 								    Margin="6,0"
-								    Text="{Binding FilePath}"
-								    TextAlignment="Left" />
+								    VerticalAlignment="Center"
+								    Text="{Binding DisplayFilePath}"
+								    TextAlignment="Left"
+								    ToolTip.Tip="{Binding FilePath}" />
 								<TextBlock Grid.Column="3"
 								    Margin="6,0"
+								    VerticalAlignment="Center"
+								    IsVisible="{Binding $parent[local:DeleteFilesView].DataContext.IsDeletingDuplicates}}"
 								    Text="{Binding Duplicates}"
 								    TextAlignment="Left" />
 							</Grid>
@@ -130,7 +154,7 @@
 			</Grid>
 		</suki:GlassCard>
 
-		<StackPanel Grid.Row="2"
+		<StackPanel Grid.Row="1"
 		    Margin="2"
 		    HorizontalAlignment="Center"
 		    VerticalAlignment="Center"
@@ -158,7 +182,7 @@
 				</CheckBox.Content>
 			</CheckBox>
 		</StackPanel>
-		<StackPanel Grid.Row="3"
+		<StackPanel Grid.Row="2"
 		    Margin="0,12"
 		    HorizontalAlignment="Center"
 		    VerticalAlignment="Center"

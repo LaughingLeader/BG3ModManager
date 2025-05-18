@@ -26,7 +26,6 @@ public class DeleteFilesViewModel : BaseProgressViewModel, IRoutableViewModel
 	[Reactive] public bool PermanentlyDelete { get; set; }
 	[Reactive] public bool RemoveFromLoadOrder { get; set; }
 	[Reactive] public bool IsDeletingDuplicates { get; set; }
-	[Reactive] public double DuplicateColumnWidth { get; set; }
 
 	public ObservableCollectionExtended<ModFileDeletionData> Files { get; set; } = [];
 
@@ -145,7 +144,7 @@ public class DesignDeleteFilesViewModel : DeleteFilesViewModel
 	{
 		for (var i = 0; i < 30; i++)
 		{
-			Files.Add(new() { UUID = $"{i}", DisplayName = $"Mod{i}", FilePath = $"%LOCALAPPDATA%/Larian Studios/Baldur's Gate 3/Mods/Mod{i}.pak" });
+			Files.Add(new() { UUID = $"{i}", DisplayName = $"Mod{i}", FilePath = $@"C:\Users\RandomTestUser0000000000001\AppData\Local\Larian Studios\Baldur's Gate 3\Mods\Mod{i}.pak" });
 		}
 	}
 }
