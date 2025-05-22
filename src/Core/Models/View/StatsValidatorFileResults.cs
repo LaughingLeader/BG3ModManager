@@ -25,7 +25,7 @@ public class StatsValidatorFileResults : TreeViewEntry
 
 	public StatsValidatorFileResults()
 	{
-		var childrenChanged = this.Children.ToObservableChangeSet().Transform(x => (StatsValidatorErrorEntry)x);
+		var childrenChanged = Children.ToObservableChangeSet().Transform(x => (StatsValidatorErrorEntry)x);
 		childrenChanged.CountChanged().Select(_ => Children.Count).ToUIProperty(this, x => x.Total);
 		childrenChanged.Bind(out _errors).Subscribe();
 

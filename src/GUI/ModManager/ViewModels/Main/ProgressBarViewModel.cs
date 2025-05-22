@@ -16,6 +16,7 @@ public interface IProgressBarViewModel : IRoutableViewModel
 	double Value { get; set; }
 
 	CancellationToken Token { get; }
+	IRoutableViewModel? NextView { get; set; }
 	bool IsVisible { get; }
 
 	RxCommandUnit CancelCommand { get; }
@@ -40,6 +41,7 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 	[Reactive] public bool CanCancel { get; private set; }
 
 	[Reactive] public CancellationToken Token { get; private set; }
+	[Reactive] public IRoutableViewModel? NextView { get; set; }
 
 	private ReactiveCommand<Func<CancellationToken, Task>, Unit> RunCommand { get; }
 	public RxCommandUnit CancelCommand { get; }
@@ -59,8 +61,6 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 
 	public async void Start(Func<CancellationToken, Task> asyncTask, bool canCancel = false, IRoutableViewModel? switchToViewOnFinish = null)
 	{
-		IRoutableViewModel? nextView = null;
-
 		await Dispatcher.UIThread.InvokeAsync(async () =>
 		{
 			TokenSource?.Dispose();
@@ -68,14 +68,14 @@ public class ProgressBarViewModel : ReactiveObject, IProgressBarViewModel
 			CanCancel = canCancel;
 			Value = 0d;
 
-			nextView = switchToViewOnFinish ?? await HostScreen.Router.CurrentViewModel;
+			NextView = switchToViewOnFinish ?? await HostScreen.Router.CurrentViewModel;
 			await HostScreen.Router.Navigate.Execute(this);
 		}, DispatcherPriority.Background);
 
 		RxApp.TaskpoolScheduler.ScheduleAsync(async (_, _) =>
 		{
 			await RunCommand.Execute(asyncTask);
-			await FinishAsync(nextView);
+			await FinishAsync(NextView);
 		});
 	}
 

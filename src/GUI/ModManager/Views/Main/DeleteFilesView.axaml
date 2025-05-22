@@ -140,13 +140,16 @@
 								    VerticalAlignment="Center"
 								    Text="{Binding DisplayFilePath}"
 								    TextAlignment="Left"
+								    TextWrapping="Wrap"
 								    ToolTip.Tip="{Binding FilePath}" />
 								<TextBlock Grid.Column="3"
+								    MaxWidth="500"
 								    Margin="6,0"
 								    VerticalAlignment="Center"
 								    IsVisible="{Binding $parent[local:DeleteFilesView].DataContext.IsDeletingDuplicates}}"
 								    Text="{Binding Duplicates}"
-								    TextAlignment="Left" />
+								    TextAlignment="Left"
+								    TextWrapping="Wrap" />
 							</Grid>
 						</DataTemplate>
 					</ListBox.ItemTemplate>

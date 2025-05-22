@@ -251,24 +251,32 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		_menuEntries.ToObservableChangeSet().Bind(out _uiMenuEntries).Subscribe();
 	}
 
-	private static bool ToggleWindow<T>() where T : Avalonia.Controls.Window
+	private static bool ToggleWindow<T>(bool forceVisible = false) where T : Avalonia.Controls.Window
 	{
 		var window = AppServices.Get<T>();
 		if(window != null)
 		{
-			if (window.IsVisible)
+			if(forceVisible || !window.IsVisible)
 			{
-				window.Hide();
-				return false;
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					if (!window.IsVisible) window.Show();
+				});
+				return true;
 			}
 			else
 			{
-				window.Show();
-				return true;
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					window.Hide();
+				});
+				return false;
 			}
 		}
 		return false;
 	}
+
+	private static bool ToggleWindow<T>() where T : Avalonia.Controls.Window => ToggleWindow<T>(false);
 
 	[Obsolete]
 	private static void NotImplemented()
@@ -296,7 +304,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		}
 	}
 
-	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs, IDirectoryOpusService dopus) : this()
+	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs, IDirectoryOpusService dopus, InteractionsService interactions) : this()
 	{
 		ModOrder = modOrder;
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
@@ -394,6 +402,22 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		}, canToggleUpdatesView);
 
 		TogglePakFileExplorerWindowCommand = ReactiveCommand.Create(ToggleWindow<PakFileExplorerWindow>, canExecuteCommands);
+
+		interactions.ViewModFiles.RegisterHandler(input =>
+		{
+			var mods = input.Input.Mods;
+			if (mods != null)
+			{
+				RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
+				{
+					await ViewModelLocator.PakFileExplorer.LoadMods(mods, token);
+					ToggleWindow<PakFileExplorerWindow>(true);
+				});
+				input.SetOutput(true);
+			}
+			input.SetOutput(false);
+		});
+
 		ToggleVersionGeneratorWindowCommand = ReactiveCommand.Create(ToggleWindow<VersionGeneratorWindow>, canExecuteCommands);
 		ToggleStatsValidatorWindowCommand = ReactiveCommand.Create(ToggleWindow<StatsValidatorWindow>, canExecuteCommands);
 		ToggleSettingsWindowCommand = ReactiveCommand.Create(ToggleWindow<SettingsWindow>, canExecuteCommands);
@@ -452,13 +476,13 @@ public partial class MainCommandBarViewModel : ReactiveObject
 				var nextFilePath = fs.Path.Join(directory, ModDataLoader.MakeSafeFilename(nextName + ext, '_'));
 
 				fs.File.Move(orderPath, nextFilePath, true);
-				var existingOrder = modOrder.ExternalModOrders.FirstOrDefault(x => x.FilePath == nextFilePath);
+				var existingOrder = modOrder.ExternalModOrders.FirstOrDefault(x => fs.PathEquals(x.FilePath, nextFilePath));
 				if (existingOrder != null)
 				{
 					modOrder.ExternalModOrders.Remove(existingOrder);
 				}
 				order.Name = nextName;
-				order.FilePath = nextFilePath;
+				order.FilePath = nextFilePath.NormalizeDirectorySep();
 				AppServices.Commands.ShowAlert($"Renamed load order to '{nextFilePath}'", AlertType.Success, 20);
 			}
 		}, canExecuteCommands.CombineLatest(canRenameOrder).AllTrue());

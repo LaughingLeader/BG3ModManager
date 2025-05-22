@@ -1337,7 +1337,7 @@ Directory the zip will be extracted to:
 
 	private readonly MainWindowExceptionHandler exceptionHandler;
 
-	private void DeleteMods(IEnumerable<IModEntry> targetMods, bool isDeletingDuplicates = false)
+	private void DeleteMods(IEnumerable<IModEntry> targetMods, bool isDeletingDuplicates = false, IEnumerable<ModData>? loadedMods = null)
 	{
 		var deleteFilesView = ViewModelLocator.DeleteFiles;
 		if (!deleteFilesView.IsVisible)
@@ -1347,7 +1347,7 @@ Directory the zip will be extracted to:
 			List<ModFileDeletionData> deleteFilesData = [];
 			foreach (var entry in targetMods)
 			{
-				var data = ModFileDeletionData.FromModEntry(entry, isDeletingDuplicates, AppServices.Mods.AllMods);
+				var data = ModFileDeletionData.FromModEntry(entry, isDeletingDuplicates, loadedMods ?? AppServices.Mods.AllMods);
 				if (data != null)
 				{
 					deleteFilesData.Add(data);
@@ -1356,7 +1356,10 @@ Directory the zip will be extracted to:
 			deleteFilesView.IsDeletingDuplicates = isDeletingDuplicates;
 			deleteFilesView.Files.AddRange(deleteFilesData);
 
-			Views.SwitchToDeleteView();
+			if(!IsRefreshing)
+			{
+				Views.SwitchToDeleteView();
+			}
 		}
 	}
 
@@ -1616,12 +1619,13 @@ Directory the zip will be extracted to:
 
 		interactionsService.DeleteMods.RegisterHandler(input =>
 		{
-			return Observable.Start(() =>
+			var data = input.Input;
+			if (IsRefreshing) Progress.NextView = ViewModelLocator.DeleteFiles;
+			RxApp.MainThreadScheduler.Schedule(() =>
 			{
-				var data = input.Input;
-				DeleteMods(data.TargetMods, data.IsDeletingDuplicates);
-				input.SetOutput(true);
-			}, RxApp.MainThreadScheduler);
+				DeleteMods(data.TargetMods, data.IsDeletingDuplicates, data.LoadedMods);
+			});
+			input.SetOutput(true);
 		});
 
 		interactionsService.DeleteSelectedMods.RegisterHandler(input =>
@@ -1705,7 +1709,7 @@ Directory the zip will be extracted to:
 				{
 					TotalFiles = files.Count
 				};
-				var builtinMods = DivinityApp.IgnoredMods.Items.SafeToDictionary(x => x.Folder, x => x);
+				var builtinMods = DivinityApp.IgnoredMods.Items.ToSafeDictionary(x => x.Folder);
 				foreach (var filePath in files)
 				{
 					await _importer.ImportModFromFile(builtinMods, result, filePath, token, false);
