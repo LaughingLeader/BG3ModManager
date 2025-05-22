@@ -1,4 +1,4 @@
-﻿namespace ModManager.Extensions;
+﻿namespace ModManager;
 
 public static class DictionaryExtensions
 {
@@ -71,35 +71,28 @@ public static class DictionaryExtensions
 	}
 
 	/// <summary>
-	/// ToDictionary that allows duplicate key entries.
-	/// Source: https://stackoverflow.com/a/22508992/2290477
+	/// Creates a Dictionary with non-null keys that overrides duplicates.
 	/// </summary>
-	/// <typeparam name="TSource"></typeparam>
-	/// <typeparam name="TKey"></typeparam>
-	/// <typeparam name="TElement"></typeparam>
-	/// <param name="source"></param>
-	/// <param name="keySelector"></param>
-	/// <param name="elementSelector"></param>
-	/// <param name="comparer"></param>
-	/// <returns></returns>
-	public static Dictionary<TKey, TElement> SafeToDictionary<TSource, TKey, TElement>(
-	this IEnumerable<TSource> source,
-	Func<TSource, TKey?> keySelector,
-	Func<TSource, TElement> elementSelector,
-	IEqualityComparer<TKey>? comparer = null) where TKey : notnull
-	{
-		var dictionary = new Dictionary<TKey, TElement>(comparer);
+	public static Dictionary<TKey, TSource> ToSafeDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey?> keySelector) where TKey : notnull => ToSafeDictionary(source, keySelector, x => x);
 
-		if (source == null)
-		{
-			return dictionary;
-		}
+	/// <summary>
+	/// Creates a Dictionary with non-null keys that overrides duplicates.
+	/// </summary>
+	public static Dictionary<TKey, TElement> ToSafeDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey?> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull
+	{
+		var dictionary = new Dictionary<TKey, TElement>();
+
+		if (source == null) return dictionary;
 
 		foreach (var element in source)
 		{
 			var key = keySelector(element);
-			if(key != null)
+			if (key != null)
 			{
+				if (dictionary.ContainsKey(key))
+				{
+					DivinityApp.Log($"Duplicate key: {key}");
+				}
 				dictionary[key] = elementSelector(element);
 			}
 		}
