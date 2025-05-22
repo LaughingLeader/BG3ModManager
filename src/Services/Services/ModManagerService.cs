@@ -231,7 +231,9 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		MergeModLists(ref allMods, baseMods.Values);
 		MergeModLists(ref allMods, userMods.Values);
 
-		var dupes = mods.UserDirectoryMods.Duplicates;
+		var dupes = new List<ModData>();
+		dupes.AddRange(mods.DataDirectoryMods.Duplicates);
+		dupes.AddRange(mods.UserDirectoryMods.Duplicates);
 
 		var dupeCount = dupes.Count;
 		if (dupeCount > 0)
@@ -241,7 +243,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 			DivinityApp.Log($"{string.Join(Environment.NewLine, dupes.Select(x => x.ToString()))}");
 			DivinityApp.Log("=======");
 			_commands.ShowAlert($"{dupeCount} duplicate mod(s) found", AlertType.Danger, 30);
-			await _interactions.DeleteMods.Handle(new DeleteModsRequest(dupes.ToModInterface(), true));
+			await _interactions.DeleteMods.Handle(new DeleteModsRequest(dupes.ToModInterface(), true, allMods));
 		}
 
 		//var finalMods = allMods.OrderBy(m => m.Name).ToList();
@@ -287,5 +289,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 			}
 			interaction.SetOutput(true);
 		});
+
+		this.WhenAnyValue(x => x.ActiveSelected, x => x.InactiveSelected, x => x.OverrideModsSelected, (a, b, c) => a > 0 || b > 0 || c > 0).BindTo(_commands, x => x.HasAnySelectedMods);
 	}
 }
