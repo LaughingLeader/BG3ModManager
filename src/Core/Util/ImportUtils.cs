@@ -231,7 +231,7 @@ public static class ImportUtils
 									{
 										var nameFromMeta = $"{mod.Folder}.pak";
 										outputFilePath = Path.Join(options.OutputDirectory, nameFromMeta);
-										mod.FilePath = outputFilePath;
+										mod.FilePath = outputFilePath.NormalizeDirectorySep();
 									}
 									using (var fs = File.Create(outputFilePath, ARCHIVE_BUFFER, FileOptions.Asynchronous))
 									{

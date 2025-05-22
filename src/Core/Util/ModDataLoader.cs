@@ -643,7 +643,7 @@ public static partial class ModDataLoader
 							}
 							modData.IsForceLoaded = true;
 						}
-						modData.FilePath = pakPath;
+						modData.FilePath = pakPath.NormalizeDirectorySep();
 
 						modData.LastModified = fileModified;
 
@@ -1034,7 +1034,7 @@ public static partial class ModDataLoader
 
 		FileUtils.WriteTextFile(outputFilePath, contents);
 
-		order.FilePath = outputFilePath;
+		order.FilePath = outputFilePath.NormalizeDirectorySep();
 
 		return true;
 	}
@@ -1048,7 +1048,7 @@ public static partial class ModDataLoader
 
 		await FileUtils.WriteTextFileAsync(outputFilePath, contents, token);
 
-		order.FilePath = outputFilePath;
+		order.FilePath = outputFilePath.NormalizeDirectorySep();
 
 		return true;
 	}
@@ -1069,7 +1069,7 @@ public static partial class ModDataLoader
 					var order = JsonUtils.SafeDeserialize<ModLoadOrder>(fileText);
 					if (order != null)
 					{
-						order.FilePath = loadOrderFile;
+						order.FilePath = loadOrderFile.NormalizeDirectorySep();
 						order.LastModifiedDate = File.GetLastAccessTime(loadOrderFile);
 						loadOrders.Add(order);
 					}
@@ -1108,7 +1108,7 @@ public static partial class ModDataLoader
 					order.Name = Path.GetFileNameWithoutExtension(loadOrderFile);
 					if (order != null)
 					{
-						order.FilePath = loadOrderFile;
+						order.FilePath = loadOrderFile.NormalizeDirectorySep();
 						order.LastModifiedDate = File.GetLastWriteTime(loadOrderFile);
 
 						loadOrders.Add(order);
@@ -1134,7 +1134,7 @@ public static partial class ModDataLoader
 				var order = JsonUtils.SafeDeserialize<ModLoadOrder>(fileText);
 				if (order != null)
 				{
-					order.FilePath = loadOrderFile;
+					order.FilePath = loadOrderFile.NormalizeDirectorySep();
 				}
 				return order;
 			}
@@ -1668,7 +1668,7 @@ public static partial class ModDataLoader
 		if(Directory.Exists(gameDataPath))
 		{
 			using var dataPakParser = new DirectoryPakParser(gameDataPath, FileUtils.GameDataOptions);
-			dataDirMods = await dataPakParser.ProcessAsync(detectDuplicates: false, parseLooseMetaFiles: true, token);
+			dataDirMods = await dataPakParser.ProcessAsync(detectDuplicates: true, parseLooseMetaFiles: true, token);
 
 			DivinityApp.Log($"Took {DateTimeOffset.Now - time:s\\.ff} second(s) to load mods from '{gameDataPath}'");
 

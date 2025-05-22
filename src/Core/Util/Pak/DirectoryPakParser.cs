@@ -98,7 +98,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			var toolkitMeta = ToolkitProjectMetaData.FromResource(resource);
 			if (toolkitMeta.Module.IsValid())
 			{
-				toolkitMeta.FilePath = metaPath;
+				toolkitMeta.FilePath = metaPath.NormalizeDirectorySep();
 				output.TryAdd(toolkitMeta.Module, toolkitMeta);
 			}
 		}
@@ -110,7 +110,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 		if (mod != null)
 		{
 			mod.IsLooseMod = true;
-			mod.FilePath = metaFilePath;
+			mod.FilePath = metaFilePath.NormalizeDirectorySep();
 			if (toolkitProjects.TryGetValue(mod.UUID, out var toolkitData))
 			{
 				mod.IsToolkitProject = true;
@@ -155,7 +155,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 				{
 					foreach (var mod in modList)
 					{
-						if (detectDuplicates)
+						if (detectDuplicates && !mod.IsLarianMod)
 						{
 							if (loadedMods.ContainsKey(mod.UUID))
 							{
@@ -209,7 +209,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 
 				foreach(var looseMod in looseMods)
 				{
-					if(looseMod != null)
+					if(looseMod != null && !looseMod.IsLarianMod)
 					{
 						if (detectDuplicates)
 						{
