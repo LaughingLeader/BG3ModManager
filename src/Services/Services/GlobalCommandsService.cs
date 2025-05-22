@@ -19,6 +19,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	private readonly IFileSystemService _fs;
 
 	[Reactive] public bool CanExecuteCommands { get; set; }
+	[Reactive] public bool HasAnySelectedMods { get; set; }
 
 	public ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	public ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
@@ -34,6 +35,8 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 	public ReactiveCommand<ModData?, Unit> CopyModAsDependencyCommand { get; }
 	public ReactiveCommand<ModData?, Unit> OpenModPropertiesCommand { get; }
 	public ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
+	public ReactiveCommand<ModData?, Unit> ExploreModFilesCommand { get; }
+	public RxCommandUnit ExploreSelectedModFilesCommand { get; }
 
 	public void OpenFile(string? path)
 	{
@@ -124,40 +127,40 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 
 	private void OpenGitHubPage(ModData? mod)
 	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
+		ArgumentNullException.ThrowIfNull(mod);
 		var url = mod.GetURL(ModSourceType.GITHUB);
 		OpenURL(url);
 	}
 
 	private void OpenNexusModsPage(ModData? mod)
 	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
+		ArgumentNullException.ThrowIfNull(mod);
 		var url = mod.GetURL(ModSourceType.NEXUSMODS);
 		OpenURL(url);
 	}
 
 	private void OpenModioPage(ModData? mod)
 	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
+		ArgumentNullException.ThrowIfNull(mod);
 		var url = mod.GetURL(ModSourceType.MODIO);
 		OpenURL(url);
 	}
 
 	private static void ToggleForceAllowInLoadOrder(ModData? mod)
 	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
+		ArgumentNullException.ThrowIfNull(mod);
 		mod.ForceAllowInLoadOrder = !mod.ForceAllowInLoadOrder;
 	}
 
 	private void OpenModProperties(ModData? mod)
 	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
+		ArgumentNullException.ThrowIfNull(mod);
 		_interactions.OpenModProperties.Handle(mod).Subscribe();
 	}
 
 	private void StartValidateModStats(ModData? mod)
 	{
-		if (mod == null) throw new ArgumentNullException(nameof(mod));
+		ArgumentNullException.ThrowIfNull(mod);
 		_interactions.ValidateModStats.Handle(new([mod], CancellationToken.None)).Subscribe();
 	}
 
@@ -182,9 +185,32 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		}
 	}
 
-	private void DeleteSelectedMods()
+	private async Task DeleteSelectedMods()
 	{
-		_interactions.DeleteSelectedMods.Handle(Unit.Default).Subscribe();
+		await _interactions.DeleteSelectedMods.Handle(Unit.Default);
+	}
+
+	private async Task ExploreModFiles(ModData? mod)
+	{
+		ArgumentNullException.ThrowIfNull(mod);
+		await _interactions.ViewModFiles.Handle(new([mod]));
+	}
+	private async Task ExploreSelectedModFiles()
+	{
+		List<ModData> selectedMods = [];
+		var modManager = Locator.Current.GetService<IModManagerService>();
+		if (modManager != null)
+		{
+			selectedMods.AddRange(modManager.AllMods.Where(x => x.IsSelected));
+		}
+		if(selectedMods.Count > 0)
+		{
+			await _interactions.ViewModFiles.Handle(new(selectedMods));
+		}
+		else
+		{
+			throw new ArgumentException("No mods are selected");
+		}
 	}
 
 	public void ShowAlert(string message, AlertType alertType = AlertType.Info, int timeout = 0, string? title = "")
@@ -203,6 +229,9 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		_fs = fileSystemService;
 
 		var canExecuteCommands = this.WhenAnyValue(x => x.CanExecuteCommands).ObserveOn(RxApp.MainThreadScheduler);
+		var anySelected = this.WhenAnyValue(x => x.HasAnySelectedMods).ObserveOn(RxApp.MainThreadScheduler);
+
+		var canExecuteSelected = canExecuteCommands.CombineLatest(anySelected).AllTrue();
 
 		OpenFileCommand = ReactiveCommand.Create<string?>(OpenFile, canExecuteCommands);
 		OpenInFileExplorerCommand = ReactiveCommand.Create<string?>(OpenInFileExplorer, canExecuteCommands);
@@ -212,8 +241,7 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		CopyToClipboardCommand = ReactiveCommand.Create<object?>(CopyToClipboard, canExecuteCommands);
 
 		DeleteModCommand = ReactiveCommand.Create<object?>(DeleteMod, canExecuteCommands);
-
-		DeleteSelectedModsCommand = ReactiveCommand.Create(DeleteSelectedMods, canExecuteCommands);
+		DeleteSelectedModsCommand = ReactiveCommand.CreateFromTask(DeleteSelectedMods, canExecuteSelected);
 
 		OpenURLCommand = ReactiveCommand.Create<object?>(x => OpenURL(x?.ToString()), canExecuteCommands);
 		OpenGitHubPageCommand = ReactiveCommand.Create<ModData?>(OpenGitHubPage, canExecuteCommands);
@@ -223,5 +251,8 @@ public class GlobalCommandsService : ReactiveObject, IGlobalCommandsService
 		CopyModAsDependencyCommand = ReactiveCommand.Create<ModData?>(CopyModAsDependency, canExecuteCommands);
 		OpenModPropertiesCommand = ReactiveCommand.Create<ModData?>(OpenModProperties, canExecuteCommands);
 		ValidateStatsCommand = ReactiveCommand.Create<ModData?>(StartValidateModStats, canExecuteCommands);
+
+		ExploreModFilesCommand = ReactiveCommand.CreateFromTask<ModData?>(ExploreModFiles, canExecuteCommands);
+		ExploreSelectedModFilesCommand = ReactiveCommand.CreateFromTask(ExploreSelectedModFiles, canExecuteSelected);
 	}
 }

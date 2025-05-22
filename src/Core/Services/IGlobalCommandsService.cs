@@ -5,6 +5,7 @@ namespace ModManager;
 public interface IGlobalCommandsService
 {
 	bool CanExecuteCommands { get; set; }
+	bool HasAnySelectedMods { get; set; }
 
 	ReactiveCommand<string?, Unit> OpenFileCommand { get; }
 	ReactiveCommand<string?, Unit> OpenInFileExplorerCommand { get; }
@@ -20,6 +21,8 @@ public interface IGlobalCommandsService
 	ReactiveCommand<ModData?, Unit> CopyModAsDependencyCommand { get; }
 	ReactiveCommand<ModData?, Unit> OpenModPropertiesCommand { get; }
 	ReactiveCommand<ModData?, Unit> ValidateStatsCommand { get; }
+	ReactiveCommand<ModData?, Unit> ExploreModFilesCommand { get; }
+	RxCommandUnit ExploreSelectedModFilesCommand { get; }
 
 	void OpenURL(string? url);
 	void OpenInFileExplorer(string? path);

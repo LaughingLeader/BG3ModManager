@@ -11,17 +11,17 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ModManager.Models.View;
-public class PakFileEntry : ReactiveObject, IFileModel
+public class ModFileEntry : ReactiveObject, IFileModel
 {
-	private readonly SourceCache<PakFileEntry, string> _children = new(x => x.FilePath);
+	private readonly SourceCache<ModFileEntry, string> _children = new(x => x.FilePath);
 
-	private readonly ReadOnlyObservableCollection<PakFileEntry> _uiSubfiles;
-	public ReadOnlyObservableCollection<PakFileEntry> Subfiles => _uiSubfiles;
+	private readonly ReadOnlyObservableCollection<ModFileEntry> _uiSubfiles;
+	public ReadOnlyObservableCollection<ModFileEntry> Subfiles => _uiSubfiles;
 
-	public void AddChild(PakFileEntry child) => _children.AddOrUpdate(child);
-	public void AddChild(IEnumerable<PakFileEntry> children) => _children.AddOrUpdate(children);
+	public void AddChild(ModFileEntry child) => _children.AddOrUpdate(child);
+	public void AddChild(IEnumerable<ModFileEntry> children) => _children.AddOrUpdate(children);
 
-	public bool TryGetChild(string filePath, [NotNullWhen(true)] out PakFileEntry? child)
+	public bool TryGetChild(string filePath, [NotNullWhen(true)] out ModFileEntry? child)
 	{
 		child = null;
 		var result = _children.Lookup(filePath);
@@ -57,9 +57,9 @@ public class PakFileEntry : ReactiveObject, IFileModel
 		}
 	}
 
-	private static readonly IComparer<PakFileEntry> _fileSort = new NaturalFileSortComparer(StringComparison.OrdinalIgnoreCase);
+	private static readonly IComparer<ModFileEntry> _fileSort = new NaturalFileSortComparer(StringComparison.OrdinalIgnoreCase);
 
-	public PakFileEntry(string filePath, bool isDirectory = false, double size = 0) : base()
+	public ModFileEntry(string filePath, bool isDirectory = false, double size = 0) : base()
 	{
 		SizeOnDisk = size;
 		FilePath = filePath;

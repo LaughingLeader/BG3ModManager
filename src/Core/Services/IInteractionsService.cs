@@ -65,4 +65,9 @@ public interface IInteractionsService
 	/// Open the stats validator view with the given results.
 	/// </summary>
 	Interaction<ValidateModStatsResults, bool> OpenValidateStatsResults { get; }
+
+	/// <summary>
+	/// View files for given mods.
+	/// </summary>
+	Interaction<ViewModFilesRequest, bool> ViewModFiles { get; }
 }
