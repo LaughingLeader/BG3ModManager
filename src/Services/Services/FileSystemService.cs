@@ -69,4 +69,12 @@ public class FileSystemService(IFileSystem fileSystemService) : IFileSystemServi
 		}
 		return finalPath;
 	}
+
+	/// <inheritdoc />
+	public bool PathEquals(string? path1, string? path2)
+	{
+		if (!path1.IsValid() || !path2.IsValid()) return false;
+
+		return Path.GetFullPath(Path.TrimEndingDirectorySeparator(path1)).Equals(Path.GetFullPath(Path.TrimEndingDirectorySeparator(path2)), StringComparison.OrdinalIgnoreCase);
+	}
 }

@@ -48,4 +48,12 @@ public interface IFileSystemService : IFileSystem
 	/// <param name="path">The file path.</param>
 	/// <returns>The expanded file path.</returns>
 	string GetRealPath(string path);
+
+	/// <summary>
+	/// Compare two pathways in a case-insensitive way.
+	/// </summary>
+	/// <param name="path1">The first path.</param>
+	/// <param name="path2">The second path.</param>
+	/// <returns>Whether the pathways match.</returns>
+	bool PathEquals(string? path1, string? path2);
 }
