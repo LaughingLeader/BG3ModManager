@@ -134,7 +134,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 
 		if (_validator.GameDataPath != gameDataPath)
 		{
-			await AppServices.Commands.ShowAlertAsync("Initializing base data...", AlertType.Info);
+			await AppServices.Commands.ShowAlertAsync("Initializing base data...", AlertType.Info, 10);
 			await Task.Run(() =>
 			{
 				_validator.Initialize(gameDataPath);
@@ -142,7 +142,7 @@ public class StatsValidatorWindowViewModel : ReactiveObject, IClosableViewModel,
 		}
 		else
 		{
-			await AppServices.Commands.ShowAlertAsync("Validating mod stats...", AlertType.Info, 200);
+			await AppServices.Commands.ShowAlertAsync("Validating mod stats...", AlertType.Info, 60);
 		}
 
 		var results = await Observable.StartAsync(async () =>

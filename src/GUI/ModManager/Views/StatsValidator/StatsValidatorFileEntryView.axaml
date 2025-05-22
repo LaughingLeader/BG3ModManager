@@ -1,16 +1,12 @@
-<UserControl
-	x:Class="ModManager.Views.StatsValidator.StatsValidatorFileEntryView"
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:vm="using:ModManager.Models.View"
-	d:DesignHeight="450"
-	d:DesignWidth="800"
-	x:DataType="vm:StatsValidatorFileResults"
-	mc:Ignorable="d">
-	<SelectableTextBlock
-		Name="TextControl"
-		Text="{Binding DisplayName}"
-		ToolTip.Tip="{Binding ToolTip}" />
+<UserControl x:Class="ModManager.Views.StatsValidator.StatsValidatorFileEntryView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:ModManager.Models.View"
+    d:DesignHeight="200"
+    d:DesignWidth="600"
+    x:DataType="vm:StatsValidatorFileResults"
+    mc:Ignorable="d">
+	<SelectableTextBlock Name="TextControl" Text="{Binding DisplayName}" ToolTip.Tip="{Binding ToolTip}" />
 </UserControl>

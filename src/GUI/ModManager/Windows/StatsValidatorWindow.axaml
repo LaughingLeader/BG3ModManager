@@ -96,6 +96,7 @@
 							<TreeView.DataTemplates>
 								<TreeDataTemplate DataType="m:StatsValidatorFileResults" ItemsSource="{Binding Children}">
 									<view:StatsValidatorFileEntryView ViewModel="{Binding ViewModel}" />
+									<!--<TextBlock Text="{Binding DisplayName}" />-->
 								</TreeDataTemplate>
 
 								<TreeDataTemplate DataType="m:StatsValidatorErrorEntry" ItemsSource="{Binding Children}">

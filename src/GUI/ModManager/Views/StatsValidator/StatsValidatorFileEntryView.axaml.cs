@@ -11,7 +11,7 @@ public partial class StatsValidatorFileEntryView : ReactiveUserControl<StatsVali
 		if (!isError)
 		{
 			if (Application.Current != null
-				&& Application.Current.TryFindResource("TextFillColorSecondaryBrush", out var value)
+				&& Application.Current.TryFindResource("SukiText", out var value)
 				&& value is IBrush brush)
 			{
 				return brush;
