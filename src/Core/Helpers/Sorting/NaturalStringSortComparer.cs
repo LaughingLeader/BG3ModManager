@@ -1,9 +1,4 @@
-﻿namespace ModManager.Helpers;
-
-public interface IFileModel
-{
-	public string FilePath { get; }
-}
+﻿namespace ModManager.Helpers.Sorting;
 
 /// Source: https://github.com/tompazourek/NaturalSort.Extension
 /// Copyright (c) 2022 Tomáš Pažourek - The MIT License (MIT)
@@ -13,9 +8,9 @@ public interface IFileModel
 /// which allows it to sort numbers inside the strings as numbers, not as letters.
 /// (e.g. "1", "2", "10" instead of "1", "10", "2").
 /// It uses either a <seealso cref="StringComparison" /> (preferred) or arbitrary
-/// <see cref="System.Collections.Generic.IComparer{T}" /> string comparer for the comparisons.
+/// <see cref="IComparer{T}" /> string comparer for the comparisons.
 /// </summary>
-public class NaturalFileSortComparer : IComparer<IFileModel>
+public class NaturalStringSortComparer : IComparer<string>
 {
 	/// <summary>
 	/// String comparison used for comparing strings.
@@ -36,10 +31,10 @@ public class NaturalFileSortComparer : IComparer<IFileModel>
 
 	/// <summary>
 	/// Constructs comparer with a <seealso cref="StringComparison" /> as the inner mechanism.
-	/// Prefer this to <see cref="NaturalSortComparer(System.Collections.Generic.IComparer{string})" /> if possible.
+	/// Prefer this to <see cref="NaturalSortComparer(IComparer{string})" /> if possible.
 	/// </summary>
 	/// <param name="stringComparison">String comparison to use</param>
-	public NaturalFileSortComparer(StringComparison stringComparison)
+	public NaturalStringSortComparer(StringComparison stringComparison)
 		=> _stringComparison = stringComparison;
 
 	/// <summary>
@@ -47,13 +42,13 @@ public class NaturalFileSortComparer : IComparer<IFileModel>
 	/// Prefer <see cref="NaturalSortComparer(StringComparison)" /> if possible.
 	/// </summary>
 	/// <param name="stringComparer">String comparer to wrap</param>
-	public NaturalFileSortComparer(IComparer<string> stringComparer)
+	public NaturalStringSortComparer(IComparer<string> stringComparer)
 		=> _stringComparer = stringComparer;
 
 	/// <inheritdoc />
-	public int Compare(IFileModel? file1, IFileModel? file2)
+	public int Compare(string? x, string? y)
 	{
-		return StringCompare(file1?.FilePath, file2?.FilePath);
+		return StringCompare(x, y);
 	}
 
 	/// <inheritdoc />

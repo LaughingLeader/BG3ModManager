@@ -7,13 +7,6 @@
     xmlns:rxui="using:Avalonia.ReactiveUI"
     xmlns:suki="using:SukiUI.Controls">
 
-	<Style Selector="Button.icon">
-		<Setter Property="Padding" Value="0" />
-		<Setter Property="Margin" Value="2" />
-		<Setter Property="Width" Value="24" />
-		<Setter Property="Height" Value="24" />
-	</Style>
-
 	<Style Selector="TextBlock">
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontFamily" Value="avares://Avalonia.Fonts.Inter/Assets#Inter" />
@@ -139,7 +132,30 @@
 		<Setter Property="FontSize" Value="8" />
 	</Style>-->
 
+	<Style Selector="Button.icon">
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Margin" Value="2" />
+		<Setter Property="Width" Value="24" />
+		<Setter Property="Height" Value="24" />
+	</Style>
+
+	<Style Selector="Button.flat">
+		<Setter Property="CornerRadius" Value="0" />
+	</Style>
+
 	<Style Selector="materialIcons|MaterialIcon.Yellow">
 		<Setter Property="Foreground" Value="Yellow" />
+	</Style>
+
+	<Style Selector="materialIcons|MaterialIcon.Tan">
+		<Setter Property="Foreground" Value="Tan" />
+	</Style>
+
+	<Style Selector="materialIcons|MaterialIcon.Red">
+		<Setter Property="Foreground" Value="Red" />
+	</Style>
+
+	<Style Selector="materialIcons|MaterialIcon.SpringGreen">
+		<Setter Property="Foreground" Value="SpringGreen" />
 	</Style>
 </Styles>

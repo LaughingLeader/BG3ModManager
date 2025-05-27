@@ -4,6 +4,7 @@ using ModManager.Extensions;
 using ModManager.Services;
 
 using System.Diagnostics;
+using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -13,6 +14,12 @@ namespace ModManager.Util;
 
 public static class FileUtils
 {
+	private static readonly IFileSystemService _fs;
+	static FileUtils()
+	{
+		_fs = Locator.Current.GetService<IFileSystemService>()!;
+	}
+
 	public static readonly EnumerationOptions RecursiveOptions = new()
 	{
 		RecurseSubdirectories = true,
@@ -44,7 +51,7 @@ public static class FileUtils
 	{
 		//OK, so UNC paths aren't 'drives', but this is still handy
 		if (path.StartsWith(@"\\")) return DriveType.Network;
-		var info = DriveInfo.GetDrives().Where(i => path.StartsWith(i.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+		var info = _fs.DriveInfo.GetDrives().Where(i => path.StartsWith(i.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 		if (info == null) return DriveType.Unknown;
 		return info.DriveType;
 	}
@@ -54,7 +61,7 @@ public static class FileUtils
 	/// </summary>
 	/// <param name="root">Candidate root</param>
 	/// <param name="child">Child folder</param>
-	public static bool IsSubdirectoryOf(DirectoryInfo root, DirectoryInfo child)
+	public static bool IsSubdirectoryOf(IDirectoryInfo root, IDirectoryInfo child)
 	{
 		var directoryPath = EndsWithSeparator(new Uri(child.FullName).AbsolutePath);
 		var rootPath = EndsWithSeparator(new Uri(root.FullName).AbsolutePath);
@@ -68,7 +75,7 @@ public static class FileUtils
 	/// <param name="child">Child folder</param>
 	public static bool IsSubdirectoryOf(string root, string child)
 	{
-		return IsSubdirectoryOf(new DirectoryInfo(root), new DirectoryInfo(child));
+		return IsSubdirectoryOf(_fs.DirectoryInfo.New(root), _fs.DirectoryInfo.New(child));
 	}
 
 	private static string EndsWithSeparator(string absolutePath)
@@ -82,26 +89,26 @@ public static class FileUtils
 	/// </summary>
 	public static string GetUniqueFilename(string fullPath)
 	{
-		if (!Path.IsPathRooted(fullPath))
-			fullPath = Path.GetFullPath(fullPath);
-		if (File.Exists(fullPath))
+		if (!_fs.Path.IsPathRooted(fullPath))
+			fullPath = _fs.Path.GetFullPath(fullPath);
+		if (_fs.File.Exists(fullPath))
 		{
-			var filename = Path.GetFileName(fullPath);
+			var filename = _fs.Path.GetFileName(fullPath);
 			var path = fullPath[..^filename.Length];
-			var filenameWOExt = Path.GetFileNameWithoutExtension(fullPath);
-			var ext = Path.GetExtension(fullPath);
+			var filenameWOExt = _fs.Path.GetFileNameWithoutExtension(fullPath);
+			var ext = _fs.Path.GetExtension(fullPath);
 			var n = 1;
 			do
 			{
-				fullPath = Path.Join(path, string.Format("{0} ({1}){2}", filenameWOExt, (n++), ext));
+				fullPath = _fs.Path.Join(path, string.Format("{0} ({1}){2}", filenameWOExt, (n++), ext));
 			}
-			while (File.Exists(fullPath));
+			while (_fs.File.Exists(fullPath));
 		}
 		return fullPath;
 	}
 
 
-	public static List<string> IgnoredPackageFiles = [
+	public static readonly List<string> IgnoredPackageFiles = [
 		"ReConHistory.txt",
 		"dialoglog.txt",
 		"errors.txt",
@@ -122,11 +129,11 @@ public static class FileUtils
 
 	private static bool IgnoreFile(string targetFilePath, string ignoredFileName)
 	{
-		if (Path.GetFileName(targetFilePath).Equals(ignoredFileName, StringComparison.OrdinalIgnoreCase))
+		if (_fs.Path.GetFileName(targetFilePath).Equals(ignoredFileName, StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
-		else if (ignoredFileName.Substring(0) == "." && Path.GetExtension(targetFilePath).Equals(ignoredFileName, StringComparison.OrdinalIgnoreCase))
+		else if (ignoredFileName.Substring(0) == "." && _fs.Path.GetExtension(targetFilePath).Equals(ignoredFileName, StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
@@ -141,9 +148,9 @@ public static class FileUtils
 
 			if (token.IsCancellationRequested) return false;
 
-			if (!rootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (!rootPath.EndsWith(_fs.Path.DirectorySeparatorChar.ToString()))
 			{
-				rootPath += Path.DirectorySeparatorChar;
+				rootPath += _fs.Path.DirectorySeparatorChar;
 			}
 
 			var conversionParams = ResourceConversionParameters.FromGameVersion(DivinityApp.GAME);
@@ -183,16 +190,16 @@ public static class FileUtils
 
 	private static void AddFilesToPackage(string filePath, PackageBuildData build, string rootPath, List<string> ignoredFiles, CancellationToken token)
 	{
-		if (!rootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+		if (!rootPath.EndsWith(_fs.Path.DirectorySeparatorChar.ToString()))
 		{
-			rootPath += Path.DirectorySeparatorChar;
+			rootPath += _fs.Path.DirectorySeparatorChar;
 		}
 
-		if (Directory.Exists(filePath))
+		if (_fs.Directory.Exists(filePath))
 		{
-			if (!filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (!filePath.EndsWith(_fs.Path.DirectorySeparatorChar.ToString()))
 			{
-				filePath += Path.DirectorySeparatorChar;
+				filePath += _fs.Path.DirectorySeparatorChar;
 			}
 
 			var files = EnumerateFiles(filePath, RecursiveOptions, (f) => !ignoredFiles.Any(x => IgnoreFile(f, x)))
@@ -205,9 +212,9 @@ public static class FileUtils
 				build.Files.Add(fileInfo);
 			}
 		}
-		else if (File.Exists(filePath))
+		else if (_fs.File.Exists(filePath))
 		{
-			var name = Path.GetRelativePath(rootPath, filePath);
+			var name = _fs.Path.GetRelativePath(rootPath, filePath);
 			var fileInfo = PackageBuildInputFile.CreateFromFilesystem(filePath, name);
 			build.Files.Add(fileInfo);
 		}
@@ -251,10 +258,10 @@ public static class FileUtils
 			try
 			{
 				//Put each pak into its own folder
-				var destination = Path.Join(outputDirectory, Path.GetFileNameWithoutExtension(path));
+				var destination = _fs.Path.Join(outputDirectory, _fs.Path.GetFileNameWithoutExtension(path));
 
 				//Unless the foldername == the pak name and we're only extracting one pak
-				if (count == 1 && Path.GetDirectoryName(outputDirectory).Equals(Path.GetFileNameWithoutExtension(path)))
+				if (count == 1 && _fs.Path.GetDirectoryName(outputDirectory).Equals(_fs.Path.GetFileNameWithoutExtension(path)))
 				{
 					destination = outputDirectory;
 				}
@@ -316,7 +323,7 @@ public static class FileUtils
 	{
 		try
 		{
-			File.WriteAllText(path, contents);
+			_fs.File.WriteAllText(path, contents);
 			return true;
 		}
 		catch (Exception ex)
@@ -330,7 +337,7 @@ public static class FileUtils
 	{
 		try
 		{
-			await File.WriteAllTextAsync(path, contents, token);
+			await _fs.File.WriteAllTextAsync(path, contents, token);
 			return true;
 		}
 		catch (Exception ex)
@@ -340,11 +347,11 @@ public static class FileUtils
 		}
 	}
 
-	public static async Task<byte[]> LoadFileAsBytesAsync(string path, CancellationToken token)
+	public static async Task<byte[]?> LoadFileAsBytesAsync(string path, CancellationToken token)
 	{
 		try
 		{
-			var result = await File.ReadAllBytesAsync(path, token);
+			var result = await _fs.File.ReadAllBytesAsync(path, token);
 			return result;
 		}
 		catch (Exception ex)
@@ -370,12 +377,41 @@ public static class FileUtils
 		return false;
 	}
 
+	public static async Task<bool> CopyDirectoryAsync(string copyFromPath, string copyToPath, CancellationToken token)
+	{
+		try
+		{
+			copyFromPath = copyFromPath.NormalizeDirectorySep()!;
+			copyToPath = copyToPath.NormalizeDirectorySep()!;
+
+			var tasks = new List<Task>();
+			//Recreate subdirectories
+			foreach(var subDir in _fs.Directory.EnumerateDirectories(copyFromPath, "*", RecursiveOptions))
+			{
+				var outputDir = _fs.Path.Join(copyToPath, _fs.Path.GetRelativePath(copyFromPath, subDir));
+				_fs.Directory.CreateDirectory(outputDir);
+			}
+			foreach (var filePath in _fs.Directory.EnumerateFiles(copyFromPath, "*", RecursiveOptions))
+			{
+				var outputFile = _fs.Path.Join(copyToPath, _fs.Path.GetRelativePath(copyFromPath, filePath));
+				tasks.Add(CopyFileAsync(filePath, outputFile, token));
+			}
+			await Task.WhenAll(tasks).WaitAsync(token);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			DivinityApp.Log($"Error copying directory: {ex}");
+		}
+		return false;
+	}
+
 	public static bool TryGetDirectoryOrParent(string path, out string parentDir)
 	{
 		parentDir = "";
 		try
 		{
-			if (Directory.Exists(path))
+			if (_fs.Directory.Exists(path))
 			{
 				parentDir = path;
 				return true;

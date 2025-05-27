@@ -47,9 +47,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 			{
 				x.CanDismissWithBackgroundClick = allowBackgroundClose;
 				x.ViewModel = content;
-				if (content is MessageBoxViewModel messageBox)
+				if (content is IDialogViewModel dialogVM)
 				{
-					messageBox.Dialog = x;
+					dialogVM.Dialog = x;
 				}
 				return content;
 			});
@@ -102,6 +102,21 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 						context.SetOutput(result);
 					}
 					//SukiHost.ShowDialog(dialogVM, true, !data.MessageBoxType.HasFlag(InteractionMessageBoxType.YesNo));
+				}, RxApp.MainThreadScheduler);
+			});
+
+			interactions.PickMods.RegisterHandler(context =>
+			{
+				return Observable.StartAsync(async () =>
+				{
+					DismissLastDialog();
+					var data = context.Input;
+					var dialogVM = ViewModelLocator.ModPicker;
+					dialogVM.Open(data);
+
+					ShowSukiDialog(dialogVM, true, false);
+					var result = await dialogVM.WaitForResult();
+					context.SetOutput(result);
 				}, RxApp.MainThreadScheduler);
 			});
 

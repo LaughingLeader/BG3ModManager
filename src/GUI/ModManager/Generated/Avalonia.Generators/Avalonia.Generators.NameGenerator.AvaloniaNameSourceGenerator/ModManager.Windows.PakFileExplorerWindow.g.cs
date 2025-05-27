@@ -9,10 +9,6 @@ namespace ModManager.Windows
     partial class PakFileExplorerWindow
     {
         [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
-        internal global::Avalonia.Controls.MenuItem CopyToButton;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
-        internal global::Avalonia.Controls.MenuItem CopyPathButton;
-        [global::System.CodeDom.Compiler.GeneratedCode("Avalonia.Generators.NameGenerator.InitializeComponentCodeGenerator", "11.3.0.0")]
         internal global::Avalonia.Controls.TreeDataGrid FilesTreeView;
 
         /// <summary>
@@ -38,8 +34,6 @@ namespace ModManager.Windows
 #endif
 
             var __thisNameScope__ = this.FindNameScope();
-            CopyToButton = __thisNameScope__?.Find<global::Avalonia.Controls.MenuItem>("CopyToButton");
-            CopyPathButton = __thisNameScope__?.Find<global::Avalonia.Controls.MenuItem>("CopyPathButton");
             FilesTreeView = __thisNameScope__?.Find<global::Avalonia.Controls.TreeDataGrid>("FilesTreeView");
         }
     }

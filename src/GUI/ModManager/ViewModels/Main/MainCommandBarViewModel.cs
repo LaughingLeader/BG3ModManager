@@ -304,7 +304,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 		}
 	}
 
-	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs, IDirectoryOpusService dopus, InteractionsService interactions) : this()
+	public MainCommandBarViewModel(MainWindowViewModel main, ModOrderViewModel modOrder, ModImportService modImporter, IFileSystemService fs, IDirectoryOpusService dopus, IInteractionsService interactions) : this()
 	{
 		ModOrder = modOrder;
 		var canExecuteCommands = main.WhenAnyValue(x => x.IsLocked, b => !b);
@@ -410,7 +410,7 @@ public partial class MainCommandBarViewModel : ReactiveObject
 			{
 				RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, token) =>
 				{
-					await ViewModelLocator.PakFileExplorer.LoadMods(mods, token);
+					await ViewModelLocator.PakFileExplorer.LoadModsAsync(mods, token);
 					ToggleWindow<PakFileExplorerWindow>(true);
 				});
 				input.SetOutput(true);

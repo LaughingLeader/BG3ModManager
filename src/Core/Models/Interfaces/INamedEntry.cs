@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModManager.Models.View;
-public class ModFilesCollection : ReactiveObject
+namespace ModManager.Models.Interfaces;
+public interface INamedEntry
 {
-
+	string? Name { get; }
 }

@@ -20,9 +20,6 @@ public partial class PakFileExplorerWindow : HideWindowBase<PakFileExplorerWindo
 				var commands = AppServices.Commands;
 
 				this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible);
-
-				this.BindCommand(ViewModel, x => x.ExtractPakFilesCommand, view => view.CopyToButton);
-				this.BindCommand(ViewModel, x => x.CopyToClipboardCommand, view => view.CopyPathButton);
 			}
 		});
 	}

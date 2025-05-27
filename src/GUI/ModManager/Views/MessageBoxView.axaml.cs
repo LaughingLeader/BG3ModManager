@@ -13,8 +13,10 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>
 		{
 			if (!Design.IsDesignMode) ViewModel ??= ViewModelLocator.MessageBox;
 
-			if(ViewModel != null)
+			if (ViewModel != null)
 			{
+				this.GetObservable(IsVisibleProperty).BindTo(ViewModel, x => x.IsVisible);
+
 				ViewModel.WhenAnyValue(x => x.IsInput).Subscribe(b =>
 				{
 					if(ViewModel.IsVisible)

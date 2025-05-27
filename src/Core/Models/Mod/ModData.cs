@@ -16,9 +16,6 @@ namespace ModManager.Models.Mod;
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
 public class ModData : ReactiveObject, IModData
 {
-	private static readonly SortExpressionComparer<ModuleShortDesc> _moduleSort = SortExpressionComparer<ModuleShortDesc>
-			.Ascending(p => p.UUID.IsValid() && !DivinityApp.IgnoredMods.Lookup(p.UUID).HasValue).ThenByAscending(p => p.Name ?? string.Empty);
-
 	#region meta.lsx Properties
 	[Reactive, DataMember] public string UUID { get; set; }
 	[Reactive, DataMember] public string? Folder { get; set; }
@@ -710,12 +707,18 @@ public class ModData : ReactiveObject, IModData
 		var dependenciesChanged = Dependencies.CountChanged;
 		dependenciesChanged.ToUIProperty(this, x => x.TotalDependencies);
 		dependenciesChanged.Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasDependencies);
-		Dependencies.Connect().ObserveOn(RxApp.MainThreadScheduler).SortAndBind(out _displayedDependencies, _moduleSort).Subscribe();
+		Dependencies.Connect()
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.SortAndBind(out _displayedDependencies, Sorters.ModuleShortDesc)
+			.Subscribe();
 
 		var conflictsChanged = Conflicts.CountChanged;
 		conflictsChanged.ToUIProperty(this, x => x.TotalConflicts);
 		conflictsChanged.Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasConflicts);
-		Conflicts.Connect().ObserveOn(RxApp.MainThreadScheduler).SortAndBind(out _displayedConflicts, _moduleSort).Subscribe();
+		Conflicts.Connect()
+			.ObserveOn(RxApp.MainThreadScheduler)
+			.SortAndBind(out _displayedConflicts, Sorters.ModuleShortDesc)
+			.Subscribe();
 
 		var missingDepConn = MissingDependencies.Connect().ObserveOn(RxApp.MainThreadScheduler);
 		missingDepConn.Count().Select(x => x > 0).ToUIPropertyImmediate(this, x => x.HasMissingDependency);

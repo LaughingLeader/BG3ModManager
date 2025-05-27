@@ -328,16 +328,20 @@ HKEY_CLASSES_ROOT\nxm\shell\open\command
 			new("-continueGame", "Automatically load the last save when loading into the main menu"),
 			new("-storylog 1", "Enables the story log"),
 			new(@"--logPath """, "A directory to write story logs to"),
+			new(@"-photoModeScreenshotsPath """, "A directory to write screenshots to"),
 			new("--cpuLimit x", "Limit the cpu to x amount of threads (unknown if this works)"),
+			new("-startInControllerMode 1", "Presumably switches the UI to controller mode (untested)"),
 			new("-asserts 1", "", true),
 			new("-stats 1", "", true),
 			new("-dynamicStory 1", "", true),
+			new("-syslog 1", "", true),
 			new("-externalcrashhandler", "", true),
 			new(@"-nametag """, "", true),
 			new(@"-module """, "", true),
 			new(@"+connect_lobby """, "", true),
 			new("-locaupdater 1", "", true),
 			new(@"-mediaPath """, "", true),
+			new(@"-testLoadLevel """, "", true),
 		];
 
 		var whenTab = this.WhenAnyValue(x => x.SelectedTabIndex);

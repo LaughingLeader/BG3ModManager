@@ -5,6 +5,7 @@ using ModManager.Models.Settings;
 using ModManager.Models.View;
 using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.ViewModels.Mods;
 using ModManager.ViewModels.Settings;
 using ModManager.Views;
 using ModManager.Views.Main;
@@ -75,6 +76,7 @@ public class ViewLocator : IViewLocator, IDataTemplate
 		resolver.Register(() => new StatsValidatorLineText(), typeof(IViewFor<StatsValidatorLineView>));
 
 		resolver.Register(() => new MessageBoxView(), typeof(IViewFor<MessageBoxViewModel>));
+		resolver.Register(() => new ModPickerView(), typeof(IViewFor<ModPickerViewModel>));
 	}
 
 	//IDataTemplate

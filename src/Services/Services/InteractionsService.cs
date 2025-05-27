@@ -32,9 +32,12 @@ public class InteractionsService : IInteractionsService
 	/// <inheritdoc/>
 	public Interaction<ShowMessageBoxRequest, MessageBoxResult> ShowMessageBox { get; }
 	/// <inheritdoc/>
+	public Interaction<ShowModPickerRequest, ModPickerResult> PickMods { get; }
+	/// <inheritdoc/>
 	public Interaction<ValidateModStatsRequest, bool> ValidateModStats { get; }
 	/// <inheritdoc/>
 	public Interaction<ValidateModStatsResults, bool> OpenValidateStatsResults { get; }
+	/// <inheritdoc/>
 	public Interaction<ViewModFilesRequest, bool> ViewModFiles { get; }
 
 	public InteractionsService()
@@ -49,6 +52,7 @@ public class InteractionsService : IInteractionsService
 		OpenValidateStatsResults = new();
 		ShowAlert = new();
 		ShowMessageBox = new();
+		PickMods = new();
 		ToggleModFileNameDisplay = new();
 		ValidateModStats = new();
 		ViewModFiles = new();

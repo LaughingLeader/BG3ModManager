@@ -47,7 +47,7 @@ public static class AppServices
 
 		SplatRegistrations.RegisterLazySingleton<ModOrderViewModel>();
 
-		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter, Get<IFileSystemService>(), Get<IDirectoryOpusService>()));
+		resolver.RegisterLazySingleton(() => new MainCommandBarViewModel(ViewModelLocator.Main, ViewModelLocator.ModOrder, ModImporter, Get<IFileSystemService>(), Get<IDirectoryOpusService>(), Get<IInteractionsService>()));
 
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesViewModel>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesViewModel>();

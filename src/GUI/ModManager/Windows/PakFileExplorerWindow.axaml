@@ -4,6 +4,8 @@
     xmlns:controls="using:ModManager.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:local="using:ModManager.Windows"
+    xmlns:manager="using:ModManager"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mv="using:ModManager.Models.View"
     xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
@@ -21,35 +23,38 @@
 		<vm:DesignPakFileExplorerWindowViewModel />
 	</Design.DataContext>
 	<Window.Resources>
-		<MenuFlyout x:Key="FileContextMenu" x:DataType="mv:PakFileEntry">
-			<MenuItem Name="CopyToButton"
+		<MenuFlyout x:Key="FileContextMenu" x:DataType="mv:ModFileEntry">
+			<MenuItem Command="{Binding $parent[local:PakFileExplorerWindow].ViewModel.ExtractFileCommand}"
 			    CommandParameter="{Binding}"
 			    Header="Extract To..."
 			    Icon="{icons:MaterialIconExt Kind=Download}" />
-
-			<MenuItem Name="CopyPathButton"
+			<Separator />
+			<MenuItem Command="{Binding $parent[local:PakFileExplorerWindow].ViewModel.ExtractSelectedFilesCommand}" Header="Extract All Selected To..." Icon="{icons:MaterialIconExt Kind=Download}" />
+			<Separator />
+			<MenuItem Command="{Binding Path=CopyToClipboardCommand, Source={x:Static manager:AppServices.Commands}}"
 			    CommandParameter="{Binding FilePath}"
 			    Header="Copy Path to Clipboard..."
 			    Icon="{icons:MaterialIconExt Kind=ClipboardAdd}" />
 		</MenuFlyout>
 	</Window.Resources>
+	<Window.Styles />
 	<Panel>
-		<Grid Margin="4" Grid.IsSharedSizeScope="True">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<Grid Margin="4">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
-				</Grid.ColumnDefinitions>
-				<controls:EnhancedTextBox Text="{Binding PakFilePath, Mode=TwoWay}" />
-				<Button Grid.Column="1"
-				    Height="32"
+		<Grid Margin="4" Grid.IsSharedSizeScope="True" RowDefinitions="Auto,*">
+			<StackPanel Margin="4" Orientation="Horizontal">
+				<Button Classes="icon flat"
+				    Command="{Binding AddModCommand}"
+				    Content="{icons:MaterialIconExt Kind=FileImport, Classes='SpringGreen'}"
+				    ToolTip.Tip="Add Mod(s)..." />
+				<Button Classes="icon flat"
 				    Command="{Binding OpenFileBrowserCommand}"
-				    Content="..." />
-			</Grid>
+				    Content="{icons:MaterialIconExt Kind=FolderOpen, Classes='Tan'}"
+				    ToolTip.Tip="Add Pak..." />
+				<Rectangle Width="1" Margin="2,0" Fill="{DynamicResource SukiBorderBrush}" />
+				<Button Classes="icon flat"
+				    Command="{Binding ClearCommand}"
+				    Content="{icons:MaterialIconExt Kind=CloseBoxMultiple, Classes='Red'}"
+				    ToolTip.Tip="Clear All" />
+			</StackPanel>
 			<TreeDataGrid Name="FilesTreeView"
 			    Grid.Row="1"
 			    AutoDragDropRows="False"
@@ -58,13 +63,16 @@
 			    Focusable="True"
 			    Source="{Binding FileTreeSource}">
 				<TreeDataGrid.Resources>
-					<DataTemplate x:Key="FileNameWithIconCell" x:DataType="mv:PakFileEntry">
+					<DataTemplate x:Key="FileNameWithIconCell" x:DataType="mv:ModFileEntry">
 						<Grid ContextFlyout="{StaticResource FileContextMenu}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="auto" SharedSizeGroup="Icons" />
 								<ColumnDefinition Width="*" />
 							</Grid.ColumnDefinitions>
-							<icons:MaterialIcon Grid.Column="0" VerticalAlignment="Center" Kind="{Binding Icon}" />
+							<icons:MaterialIcon Grid.Column="0"
+							    VerticalAlignment="Center"
+							    Foreground="{Binding IconColor}"
+							    Kind="{Binding Icon}" />
 							<TextBlock Grid.Column="1"
 							    Margin="4,0,0,0"
 							    VerticalAlignment="Center"

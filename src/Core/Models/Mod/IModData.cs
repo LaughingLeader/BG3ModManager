@@ -1,9 +1,10 @@
-﻿namespace ModManager.Models.Mod;
+﻿using ModManager.Models.Interfaces;
 
-public interface IModData
+namespace ModManager.Models.Mod;
+
+public interface IModData : INamedEntry
 {
 	string UUID { get; }
-	string? Name { get; set; }
 	string? Folder { get; set; }
 	string? MD5 { get; set; }
 	public ulong PublishHandle { get; set; }

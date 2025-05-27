@@ -4,7 +4,7 @@ using SukiUI.Dialogs;
 using System.Reactive.Subjects;
 
 namespace ModManager.ViewModels;
-public class MessageBoxViewModel : ReactiveObject
+public class MessageBoxViewModel : ReactiveObject, IDialogViewModel
 {
 	[Reactive] public string? Title { get; set; }
 	[Reactive] public string? Message { get; set; }

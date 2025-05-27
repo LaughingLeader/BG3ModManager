@@ -57,6 +57,11 @@ public interface IInteractionsService
 	Interaction<ShowMessageBoxRequest, MessageBoxResult> ShowMessageBox { get; }
 
 	/// <summary>
+	/// Show dialog for picking mods.
+	/// </summary>
+	Interaction<ShowModPickerRequest, ModPickerResult> PickMods { get; }
+
+	/// <summary>
 	/// Validate stats for given mods using LSLib.
 	/// </summary>
 	Interaction<ValidateModStatsRequest, bool> ValidateModStats { get; }

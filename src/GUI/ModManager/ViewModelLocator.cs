@@ -1,5 +1,6 @@
 ﻿using ModManager.ViewModels;
 using ModManager.ViewModels.Main;
+using ModManager.ViewModels.Mods;
 using ModManager.ViewModels.Settings;
 using ModManager.ViewModels.Window;
 
@@ -25,6 +26,7 @@ public static class ViewModelLocator
 	public static VersionGeneratorViewModel VersionGenerator => AppServices.Get<VersionGeneratorViewModel>()!;
 	public static ExportOrderToArchiveViewModel ExportOrderToArchive => AppServices.Get<ExportOrderToArchiveViewModel>()!;
 	public static MessageBoxViewModel MessageBox => AppServices.Get<MessageBoxViewModel>()!;
+	public static ModPickerViewModel ModPicker => AppServices.Get<ModPickerViewModel>()!;
 	public static IProgressBarViewModel Progress => AppServices.Get<IProgressBarViewModel>()!;
 	public static KeybindingsViewModel Keybindings => AppServices.Get<KeybindingsViewModel>()!;
 

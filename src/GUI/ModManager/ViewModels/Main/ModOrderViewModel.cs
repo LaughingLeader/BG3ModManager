@@ -208,8 +208,6 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		}, canExecuteCommands);
 	}*/
 
-	private readonly SortExpressionComparer<ProfileData> _profileSort = SortExpressionComparer<ProfileData>.Ascending(p => p.FolderName != "Public").ThenByAscending(p => p.Name);
-
 	public void Clear()
 	{
 		_lastProfile = null;
@@ -1611,7 +1609,7 @@ public class ModOrderViewModel : ReactiveObject, IRoutableViewModel, IModOrderVi
 		var mainIsNotLocked = host.WhenAnyValue(x => x.IsLocked, b => !b);
 		var canExecuteCommands = mainIsNotLocked.CombineLatest(isActive).Select(x => x.First && x.Second);
 
-		profiles.Connect().SortAndBind(out _uiprofiles, _profileSort).DisposeMany().Subscribe();
+		profiles.Connect().SortAndBind(out _uiprofiles, Sorters.Profile).DisposeMany().Subscribe();
 
 		var whenProfile = this.WhenAnyValue(x => x.SelectedProfile);
 		var hasNonNullProfile = whenProfile.Select(x => x != null);
