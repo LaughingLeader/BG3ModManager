@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ModManager.Models.Mod.Game;
 
 [DataContract]
-public class ModuleShortDesc : ReactiveObject, IModData
+public class ModuleShortDesc : ReactiveObject, IModuleShortDesc
 {
 	[DataMember, Reactive] public string UUID { get; set; }
 	[DataMember, Reactive] public string? Name { get; set; }
@@ -66,7 +66,7 @@ public class ModuleShortDesc : ReactiveObject, IModData
 		};
 	}
 
-	public static ModuleShortDesc FromModData(IModData m)
+	public static ModuleShortDesc FromModData(IModuleShortDesc m)
 	{
 		return new ModuleShortDesc(m.UUID)
 		{
@@ -79,7 +79,7 @@ public class ModuleShortDesc : ReactiveObject, IModData
 		};
 	}
 
-	public void UpdateFrom(IModData m)
+	public void UpdateFrom(IModuleShortDesc m)
 	{
 		Folder = m.Folder;
 		Name = m.Name;

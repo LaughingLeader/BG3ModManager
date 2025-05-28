@@ -14,7 +14,7 @@ namespace ModManager.Models.Mod;
 
 [DataContract]
 [ScreenReaderHelper(Name = "DisplayName", HelpText = "HelpText")]
-public class ModData : ReactiveObject, IModData
+public class ModData : ReactiveObject, IModuleShortDesc
 {
 	#region meta.lsx Properties
 	[Reactive, DataMember] public string UUID { get; set; }
@@ -345,7 +345,7 @@ public class ModData : ReactiveObject, IModData
 		return false;
 	}
 
-	public bool IsNewerThan(IModData mod)
+	public bool IsNewerThan(IModuleShortDesc mod)
 	{
 		if (LastModified.HasValue && mod.LastModified.HasValue)
 		{

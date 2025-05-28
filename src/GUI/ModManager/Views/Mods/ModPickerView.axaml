@@ -3,46 +3,178 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:ModManager.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:ModManager.Models.View"
     xmlns:rxui="using:Avalonia.ReactiveUI"
-    xmlns:sukiControls="using:SukiUI.Controls"
+    xmlns:suki="using:SukiUI.Controls"
     xmlns:vm="using:ModManager.ViewModels.Mods"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:ModPickerViewModel"
     mc:Ignorable="d">
-	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="auto,auto,*,*,auto">
+	<Design.DataContext>
+		<vm:DesignModPickerViewModel />
+	</Design.DataContext>
+	<UserControl.Styles>
+		<Style Selector="ListBoxItem">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Name="BorderBasicStyle"
+					    Margin="0,2,0,2"
+					    Padding="0"
+					    CornerRadius="10">
+						<DockPanel>
+							<ContentPresenter Name="PART_ContentPresenter"
+							    Margin="0,0,0,0"
+							    Padding="{TemplateBinding Padding}"
+							    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+							    Background="Transparent"
+							    BorderBrush="Transparent"
+							    BorderThickness="{TemplateBinding BorderThickness}"
+							    Content="{TemplateBinding Content}"
+							    ContentTemplate="{TemplateBinding ContentTemplate}"
+							    CornerRadius="{TemplateBinding CornerRadius}" />
+						</DockPanel>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="TextBlock:pointerover">
+			<Setter Property="Foreground" Value="{DynamicResource ModListHoveredTextForeground}" />
+		</Style>
+	</UserControl.Styles>
+	<Grid HorizontalAlignment="Stretch"
+	    VerticalAlignment="Stretch"
+	    Grid.IsSharedSizeScope="True"
+	    RowDefinitions="1*,Auto">
 
-		<TextBlock Text="{Binding Title}" TextAlignment="Center" />
-
-		<Border Grid.Row="1"
-		    Height="1"
-		    Margin="0,10,0,10"
-		    Background="{DynamicResource SukiControlBorderBrush}"
-		    BorderThickness="0" />
-
-		<ScrollViewer Grid.Row="2"
-		    MaxHeight="400"
-		    Margin="4,0"
+		<suki:GlassCard Grid.Row="0"
+		    Padding="48"
 		    HorizontalAlignment="Center"
 		    VerticalAlignment="Center"
-		    HorizontalScrollBarVisibility="Disabled"
-		    VerticalScrollBarVisibility="Auto">
-			<ListBox ItemsSource="{Binding Mods}" />
-		</ScrollViewer>
+		    IsOpaque="True">
+			<Grid RowDefinitions="Auto,Auto,Auto,*">
 
-		<UniformGrid Grid.Row="4"
+				<StackPanel Grid.Row="0"
+				    Margin="0,-24,0,24"
+				    HorizontalAlignment="Center"
+				    Orientation="Vertical">
+					<TextBlock FontSize="24" Text="{Binding Title}" TextAlignment="Center" />
+					<Rectangle Height="2" Fill="LightGray" />
+				</StackPanel>
+
+				<Grid Grid.Row="1" ColumnDefinitions="auto,auto,auto,*">
+					<controls:EnhancedTextBox Name="FilterTextBox"
+					    Width="200"
+					    Margin="0"
+					    Padding="0"
+					    VerticalContentAlignment="Center"
+					    AcceptsReturn="False"
+					    AcceptsTab="False"
+					    ContextFlyout="{StaticResource EnhancedTextBoxContextFlyout}"
+					    MaxLines="1"
+					    TextAlignment="Left"
+					    UseFloatingWatermark="False"
+					    Watermark="Filter Mods" />
+
+					<TextBlock Grid.Column="2"
+					    Margin="4,0,0,0"
+					    HorizontalAlignment="Left"
+					    VerticalAlignment="Center"
+					    Text="{Binding FilterResultText}" />
+				</Grid>
+
+				<Grid Grid.Row="2" RowDefinitions="Auto,Auto">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" SharedSizeGroup="selected" />
+						<ColumnDefinition Width="1*" SharedSizeGroup="name" />
+						<ColumnDefinition SharedSizeGroup="path" />
+					</Grid.ColumnDefinitions>
+
+					<TextBlock Grid.Column="1"
+					    Margin="6,0"
+					    HorizontalAlignment="Stretch"
+					    Text="Name" />
+					<TextBlock Grid.Column="2"
+					    Margin="6,0"
+					    HorizontalAlignment="Stretch"
+					    Text="File" />
+
+					<Rectangle Grid.Row="1"
+					    Grid.ColumnSpan="4"
+					    Height="1"
+					    Fill="LightGray" />
+				</Grid>
+
+				<ListBox Name="ModsListBox"
+				    Grid.Row="3"
+				    Padding="0"
+				    ItemsSource="{Binding Mods}">
+					<ListBox.ItemTemplate>
+						<DataTemplate DataType="models:ModPickerEntry">
+							<Grid Margin="0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" SharedSizeGroup="selected" />
+									<ColumnDefinition Width="1*" SharedSizeGroup="name" />
+									<ColumnDefinition SharedSizeGroup="path" />
+								</Grid.ColumnDefinitions>
+
+								<CheckBox Grid.Column="0"
+								    Margin="6,0"
+								    HorizontalAlignment="Left"
+								    VerticalAlignment="Center"
+								    IsChecked="{Binding IsSelected}" />
+								<TextBlock Grid.Column="1"
+								    Margin="6,0"
+								    VerticalAlignment="Center"
+								    Text="{Binding Name}"
+								    TextAlignment="Left"
+								    ToolTip.Tip="{Binding ShortDescription}" />
+								<Grid Grid.Column="2"
+								    Margin="6,0"
+								    VerticalAlignment="Center"
+								    ColumnDefinitions="Auto,6,*">
+									<icons:MaterialIcon Foreground="{Binding IconColor}" Kind="{Binding Icon}" />
+									<TextBlock Grid.Column="2"
+									    HorizontalAlignment="Left"
+									    Text="{Binding DisplayFilePath}"
+									    TextAlignment="Left"
+									    TextWrapping="Wrap"
+									    ToolTip.Tip="{Binding FilePath}" />
+								</Grid>
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Grid>
+		</suki:GlassCard>
+
+		<UniformGrid Grid.Row="1"
 		    HorizontalAlignment="Center"
 		    VerticalAlignment="Bottom"
 		    Rows="1">
 			<Button Margin="8"
 			    Classes="Flat"
 			    Command="{Binding ConfirmCommand}"
-			    Content="Confirm" />
+			    Content="Confirm">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Padding="0,0,4,0" Kind="Upload" />
+					<TextBlock FontSize="16" FontWeight="Bold" Text="Confirm" />
+				</StackPanel>
+			</Button>
 			<Button Margin="8"
+			    Background="Firebrick"
 			    Classes="Flat"
 			    Command="{Binding CancelCommand}"
-			    Content="Cancel" />
+			    Content="Cancel">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Padding="0,0,4,0" Kind="Cancel" />
+					<TextBlock FontSize="16" Text="Cancel" />
+				</StackPanel>
+			</Button>
 		</UniformGrid>
 	</Grid>
 </UserControl>

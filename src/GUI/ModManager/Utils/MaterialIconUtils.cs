@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ModManager.Utils;
 public static class MaterialIconUtils
 {
-	public static MaterialIconKind ExtensionToIconKind(string ext)
+	public static MaterialIconKind ExtensionToIconKind(string? ext)
 	{
 		return ext switch
 		{
@@ -35,7 +35,17 @@ public static class MaterialIconUtils
 		};
 	}
 
-	public static IBrush ExtensionToIconBrush(string ext)
+	public static MaterialIconKind ExtensionToModIconKind(string? ext)
+	{
+		return ext switch
+		{
+			".lsx" or ".xml" => MaterialIconKind.Tools,
+			".pak" => MaterialIconKind.PackageVariantClosed,
+			_ => MaterialIconKind.File,
+		};
+	}
+
+	public static IBrush ExtensionToIconBrush(string? ext)
 	{
 		return ext switch
 		{

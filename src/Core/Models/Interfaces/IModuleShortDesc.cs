@@ -2,12 +2,12 @@
 
 namespace ModManager.Models.Mod;
 
-public interface IModData : INamedEntry
+public interface IModuleShortDesc : INamedEntry
 {
 	string UUID { get; }
 	string? Folder { get; set; }
 	string? MD5 { get; set; }
-	public ulong PublishHandle { get; set; }
+	ulong PublishHandle { get; set; }
 	LarianVersion Version { get; set; }
-	public DateTimeOffset? LastModified { get; }
+	DateTimeOffset? LastModified { get; }
 }

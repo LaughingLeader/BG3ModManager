@@ -158,4 +158,30 @@
 	<Style Selector="materialIcons|MaterialIcon.SpringGreen">
 		<Setter Property="Foreground" Value="SpringGreen" />
 	</Style>
+
+	<Style Selector="ListBoxItem.Condensed">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Name="BorderBasicStyle"
+				    Margin="0,2,0,2"
+				    Padding="0"
+				    CornerRadius="10">
+					<DockPanel>
+						<ContentPresenter Name="PART_ContentPresenter"
+						    Margin="0,0,0,0"
+						    Padding="{TemplateBinding Padding}"
+						    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+						    Background="Transparent"
+						    BorderBrush="Transparent"
+						    BorderThickness="{TemplateBinding BorderThickness}"
+						    Content="{TemplateBinding Content}"
+						    ContentTemplate="{TemplateBinding ContentTemplate}"
+						    CornerRadius="{TemplateBinding CornerRadius}" />
+					</DockPanel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
 </Styles>

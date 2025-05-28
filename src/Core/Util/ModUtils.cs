@@ -4,11 +4,13 @@ using LSLib.Stats;
 using ModManager.Extensions;
 using ModManager.Models.Mod;
 
+using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace ModManager.Util;
 
-public static class ModUtils
+public static partial class ModUtils
 {
 	private record struct FileText(string FilePath, string[] Lines);
 
@@ -161,5 +163,207 @@ public static class ModUtils
 		var fileDict = textData.ToDictionary(x => x.FilePath, x => x.Lines);
 
 		return new ValidateModStatsResults([.. mods], context.Errors, fileDict, DateTimeOffset.Now - time);
+	}
+
+	[GeneratedRegex("@([^\\s]+?)([\\s]+)([^@\\s]*)")]
+	private static partial Regex FilterPropertyRe();
+	[GeneratedRegex("@([^\\s]+?)([\\s\"]+)([^@\"]*)")]
+	private static partial Regex FilterPropertyPatternWithQuotesRe();
+
+	private static readonly Regex s_filterPropertyPattern = FilterPropertyRe();
+	private static readonly Regex s_filterPropertyPatternWithQuotes = FilterPropertyPatternWithQuotesRe();
+
+	public static void FilterMods(string? filterText, IEnumerable<IModEntry> mods)
+	{
+		foreach (var m in mods)
+		{
+			m.IsHidden = false;
+		}
+
+		if (!string.IsNullOrWhiteSpace(filterText))
+		{
+			if (filterText.IndexOf('@') > -1)
+			{
+				var remainingSearch = filterText;
+				List<ModFilterData> searchProps = [];
+
+				MatchCollection matches;
+
+				if (filterText.IndexOf('\"') > -1)
+				{
+					matches = s_filterPropertyPatternWithQuotes.Matches(filterText);
+				}
+				else
+				{
+					matches = s_filterPropertyPattern.Matches(filterText);
+				}
+
+				if (matches.Count > 0)
+				{
+					foreach (var match in matches.Cast<Match>())
+					{
+						if (match.Success)
+						{
+							var prop = match.Groups[1]?.Value;
+							var value = match.Groups[3]?.Value;
+							if (!value.IsValid()) value = "";
+							if (!string.IsNullOrWhiteSpace(prop))
+							{
+								searchProps.Add(new ModFilterData()
+								{
+									FilterProperty = prop,
+									FilterValue = value
+								});
+
+								remainingSearch = remainingSearch.Replace(match.Value, "");
+							}
+						}
+					}
+				}
+
+				remainingSearch = remainingSearch.Replace("\"", "");
+
+				//If no Name property is specified, use the remaining unmatched text for that
+				if (remainingSearch.IsValid() && !searchProps.Any(f => f.PropertyContains("Name")))
+				{
+					remainingSearch = remainingSearch.Trim();
+					searchProps.Add(new ModFilterData()
+					{
+						FilterProperty = "Name",
+						FilterValue = remainingSearch
+					});
+				}
+
+				foreach (var mod in mods)
+				{
+					//@Mode GM @Author Leader
+					var totalMatches = 0;
+					foreach (var f in searchProps)
+					{
+						if (f.Match(mod))
+						{
+							totalMatches += 1;
+						}
+					}
+
+					if (totalMatches < searchProps.Count)
+					{
+						mod.IsHidden = true;
+					}
+				}
+			}
+			else
+			{
+				foreach (var m in mods)
+				{
+					if (m.DisplayName.IsValid())
+					{
+						var matchIndex = CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.DisplayName, filterText, CompareOptions.IgnoreCase);
+
+						if (matchIndex <= -1)
+						{
+							m.IsHidden = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public static void FilterMods(string? filterText, IEnumerable<ModData> mods)
+	{
+		foreach (var m in mods)
+		{
+			m.IsHidden = false;
+		}
+
+		if (!string.IsNullOrWhiteSpace(filterText))
+		{
+			if (filterText.IndexOf('@') > -1)
+			{
+				var remainingSearch = filterText;
+				List<ModFilterData> searchProps = [];
+
+				MatchCollection matches;
+
+				if (filterText.IndexOf('\"') > -1)
+				{
+					matches = s_filterPropertyPatternWithQuotes.Matches(filterText);
+				}
+				else
+				{
+					matches = s_filterPropertyPattern.Matches(filterText);
+				}
+
+				if (matches.Count > 0)
+				{
+					foreach (var match in matches.Cast<Match>())
+					{
+						if (match.Success)
+						{
+							var prop = match.Groups[1]?.Value;
+							var value = match.Groups[3]?.Value;
+							if (!value.IsValid()) value = "";
+							if (!string.IsNullOrWhiteSpace(prop))
+							{
+								searchProps.Add(new ModFilterData()
+								{
+									FilterProperty = prop,
+									FilterValue = value
+								});
+
+								remainingSearch = remainingSearch.Replace(match.Value, "");
+							}
+						}
+					}
+				}
+
+				remainingSearch = remainingSearch.Replace("\"", "");
+
+				//If no Name property is specified, use the remaining unmatched text for that
+				if (remainingSearch.IsValid() && !searchProps.Any(f => f.PropertyContains("Name")))
+				{
+					remainingSearch = remainingSearch.Trim();
+					searchProps.Add(new ModFilterData()
+					{
+						FilterProperty = "Name",
+						FilterValue = remainingSearch
+					});
+				}
+
+				foreach (var mod in mods)
+				{
+					//@Mode GM @Author Leader
+					var totalMatches = 0;
+					foreach (var f in searchProps)
+					{
+						if (f.Match(mod))
+						{
+							totalMatches += 1;
+						}
+					}
+
+					if (totalMatches < searchProps.Count)
+					{
+						mod.IsHidden = true;
+					}
+				}
+			}
+			else
+			{
+				foreach (var m in mods)
+				{
+					if (m.DisplayName.IsValid())
+					{
+						var matchIndex = CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.DisplayName, filterText, CompareOptions.IgnoreCase);
+
+						if (matchIndex <= -1)
+						{
+							m.IsHidden = true;
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -27,7 +27,7 @@ public interface IModManagerService
 	void RemoveByUUID(IEnumerable<string> uuids);
 	bool TryGetMod(string? guid, [NotNullWhen(true)] out ModData? mod);
 	string GetModType(string guid);
-	bool ModIsAvailable(IModData divinityModData);
+	bool ModIsAvailable(IModuleShortDesc divinityModData);
 	void DeselectAllMods();
 	void Refresh();
 	void ApplyUserModConfig();

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ModManager.Models.Mod;
 
 [DataContract]
-public class SerializedModData : IModData
+public class SerializedModData : IModuleShortDesc
 {
 	[DataMember] public string UUID { get; set; }
 	[DataMember] public int Index { get; set; }

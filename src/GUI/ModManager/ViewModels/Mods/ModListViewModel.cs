@@ -6,6 +6,7 @@ using DynamicData.Binding;
 
 using ModManager.Models;
 using ModManager.Models.Mod;
+using ModManager.Util;
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -13,20 +14,12 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace ModManager.ViewModels.Mods;
-public partial class ModListViewModel : ReactiveObject
+public class ModListViewModel : ReactiveObject
 {
-	[GeneratedRegex("@([^\\s]+?)([\\s]+)([^@\\s]*)")]
-	private static partial Regex FilterPropertyRe();
-	[GeneratedRegex("@([^\\s]+?)([\\s\"]+)([^@\"]*)")]
-	private static partial Regex FilterPropertyPatternWithQuotesRe();
-
 	private readonly ICollection<IModEntry> _mods;
 	private readonly ModEntryTreeDataGridRowSelectionModel _rowSelection;
 
 	public HierarchicalTreeDataGridSource<IModEntry> Mods { get; }
-
-	private static readonly Regex s_filterPropertyPattern = FilterPropertyRe();
-	private static readonly Regex s_filterPropertyPatternWithQuotes = FilterPropertyPatternWithQuotesRe();
 
 	[Reactive] public string Title { get; set; }
 	[Reactive] public string? FilterInputText { get; set; }
@@ -46,103 +39,6 @@ public partial class ModListViewModel : ReactiveObject
 
 	public RxCommandUnit FocusCommand { get; }
 
-	public void FilterMods(string? searchText)
-	{
-		foreach (var m in _mods)
-		{
-			m.IsHidden = false;
-		}
-
-		if (!string.IsNullOrWhiteSpace(searchText))
-		{
-			if (searchText.IndexOf('@') > -1)
-			{
-				var remainingSearch = searchText;
-				List<ModFilterData> searchProps = [];
-
-				MatchCollection matches;
-
-				if (searchText.IndexOf('\"') > -1)
-				{
-					matches = s_filterPropertyPatternWithQuotes.Matches(searchText);
-				}
-				else
-				{
-					matches = s_filterPropertyPattern.Matches(searchText);
-				}
-
-				if (matches.Count > 0)
-				{
-					foreach (var match in matches.Cast<Match>())
-					{
-						if (match.Success)
-						{
-							var prop = match.Groups[1]?.Value;
-							var value = match.Groups[3]?.Value;
-							if (!value.IsValid()) value = "";
-							if (!string.IsNullOrWhiteSpace(prop))
-							{
-								searchProps.Add(new ModFilterData()
-								{
-									FilterProperty = prop,
-									FilterValue = value
-								});
-
-								remainingSearch = remainingSearch.Replace(match.Value, "");
-							}
-						}
-					}
-				}
-
-				remainingSearch = remainingSearch.Replace("\"", "");
-
-				//If no Name property is specified, use the remaining unmatched text for that
-				if (remainingSearch.IsValid() && !searchProps.Any(f => f.PropertyContains("Name")))
-				{
-					remainingSearch = remainingSearch.Trim();
-					searchProps.Add(new ModFilterData()
-					{
-						FilterProperty = "Name",
-						FilterValue = remainingSearch
-					});
-				}
-
-				foreach (var mod in _mods)
-				{
-					//@Mode GM @Author Leader
-					var totalMatches = 0;
-					foreach (var f in searchProps)
-					{
-						if (f.Match(mod))
-						{
-							totalMatches += 1;
-						}
-					}
-
-					if (totalMatches < searchProps.Count)
-					{
-						mod.IsHidden = true;
-					}
-				}
-			}
-			else
-			{
-				foreach (var m in _mods)
-				{
-					if (m.DisplayName.IsValid())
-					{
-						var matchIndex = CultureInfo.CurrentCulture.CompareInfo.IndexOf(m.DisplayName, searchText, CompareOptions.IgnoreCase);
-						
-						if (matchIndex <= -1)
-						{
-							m.IsHidden = true;
-						}
-					}
-				}
-			}
-		}
-	}
-
 	private static string ToFilterResultText(ValueTuple<int, int, int, string?, bool> x)
 	{
 		var (total, totalHidden, totalSelected, filterText, isEnabled) = x;
@@ -155,7 +51,7 @@ public partial class ModListViewModel : ReactiveObject
 			texts.Add($"{matched} Matched");
 			if(totalHidden > 0) texts.Add($"{totalHidden} Hidden");
 		}
-		if(totalSelected > 0) texts.Add($"{total} Selected");
+		if(totalSelected > 0) texts.Add($"{totalSelected} Selected");
 		
 		return string.Join(", ", texts);
 	}
@@ -245,7 +141,10 @@ public partial class ModListViewModel : ReactiveObject
 		this.WhenAnyValue(x => x.IsFilterEnabled, x => x.FilterInputText)
 			.ObserveOn(RxApp.MainThreadScheduler)
 			.Select(x => x.Item1 ? x.Item2 : null)
-			.Subscribe(FilterMods);
+			.Subscribe(searchText =>
+			{
+				ModUtils.FilterMods(searchText, _mods);
+			});
 
 		this.WhenAnyValue(x => x.Title).Select(x => $"Filter {x}").ToUIProperty(this, x => x.FilterPlaceholderText);
 

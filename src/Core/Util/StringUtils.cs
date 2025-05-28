@@ -60,6 +60,15 @@ public static class StringUtils
 		MaybeAddReplacement("%USERPROFILE%", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 	}
 
+	public static string? GetSpecialPathway(string symbol)
+	{
+		if(replacePaths.TryGetValue(symbol, out var pathway))
+		{
+			return pathway;
+		}
+		return null;
+	}
+
 	public static string? ReplaceSpecialPathways(string? input)
 	{
 		if (!string.IsNullOrEmpty(input))

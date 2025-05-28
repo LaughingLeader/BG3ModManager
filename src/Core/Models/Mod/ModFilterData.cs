@@ -118,4 +118,87 @@ public struct ModFilterData
 
 		return false;
 	}
+
+	public readonly bool Match(ModData mod)
+	{
+		if (!FilterValue.IsValid()) return true;
+
+		if (PropertyContains("Author") && mod.Author.IsValid())
+		{
+			if (ValueContains(mod.Author)) return true;
+		}
+
+		if (PropertyContains("Version") && mod.Version.Version.IsValid())
+		{
+			if (ValueContains(mod.Version.Version)) return true;
+		}
+
+		if (PropertyContains("Name") && mod.DisplayName.IsValid())
+		{
+			if (ValueContains(mod.DisplayName)) return true;
+		}
+
+		if (PropertyContains("UUID") && mod.UUID.IsValid())
+		{
+			if (ValueContains(mod.UUID)) return true;
+		}
+
+		if (PropertyContains("Selected") && mod.IsSelected)
+		{
+			return true;
+		}
+
+		if (PropertyContains("Depend"))
+		{
+			foreach (var dependency in mod.Dependencies.Items)
+			{
+				if (dependency == null) continue;
+
+				if (ValueContains(dependency.Name) || FilterValue == dependency.UUID || ValueContains(dependency.Folder))
+				{
+					return true;
+				}
+			}
+		}
+
+		if (PropertyContains("File"))
+		{
+			if (ValueContains(mod.FileName)) return true;
+		}
+
+		if (PropertyContains("Desc"))
+		{
+			if (ValueContains(mod.Description)) return true;
+		}
+
+		if (PropertyContains("Type"))
+		{
+			if (ValueContains(mod.ModType)) return true;
+		}
+
+		if (PropertyContains("Editor"))
+		{
+			if (mod.IsLooseMod) return true;
+		}
+
+		if (PropertyContains("Modified") || PropertyContains("Updated"))
+		{
+			var date = DateTimeOffset.Now;
+			if (DateTimeOffset.TryParse(FilterValue, out date))
+			{
+				if (mod.LastModified >= date) return true;
+			}
+		}
+
+		if (PropertyContains("Tag"))
+		{
+			if (mod.Tags != null && mod.Tags.Count > 0)
+			{
+				var f = this;
+				if (mod.Tags.Any(x => f.ValueContains(x))) return true;
+			}
+		}
+
+		return false;
+	}
 }

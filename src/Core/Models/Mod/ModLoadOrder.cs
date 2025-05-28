@@ -74,7 +74,7 @@ public class ModLoadOrder : ReactiveObject
 		}
 	}
 
-	public void Add(IModData mod, bool force = false)
+	public void Add(IModuleShortDesc mod, bool force = false)
 	{
 		try
 		{
@@ -158,7 +158,7 @@ public class ModLoadOrder : ReactiveObject
 		}
 	}
 
-	public void Update(IModData mod)
+	public void Update(IModuleShortDesc mod)
 	{
 		if (Order != null && Order.Count > 0)
 		{

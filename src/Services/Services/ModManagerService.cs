@@ -1,9 +1,6 @@
 ﻿using DynamicData;
 
-using ModManager.Models;
-using ModManager.Models.App;
 using ModManager.Models.Mod;
-using ModManager.Models.View;
 using ModManager.Util;
 
 using ReactiveUI;
@@ -68,7 +65,7 @@ public class ModManagerService : ReactiveObject, IModManagerService
 		return "";
 	}
 
-	public bool ModIsAvailable(IModData divinityModData)
+	public bool ModIsAvailable(IModuleShortDesc divinityModData)
 	{
 		return ModExists(divinityModData.UUID) || ModDataLoader.IgnoreModDependency(divinityModData.UUID);
 	}
