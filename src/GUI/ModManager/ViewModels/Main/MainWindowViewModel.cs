@@ -84,9 +84,6 @@ public class MainWindowViewModel : ReactiveObject, IScreen
 	[ObservableAsProperty] public bool UpdatesViewIsVisible { get; }
 
 	[Reactive] public bool StatusBarBusyIndicatorVisibility { get; set; }
-	[ObservableAsProperty] public string NexusModsLimitsText { get; }
-	[ObservableAsProperty] public Uri? NexusModsProfileBitmapUri { get; }
-	[ObservableAsProperty] public bool NexusModsProfileAvatarVisibility { get; }
 	[ObservableAsProperty] public bool UpdatingBusyIndicatorVisibility { get; }
 	[ObservableAsProperty] public bool UpdateCountVisibility { get; }
 	[ObservableAsProperty] public bool DeveloperModeVisibility { get; }
@@ -1532,11 +1529,6 @@ Directory the zip will be extracted to:
 		AppSettingsLoaded = true;
 	}
 
-	private static string NexusModsLimitToText(NexusModsObservableApiLimits limits)
-	{
-		return $"NexusMods Limits [Hourly ({limits.HourlyRemaining}/{limits.HourlyLimit}) Daily ({limits.DailyRemaining}/{limits.DailyLimit})]";
-	}
-
 	private void CreateSteamApiTextFile(string exePath)
 	{
 		var binFolder = Path.GetDirectoryName(exePath);
@@ -1671,11 +1663,6 @@ Directory the zip will be extracted to:
 		DivinityApp.Log($"{Title} initializing...");
 
 		AppServices.AppUpdater.Configure(DivinityApp.GITHUB_USER, DivinityApp.GITHUB_REPO, DivinityApp.GITHUB_RELEASE_ASSET);
-
-		_nexusMods.WhenLimitsChange.Throttle(TimeSpan.FromMilliseconds(50)).Select(NexusModsLimitToText).ToUIProperty(this, x => x.NexusModsLimitsText);
-		var whenNexusModsAvatar = _nexusMods.WhenAnyValue(x => x.ProfileAvatarUrl);
-		whenNexusModsAvatar.Select(x => x.IsValid()).ToUIProperty(this, x => x.NexusModsProfileAvatarVisibility);
-		whenNexusModsAvatar.ToUIProperty(this, x => x.NexusModsProfileBitmapUri);
 
 		_nexusMods.WhenAnyValue(x => x.DownloadProgressValue, x => x.DownloadProgressText, x => x.CanCancel).Subscribe(x =>
 		{

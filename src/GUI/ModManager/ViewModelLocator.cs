@@ -29,6 +29,7 @@ public static class ViewModelLocator
 	public static ModPickerViewModel ModPicker => AppServices.Get<ModPickerViewModel>()!;
 	public static IProgressBarViewModel Progress => AppServices.Get<IProgressBarViewModel>()!;
 	public static KeybindingsViewModel Keybindings => AppServices.Get<KeybindingsViewModel>()!;
+	public static FooterViewModel Footer => AppServices.Get<FooterViewModel>()!;
 
 	public static PakFileExplorerWindowViewModel PakFileExplorer => AppServices.Get<PakFileExplorerWindowViewModel>()!;
 }

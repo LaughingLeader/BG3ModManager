@@ -132,6 +132,11 @@ namespace Splat
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Views.Main.ModUpdatesView));
             }
             {
+                global::System.Lazy<ModManager.ViewModels.Main.FooterViewModel> lazy = new global::System.Lazy<ModManager.ViewModels.Main.FooterViewModel>(() => new global::ModManager.ViewModels.Main.FooterViewModel((global::ModManager.INexusModsService)resolver.GetService(typeof(global::ModManager.INexusModsService))));
+                Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.ViewModels.Main.FooterViewModel>));
+                Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.ViewModels.Main.FooterViewModel));
+            }
+            {
                 global::System.Lazy<ModManager.Views.Main.ProgressBarView> lazy = new global::System.Lazy<ModManager.Views.Main.ProgressBarView>(() => new global::ModManager.Views.Main.ProgressBarView());
                 Splat.Locator.CurrentMutable.Register(() => lazy, typeof(global::System.Lazy<ModManager.Views.Main.ProgressBarView>));
                 Splat.Locator.CurrentMutable.Register(() => lazy.Value, typeof(global::ModManager.Views.Main.ProgressBarView));

@@ -21,6 +21,8 @@ public class NexusModsObservableApiLimits : ReactiveObject, INexusApiLimits
 		DailyReset = DateTime.MaxValue;
 	}
 
+	public override string ToString() => $"NexusMods API Limit [Hourly ({HourlyRemaining}/{HourlyLimit}) Daily ({DailyRemaining}/{DailyLimit})]";
+
 	public NexusModsObservableApiLimits()
 	{
 		Reset();

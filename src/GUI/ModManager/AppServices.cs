@@ -73,6 +73,7 @@ public static class AppServices
 		SplatRegistrations.RegisterLazySingleton<DeleteFilesView>();
 		SplatRegistrations.RegisterLazySingleton<ModOrderView>();
 		SplatRegistrations.RegisterLazySingleton<ModUpdatesView>();
+		SplatRegistrations.RegisterLazySingleton<FooterViewModel>();
 
 		SplatRegistrations.RegisterLazySingleton<ProgressBarView>();
 

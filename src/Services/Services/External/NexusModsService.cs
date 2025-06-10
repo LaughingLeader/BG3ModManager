@@ -28,14 +28,14 @@ namespace ModManager.Services;
 
 public class NexusModsService : ReactiveObject, INexusModsService
 {
-	private INexusModsClient _client;
-	private InfosInquirer _dataLoader;
+	private INexusModsClient? _client;
+	private InfosInquirer? _dataLoader;
 
-	[Reactive] public string ApiKey { get; set; }
+	[Reactive] public string? ApiKey { get; set; }
 	[Reactive] public bool IsPremium { get; private set; }
-	[Reactive] public Uri ProfileAvatarUrl { get; private set; }
+	[Reactive] public Uri? ProfileAvatarUrl { get; private set; }
 	[Reactive] public double DownloadProgressValue { get; private set; }
-	[Reactive] public string DownloadProgressText { get; private set; }
+	[Reactive] public string? DownloadProgressText { get; private set; }
 	[Reactive] public bool CanCancel { get; private set; }
 
 	private readonly CompositeDisposable _downloadTasksCompositeDisposable = [];
@@ -50,8 +50,8 @@ public class NexusModsService : ReactiveObject, INexusModsService
 	public bool LimitExceeded => LimitExceededCheck();
 	public bool CanFetchData => IsInitialized && !LimitExceeded;
 
-	private readonly IObservable<NexusModsObservableApiLimits> _whenLimitsChange;
-	public IObservable<NexusModsObservableApiLimits> WhenLimitsChange => _whenLimitsChange;
+	private readonly IObservable<NexusModsObservableApiLimits?> _whenLimitsChange;
+	public IObservable<NexusModsObservableApiLimits?> WhenLimitsChange => _whenLimitsChange;
 
 	private bool LimitExceededCheck()
 	{
@@ -87,16 +87,16 @@ public class NexusModsService : ReactiveObject, INexusModsService
 		return false;
 	}
 
-	public async Task<NexusUser> GetUserAsync(CancellationToken token)
+	public async Task<NexusUser?> GetUserAsync(CancellationToken token)
 	{
-		if (!CanFetchData) return null;
+		if (!CanFetchData || _dataLoader == null) return null;
 		return await _dataLoader.User.GetUserAsync(token);
 	}
 
 	public async Task<Dictionary<string, NexusModsModDownloadLink>> GetLatestDownloadsForModsAsync(IEnumerable<ModData> mods, CancellationToken token)
 	{
 		var links = new Dictionary<string, NexusModsModDownloadLink>();
-		if (!CanFetchData) return links;
+		if (!CanFetchData || _dataLoader == null) return links;
 
 		try
 		{
@@ -148,9 +148,9 @@ public class NexusModsService : ReactiveObject, INexusModsService
 			return taskResult;
 		}
 
-		if (!CanFetchData)
+		if (!CanFetchData || _dataLoader == null)
 		{
-			if (_client == null)
+			if (_client == null || _dataLoader == null)
 			{
 				taskResult.FailureMessage = "API Client not initialized.";
 			}
@@ -234,7 +234,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 
 	public async Task<bool> ProcessNXMLinkAsync(string url, IScheduler sch, CancellationToken token)
 	{
-		if (!CanFetchData) return false;
+		if (!CanFetchData || _dataLoader == null) return false;
 
 		try
 		{
@@ -324,7 +324,7 @@ public class NexusModsService : ReactiveObject, INexusModsService
 		return false;
 	}
 
-	private IDisposable _scheduledClearTasks;
+	private IDisposable? _scheduledClearTasks;
 
 	public void ProcessNXMLinkBackground(string url)
 	{
@@ -350,13 +350,34 @@ public class NexusModsService : ReactiveObject, INexusModsService
 		ClearTasks();
 	}
 
+	private IDisposable? _fetchProfileInfoTask;
+
+	private async Task FetchUserProfileInfoAsync(IScheduler sch, CancellationToken token)
+	{
+		var user = await GetUserAsync(token);
+		if (user != null)
+		{
+			RxApp.MainThreadScheduler.Schedule(() =>
+			{
+				DivinityApp.Log($"Found NexusMods user profile info. IsPremium({user.IsPremium}) Avatar({user.ProfileAvatarUrl})");
+				IsPremium = user.IsPremium;
+				ProfileAvatarUrl = user.ProfileAvatarUrl;
+			});
+		}
+		else
+		{
+			DivinityApp.Log("Failed to fetch NexusMods user profile info.");
+		}
+	}
+
 	public NexusModsService(IEnvironmentService environmentService)
 	{
 		var appName = environmentService.AppFriendlyName;
 		var appVersion = environmentService.AppVersion.ToString();
 		_apiLimits = new NexusModsObservableApiLimits();
 		_whenLimitsChange = _apiLimits.WhenAnyPropertyChanged();
-		this.WhenAnyValue(x => x.ApiKey).Subscribe(key =>
+
+		this.WhenAnyValue(x => x.ApiKey).Skip(1).Subscribe(key =>
 		{
 			_client?.Dispose();
 			_dataLoader?.Dispose();
@@ -369,28 +390,18 @@ public class NexusModsService : ReactiveObject, INexusModsService
 				if (ProfileAvatarUrl == null)
 				{
 					DivinityApp.Log("Fetching NexusMods user profile info...");
-					RxApp.TaskpoolScheduler.ScheduleAsync(async (sch, cts) =>
-					{
-						var user = await GetUserAsync(cts);
-						if (user != null)
-						{
-							RxApp.MainThreadScheduler.Schedule(() =>
-							{
-								IsPremium = user.IsPremium;
-								ProfileAvatarUrl = user.ProfileAvatarUrl;
-							});
-						}
-						else
-						{
-							DivinityApp.Log("Failed to fetch NexusMods user profile info.");
-						}
-					});
+					_fetchProfileInfoTask?.Dispose();
+					_fetchProfileInfoTask = RxApp.TaskpoolScheduler.ScheduleAsync(FetchUserProfileInfoAsync);
 				}
 			}
 			else
 			{
 				_apiLimits.Reset();
+				_fetchProfileInfoTask?.Dispose();
 			}
 		});
+#if DEBUG
+		ApiKey = Environment.GetEnvironmentVariable("NEXUSMODS_API_KEY", EnvironmentVariableTarget.User);
+#endif
 	}
 }

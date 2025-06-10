@@ -1,0 +1,44 @@
+<UserControl x:Class="ModManager.Views.Main.FooterView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="using:SukiUI.Controls"
+    xmlns:vm="using:ModManager.ViewModels.Main"
+    d:DesignHeight="24"
+    d:DesignWidth="800"
+    x:DataType="vm:FooterViewModel"
+    mc:Ignorable="d">
+	<Panel>
+		<suki:GlassCard Padding="0" CornerRadius="0" IsOpaque="False">
+			<Grid HorizontalAlignment="Right" VerticalAlignment="Center">
+				<StackPanel Margin="4,0" Orientation="Horizontal">
+					<controls:IconExpander Margin="0"
+					    VerticalAlignment="Center"
+					    BorderThickness="0"
+					    ExpandDirection="Left"
+					    IsExpanded="{Binding IsNexusModsSectionExpanded}"
+					    ToolTip.Tip="Nexus Mods API Limits">
+						<controls:IconExpander.Icon>
+							<Image Width="16" Height="16" Source="{SvgImage /Assets/Icons/nexuslogo.svg}" />
+						</controls:IconExpander.Icon>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock HorizontalAlignment="Center"
+							    VerticalAlignment="Center"
+							    Text="{Binding NexusModsLimitsText}"
+							    TextAlignment="Center" />
+							<Image Width="16"
+							    Height="16"
+							    Margin="4,0"
+							    asyncImageLoader:ImageLoader.Source="{Binding NexusModsProfileBitmapUri}"
+							    IsVisible="{Binding HasNexusModsProfileAvatar}"
+							    Stretch="UniformToFill" />
+						</StackPanel>
+					</controls:IconExpander>
+				</StackPanel>
+			</Grid>
+		</suki:GlassCard>
+	</Panel>
+</UserControl>

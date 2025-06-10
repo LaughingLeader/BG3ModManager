@@ -8,20 +8,20 @@ namespace ModManager;
 
 public interface INexusModsService
 {
-	string ApiKey { get; set; }
+	string? ApiKey { get; set; }
 	bool IsInitialized { get; }
 	bool LimitExceeded { get; }
 	bool CanFetchData { get; }
 	bool IsPremium { get; }
-	Uri ProfileAvatarUrl { get; }
+	Uri? ProfileAvatarUrl { get; }
 
 	double DownloadProgressValue { get; }
-	string DownloadProgressText { get; }
+	string? DownloadProgressText { get; }
 	bool CanCancel { get; }
 
 	NexusModsObservableApiLimits ApiLimits { get; }
 
-	IObservable<NexusModsObservableApiLimits> WhenLimitsChange { get; }
+	IObservable<NexusModsObservableApiLimits?> WhenLimitsChange { get; }
 
 	ObservableCollectionExtended<string> DownloadResults { get; }
 

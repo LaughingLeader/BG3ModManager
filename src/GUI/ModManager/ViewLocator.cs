@@ -61,6 +61,7 @@ public class ViewLocator : IViewLocator, IDataTemplate
 		RegisterConstant<ModOrderViewModel, ModOrderView>(resolver);
 		RegisterConstant<ModUpdatesViewModel, ModUpdatesView>(resolver);
 		RegisterConstant<KeybindingsViewModel, KeybindingsView>(resolver);
+		RegisterConstant<FooterViewModel, FooterView>(resolver);
 		resolver.RegisterLazySingleton(() => (IViewFor<IProgressBarViewModel>)AppServices.Get<ProgressBarView>());
 
 		//resolver.RegisterLazySingleton(() => (IViewFor<SettingsWindowViewModel>)AppServices.Settings);

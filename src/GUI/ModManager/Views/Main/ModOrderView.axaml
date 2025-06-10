@@ -51,7 +51,7 @@
 		</Style>
 
 	</UserControl.Styles>
-	<Grid RowDefinitions="auto,*,20">
+	<Grid RowDefinitions="auto,*,auto">
 		<rxui:ViewModelViewHost Name="CommandBar" ViewModel="{x:Static mm:ViewModelLocator.CommandBar}" />
 
 		<Grid Grid.Row="1" Margin="4,0" ColumnDefinitions="*,auto,*">
@@ -82,5 +82,11 @@
 				<mv:ModListView Name="InactiveModsList" DataContext="{Binding InactiveModsView}" />
 			</sukiControls:GlassCard>
 		</Grid>
+
+		<views:FooterView Grid.Row="2"
+		    Height="24"
+		    HorizontalAlignment="Stretch"
+		    VerticalAlignment="Bottom"
+		    ViewModel="{x:Static mm:ViewModelLocator.Footer}" />
 	</Grid>
 </UserControl>

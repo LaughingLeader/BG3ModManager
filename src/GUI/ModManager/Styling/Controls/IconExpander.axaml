@@ -1,19 +1,20 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:content="using:SukiUI.Content"
-    xmlns:controls="using:SukiUI.Controls"
-    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+    xmlns:controls="using:ModManager.Controls"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:sukiControl="using:SukiUI.Controls">
 	<Design.PreviewWith>
 		<Grid Width="500" Height="200" Background="DarkGray">
-			<Expander ExpandDirection="Right" IsExpanded="True" Theme="{StaticResource FilterButtonExpander}">
-				<Expander.Header>
+			<controls:IconExpander HorizontalAlignment="Center" VerticalAlignment="Center" ExpandDirection="Right">
+				<controls:IconExpander.Icon>
 					<Image Width="16" Height="16" Source="{SvgImage /Assets/Icons/nexuslogo.svg}" />
-				</Expander.Header>
+				</controls:IconExpander.Icon>
 				<TextBlock Text="Test hello" />
-			</Expander>
+			</controls:IconExpander>
 		</Grid>
 	</Design.PreviewWith>
-	<ControlTheme x:Key="FilterButtonExpander" TargetType="Expander">
+	<ControlTheme x:Key="{x:Type controls:IconExpander}" TargetType="controls:IconExpander">
 		<Setter Property="TextBlock.TextAlignment" Value="Start" />
 		<Setter Property="ClipToBounds" Value="False" />
 		<Setter Property="CornerRadius" Value="4" />
@@ -27,7 +28,7 @@
 				    CornerRadius="{TemplateBinding CornerRadius}">
 					<Border Name="PART_InnerBorder" CornerRadius="{TemplateBinding CornerRadius}">
 						<Panel>
-							<controls:ContentExpandControl Name="PART_ContentExpand"
+							<sukiControl:ContentExpandControl Name="PART_ContentExpand"
 							    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
 							    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
 							    Content="{TemplateBinding Content}"
@@ -36,6 +37,7 @@
 							<LayoutTransformControl Name="PART_ToggleTransform">
 								<DockPanel>
 									<ToggleButton Name="PART_ToggleButton"
+									    Padding="0"
 									    HorizontalAlignment="Stretch"
 									    VerticalAlignment="Center"
 									    HorizontalContentAlignment="Stretch"
@@ -50,12 +52,11 @@
 											    VerticalAlignment="Center"
 											    Content="{TemplateBinding Header}"
 											    FontWeight="DemiBold" />
-											<materialIcons:MaterialIcon Name="PART_Icon"
+											<ContentPresenter Name="PART_Icon"
 											    Grid.Column="2"
-											    Width="16"
-											    Height="16"
 											    Margin="0"
-											    Kind="FilterPlus" />
+											    Content="{TemplateBinding Icon}" />
+											<!--<Image Width="16" Height="16" Source="{SvgImage /Assets/Icons/nexuslogo.svg}" />-->
 										</Grid>
 									</ToggleButton>
 								</DockPanel>
@@ -66,7 +67,7 @@
 			</ControlTemplate>
 		</Setter>
 
-		<Style Selector="^:not(.no-transitions) /template/ controls|ContentExpandControl#PART_ContentExpand">
+		<Style Selector="^:not(.no-transitions) /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 			<Setter Property="Transitions">
 				<Transitions>
 					<DoubleTransition Easing="CircularEaseOut" Property="Multiplier" Duration="0.25" />
@@ -82,22 +83,12 @@
 			<Setter Property="ClipToBounds" Value="False" />
 		</Style>
 
-		<Style Selector="^ /template/ controls|ContentExpandControl#PART_ContentExpand">
+		<Style Selector="^ /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 			<Setter Property="Multiplier" Value="0" />
 		</Style>
 
-		<Style Selector="^:expanded /template/ controls|ContentExpandControl#PART_ContentExpand">
+		<Style Selector="^:expanded /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 			<Setter Property="Multiplier" Value="1" />
-		</Style>
-
-		<Style Selector="^ /template/ ToggleButton:checked">
-			<Setter Property="Background" Value="Transparent" />
-		</Style>
-
-		<Style Selector="^ /template/ ToggleButton#PART_ToggleButton:pointerover">
-			<Style Selector="^ materialIcons|MaterialIcon#PART_Icon">
-				<Setter Property="Foreground" Value="{DynamicResource SukiPrimaryColor}" />
-			</Style>
 		</Style>
 
 		<!--  Hide the tooltip when pressed  -->
@@ -105,12 +96,12 @@
 			<Setter Property="ToolTip.Tip" Value="{x:Null}" />
 		</Style>
 
-		<Style Selector="^:expanded /template/ materialIcons|MaterialIcon#PART_Icon">
-			<Setter Property="Kind" Value="FilterMinus" />
+		<Style Selector="^ /template/ ToggleButton:checked">
+			<Setter Property="Background" Value="Transparent" />
 		</Style>
 
 		<Style Selector="^:up">
-			<Style Selector="^ /template/ controls|ContentExpandControl#PART_ContentExpand">
+			<Style Selector="^ /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 				<Setter Property="Orientation" Value="Vertical" />
 				<Setter Property="VerticalAlignment" Value="Bottom" />
 				<Setter Property="Margin" Value="0,0,0,32" />
@@ -122,7 +113,7 @@
 		</Style>
 
 		<Style Selector="^:down">
-			<Style Selector="^ /template/ controls|ContentExpandControl#PART_ContentExpand">
+			<Style Selector="^ /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 				<Setter Property="Orientation" Value="Vertical" />
 				<Setter Property="VerticalAlignment" Value="Top" />
 				<Setter Property="Margin" Value="0,32,0,0" />
@@ -134,7 +125,7 @@
 		</Style>
 
 		<Style Selector="^:left">
-			<Style Selector="^ /template/ controls|ContentExpandControl#PART_ContentExpand">
+			<Style Selector="^ /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 				<Setter Property="Orientation" Value="Horizontal" />
 				<Setter Property="HorizontalAlignment" Value="Right" />
 				<Setter Property="Margin" Value="0,0,32,0" />
@@ -147,7 +138,7 @@
 		</Style>
 
 		<Style Selector="^:right">
-			<Style Selector="^ /template/ controls|ContentExpandControl#PART_ContentExpand">
+			<Style Selector="^ /template/ sukiControl|ContentExpandControl#PART_ContentExpand">
 				<Setter Property="Orientation" Value="Horizontal" />
 				<Setter Property="HorizontalAlignment" Value="Left" />
 				<Setter Property="Margin" Value="32,0,0,0" />

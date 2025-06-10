@@ -261,7 +261,7 @@ public partial class DirectoryPakParser(string directoryPath, EnumerationOptions
 			}
 
 			var timeTaken = $"{DateTimeOffset.Now - time:s\\.ff}";
-			System.Diagnostics.Trace.WriteLine($"Took {timeTaken} second(s) to enumerate files");
+			DivinityApp.Log($"Took {timeTaken} second(s) to read packages.");
 
 			return await LoadPackagesAsync(detectDuplicates, parseLooseMetaFiles, token);
 		}

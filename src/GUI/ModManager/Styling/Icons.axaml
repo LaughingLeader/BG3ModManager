@@ -1,4 +1,6 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="using:System">
+	<sys:String x:Key="NexusModsIconPath">/Assets/Icons/nexuslogo.svg</sys:String>
+
 	<Image x:Key="ModioIcon"
 	    Width="16"
 	    Height="16"
