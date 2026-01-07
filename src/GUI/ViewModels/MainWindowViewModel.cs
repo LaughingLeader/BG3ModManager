@@ -3409,7 +3409,6 @@ Directory the zip will be extracted to:
 			{
 				var info = NexusModFileVersionData.FromFilePath(archivePath);
 
-				await fileStream.ReadAsync(new byte[fileStream.Length], 0, (int)fileStream.Length);
 				fileStream.Position = 0;
 				IncreaseMainProgressValue(taskStepAmount);
 				using (var archive = ArchiveFactory.Open(fileStream, _importReaderOptions))
