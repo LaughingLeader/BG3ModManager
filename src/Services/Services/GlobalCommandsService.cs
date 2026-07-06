@@ -4,6 +4,7 @@ using ModManager.Util;
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 
 using TextCopy;
 
@@ -37,7 +38,7 @@ public partial class GlobalCommandsService : ReactiveObject, IGlobalCommandsServ
 		}
 		else if (_fs.Directory.Exists(path))
 		{
-			Process.Start("explorer.exe", $"\"{path}\"");
+			Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
 		}
 		else
 		{
@@ -52,11 +53,25 @@ public partial class GlobalCommandsService : ReactiveObject, IGlobalCommandsServ
 
 		if (_fs.File.Exists(path))
 		{
-			return ProcessHelper.TryRunCommand("explorer.exe", $"/select, \"{_fs.Path.GetFullPath(path)}\"");
+			var fullPath = _fs.Path.GetFullPath(path);
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				return ProcessHelper.TryRunCommand("explorer.exe", $"/select, \"{fullPath}\"");
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+				return ProcessHelper.TryRunCommand("open", $"-R \"{fullPath}\"");
+			// Linux — no universal /select equivalent, open parent directory
+			var parent = _fs.Path.GetDirectoryName(fullPath);
+			if (parent == null) return false;
+			try { Process.Start(new ProcessStartInfo { FileName = parent, UseShellExecute = true }); return true; }
+			catch { return false; }
 		}
 		else if (_fs.Directory.Exists(path))
 		{
-			return ProcessHelper.TryRunCommand("explorer.exe", $"\"{_fs.Path.GetFullPath(path)}\"");
+			try
+			{
+				Process.Start(new ProcessStartInfo { FileName = _fs.Path.GetFullPath(path), UseShellExecute = true });
+				return true;
+			}
+			catch { return false; }
 		}
 		else
 		{
