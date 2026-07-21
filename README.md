@@ -55,6 +55,7 @@ A mod manager for [Baldur's Gate 3](https://store.steampowered.com/app/1086940/B
 * [Latest Release](https://github.com/LaughingLeader/BG3ModManager/releases/latest)
 * [Changelog](https://github.com/LaughingLeader/BG3ModManager/wiki/Changelog)
 * [Leader's Lair Discord](https://discord.gg/j5gp6MD)
+- [BG3 Hub](https://bg3hub.com/) — Baldur's Gate 3 tier lists, class builds, spell library, and Honour-Mode strategies.
 
 # Support
 
