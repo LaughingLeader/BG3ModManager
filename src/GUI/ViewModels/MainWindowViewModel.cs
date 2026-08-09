@@ -520,7 +520,10 @@ Directory the zip will be extracted to:
 			try
 			{
 				FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(extenderUpdaterPath);
-				if (fvi != null && fvi.ProductName.IndexOf("Script Extender", StringComparison.OrdinalIgnoreCase) >= 0)
+				using Stream updaterBinary = String.IsNullOrEmpty(fvi?.ProductName)
+					? File.OpenRead(extenderUpdaterPath)
+					: Stream.Null;
+				if (ScriptExtenderUpdaterDetector.IsScriptExtenderUpdater(fvi?.ProductName, updaterBinary))
 				{
 					Settings.ExtenderUpdaterSettings.UpdaterIsAvailable = true;
 					DivinityApp.Log($"Found the Extender at '{extenderUpdaterPath}'.");
