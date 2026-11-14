@@ -754,12 +754,15 @@ public static partial class DivinityModDataLoader
 		var modPaks = new List<string>();
 		try
 		{
-			var allPaks = DivinityFileUtils.EnumerateFiles(modsFolderPath, DivinityFileUtils.RecursiveOptions,
+			// Inactive packages remain available to the manager, outside the game's scan.
+			var allPaks = ModPackageIsolation.GetPackageDirectories(modsFolderPath)
+				.SelectMany(folder => DivinityFileUtils.EnumerateFiles(folder, DivinityFileUtils.RecursiveOptions,
 			(f) =>
 			{
 				var name = Path.GetFileName(f);
 				return name.EndsWith(".pak", SCOMP) && !_IgnoredRecursiveFolders.Any(x => f.Contains(x));
-			});
+			})).ToList();
+			_AllPaksNames.Clear();
 			_AllPaksNames.UnionWith(allPaks.Select(p => Path.GetFileNameWithoutExtension(p)));
 			modPaks.AddRange(allPaks.Where(PakIsNotPartial));
 		}
@@ -1328,7 +1331,8 @@ public static partial class DivinityModDataLoader
 		return order;
 	}
 
-	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<DivinityModData> order)
+	public static async Task<bool> ExportModSettingsToFileAsync(string folder, IEnumerable<DivinityModData> order,
+		string modsFolderPath = null, IEnumerable<DivinityModData> allMods = null)
 	{
 		if (Directory.Exists(folder))
 		{
@@ -1336,6 +1340,32 @@ public static partial class DivinityModDataLoader
 			string contents = GenerateModSettingsFile(order);
 			try
 			{
+				if (allMods != null)
+				{
+					var storage = ModPackageIsolation.GetInactiveDirectory(modsFolderPath);
+					var folders = ModPackageIsolation.GetPackageDirectories(modsFolderPath).ToArray();
+					var available = allMods.Where(m => !m.IsEditorMod && !m.IsLarianMod && m.CanAddToLoadOrder
+						&& !string.IsNullOrEmpty(m.FilePath) && folders.Any(f => DivinityFileUtils.IsSubdirectoryOf(f, m.FilePath))).ToList();
+					var active = order.Select(m => m.UUID).ToHashSet(StringComparer.OrdinalIgnoreCase);
+					var moves = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+					foreach (var group in available.GroupBy(m => m.FilePath, StringComparer.OrdinalIgnoreCase))
+					{
+						var sourceRoot = folders.First(f => DivinityFileUtils.IsSubdirectoryOf(f, group.Key));
+						var targetRoot = group.Any(m => active.Contains(m.UUID)) ? modsFolderPath : storage;
+						using var pak = new PackageReader().Read(group.Key, metadataOnly: true);
+						for (var part = 0; part < Math.Max(1, (int)pak.Metadata.NumParts); part++)
+						{
+							var source = part == 0 ? group.Key : Package.MakePartFilename(group.Key, part);
+							var target = Path.Combine(targetRoot, Path.GetRelativePath(sourceRoot, source));
+							moves.Add(source, target);
+						}
+					}
+					var exported = await ModPackageIsolation.ExportAsync(moves, () => ExportModSettingsToFileAsync(folder, order));
+					if (exported)
+						foreach (var mod in available)
+							if (moves.TryGetValue(mod.FilePath, out var target)) mod.FilePath = target;
+					return exported;
+				}
 				//Lazy indentation!
 				var xml = new XmlDocument();
 				xml.LoadXml(contents);
