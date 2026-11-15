@@ -18,9 +18,7 @@ A mod manager for [Baldur's Gate 3](https://store.steampowered.com/app/1086940/B
  [![Exporting Load Orders](https://i.imgur.com/m9IBQrj.png)](https://i.imgur.com/m9IBQrj.png)
 
 # Important Tips  
-
-* Exporting a load order moves managed inactive `.pak` files, including their parts, to a sibling `Mods.disabled` directory. They remain visible in the manager and are restored unchanged when exported as active. Close the game before exporting package changes, and restart it afterwards. Pure overrides in the Overrides section, native plugins, loose files, and data already written into saves are not controlled by this inactive-package workflow.
-* Failed exports roll back package moves while the manager is running. Forced termination may require restoring package locations manually.
+* Export with the game closed: inactive managed PAKs and their parts move to `Mods.disabled`, remain listed, and return unchanged when exported as active. Native plugins, loose files, pure overrides, duplicate copies, and saved effects are excluded. Failed exports attempt rollback; interrupted moves may need manual recovery.
 * Make sure you don't have any subfolders in your mods folder (`%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Mods`). This causes the game to reset your `modsettings.lsx`!
 * Ensure the `Game Data Path` is set in Settings -> Preferences to the game's data folder, where all the various .pak files are (Gustav.pak etc).
 * Make sure you have a campaign selected (i.e. "Main"). The game must have a campaign exported to the `modsettings.lsx`, or it will fail to load the main menu scene / have other issues.
