@@ -2324,7 +2324,7 @@ Directory the zip will be extracted to:
 
 					var outputPath = Path.Combine(SelectedProfile.Folder, "modsettings.lsx");
 					var finalOrder = DivinityModDataLoader.BuildOutputList(lastExported.Order, mods.Items, Settings.AutoAddDependenciesWhenExporting, SelectedAdventureMod);
-					await DivinityModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.Folder, finalOrder);
+					if (!await DivinityModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.Folder, finalOrder, PathwayData.AppDataModsPath, mods.Items)) return;
 
 					await Observable.Start(() =>
 					{
@@ -2929,7 +2929,7 @@ Directory the zip will be extracted to:
 			}
 			string outputPath = Path.Combine(SelectedProfile.Folder, "modsettings.lsx");
 			var finalOrder = DivinityModDataLoader.BuildOutputList(SelectedModOrder.Order, mods.Items, Settings.AutoAddDependenciesWhenExporting, outputAdventureMod);
-			var result = await DivinityModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.Folder, finalOrder);
+			var result = await DivinityModDataLoader.ExportModSettingsToFileAsync(SelectedProfile.Folder, finalOrder, PathwayData.AppDataModsPath, mods.Items);
 
 			await BackupCurrentLoadOrderAsync();
 
